@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import dev.icerock.moko.resources.compose.painterResource
@@ -83,13 +84,16 @@ fun ChatPreviewView(
 
   @Composable
   fun chatPreviewTitleText(color: Color = Color.Unspecified) {
+    val titleColor = if (color == Color.Unspecified) {
+      if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+    } else color
     Text(
       cInfo.chatViewName,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
       style = MaterialTheme.typography.h3,
       fontWeight = FontWeight.Bold,
-      color = color
+      color = titleColor
     )
   }
 
@@ -150,7 +154,7 @@ fun ChatPreviewView(
           } else if (!cInfo.contact.sndReady) {
             MaterialTheme.colors.secondary
           } else {
-            Color.Unspecified
+            if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A)
           }
           NameWithBadge(
             cInfo.chatViewName,
@@ -239,9 +243,9 @@ fun ChatPreviewView(
         overflow = TextOverflow.Ellipsis,
         style = TextStyle(
           fontFamily = Inter,
-          fontSize = 15.sp,
-          color = if (isInDarkTheme()) MessagePreviewDark else MessagePreviewLight,
-          lineHeight = 21.sp
+          fontSize = 14.sp,
+          color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF475569),
+          lineHeight = 19.sp
         ),
         inlineContent = inlineTextContent,
         modifier = Modifier.fillMaxWidth()
@@ -293,9 +297,9 @@ fun ChatPreviewView(
         overflow = TextOverflow.Ellipsis,
         style = TextStyle(
           fontFamily = Inter,
-          fontSize = 15.sp,
-          color = if (isInDarkTheme()) MessagePreviewDark else MessagePreviewLight,
-          lineHeight = 21.sp
+          fontSize = 14.sp,
+          color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF475569),
+          lineHeight = 19.sp
         ),
         inlineContent = inlineTextContent,
         modifier = Modifier.fillMaxWidth(),
@@ -395,25 +399,33 @@ fun ChatPreviewView(
   }
 
   Box(contentAlignment = Alignment.Center) {
-    Row {
+    Row(verticalAlignment = Alignment.CenterVertically) {
       Box(contentAlignment = Alignment.BottomEnd) {
-        ChatInfoImage(cInfo, size = 72.dp * fontSizeSqrtMultiplier)
-        Box(Modifier.padding(end = 6.sp.toDp(), bottom = 6.sp.toDp())) {
+        Box(
+          Modifier
+            .size(54.dp * fontSizeSqrtMultiplier)
+            .clip(CircleShape)
+            .border(1.dp, if (isInDarkTheme()) Color(0x38FFFFFF) else Color(0x1F000000), CircleShape),
+          contentAlignment = Alignment.Center
+        ) {
+          ChatInfoImage(cInfo, size = 54.dp * fontSizeSqrtMultiplier)
+        }
+        Box(Modifier.padding(end = 2.dp, bottom = 2.dp)) {
           chatPreviewImageOverlayIcon()
         }
       }
-      Spacer(Modifier.width(8.dp))
+      Spacer(Modifier.width(10.dp))
       Column(Modifier.weight(1f)) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
           Box(Modifier.weight(1f)) {
             chatPreviewTitle()
           }
-          Spacer(Modifier.width(8.sp.toDp()))
+          Spacer(Modifier.width(8.dp))
           val ts = getTimestampText(chat.chatItems.lastOrNull()?.meta?.itemTs ?: chat.chatInfo.chatTs)
           ChatListTimestampView(ts)
         }
-        Row(Modifier.heightIn(min = 46.sp.toDp()).fillMaxWidth()) {
-          Row(Modifier.padding(top = 3.sp.toDp()).weight(1f)) {
+        Row(Modifier.heightIn(min = 34.sp.toDp()).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+          Row(Modifier.padding(top = 2.dp).weight(1f)) {
             val activeVoicePreview: MutableState<(ActiveVoicePreview)?> = remember(chat.id) { mutableStateOf(null) }
             val chat = activeVoicePreview.value?.chat ?: chat
             val ci = activeVoicePreview.value?.ci ?: chat.chatItems.lastOrNull()
@@ -588,18 +600,29 @@ fun UnreadBadge(
   backgroundColor: Color,
   yOffset: Dp? = null
 ) {
-  Text(
-    text,
-    color = Color.White,
-    fontSize = 10.sp,
-    style = TextStyle(textAlign = TextAlign.Center),
+  val isGradient = backgroundColor != MaterialTheme.colors.secondary
+  val bgModifier = if (isGradient) {
+    Modifier.background(Brush.linearGradient(listOf(Color(0xFF00E5FF), Color(0xFF0088FF))), shape = CornerPill)
+  } else {
+    Modifier.background(backgroundColor, shape = CornerPill)
+  }
+  Box(
     modifier = Modifier
       .offset(y = yOffset ?: 0.dp)
-      .background(backgroundColor, shape = CircleShape)
-      .badgeLayout()
-      .padding(horizontal = 2.sp.toDp())
-      .padding(vertical = 1.sp.toDp())
-  )
+      .clip(CornerPill)
+      .then(bgModifier)
+      .border(0.5.dp, Color(0x66FFFFFF), CornerPill)
+      .padding(horizontal = 7.dp, vertical = 2.dp),
+    contentAlignment = Alignment.Center
+  ) {
+    Text(
+      text,
+      color = Color.White,
+      fontSize = 11.sp,
+      fontWeight = FontWeight.Bold,
+      textAlign = TextAlign.Center
+    )
+  }
 }
 
 @Composable
@@ -608,20 +631,12 @@ fun unreadCountStr(n: Int): String {
 }
 
 @Composable fun ChatListTimestampView(ts: String) {
-  Box(contentAlignment = Alignment.BottomStart) {
-    // This should be the same font style as in title to make date located on the same line as title
-    Text(
-      " ",
-      style = MaterialTheme.typography.h3,
-      fontWeight = FontWeight.Bold,
-    )
-    Text(
-      ts,
-      Modifier.padding(bottom = 5.sp.toDp()).offset(x = if (appPlatform.isDesktop) 1.5.sp.toDp() else 0.dp),
-      color = MaterialTheme.colors.secondary,
-      style = MaterialTheme.typography.body2.copy(fontSize = 13.sp),
-    )
-  }
+  Text(
+    ts,
+    Modifier.padding(top = 1.dp).offset(x = if (appPlatform.isDesktop) 1.5.sp.toDp() else 0.dp),
+    color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
+    style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, fontWeight = FontWeight.Medium),
+  )
 }
 
 private data class ActiveVoicePreview(

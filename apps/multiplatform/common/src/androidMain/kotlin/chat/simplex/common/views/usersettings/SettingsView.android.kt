@@ -24,13 +24,13 @@ actual fun AdvancedSettingsAppSection(
   withAuth: (title: String, desc: String, block: () -> Unit) -> Unit,
 ) {
   SectionView {
-    SettingsActionItem(painterResource(MR.images.ic_code), stringResource(MR.strings.settings_developer_tools), showSettingsModal { DeveloperView(withAuth) })
+    SettingsActionItem(painterResource(MR.images.ic_code), stringResource(MR.strings.settings_developer_tools), showSettingsModal { DeveloperView(withAuth) }, badgeColor = Color(0xFF5E35B1))
   }
 }
 
 @Composable
 actual fun AppShutdownItem() {
-  SettingsActionItem(painterResource(MR.images.ic_power_settings_new), stringResource(MR.strings.settings_shutdown), ::shutdownAppAlert)
+  SettingsActionItem(painterResource(MR.images.ic_power_settings_new), stringResource(MR.strings.settings_shutdown), ::shutdownAppAlert, badgeColor = Color(0xFFE53935))
 }
 
 fun restartApp() {

@@ -201,31 +201,22 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   }
   val searchText = rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
   val listState = rememberLazyListState(lazyListState.first, lazyListState.second)
+  val scope = rememberCoroutineScope()
+
   Box(Modifier.fillMaxSize()) {
-    if (oneHandUI.value) {
-      ChatListWithLoadingScreen(searchText, listState)
-      Column(Modifier.align(Alignment.BottomCenter)) {
-        ChatListToolbar(
-          userPickerState,
-          listState,
-          stopped,
-          setPerformLA,
-        )
+    ChatListWithLoadingScreen(searchText, listState, userPickerState, setPerformLA, stopped)
+    TelegramBottomIslandBar(
+      userPickerState = userPickerState,
+      setPerformLA = setPerformLA,
+      onChatsClick = {
+        if (listState.firstVisibleItemIndex != 0) {
+          scope.launch { listState.animateScrollToItem(0) }
+        } else {
+          chatModel.activeChatTagFilter.value = null
+          searchText.value = TextFieldValue("")
+        }
       }
-    } else {
-      ChatListWithLoadingScreen(searchText, listState)
-      Column {
-        ChatListToolbar(
-          userPickerState,
-          listState,
-          stopped,
-          setPerformLA,
-        )
-      }
-      if (searchText.value.text.isEmpty() && !chatModel.desktopNoUserNoRemote && chatModel.chatRunning.value == true) {
-        NewChatSheetFloatingButton(oneHandUI, stopped)
-      }
-    }
+    )
   }
 
   if (searchText.value.text.isEmpty()) {
@@ -409,14 +400,20 @@ private fun ConnectBannerCard() {
 }
 
 @Composable
-private fun BoxScope.ChatListWithLoadingScreen(searchText: MutableState<TextFieldValue>, listState: LazyListState) {
+private fun BoxScope.ChatListWithLoadingScreen(
+  searchText: MutableState<TextFieldValue>,
+  listState: LazyListState,
+  userPickerState: MutableStateFlow<AnimatedViewState>,
+  setPerformLA: (Boolean) -> Unit,
+  stopped: Boolean
+) {
   if (chatModel.chatRunning.value == null) {
     Text(stringResource(MR.strings.loading_chats), Modifier.align(Alignment.Center), color = MaterialTheme.colors.secondary)
   } else if (shouldShowOnboarding()) {
     if (appPlatform.isAndroid) AndroidOnboardingCards()
   } else {
     if (!chatModel.desktopNoUserNoRemote) {
-      ChatList(searchText = searchText, listState)
+      ChatList(searchText = searchText, listState, userPickerState, setPerformLA, stopped)
     }
     if (chatModel.chats.value.isEmpty() && !chatModel.switchingUsersAndHosts.value && !chatModel.desktopNoUserNoRemote) {
       Text(stringResource(MR.strings.you_have_no_chats), Modifier.align(Alignment.Center), color = MaterialTheme.colors.secondary)
@@ -450,12 +447,13 @@ private fun BoxScope.NewChatSheetFloatingButton(oneHandUI: State<Boolean>, stopp
       .navigationBarsPadding()
       .padding(end = DEFAULT_PADDING, bottom = DEFAULT_PADDING)
       .align(Alignment.BottomEnd)
+      .bounceClick()
       .size(AppBarHeight * fontSizeSqrtMultiplier),
     elevation = FloatingActionButtonDefaults.elevation(
-      defaultElevation = 0.dp,
-      pressedElevation = 0.dp,
-      hoveredElevation = 0.dp,
-      focusedElevation = 0.dp,
+      defaultElevation = 3.dp,
+      pressedElevation = 1.dp,
+      hoveredElevation = 5.dp,
+      focusedElevation = 3.dp,
     ),
     backgroundColor = if (!stopped) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
     contentColor = Color.White
@@ -554,8 +552,12 @@ private fun ChatListToolbar(userPickerState: MutableStateFlow<AnimatedViewState>
           Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-              .background(MaterialTheme.colors.primary, shape = CircleShape)
-              .size(33.dp * fontSizeSqrtMultiplier)
+              .background(
+                Brush.linearGradient(listOf(Color(0xFF00E5FF), Color(0xFF0088FF))),
+                shape = CircleShape
+              )
+              .border(1.dp, Color(0x66FFFFFF), CircleShape)
+              .size(36.dp * fontSizeSqrtMultiplier)
           ) {
             Icon(
               painterResource(MR.images.ic_edit_filled),
@@ -749,15 +751,29 @@ fun connectIfOpenedViaUri(rhId: Long?, uri: String, chatModel: ChatModel) {
 
 @Composable
 private fun ChatListSearchBar(listState: LazyListState, searchText: MutableState<TextFieldValue>, searchShowingSimplexLink: MutableState<Boolean>, searchChatFilteredBySimplexLink: MutableState<Set<String>>, connectNameCandidate: MutableState<String?>) {
-  Box {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-      val focusRequester = remember { FocusRequester() }
-      var focused by remember { mutableStateOf(false) }
+  val isDark = isInDarkTheme()
+  val focusRequester = remember { FocusRequester() }
+  var focused by remember { mutableStateOf(false) }
+  val shape = RoundedCornerShape(18.dp)
+
+  Box(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 10.dp, vertical = 5.dp)
+      .clip(shape)
+      .background(if (isDark) Color(0x661E293B) else Color(0xEEF1F5F9))
+      .border(
+        1.dp,
+        if (focused) Color(0x9938BDF8) else if (isDark) Color(0x38FFFFFF) else Color(0x1F000000),
+        shape
+      )
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp)) {
       Icon(
         painterResource(MR.images.ic_search),
         contentDescription = null,
-        Modifier.padding(start = DEFAULT_PADDING, end = DEFAULT_PADDING_HALF).size(22.dp * fontSizeSqrtMultiplier),
-        tint = MaterialTheme.colors.secondary
+        Modifier.padding(start = 4.dp, end = 6.dp).size(20.dp * fontSizeSqrtMultiplier),
+        tint = if (focused) Color(0xFF38BDF8) else MaterialTheme.colors.secondary
       )
       SearchTextField(
         Modifier.weight(1f).onFocusChanged { focused = it.hasFocus }.focusRequester(focusRequester),
@@ -779,7 +795,7 @@ private fun ChatListSearchBar(listState: LazyListState, searchText: MutableState
           hideSearchOnBack()
         }
       } else {
-        val padding = if (appPlatform.isDesktop) 0.dp else 7.dp
+        val padding = if (appPlatform.isDesktop) 0.dp else 4.dp
         if (chatModel.chats.value.isNotEmpty()) {
           ToggleFilterEnabledButton()
         }
@@ -842,8 +858,6 @@ private fun ChatListSearchBar(listState: LazyListState, searchText: MutableState
           }
       }
     }
-    val oneHandUI = remember { appPrefs.oneHandUI.state }
-    Divider(Modifier.align(if (oneHandUI.value) Alignment.TopStart else Alignment.BottomStart))
   }
 }
 
@@ -904,134 +918,329 @@ fun BoxScope.NavigationBarBackground(modifier: Modifier, color: Color = Material
 }
 
 @Composable
-private fun BoxScope.ChatList(searchText: MutableState<TextFieldValue>, listState: LazyListState) {
-  var scrollDirection by remember { mutableStateOf(ScrollDirection.Idle) }
-  var previousIndex by remember { mutableStateOf(0) }
-  var previousScrollOffset by remember { mutableStateOf(0) }
-  val keyboardState by getKeyboardState()
+private fun TelegramTopHeader(
+  userPickerState: MutableStateFlow<AnimatedViewState>,
+  setPerformLA: (Boolean) -> Unit,
+  stopped: Boolean,
+  listState: LazyListState
+) {
+  val isDark = isInDarkTheme()
+  val showMenu = remember { mutableStateOf(false) }
+  val serversSummary: MutableState<PresentedServersSummary?> = remember { mutableStateOf(null) }
+  val clipboard = LocalClipboardManager.current
   val oneHandUI = remember { appPrefs.oneHandUI.state }
-  val oneHandUICardShown = remember { appPrefs.oneHandUICardShown.state }
-  val addressCreationCardShown = remember { appPrefs.addressCreationCardShown.state }
-  val activeFilter = remember { chatModel.activeChatTagFilter }
 
-  LaunchedEffect(listState.firstVisibleItemIndex, listState.firstVisibleItemScrollOffset) {
-    val currentIndex = listState.firstVisibleItemIndex
-    val currentScrollOffset = listState.firstVisibleItemScrollOffset
-    val threshold = 25
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 4.dp),
+    horizontalArrangement = Arrangement.SpaceBetween,
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    Text(
+      text = "SimpleUX",
+      color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+      style = TextStyle(
+        fontFamily = Inter,
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 0.5.sp
+      )
+    )
 
-    scrollDirection = when {
-      currentIndex > previousIndex -> ScrollDirection.Down
-      currentIndex < previousIndex -> ScrollDirection.Up
-      currentScrollOffset > previousScrollOffset + threshold -> ScrollDirection.Down
-      currentScrollOffset < previousScrollOffset - threshold -> ScrollDirection.Up
-      currentScrollOffset == previousScrollOffset -> ScrollDirection.Idle
-      else -> scrollDirection
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      SubscriptionStatusIndicator(
+        click = {
+          ModalManager.start.closeModals()
+          val summary = serversSummary.value
+          ModalManager.start.showModalCloseable(
+            endButtons = {
+              if (summary != null) {
+                ShareButton {
+                  val json = Json { prettyPrint = true }
+                  val text = json.encodeToString(PresentedServersSummary.serializer(), summary)
+                  clipboard.shareText(text)
+                }
+              }
+            }
+          ) { ServersSummaryView(chatModel.currentRemoteHost.value, serversSummary) }
+        }
+      )
+
+      Box {
+        IconButton(onClick = { showMenu.value = true }) {
+          Icon(
+            painterResource(MR.images.ic_more_horiz),
+            contentDescription = "Options",
+            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+            modifier = Modifier.size(24.dp)
+          )
+        }
+
+        DefaultDropdownMenu(showMenu) {
+          ItemAction(
+            stringResource(MR.strings.new_chat),
+            painterResource(MR.images.ic_edit_filled),
+            onClick = {
+              showMenu.value = false
+              showNewChatSheet(oneHandUI)
+            }
+          )
+          ItemAction(
+            stringResource(MR.strings.settings_section_title_settings),
+            painterResource(MR.images.ic_settings),
+            onClick = {
+              showMenu.value = false
+              ModalManager.start.showModalCloseable(cardScreen = true) { close ->
+                SettingsView(chatModel, setPerformLA, close)
+              }
+            }
+          )
+        }
+      }
     }
+  }
+}
 
-    previousIndex = currentIndex
-    previousScrollOffset = currentScrollOffset
+@Composable
+fun BoxScope.TelegramBottomIslandBar(
+  userPickerState: MutableStateFlow<AnimatedViewState>,
+  setPerformLA: (Boolean) -> Unit,
+  onChatsClick: () -> Unit
+) {
+  val isDark = isInDarkTheme()
+  val shape = RoundedCornerShape(32.dp)
+  val oneHandUI = remember { appPrefs.oneHandUI.state }
+
+  Box(
+    modifier = Modifier
+      .align(Alignment.BottomCenter)
+      .windowInsetsPadding(WindowInsets.navigationBars)
+      .padding(start = 20.dp, end = 20.dp, bottom = 16.dp),
+    contentAlignment = Alignment.Center
+  ) {
+    Surface(
+      shape = shape,
+      color = if (isDark) Color(0xEE121A26) else Color(0xF5F8FAFC),
+      elevation = 12.dp,
+      modifier = Modifier
+        .wrapContentWidth()
+        .border(
+          width = 1.dp,
+          brush = Brush.linearGradient(
+            listOf(
+              if (isDark) Color(0x4DFFFFFF) else Color(0x26000000),
+              if (isDark) Color(0x1AFFFFFF) else Color(0x0D000000)
+            )
+          ),
+          shape = shape
+        )
+    ) {
+      Row(
+        modifier = Modifier
+          .padding(horizontal = 10.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        // Tab 1: Chats (Active)
+        IslandTabItem(
+          label = "Chats",
+          icon = MR.images.ic_forum,
+          isActive = true,
+          onClick = onChatsClick
+        )
+
+        Spacer(Modifier.width(6.dp))
+
+        // Tab 2: Contacts
+        IslandTabItem(
+          label = "Contacts",
+          icon = MR.images.ic_supervised_user_circle_filled,
+          isActive = false,
+          onClick = {
+            showNewChatSheet(oneHandUI)
+          }
+        )
+
+        Spacer(Modifier.width(6.dp))
+
+        // Tab 3: Settings
+        IslandTabItem(
+          label = "Settings",
+          icon = MR.images.ic_settings,
+          isActive = false,
+          onClick = {
+            ModalManager.start.showModalCloseable(cardScreen = true) { close ->
+              SettingsView(chatModel, setPerformLA, close)
+            }
+          }
+        )
+
+        Spacer(Modifier.width(6.dp))
+
+        // Tab 4: Profile
+        val currentUser = remember { chatModel.currentUser }
+        IslandProfileTabItem(
+          label = "Profile",
+          image = currentUser.value?.profile?.image,
+          isActive = false,
+          onClick = {
+            userPickerState.value = AnimatedViewState.VISIBLE
+          }
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun IslandTabItem(
+  label: String,
+  icon: ImageResource,
+  isActive: Boolean,
+  onClick: () -> Unit
+) {
+  val isDark = isInDarkTheme()
+  val activeShape = RoundedCornerShape(20.dp)
+  val activeBg = if (isActive) {
+    if (isDark) Brush.linearGradient(listOf(Color(0x3300E5FF), Color(0x223B82F6)))
+    else Brush.linearGradient(listOf(Color(0x220284C7), Color(0x110284C7)))
+  } else {
+    SolidColor(Color.Transparent)
   }
 
-  DisposableEffect(Unit) {
-    onDispose { lazyListState = listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
+  Box(
+    modifier = Modifier
+      .clip(activeShape)
+      .background(activeBg)
+      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x5500E5FF) else Color(0x330284C7), activeShape) else Modifier)
+      .clickable(onClick = onClick)
+      .padding(horizontal = 14.dp, vertical = 6.dp),
+    contentAlignment = Alignment.Center
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      Icon(
+        painterResource(icon),
+        contentDescription = label,
+        modifier = Modifier.size(20.dp),
+        tint = if (isActive) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+      )
+      Spacer(Modifier.height(2.dp))
+      Text(
+        label,
+        fontSize = 11.sp,
+        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+        color = if (isActive) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+      )
+    }
   }
+}
+
+@Composable
+private fun IslandProfileTabItem(
+  label: String,
+  image: String?,
+  isActive: Boolean,
+  onClick: () -> Unit
+) {
+  val isDark = isInDarkTheme()
+  val activeShape = RoundedCornerShape(20.dp)
+
+  Box(
+    modifier = Modifier
+      .clip(activeShape)
+      .clickable(onClick = onClick)
+      .padding(horizontal = 14.dp, vertical = 6.dp),
+    contentAlignment = Alignment.Center
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center
+    ) {
+      Box(
+        modifier = Modifier
+          .size(20.dp)
+          .clip(CircleShape)
+          .border(1.dp, if (isDark) Color(0x44FFFFFF) else Color(0x22000000), CircleShape),
+        contentAlignment = Alignment.Center
+      ) {
+        ProfileImage(
+          image = image,
+          size = 20.dp,
+          color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+        )
+      }
+      Spacer(Modifier.height(2.dp))
+      Text(
+        label,
+        fontSize = 11.sp,
+        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
+        color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+      )
+    }
+  }
+}
+
+@Composable
+private fun BoxScope.ChatList(
+  searchText: MutableState<TextFieldValue>,
+  listState: LazyListState,
+  userPickerState: MutableStateFlow<AnimatedViewState>,
+  setPerformLA: (Boolean) -> Unit,
+  stopped: Boolean
+) {
+  val activeFilter = remember { chatModel.activeChatTagFilter }
   val allChats = remember { chatModel.chats }
-  // In some not always reproducible situations this code produce IndexOutOfBoundsException on Compose's side
-  // which is related to [derivedStateOf]. Using safe alternative instead
-  // val chats by remember(search, showUnreadAndFavorites) { derivedStateOf { filteredChats(showUnreadAndFavorites, search, allChats.toList()) } }
   val searchShowingSimplexLink = remember { mutableStateOf(false) }
   val searchChatFilteredBySimplexLink = remember { mutableStateOf<Set<String>>(emptySet()) }
   val connectNameCandidate = remember { mutableStateOf<String?>(null) }
   val chats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
-  val topPaddingToContent = topPaddingToContent(false)
-  val blankSpaceSize = if (oneHandUI.value) WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + AppBarHeight * fontSizeSqrtMultiplier else topPaddingToContent
+
   LazyColumnWithScrollBar(
-    if (!oneHandUI.value) Modifier.imePadding() else Modifier,
+    Modifier.imePadding(),
     listState,
-    reverseLayout = oneHandUI.value
+    reverseLayout = false
   ) {
-    item { Spacer(Modifier.height(blankSpaceSize)) }
     stickyHeader {
       Column(
         Modifier
+          .fillMaxWidth()
           .zIndex(1f)
-          .offset {
-            val offsetMultiplier = if (oneHandUI.value) 1 else -1
-            val y = if (searchText.value.text.isNotEmpty() || (appPlatform.isAndroid && keyboardState == KeyboardState.Opened) || scrollDirection == ScrollDirection.Up) {
-              if (listState.firstVisibleItemIndex == 0) -offsetMultiplier * listState.firstVisibleItemScrollOffset
-              else -offsetMultiplier * blankSpaceSize.roundToPx()
-            } else {
-              when (listState.firstVisibleItemIndex) {
-                0 -> 0
-                1 -> offsetMultiplier * listState.firstVisibleItemScrollOffset
-                else -> offsetMultiplier * 1000
-              }
-            }
-            IntOffset(0, y)
-          }
+          .windowInsetsPadding(WindowInsets.statusBars)
           .background(MaterialTheme.colors.background)
-        ) {
-        if (oneHandUI.value) {
-          Column(Modifier.consumeWindowInsets(WindowInsets.navigationBars).consumeWindowInsets(PaddingValues(bottom = AppBarHeight))) {
-            Divider()
-            // bottom toolbar: search bar below, so on desktop the connect row goes below the tags
-            TagsOrConnectByName(searchText, connectNameCandidate) { candidate ->
-              TagsView(searchText)
-              Divider()
-              ConnectByNameRow(candidate, searchText, connectNameCandidate, close = null)
-            }
-            ChatListSearchBar(listState, searchText, searchShowingSimplexLink, searchChatFilteredBySimplexLink, connectNameCandidate)
-            Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.ime))
-          }
-        } else {
-          ChatListSearchBar(listState, searchText, searchShowingSimplexLink, searchChatFilteredBySimplexLink, connectNameCandidate)
-          // top toolbar: search bar above, so on desktop the connect row goes above the tags
-          TagsOrConnectByName(searchText, connectNameCandidate) { candidate ->
-            ConnectByNameRow(candidate, searchText, connectNameCandidate, close = null)
-            Divider()
-            TagsView(searchText)
-          }
-          Divider()
+      ) {
+        TelegramTopHeader(userPickerState, setPerformLA, stopped, listState)
+        ChatListSearchBar(listState, searchText, searchShowingSimplexLink, searchChatFilteredBySimplexLink, connectNameCandidate)
+        TagsOrConnectByName(searchText, connectNameCandidate) { candidate ->
+          ConnectByNameRow(candidate, searchText, connectNameCandidate, close = null)
+          TagsView(searchText)
         }
+        Spacer(Modifier.height(4.dp))
       }
     }
-    if (!oneHandUICardShown.value) {
-      item {
-        ToggleChatListCard()
-      }
-    }
+
     itemsIndexed(chats, key = { _, chat -> chat.remoteHostId to chat.id }) { index, chat ->
       val nextChatSelected = remember(chat.id, chats) { derivedStateOf {
         chatModel.chatId.value != null && chats.getOrNull(index + 1)?.id == chatModel.chatId.value
       } }
       ChatListNavLinkView(chat, nextChatSelected)
     }
-    if (!addressCreationCardShown.value) {
-      item {
-        ChatListFeatureCards()
-      }
-    }
-    if (appPlatform.isAndroid) {
-      item { Spacer(if (oneHandUI.value) Modifier.windowInsetsTopHeight(WindowInsets.statusBars) else Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)) }
+
+    item {
+      Spacer(Modifier.height(110.dp))
     }
   }
+
   if (chats.isEmpty() && chatModel.chats.value.isNotEmpty()) {
     Box(Modifier.fillMaxSize().imePadding().padding(horizontal = DEFAULT_PADDING), contentAlignment = Alignment.Center) {
       NoChatsView(searchText = searchText)
     }
   }
-  if (oneHandUI.value) {
-    StatusBarBackground()
-  } else {
-    NavigationBarBackground(oneHandUI.value, true)
-  }
-  if (!oneHandUICardShown.value) {
-    LaunchedEffect(chats.size) {
-      if (chats.size >= 3) {
-        appPrefs.oneHandUICardShown.set(true)
-      }
-    }
-  }
+
+  StatusBarBackground()
 
   LaunchedEffect(activeFilter.value) {
     searchText.value = TextFieldValue("")
@@ -1192,8 +1401,48 @@ private fun TagsView(searchText: MutableState<TextFieldValue>) {
   val rhId = chatModel.remoteHostId()
 
   val rowSizeModifier = Modifier.sizeIn(minHeight = TAG_MIN_HEIGHT * fontSizeSqrtMultiplier)
+  val isDark = isInDarkTheme()
 
   TagsRow {
+    // "All" Tab
+    val allActive = activeFilter.value == null && searchText.value.text.isEmpty()
+    val allShape = RoundedCornerShape(14.dp)
+    val allBgModifier = if (allActive) {
+      Modifier.background(Brush.linearGradient(listOf(Color(0x3300E5FF), Color(0x333B82F6))), shape = allShape)
+    } else {
+      Modifier.background(if (isDark) Color(0x331E293B) else Color(0xEEF1F5F9), shape = allShape)
+    }
+    val allBorderModifier = if (allActive) {
+      Modifier.border(1.dp, Color(0x6600E5FF), allShape)
+    } else {
+      Modifier.border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x15000000), allShape)
+    }
+    val allColor = if (allActive) Color(0xFF38BDF8) else if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+
+    Row(
+      modifier = Modifier
+        .sizeIn(minHeight = TAG_MIN_HEIGHT * fontSizeSqrtMultiplier)
+        .padding(horizontal = 3.dp)
+        .clip(allShape)
+        .then(allBgModifier)
+        .then(allBorderModifier)
+        .bounceClick()
+        .clickable {
+          chatModel.activeChatTagFilter.value = null
+          searchText.value = TextFieldValue("")
+        }
+        .padding(horizontal = 12.dp, vertical = 5.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Center
+    ) {
+      Text(
+        stringResource(MR.strings.chat_list_all),
+        color = allColor,
+        fontWeight = if (allActive) FontWeight.Bold else FontWeight.Medium,
+        fontSize = 14.sp
+      )
+    }
+
     if (collapsiblePresetTags.size > 1) {
       if (collapsiblePresetTags.size + alwaysShownPresetTags.size + userTags.value.size <= 3) {
         PresetTagKind.entries.filter { t -> (presetTags[t] ?: 0) > 0 }.forEach { tag ->
@@ -1208,6 +1457,7 @@ private fun TagsView(searchText: MutableState<TextFieldValue>) {
     }
 
     userTags.value.forEach { tag ->
+      val isDark = isInDarkTheme()
       val current = when (val af = activeFilter.value) {
         is ActiveFilter.UserTag -> af.tag == tag
         else -> false
@@ -1215,10 +1465,25 @@ private fun TagsView(searchText: MutableState<TextFieldValue>) {
       val interactionSource = remember { MutableInteractionSource() }
       val showMenu = rememberSaveable { mutableStateOf(false) }
       val saving = remember { mutableStateOf(false) }
-      Box {
+      val shape = RoundedCornerShape(14.dp)
+      val bgModifier = if (current) {
+        Modifier.background(Brush.linearGradient(listOf(Color(0x3300E5FF), Color(0x333B82F6))), shape = shape)
+      } else {
+        Modifier.background(if (isDark) Color(0x331E293B) else Color(0xEEF1F5F9), shape = shape)
+      }
+      val borderModifier = if (current) {
+        Modifier.border(1.dp, Color(0x6600E5FF), shape)
+      } else {
+        Modifier.border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x15000000), shape)
+      }
+      val chipColor = if (current) Color(0xFF38BDF8) else if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+
+      Box(Modifier.padding(horizontal = 3.dp)) {
         Row(
           rowSizeModifier
-            .clip(shape = CircleShape)
+            .clip(shape = shape)
+            .then(bgModifier)
+            .then(borderModifier)
             .combinedClickable(
               onClick = {
                 if (chatModel.activeChatTagFilter.value == ActiveFilter.UserTag(tag)) {
@@ -1233,7 +1498,7 @@ private fun TagsView(searchText: MutableState<TextFieldValue>) {
               enabled = !saving.value
             )
             .onRightClick { showMenu.value = true }
-            .padding(4.dp),
+            .padding(horizontal = 10.dp, vertical = 5.dp),
           horizontalArrangement = Arrangement.Center,
           verticalAlignment = Alignment.CenterVertically
         ) {
@@ -1243,48 +1508,37 @@ private fun TagsView(searchText: MutableState<TextFieldValue>) {
             Icon(
               painterResource(if (current) MR.images.ic_label_filled else MR.images.ic_label),
               null,
-              Modifier.size(18.sp.toDp()),
-              tint = if (current) MaterialTheme.colors.primary else MaterialTheme.colors.onBackground
+              Modifier.size(16.sp.toDp()),
+              tint = chipColor
             )
           }
-          Spacer(Modifier.width(4.dp))
-          Box {
-            val badgeText = if ((unreadTags[tag.chatTagId] ?: 0) > 0) " ●" else ""
-            val invisibleText = buildAnnotatedString {
-              append(tag.chatTagText)
-              withStyle(SpanStyle(fontSize = 12.sp, fontWeight = FontWeight.SemiBold)) {
+          Spacer(Modifier.width(5.dp))
+          val badgeText = if ((unreadTags[tag.chatTagId] ?: 0) > 0) " ●" else ""
+          val visibleText = buildAnnotatedString {
+            append(tag.chatTagText)
+            if (badgeText.isNotEmpty()) {
+              withStyle(SpanStyle(fontSize = 12.5.sp, color = Color(0xFF00E5FF))) {
                 append(badgeText)
               }
             }
-            Text(
-              text = invisibleText,
-              fontWeight = FontWeight.Medium,
-              fontSize = 15.sp,
-              color = Color.Transparent,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis
-            )
-            // Visible text with styles
-            val visibleText = buildAnnotatedString {
-              append(tag.chatTagText)
-              withStyle(SpanStyle(fontSize = 12.5.sp, color = MaterialTheme.colors.primary)) {
-                append(badgeText)
-              }
-            }
-            Text(
-              text = visibleText,
-              fontWeight = if (current) FontWeight.Medium else FontWeight.Normal,
-              fontSize = 15.sp,
-              color = if (current) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-              maxLines = 1,
-              overflow = TextOverflow.Ellipsis
-            )
           }
+          Text(
+            text = visibleText,
+            fontWeight = if (current) FontWeight.SemiBold else FontWeight.Medium,
+            fontSize = 14.sp,
+            color = chipColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+          )
         }
         TagsDropdownMenu(rhId, tag, showMenu, saving)
       }
     }
+    val plusShape = RoundedCornerShape(14.dp)
     val plusClickModifier = Modifier
+      .clip(plusShape)
+      .background(if (isInDarkTheme()) Color(0x221E293B) else Color(0xEEF1F5F9), plusShape)
+      .border(1.dp, if (isInDarkTheme()) Color(0x26FFFFFF) else Color(0x15000000), plusShape)
       .clickable {
         ModalManager.start.showModalCloseable { close ->
           TagListEditor(rhId = rhId, close = close)
@@ -1292,15 +1546,15 @@ private fun TagsView(searchText: MutableState<TextFieldValue>) {
       }
 
     if (userTags.value.isEmpty()) {
-      Row(rowSizeModifier.clip(shape = CircleShape).then(plusClickModifier).padding(start = 2.dp, top = 4.dp, end = 6.dp, bottom = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        Icon(painterResource(MR.images.ic_add), stringResource(MR.strings.chat_list_add_list), Modifier.size(18.sp.toDp()), tint = MaterialTheme.colors.secondary)
-        Spacer(Modifier.width(2.dp))
-        Text(stringResource(MR.strings.chat_list_add_list), color = MaterialTheme.colors.secondary, fontSize = 15.sp)
+      Row(rowSizeModifier.then(plusClickModifier).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(painterResource(MR.images.ic_add), stringResource(MR.strings.chat_list_add_list), Modifier.size(16.sp.toDp()), tint = MaterialTheme.colors.secondary)
+        Spacer(Modifier.width(4.dp))
+        Text(stringResource(MR.strings.chat_list_add_list), color = MaterialTheme.colors.secondary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
       }
     } else {
-      Box(rowSizeModifier, contentAlignment = Alignment.Center) {
+      Box(rowSizeModifier.then(plusClickModifier).padding(horizontal = 8.dp, vertical = 5.dp), contentAlignment = Alignment.Center) {
         Icon(
-          painterResource(MR.images.ic_add), stringResource(MR.strings.chat_list_add_list), Modifier.clip(shape = CircleShape).then(plusClickModifier).padding(2.dp), tint = MaterialTheme.colors.secondary
+          painterResource(MR.images.ic_add), stringResource(MR.strings.chat_list_add_list), Modifier.size(16.sp.toDp()), tint = MaterialTheme.colors.secondary
         )
       }
     }
@@ -1312,18 +1566,34 @@ expect fun TagsRow(content: @Composable() (() -> Unit))
 
 @Composable
 private fun ExpandedTagFilterView(tag: PresetTagKind) {
+  val isDark = isInDarkTheme()
   val activeFilter = remember { chatModel.activeChatTagFilter }
   val active = when (val af = activeFilter.value) {
     is ActiveFilter.PresetTag -> af.tag == tag
     else -> false
   }
   val (icon, menuIcon, text) = presetTagLabel(tag, active)
-  val color = if (active) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+  val color = if (active) Color(0xFF38BDF8) else if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+  val shape = RoundedCornerShape(14.dp)
+  val bgModifier = if (active) {
+    Modifier.background(Brush.linearGradient(listOf(Color(0x3300E5FF), Color(0x333B82F6))), shape = shape)
+  } else {
+    Modifier.background(if (isDark) Color(0x331E293B) else Color(0xEEF1F5F9), shape = shape)
+  }
+  val borderModifier = if (active) {
+    Modifier.border(1.dp, Color(0x6600E5FF), shape)
+  } else {
+    Modifier.border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x15000000), shape)
+  }
 
   Row(
     modifier = Modifier
       .sizeIn(minHeight = TAG_MIN_HEIGHT * fontSizeSqrtMultiplier)
-      .clip(shape = CircleShape)
+      .padding(horizontal = 3.dp)
+      .clip(shape)
+      .then(bgModifier)
+      .then(borderModifier)
+      .bounceClick()
       .clickable {
         if (activeFilter.value == ActiveFilter.PresetTag(tag)) {
           chatModel.activeChatTagFilter.value = null
@@ -1331,7 +1601,7 @@ private fun ExpandedTagFilterView(tag: PresetTagKind) {
           chatModel.activeChatTagFilter.value = ActiveFilter.PresetTag(tag)
         }
       }
-      .padding(horizontal = 5.dp, vertical = 4.dp)
+      .padding(horizontal = 10.dp, vertical = 5.dp)
     ,
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.Center
@@ -1339,24 +1609,16 @@ private fun ExpandedTagFilterView(tag: PresetTagKind) {
     Icon(
       painterResource(menuIcon ?: icon),
       stringResource(text),
-      Modifier.size(18.sp.toDp()),
+      Modifier.size(16.sp.toDp()),
       tint = color
     )
-    Spacer(Modifier.width(4.dp))
-    Box {
-      Text(
-        stringResource(text),
-        color = if (active) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-        fontWeight = if (active) FontWeight.Medium else FontWeight.Normal,
-        fontSize = 15.sp
-      )
-      Text(
-        stringResource(text),
-        color = Color.Transparent,
-        fontWeight = FontWeight.Medium,
-        fontSize = 15.sp
-      )
-    }
+    Spacer(Modifier.width(5.dp))
+    Text(
+      stringResource(text),
+      color = color,
+      fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
+      fontSize = 14.sp
+    )
   }
 }
 

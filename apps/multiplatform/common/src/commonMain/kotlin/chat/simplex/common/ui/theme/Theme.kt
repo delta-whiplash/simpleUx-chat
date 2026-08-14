@@ -603,9 +603,10 @@ data class ThemeModeOverride (
 // cards above. DARK/BLACK: palette bg (cards already raised via founder's
 // formula in Section.kt). SIMPLEX: gradient bottom stop (darker), since the
 // canvas itself is a gradient drawn by themedBackgroundBrush.
+@Composable
 fun canvasColorForCurrentTheme(): Color {
-  val theme = CurrentColors.value
-  val c = theme.colors
+  val theme = CurrentColors.collectAsState().value
+  val c = MaterialTheme.colors
   return when (theme.base) {
     DefaultTheme.LIGHT -> c.background.mixWith(c.onBackground, 0.94f)
     DefaultTheme.SIMPLEX -> c.background.darker(0.4f)
@@ -616,10 +617,12 @@ fun canvasColorForCurrentTheme(): Color {
 // Card background color for SectionView. LIGHT: pure white (raised above the
 // off-white canvas). DARK/BLACK/SIMPLEX: founder's mixWith formula (lifts cards
 // above palette bg using onBackground tint).
+@Composable
 fun sectionCardColor(): Color {
-  val theme = CurrentColors.value
+  val theme = CurrentColors.collectAsState().value
+  val c = MaterialTheme.colors
   return if (theme.base == DefaultTheme.LIGHT) Color.White
-  else theme.colors.background.mixWith(theme.colors.onBackground, 0.95f)
+  else c.surface
 }
 
 fun Modifier.themedBackground(baseTheme: DefaultTheme = CurrentColors.value.base, bgLayerSize: MutableState<IntSize>?, bgLayer: GraphicsLayer?, overrideColor: Color? = null): Modifier {
@@ -661,93 +664,83 @@ val DEFAULT_END_MODAL_WIDTH = 388.dp
 val DEFAULT_MAX_IMAGE_WIDTH = 500.dp
 
 val DarkColorPalette = darkColors(
-  primary = SimplexBlue,  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = SimplexBlue,
-  secondary = HighOrLowlight,
-  secondaryVariant = DarkGray,
-//  background = Color.Black,
-  surface = Color(0xFF222222),
-//  background = Color(0xFF121212),
-  error = Color.Red,
-  onBackground = Color(0xFFFFFBFA),
-  onSurface = Color(0xFFFFFBFA),
-//  onError: Color = Color.Black,
+  primary = TelegramBlue,  // If this value changes also need to update #0088ff in string resource files
+  primaryVariant = TelegramBlue,
+  secondary = Color(0xFF8E9BAE),
+  secondaryVariant = Color(0xFF232B3E),
+  background = Color(0xFF0E121B),
+  surface = Color(0xFF181E2C),
+  error = CoralRed,
+  onBackground = Color(0xFFF1F5F9),
+  onSurface = Color(0xFFF1F5F9),
 )
 val DarkColorPaletteApp = AppColors(
-  title = SimplexBlue,
-  primaryVariant2 = Color(0xFF18262E),
-  sentMessage = Color(0xFF18262E),
-  sentQuote = Color(0xFF1D3847),
-  receivedMessage = Color(0xff262627),
-  receivedQuote = Color(0xff373739),
+  title = TelegramBlue,
+  primaryVariant2 = Color(0xFF1E3A5F),
+  sentMessage = Color(0xFF1E3A5F),
+  sentQuote = Color(0xFF254B78),
+  receivedMessage = Color(0xFF1C2230),
+  receivedQuote = Color(0xFF252D3F),
 )
 
 val LightColorPalette = lightColors(
-  primary = SimplexBlue,  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = SimplexBlue,
-  secondary = HighOrLowlight,
-  secondaryVariant = LightGray,
-  error = Color.Red,
-//  background = Color.White,
+  primary = Color(0xFF0088CC),  // If this value changes also need to update #0088ff in string resource files
+  primaryVariant = Color(0xFF0088CC),
+  secondary = Color(0xFF70798C),
+  secondaryVariant = Color(0xFFE8EDF5),
+  background = Color(0xFFF4F6FB),
   surface = Color.White,
-//  onPrimary = Color.White,
-//  onSecondary = Color.Black,
-//  onBackground = Color.Black,
-//  onSurface = Color.Black,
+  error = CoralRed,
+  onBackground = Color(0xFF0F172A),
+  onSurface = Color(0xFF0F172A),
 )
 val LightColorPaletteApp = AppColors(
-  title = SimplexBlue,
-  primaryVariant2 = Color(0xFFE9F7FF),
-  sentMessage = Color(0xFFE9F7FF),
-  sentQuote = Color(0xFFD6F0FF),
-  receivedMessage = Color(0xfff5f5f6),
-  receivedQuote = Color(0xffececee),
+  title = Color(0xFF0088CC),
+  primaryVariant2 = Color(0xFFE3F2FD),
+  sentMessage = Color(0xFFE3F2FD),
+  sentQuote = Color(0xFFD0E8FC),
+  receivedMessage = Color.White,
+  receivedQuote = Color(0xFFF0F2F6),
 )
 
 val SimplexColorPalette = darkColors(
   primary = Color(0xFF70F0F9),  // If this value changes also need to update #0088ff in string resource files
   primaryVariant = Color(0xFF1298A5),
-  secondary = HighOrLowlight,
-  secondaryVariant = Color(0xFF2C464D),
-  background = Color(0xFF111528),
-  //  surface = Color.Black,
-  //  background = Color(0xFF121212),
-  surface = Color(0xFF121C37),
-  error = Color.Red,
-//  onBackground = Color(0xFFFFFBFA),
-//  onSurface = Color(0xFFFFFBFA),
-  //  onError: Color = Color.Black,
+  secondary = Color(0xFF8E9BAE),
+  secondaryVariant = Color(0xFF1E2D38),
+  background = Color(0xFF0D131F),
+  surface = Color(0xFF141D2E),
+  error = CoralRed,
+  onBackground = Color(0xFFF1F5F9),
+  onSurface = Color(0xFFF1F5F9),
 )
 val SimplexColorPaletteApp = AppColors(
   title = Color(0xFF267BE5),
-  primaryVariant2 = Color(0xFF172941),
-  sentMessage = Color(0xFF172941),
-  sentQuote = Color(0xFF1C3A57),
-  receivedMessage = Color(0xff25283a),
-  receivedQuote = Color(0xff36394a),
+  primaryVariant2 = Color(0xFF162D4A),
+  sentMessage = Color(0xFF162D4A),
+  sentQuote = Color(0xFF1D3E66),
+  receivedMessage = Color(0xFF1A2336),
+  receivedQuote = Color(0xFF26334D),
 )
 
 val BlackColorPalette = darkColors(
-  primary = Color(0xff0077e0),  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = Color(0xff0077e0),
-  secondary = HighOrLowlight,
-  secondaryVariant = DarkGray,
-  background = Color(0xff070707),
-  surface = Color(0xff161617),
-  //  background = Color(0xFF121212),
-  //  surface = Color(0xFF121212),
-  error = Color.Red,
-  onBackground = Color(0xFFFFFBFA),
-  onSurface = Color(0xFFFFFBFA),
-  //  onError: Color = Color.Black,
+  primary = TelegramBlue,  // If this value changes also need to update #0088ff in string resource files
+  primaryVariant = TelegramBlue,
+  secondary = Color(0xFF8E9BAE),
+  secondaryVariant = Color(0xFF1E1E22),
+  background = Color(0xFF000000),
+  surface = Color(0xFF121214),
+  error = CoralRed,
+  onBackground = Color(0xFFF1F5F9),
+  onSurface = Color(0xFFF1F5F9),
 )
 val BlackColorPaletteApp = AppColors(
-  title = Color(0xff0077e0),
-  primaryVariant2 = Color(0xff243747),
-  sentMessage = Color(0xFF18262E),
-  sentQuote = Color(0xFF1D3847),
-  receivedMessage = Color(0xff1b1b1b),
-  receivedQuote = Color(0xff29292b),
+  title = TelegramBlue,
+  primaryVariant2 = Color(0xFF1A2E44),
+  sentMessage = Color(0xFF162436),
+  sentQuote = Color(0xFF1F3550),
+  receivedMessage = Color(0xFF18181B),
+  receivedQuote = Color(0xFF27272A),
 )
 
 var systemInDarkThemeCurrently: Boolean = isInNightMode()
@@ -757,6 +750,16 @@ val CurrentColors: MutableStateFlow<ThemeManager.ActiveTheme> = MutableStateFlow
 
 @Composable
 fun isInDarkTheme(): Boolean = !CurrentColors.collectAsState().value.colors.isLight
+
+/**
+ * Returns true when the Glassmorphism 2026 visual mode should be active.
+ *
+ * Currently tied to dark theme: glass mode activates automatically in any
+ * dark theme variant (DARK, SIMPLEX, BLACK). Can be gated by a dedicated
+ * preference in the future (e.g., `appPrefs.glassMode`).
+ */
+@Composable
+fun isGlassModeActive(): Boolean = isInDarkTheme()
 
 @Composable
 expect fun isSystemInDarkTheme(): Boolean

@@ -22,7 +22,7 @@ import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 actual fun ReactionIcon(text: String, fontSize: TextUnit) {
-  Text(text, fontSize = fontSize)
+  Text(text, fontSize = fontSize, fontFamily = chat.simplex.common.ui.theme.EmojiFont)
 }
 
 @Composable

@@ -1269,10 +1269,14 @@ fun ComposeView(
     val commandsEnabled = chat.chatInfo.sendMsgEnabled && chat.chatInfo.menuCommands.isNotEmpty()
     IconButton(
       onClick = { showCommandsMenu.value = !showCommandsMenu.value },
-      enabled = commandsEnabled
+      enabled = commandsEnabled,
+      modifier = Modifier.bounceClick()
     ) {
       Box(
-        modifier = Modifier.size(28.dp).clip(CircleShape),
+        modifier = Modifier
+          .size(34.dp)
+          .clip(CircleShape)
+          .background(MaterialTheme.colors.primary.copy(alpha = 0.12f)),
         contentAlignment = Alignment.Center
       ) {
         Text("//", style = MaterialTheme.typography.h3.copy(fontStyle = FontStyle.Italic, color = if (commandsEnabled) MaterialTheme.colors.primary else MaterialTheme.colors.secondary))
@@ -1303,16 +1307,23 @@ fun ComposeView(
           && !nextSendGrpInv.value
     IconButton(
       attachmentClicked,
-      enabled = attachmentEnabled
+      enabled = attachmentEnabled,
+      modifier = Modifier.bounceClick()
     ) {
-      Icon(
-        painterResource(MR.images.ic_attach_file_filled_500),
-        contentDescription = stringResource(MR.strings.attach),
-        tint = if (attachmentEnabled) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-        modifier = Modifier
-          .size(28.dp)
+      Box(
+        Modifier
+          .size(34.dp)
           .clip(CircleShape)
-      )
+          .background(MaterialTheme.colors.primary.copy(alpha = 0.12f)),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          AttachmentClipVector,
+          contentDescription = stringResource(MR.strings.attach),
+          tint = if (attachmentEnabled) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
+          modifier = Modifier.size(20.dp)
+        )
+      }
     }
   }
 
@@ -1320,8 +1331,9 @@ fun ComposeView(
   fun AttachmentAndCommandsButtons() {
     val cInfo = chat.chatInfo
     Row(
-      Modifier.padding(start = 3.dp, end = 1.dp, bottom = if (appPlatform.isAndroid) 2.sp.toDp() else 5.sp.toDp() * fontSizeSqrtMultiplier),
-      horizontalArrangement = Arrangement.spacedBy((-8).dp)
+      Modifier.padding(start = 4.dp, end = 2.dp),
+      horizontalArrangement = Arrangement.spacedBy(2.dp),
+      verticalAlignment = Alignment.CenterVertically
     ) {
       val msg = composeState.value.message.text.trim()
       val showAttachment = cInfo !is ChatInfo.Direct || cInfo.contact.profile.peerType != ChatPeerType.Bot || cInfo.featureEnabled(ChatFeature.Files)
@@ -1744,8 +1756,10 @@ fun ComposeView(
       }
     }
 
-    Surface(color = MaterialTheme.colors.background, contentColor = MaterialTheme.colors.onBackground) {
-      Divider()
+    Surface(
+      color = if (isInDarkTheme()) Color(0xEB0E121B) else Color(0xF5F8FAFC),
+      contentColor = MaterialTheme.colors.onBackground
+    ) {
       if (chat.chatInfo is ChatInfo.Group && chat.chatInfo.groupInfo.nextConnectPrepared) {
         if (chat.chatInfo.groupInfo.businessChat == null) {
           val isChannel = chat.chatInfo.groupInfo.useRelays
@@ -1765,7 +1779,7 @@ fun ComposeView(
         Column {
           ContextSendMessageToConnect(generalGetString(MR.strings.compose_send_direct_message_to_connect))
           Divider()
-          Row(Modifier.padding(end = 8.dp), verticalAlignment = Alignment.Bottom) {
+          Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
             AttachmentAndCommandsButtons()
             SendMsgView_(
               disableSendButton = disableSendButton,
@@ -1820,7 +1834,7 @@ fun ComposeView(
           groupDirectInv = chat.chatInfo.contact.groupDirectInv
         )
       } else {
-        Row(Modifier.padding(end = 8.dp), verticalAlignment = Alignment.Bottom) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
           AttachmentAndCommandsButtons()
           val broadcastPlaceholder = (chat.chatInfo as? ChatInfo.Group)?.groupInfo?.let { gi ->
             if (gi.useRelays && gi.membership.memberRole >= GroupMemberRole.Owner && chat.chatInfo.groupChatScope() == null) generalGetString(MR.strings.compose_view_broadcast)

@@ -4,12 +4,14 @@ import androidx.compose.ui.text.font.*
 import chat.simplex.res.MR
 
 actual val Inter: FontFamily = FontFamily(
-  Font(MR.fonts.Inter.regular.fontResourceId),
-  Font(MR.fonts.Inter.italic.fontResourceId, style = FontStyle.Italic),
-  Font(MR.fonts.Inter.bold.fontResourceId, FontWeight.Bold),
-  Font(MR.fonts.Inter.semibold.fontResourceId, FontWeight.SemiBold),
-  Font(MR.fonts.Inter.medium.fontResourceId, FontWeight.Medium),
-  Font(MR.fonts.Inter.light.fontResourceId, FontWeight.Light)
+  Font(MR.fonts.PlusJakartaSans.regular.fontResourceId),
+  Font(MR.fonts.PlusJakartaSans.italic.fontResourceId, style = FontStyle.Italic),
+  Font(MR.fonts.PlusJakartaSans.bold.fontResourceId, FontWeight.Bold),
+  Font(MR.fonts.PlusJakartaSans.semibold.fontResourceId, FontWeight.SemiBold),
+  Font(MR.fonts.PlusJakartaSans.medium.fontResourceId, FontWeight.Medium),
+  Font(MR.fonts.PlusJakartaSans.light.fontResourceId, FontWeight.Light)
 )
 
-actual val EmojiFont: FontFamily = FontFamily.Default
+actual val EmojiFont: FontFamily = FontFamily(
+  Font(MR.fonts.NotoColorEmoji.regular.fontResourceId)
+)

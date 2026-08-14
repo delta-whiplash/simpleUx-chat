@@ -38,6 +38,7 @@ fun ContactConnectionInfoView(
   focusAlias: Boolean,
   close: () -> Unit
 ) {
+  BackHandler(onBack = close)
   LaunchedEffect(connLinkInvitation) {
     if (connLinkInvitation != null) {
       chatModel.showingInvitation.value = ShowingInvitation(contactConnection.id, connLinkInvitation, false, conn = contactConnection)

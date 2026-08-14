@@ -301,17 +301,39 @@ fun ChatItemView(
       }
     }
 
-    Column(horizontalAlignment = if (cItem.chatDir.sent) Alignment.End else Alignment.Start) {
+    val isCenterEvent = cItem.content is CIContent.SndDirectE2EEInfo ||
+        cItem.content is CIContent.RcvDirectE2EEInfo ||
+        cItem.content is CIContent.SndGroupE2EEInfo ||
+        cItem.content is CIContent.RcvGroupE2EEInfo ||
+        cItem.content is CIContent.RcvChatFeature ||
+        cItem.content is CIContent.SndChatFeature ||
+        cItem.content is CIContent.RcvGroupFeature ||
+        cItem.content is CIContent.SndGroupFeature ||
+        cItem.content is CIContent.RcvChatPreference ||
+        cItem.content is CIContent.SndChatPreference ||
+        cItem.content is CIContent.RcvDirectEventContent ||
+        cItem.content is CIContent.RcvGroupEventContent ||
+        cItem.content is CIContent.RcvConnEventContent ||
+        cItem.content is CIContent.SndConnEventContent
+
+    Column(
+      modifier = if (isCenterEvent) Modifier.fillMaxWidth() else Modifier,
+      horizontalAlignment = if (isCenterEvent) Alignment.CenterHorizontally else if (cItem.chatDir.sent) Alignment.End else Alignment.Start
+    ) {
       val canReply = (cItem.content is CIContent.SndMsgContent || cItem.content is CIContent.RcvMsgContent) &&
           cInfo !is ChatInfo.Local && !cItem.isReport && !cItem.meta.isLive && cItem.meta.itemDeleted == null
-      Box {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+      Box(modifier = if (isCenterEvent) Modifier.fillMaxWidth() else Modifier, contentAlignment = if (isCenterEvent) Alignment.Center else Alignment.TopStart) {
+        Row(
+          modifier = if (isCenterEvent) Modifier.fillMaxWidth() else Modifier,
+          horizontalArrangement = if (isCenterEvent) Arrangement.Center else Arrangement.Start,
+          verticalAlignment = Alignment.CenterVertically
+        ) {
           val bubbleInteractionSource = remember { MutableInteractionSource() }
         val bubbleHovered = bubbleInteractionSource.collectIsHoveredAsState()
-        if (cItem.chatDir.sent) {
+        if (cItem.chatDir.sent && !isCenterEvent) {
           GoToItemButton(true, bubbleHovered)
         }
-        Column(Modifier.weight(1f, fill = false)) {
+        Column(Modifier.weight(1f, fill = isCenterEvent)) {
           val enterInteraction = remember { HoverInteraction.Enter() }
           LaunchedEffect(highlighted.value, hoveredItemId.value) {
             if (highlighted.value || hoveredItemId.value == cItem.id) {
@@ -322,7 +344,7 @@ fun ChatItemView(
           }
           Column(
             Modifier
-              .clipChatItem(cItem, itemSeparation.largeGap, revealed.value)
+              .then(if (isCenterEvent) Modifier else Modifier.clipChatItem(cItem, itemSeparation.largeGap, revealed.value))
               .hoverable(bubbleInteractionSource)
               .combinedClickable(
                 onLongClick = { showMenu.value = true },
@@ -672,27 +694,131 @@ fun ChatItemView(
             }
 
             @Composable
-            fun e2eeInfoText(sId: StringResource) {
-              Text(
-                buildAnnotatedString {
-                  withStyle(chatEventStyle) { append(annotatedStringResource(sId)) }
-                },
-                Modifier.padding(horizontal = 6.dp, vertical = 6.dp)
-              )
+            fun E2EESecurityCard(sId: StringResource, isPublic: Boolean = false) {
+              val glassMode = isGlassModeActive()
+              Box(
+                Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 24.dp, vertical = 6.dp),
+                contentAlignment = Alignment.Center
+              ) {
+                if (glassMode) {
+                  Box(
+                    Modifier
+                      .widthIn(max = 360.dp)
+                      .glassSurface(
+                        shape = RoundedCornerShape(20.dp),
+                        backgroundColor = if (isPublic) Color(0xFFEF4444).copy(alpha = 0.12f) else GlassTokens.SecurityPillBg.copy(alpha = 0.12f),
+                        borderColor = if (isPublic) Color(0xFFF87171).copy(alpha = 0.25f) else GlassTokens.SecurityPillBorder.copy(alpha = 0.25f)
+                      )
+                      .padding(horizontal = 16.dp, vertical = 10.dp)
+                  ) {
+                    Column(
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                      verticalArrangement = Arrangement.spacedBy(4.dp),
+                      modifier = Modifier.fillMaxWidth()
+                    ) {
+                      Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                      ) {
+                        Box(
+                          Modifier
+                            .size(24.dp)
+                            .clip(CircleShape)
+                            .background(if (isPublic) Color(0x33EF4444) else Color(0x333B82F6)),
+                          contentAlignment = Alignment.Center
+                        ) {
+                          Icon(
+                            painterResource(if (isPublic) MR.images.ic_info else MR.images.ic_lock_filled),
+                            null,
+                            Modifier.size(13.dp),
+                            tint = if (isPublic) Color(0xFFEF4444) else GlassTokens.SecurityPillIcon
+                          )
+                        }
+                        Spacer(Modifier.width(6.dp))
+                        Text(
+                          text = if (isPublic) "Public / Unencrypted" else "Chiffrement de bout en bout actif",
+                          color = if (isPublic) Color(0xFFFCA5A5) else GlassTokens.SecurityPillText,
+                          fontSize = 12.sp,
+                          fontWeight = FontWeight.Bold
+                        )
+                      }
+                      Text(
+                        buildAnnotatedString {
+                          withStyle(SpanStyle(fontWeight = FontWeight.Normal, color = Color.White.copy(alpha = 0.7f))) {
+                            append(annotatedStringResource(sId))
+                          }
+                        },
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp,
+                        textAlign = TextAlign.Center
+                      )
+                    }
+                  }
+                } else {
+                  Box(
+                    Modifier
+                      .widthIn(max = 340.dp)
+                      .clip(Corner18)
+                      .background(if (isInDarkTheme()) Color(0xCC141B28) else Color(0xEEF1F5F9))
+                      .border(
+                        width = 1.dp,
+                        color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x1A000000),
+                        shape = Corner18
+                      )
+                      .padding(horizontal = 16.dp, vertical = 10.dp)
+                  ) {
+                    Column(
+                      horizontalAlignment = Alignment.CenterHorizontally,
+                      verticalArrangement = Arrangement.spacedBy(6.dp),
+                      modifier = Modifier.fillMaxWidth()
+                    ) {
+                      Box(
+                        Modifier
+                          .size(28.dp)
+                          .clip(CircleShape)
+                          .background(if (isPublic) Color(0x22EF4444) else Color(0x222AABEE)),
+                        contentAlignment = Alignment.Center
+                      ) {
+                        Icon(
+                          painterResource(if (isPublic) MR.images.ic_info else MR.images.ic_lock_filled),
+                          null,
+                          Modifier.size(15.dp),
+                          tint = if (isPublic) Color(0xFFEF4444) else Color(0xFF2AABEE)
+                        )
+                      }
+                      Text(
+                        buildAnnotatedString {
+                          withStyle(SpanStyle(fontWeight = FontWeight.Normal, color = if (isInDarkTheme()) Color(0xFFCBD5E1) else Color(0xFF334155))) {
+                            append(annotatedStringResource(sId))
+                          }
+                        },
+                        fontSize = 12.sp,
+                        lineHeight = 16.sp,
+                        textAlign = TextAlign.Center
+                      )
+                    }
+                  }
+                }
+              }
             }
 
             @Composable
             fun DirectE2EEInfoText(e2EEInfo: E2EEInfo) {
-              e2eeInfoText(when (e2EEInfo.pqEnabled) {
+              val sId = when (e2EEInfo.pqEnabled) {
                 true -> MR.strings.e2ee_info_pq
                 false -> MR.strings.e2ee_info_no_pq
                 null -> MR.strings.e2ee_info_e2ee
-              })
+              }
+              E2EESecurityCard(sId, isPublic = false)
             }
 
             @Composable
             fun GroupE2EEInfoText(e2EEInfo: E2EEInfo) {
-              e2eeInfoText(if (e2EEInfo.public == true) MR.strings.e2ee_info_no_e2ee else MR.strings.e2ee_info_no_pq)
+              val isPublic = e2EEInfo.public == true
+              val sId = if (isPublic) MR.strings.e2ee_info_no_e2ee else MR.strings.e2ee_info_no_pq
+              E2EESecurityCard(sId, isPublic = isPublic)
             }
 
             if (cItem.meta.itemDeleted != null && (!revealed.value || cItem.isDeletedContent)) {

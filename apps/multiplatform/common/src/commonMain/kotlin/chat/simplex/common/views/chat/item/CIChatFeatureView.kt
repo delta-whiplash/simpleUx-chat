@@ -1,11 +1,14 @@
 package chat.simplex.common.views.chat.item
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
@@ -13,6 +16,8 @@ import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.*
 import chat.simplex.common.model.ChatModel.getChatItemIndexOrNull
 import chat.simplex.common.platform.onRightClick
+import chat.simplex.common.ui.theme.CornerPill
+import chat.simplex.common.ui.theme.isInDarkTheme
 
 @Composable
 fun CIChatFeatureView(
@@ -28,23 +33,54 @@ fun CIChatFeatureView(
   val merged = if (!revealed.value) mergedFeatures(chatsCtx, chatItem, chatInfo) else emptyList()
   Box(
     Modifier
-      .combinedClickable(
-        onLongClick = { showMenu.value = true },
-        onClick = {}
-      )
-      .onRightClick { showMenu.value = true }
+      .fillMaxWidth()
+      .padding(vertical = 4.dp, horizontal = 16.dp),
+    contentAlignment = Alignment.Center
   ) {
-    if (!revealed.value && merged != null) {
-      Row(
-        Modifier.padding(horizontal = 6.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-      ) {
-        merged.forEach {
-          FeatureIconView(it)
+    Box(
+      Modifier
+        .combinedClickable(
+          onLongClick = { showMenu.value = true },
+          onClick = {}
+        )
+        .onRightClick { showMenu.value = true }
+    ) {
+      if (!revealed.value && merged != null) {
+        Box(
+          Modifier
+            .clip(CornerPill)
+            .background(if (isInDarkTheme()) Color(0xCC141B28) else Color(0xEEF1F5F9))
+            .border(
+              width = 1.dp,
+              color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x1A000000),
+              shape = CornerPill
+            )
+            .padding(horizontal = 14.dp, vertical = 7.dp)
+        ) {
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+          ) {
+            merged.forEach {
+              FeatureIconView(it)
+            }
+          }
+        }
+      } else {
+        Box(
+          Modifier
+            .clip(CornerPill)
+            .background(if (isInDarkTheme()) Color(0xCC141B28) else Color(0xEEF1F5F9))
+            .border(
+              width = 1.dp,
+              color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x1A000000),
+              shape = CornerPill
+            )
+            .padding(horizontal = 14.dp, vertical = 6.dp)
+        ) {
+          FullFeatureView(chatItem, feature, iconColor, icon)
         }
       }
-    } else {
-      FullFeatureView(chatItem, feature, iconColor, icon)
     }
   }
 }

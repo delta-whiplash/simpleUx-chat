@@ -146,8 +146,9 @@ fun OnboardingCardView(
   Box(
     Modifier
       .fillMaxSize()
-      .clip(RoundedCornerShape(24.dp))
-      .clickable(onClick = onClick)
+      .clip(Corner24)
+      .border(1.dp, MaterialTheme.colors.onBackground.copy(alpha = 0.08f), Corner24)
+      .bounceClick(onClick = onClick)
   ) {
     Column(Modifier.fillMaxSize()) {
       Box(

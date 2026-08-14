@@ -2,7 +2,12 @@ package chat.simplex.common.views.helpers
 
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.*
+import androidx.compose.ui.unit.dp
 
 val AccountCircleFilled: ImageVector
   get() {
@@ -82,29 +87,132 @@ val SupervisedUserCircleFilled: ImageVector
 
 private var _supervisedUserCircleFilled: ImageVector? = null
 
+val ChevronBackVector: ImageVector
+  get() {
+    if (_chevronBack != null) return _chevronBack!!
+    _chevronBack = ImageVector.Builder(
+      name = "ChevronBack",
+      defaultWidth = 24.dp,
+      defaultHeight = 24.dp,
+      viewportWidth = 24f,
+      viewportHeight = 24f
+    ).apply {
+      addPath(
+        pathData = PathParser().parsePathString("M15.5 19l-7-7 7-7").toNodes(),
+        stroke = SolidColor(Color.White),
+        strokeLineWidth = 2.4f,
+        strokeLineCap = StrokeCap.Round,
+        strokeLineJoin = StrokeJoin.Round
+      )
+    }.build()
+    return _chevronBack!!
+  }
+private var _chevronBack: ImageVector? = null
+
+val MediaGalleryVector: ImageVector
+  get() {
+    if (_mediaGallery != null) return _mediaGallery!!
+    _mediaGallery = ImageVector.Builder(
+      name = "MediaGallery",
+      defaultWidth = 24.dp,
+      defaultHeight = 24.dp,
+      viewportWidth = 24f,
+      viewportHeight = 24f
+    ).apply {
+      addPath(
+        pathData = PathParser().parsePathString("M4 6.5C4 5.12 5.12 4 6.5 4h10c1.38 0 2.5 1.12 2.5 2.5v1.2H6.5C4.9 7.7 3.7 8.9 3.7 10.5v6H6.5v1H6.5C4.9 17.5 4 16.38 4 14.8V6.5z").toNodes(),
+        fill = SolidColor(Color.White),
+        fillAlpha = 0.5f
+      )
+      addPath(
+        pathData = PathParser().parsePathString("M7.5 8h11.5c1.1 0 2 .9 2 2v10c0 1.1-.9 2-2 2H7.5c-1.1 0-2-.9-2-2V10c0-1.1.9-2 2-2z").toNodes(),
+        stroke = SolidColor(Color.White),
+        strokeLineWidth = 1.8f,
+        strokeLineCap = StrokeCap.Round,
+        strokeLineJoin = StrokeJoin.Round
+      )
+      addPath(
+        pathData = PathParser().parsePathString("M10.5 12.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z").toNodes(),
+        fill = SolidColor(Color.White)
+      )
+      addPath(
+        pathData = PathParser().parsePathString("M6.5 19l4.5-5 3.5 3.5 2.5-2.5 3.5 4").toNodes(),
+        stroke = SolidColor(Color.White),
+        strokeLineWidth = 1.6f,
+        strokeLineCap = StrokeCap.Round,
+        strokeLineJoin = StrokeJoin.Round
+      )
+    }.build()
+    return _mediaGallery!!
+  }
+private var _mediaGallery: ImageVector? = null
+
+val AttachmentClipVector: ImageVector
+  get() {
+    if (_attachmentClip != null) return _attachmentClip!!
+    _attachmentClip = ImageVector.Builder(
+      name = "AttachmentClip",
+      defaultWidth = 24.dp,
+      defaultHeight = 24.dp,
+      viewportWidth = 24f,
+      viewportHeight = 24f
+    ).apply {
+      addPath(
+        pathData = PathParser().parsePathString("M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48").toNodes(),
+        stroke = SolidColor(Color.White),
+        strokeLineWidth = 2.0f,
+        strokeLineCap = StrokeCap.Round,
+        strokeLineJoin = StrokeJoin.Round
+      )
+    }.build()
+    return _attachmentClip!!
+  }
+private var _attachmentClip: ImageVector? = null
+
+val ModernMicVector: ImageVector
+  get() {
+    if (_modernMic != null) return _modernMic!!
+    _modernMic = ImageVector.Builder(
+      name = "ModernMic",
+      defaultWidth = 24.dp,
+      defaultHeight = 24.dp,
+      viewportWidth = 24f,
+      viewportHeight = 24f
+    ).apply {
+      addPath(
+        pathData = PathParser().parsePathString("M12 2a3.2 3.2 0 0 0-3.2 3.2v6.6a3.2 3.2 0 0 0 6.4 0V5.2A3.2 3.2 0 0 0 12 2z").toNodes(),
+        fill = SolidColor(Color.White)
+      )
+      addPath(
+        pathData = PathParser().parsePathString("M18.5 10.5v1.3a6.5 6.5 0 0 1-13 0v-1.3M12 18.3v3.7M8.5 22h7").toNodes(),
+        stroke = SolidColor(Color.White),
+        strokeLineWidth = 2.0f,
+        strokeLineCap = StrokeCap.Round,
+        strokeLineJoin = StrokeJoin.Round
+      )
+    }.build()
+    return _modernMic!!
+  }
+private var _modernMic: ImageVector? = null
+
 val BoltFilled: ImageVector
   get() {
-    if (_boltFilled != null) {
-      return _boltFilled!!
-    }
-    _boltFilled = materialIcon(name = "Filled.Bolt") {
-      materialPath {
-        moveTo(11.0f, 21.0f)
-        horizontalLineToRelative(-1.0f)
-        lineToRelative(1.0f, -7.0f)
-        horizontalLineTo(7.5f)
-        curveToRelative(-0.58f, 0.0f, -0.57f, -0.32f, -0.38f, -0.66f)
-        curveToRelative(0.19f, -0.34f, 0.05f, -0.08f, 0.07f, -0.12f)
-        curveTo(8.48f, 10.94f, 10.42f, 7.54f, 13.0f, 3.0f)
-        horizontalLineToRelative(1.0f)
-        lineToRelative(-1.0f, 7.0f)
-        horizontalLineToRelative(3.5f)
-        curveToRelative(0.49f, 0.0f, 0.56f, 0.33f, 0.47f, 0.51f)
-        lineToRelative(-0.07f, 0.15f)
-        curveTo(12.96f, 17.55f, 11.0f, 21.0f, 11.0f, 21.0f)
-        close()
-      }
-    }
+    if (_boltFilled != null) return _boltFilled!!
+    _boltFilled = ImageVector.Builder(
+      name = "Filled.Bolt",
+      defaultWidth = 24.dp,
+      defaultHeight = 24.dp,
+      viewportWidth = 24f,
+      viewportHeight = 24f
+    ).apply {
+      addPath(
+        pathData = PathParser().parsePathString("M13 2L3.5 13.5h7L9.5 22 20.5 10.5h-7L13 2z").toNodes(),
+        fill = SolidColor(Color.White),
+        stroke = SolidColor(Color.White),
+        strokeLineWidth = 0.8f,
+        strokeLineJoin = StrokeJoin.Round
+      )
+    }.build()
     return _boltFilled!!
   }
 
@@ -112,31 +220,19 @@ private var _boltFilled: ImageVector? = null
 
 val MoreVertFilled: ImageVector
   get() {
-    if (_moreVertFilled != null) {
-      return _moreVertFilled!!
-    }
-    _moreVertFilled = materialIcon(name = "Filled.MoreVert") {
-      materialPath {
-        moveTo(12.0f, 8.0f)
-        curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
-        reflectiveCurveToRelative(-0.9f, -2.0f, -2.0f, -2.0f)
-        reflectiveCurveToRelative(-2.0f, 0.9f, -2.0f, 2.0f)
-        reflectiveCurveToRelative(0.9f, 2.0f, 2.0f, 2.0f)
-        close()
-        moveTo(12.0f, 10.0f)
-        curveToRelative(-1.1f, 0.0f, -2.0f, 0.9f, -2.0f, 2.0f)
-        reflectiveCurveToRelative(0.9f, 2.0f, 2.0f, 2.0f)
-        reflectiveCurveToRelative(2.0f, -0.9f, 2.0f, -2.0f)
-        reflectiveCurveToRelative(-0.9f, -2.0f, -2.0f, -2.0f)
-        close()
-        moveTo(12.0f, 16.0f)
-        curveToRelative(-1.1f, 0.0f, -2.0f, 0.9f, -2.0f, 2.0f)
-        reflectiveCurveToRelative(0.9f, 2.0f, 2.0f, 2.0f)
-        reflectiveCurveToRelative(2.0f, -0.9f, 2.0f, -2.0f)
-        reflectiveCurveToRelative(-0.9f, -2.0f, -2.0f, -2.0f)
-        close()
-      }
-    }
+    if (_moreVertFilled != null) return _moreVertFilled!!
+    _moreVertFilled = ImageVector.Builder(
+      name = "Filled.MoreVert",
+      defaultWidth = 24.dp,
+      defaultHeight = 24.dp,
+      viewportWidth = 24f,
+      viewportHeight = 24f
+    ).apply {
+      addPath(
+        pathData = PathParser().parsePathString("M12 5.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm0 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4z").toNodes(),
+        fill = SolidColor(Color.White)
+      )
+    }.build()
     return _moreVertFilled!!
   }
 

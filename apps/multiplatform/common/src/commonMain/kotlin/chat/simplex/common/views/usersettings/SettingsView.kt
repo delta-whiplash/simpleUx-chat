@@ -9,11 +9,13 @@ import TextIconSpaced
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.*
@@ -93,20 +95,20 @@ fun SettingsLayout(
     AppBarTitle(stringResource(MR.strings.your_settings))
 
     SectionView {
-      SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) })
-      SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, disabled = stopped)
-      SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) })
+      SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF8E24AA))
+      SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, badgeColor = Color(0xFF43A047), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Color(0xFFFB8C00))
       DatabaseItem(encrypted, passphraseSaved, showSettingsModal { DatabaseView() }, stopped)
-      SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, badgeColor = Color(0xFF00ACC1), disabled = stopped)
     }
     SectionDividerSpaced()
 
     SectionView(stringResource(MR.strings.advanced_settings)) {
-      SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, badgeColor = Color(0xFF3949AB), disabled = stopped)
       if (appPlatform == AppPlatform.ANDROID) {
-        SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, disabled = stopped)
+        SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, badgeColor = Color(0xFFFFB300), disabled = stopped)
       }
-      SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, badgeColor = Color(0xFF00897B), disabled = stopped)
       AppShutdownItem()
       AppVersionItem(showVersion)
     }
@@ -172,13 +174,23 @@ expect fun AppShutdownItem()
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-        Icon(
-          painterResource(MR.images.ic_database),
-          contentDescription = stringResource(MR.strings.chat_data),
-          tint = if (encrypted && (appPlatform.isAndroid || !saved)) MaterialTheme.colors.secondary else WarningOrange,
-        )
-        TextIconSpaced(false)
-        Text(stringResource(MR.strings.chat_data))
+        val badgeColor = if (encrypted && (appPlatform.isAndroid || !saved)) Color(0xFF1E88E5) else WarningOrange
+        Box(
+          modifier = Modifier
+            .size(30.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(badgeColor),
+          contentAlignment = Alignment.Center
+        ) {
+          Icon(
+            painterResource(MR.images.ic_database),
+            contentDescription = stringResource(MR.strings.chat_data),
+            modifier = Modifier.size(17.dp),
+            tint = Color.White,
+          )
+        }
+        Spacer(Modifier.width(14.dp))
+        Text(stringResource(MR.strings.chat_data), fontSize = 16.sp)
       }
       if (stopped) {
         Icon(
@@ -351,11 +363,33 @@ fun AppVersionItem(showVersion: () -> Unit) {
 }
 
 @Composable
-fun SettingsActionItem(icon: Painter, text: String, click: (() -> Unit)? = null, textColor: Color = Color.Unspecified, iconColor: Color = MaterialTheme.colors.secondary, disabled: Boolean = false, extraPadding: Boolean = false) {
+fun SettingsActionItem(
+  icon: Painter,
+  text: String,
+  click: (() -> Unit)? = null,
+  textColor: Color = Color.Unspecified,
+  iconColor: Color = MaterialTheme.colors.secondary,
+  badgeColor: Color? = null,
+  disabled: Boolean = false,
+  extraPadding: Boolean = false
+) {
   SectionItemView(click, disabled = disabled, extraPadding = extraPadding) {
-    Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
-    TextIconSpaced(extraPadding)
-    Text(text, color = if (disabled) MaterialTheme.colors.secondary else textColor)
+    if (badgeColor != null) {
+      Box(
+        modifier = Modifier
+          .size(30.dp)
+          .clip(RoundedCornerShape(8.dp))
+          .background(if (disabled) MaterialTheme.colors.secondary.copy(alpha = 0.4f) else badgeColor),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(icon, text, Modifier.size(17.dp), tint = Color.White)
+      }
+      Spacer(Modifier.width(14.dp))
+    } else {
+      Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
+      TextIconSpaced(extraPadding)
+    }
+    Text(text, color = if (disabled) MaterialTheme.colors.secondary else textColor, fontSize = 16.sp)
   }
 }
 

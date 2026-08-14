@@ -10,41 +10,48 @@ val Typography = Typography(
   h1 = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.Bold,
-    fontSize = 33.5.sp,
+    fontSize = 32.sp,
+    letterSpacing = (-0.5).sp
   ),
   h2 = TextStyle(
     fontFamily = Inter,
-    fontWeight = FontWeight.Normal,
-    fontSize = 24.sp
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 24.sp,
+    letterSpacing = (-0.3).sp
   ),
   h3 = TextStyle(
     fontFamily = Inter,
-    fontWeight = FontWeight.Normal,
-    fontSize = 18.5.sp
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 18.sp,
+    letterSpacing = (-0.2).sp
   ),
   h4 = TextStyle(
     fontFamily = Inter,
-    fontWeight = FontWeight.Normal,
-    fontSize = 17.5.sp
+    fontWeight = FontWeight.Medium,
+    fontSize = 16.5.sp,
+    letterSpacing = (-0.1).sp
   ),
   body1 = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.Normal,
-    fontSize = 16.sp
+    fontSize = 15.5.sp,
+    letterSpacing = (-0.1).sp
   ),
   body2 = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.Normal,
-    fontSize = 14.sp
+    fontSize = 13.5.sp,
+    letterSpacing = (-0.05).sp
   ),
   button = TextStyle(
     fontFamily = Inter,
-    fontWeight = FontWeight.Normal,
-    fontSize = 16.sp,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 15.sp,
+    letterSpacing = 0.1.sp
   ),
   caption = TextStyle(
     fontFamily = Inter,
     fontWeight = FontWeight.Normal,
-    fontSize = 18.sp
+    fontSize = 12.5.sp
   )
 )

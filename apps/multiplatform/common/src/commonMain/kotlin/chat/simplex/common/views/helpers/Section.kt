@@ -28,7 +28,7 @@ import chat.simplex.common.views.onboarding.SelectableCard
 import chat.simplex.common.views.usersettings.SettingsActionItemWithContent
 import chat.simplex.res.MR
 
-val SectionCardShape = RoundedCornerShape(16.dp)
+val SectionCardShape = GroupedCardShape
 val CARD_PADDING = 18.dp
 val ICON_TEXT_SPACING = 8.dp
 
@@ -210,7 +210,7 @@ fun SectionItemView(
     .fillMaxWidth()
     .sizeIn(minHeight = minHeight)
   Row(
-    if (click == null || disabled) modifier.padding(padding) else modifier.clickable(onClick = click).padding(padding),
+    if (click == null || disabled) modifier.padding(padding) else modifier.bounceClick().clickable(onClick = click).padding(padding),
     verticalAlignment = Alignment.CenterVertically
   ) {
     content()

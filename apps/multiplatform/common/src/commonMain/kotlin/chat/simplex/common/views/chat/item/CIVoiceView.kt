@@ -23,6 +23,7 @@ import chat.simplex.common.model.*
 import chat.simplex.common.platform.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
+import chat.simplex.common.views.chat.glass.GlassVoiceNotePlayer
 import kotlinx.coroutines.flow.*
 import kotlin.math.*
 
@@ -87,8 +88,26 @@ fun CIVoiceView(
           durationText(time / 1000)
         }
       }
-      VoiceLayout(file, ci, text, audioPlaying, progress, duration, brokenAudio, sent, hasText, timedMessagesTTL, showViaProxy, showTimestamp, sizeMultiplier, play, pause, longClick, receiveFile) {
-        AudioPlayer.seekTo(it, progress, fileSource.value?.filePath)
+      if (isGlassModeActive() && !smallView && !hasText) {
+        var currentSpeed by remember { mutableStateOf("1.0x") }
+        GlassVoiceNotePlayer(
+          durationText = text.value,
+          isOutgoing = sent,
+          isPlaying = audioPlaying.value,
+          onTogglePlay = { if (audioPlaying.value) pause() else play() },
+          currentSpeed = currentSpeed,
+          onToggleSpeed = {
+            currentSpeed = when (currentSpeed) {
+              "1.0x" -> "1.5x"
+              "1.5x" -> "2.0x"
+              else -> "1.0x"
+            }
+          }
+        )
+      } else {
+        VoiceLayout(file, ci, text, audioPlaying, progress, duration, brokenAudio, sent, hasText, timedMessagesTTL, showViaProxy, showTimestamp, sizeMultiplier, play, pause, longClick, receiveFile) {
+          AudioPlayer.seekTo(it, progress, fileSource.value?.filePath)
+        }
       }
       if (smallView) {
         KeyChangeEffect(chatModel.chatId.value, chatModel.currentUser.value?.userId, chatModel.currentRemoteHost.value) {

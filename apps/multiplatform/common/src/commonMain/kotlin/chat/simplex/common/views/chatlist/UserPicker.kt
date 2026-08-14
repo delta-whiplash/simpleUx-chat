@@ -387,9 +387,17 @@ private fun GlobalSettingsSection(
     padding = if (appPlatform.isDesktop) PaddingValues(start = DEFAULT_PADDING * 1.7f, end = DEFAULT_PADDING + 2.dp) else PaddingValues(start = DEFAULT_PADDING, end = DEFAULT_PADDING_HALF)
   ) {
     val text = generalGetString(MR.strings.settings_section_title_settings).lowercase().capitalize(Locale.current)
-    Icon(painterResource(MR.images.ic_settings), text, tint = MaterialTheme.colors.secondary)
+    Box(
+      Modifier
+        .size(28.dp)
+        .clip(Corner8)
+        .background(MaterialTheme.colors.primary.copy(alpha = 0.15f)),
+      contentAlignment = Alignment.Center
+    ) {
+      Icon(painterResource(MR.images.ic_settings), text, Modifier.size(18.dp), tint = MaterialTheme.colors.primary)
+    }
     TextIconSpaced()
-    Text(text, color = Color.Unspecified)
+    Text(text, color = Color.Unspecified, fontWeight = FontWeight.Medium)
     Spacer(Modifier.weight(1f))
     ColorModeSwitcher()
   }
@@ -434,7 +442,7 @@ fun UserProfilePickerItem(
               color = Color.White,
               fontSize = 10.sp,
               modifier = Modifier
-                .background(if (u.showNtfs) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.secondary, shape = CircleShape)
+                .background(if (u.showNtfs) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.secondary, shape = CornerPill)
                 .padding(2.dp)
                 .badgeLayout()
             )
@@ -482,9 +490,17 @@ fun UserProfileRow(u: User, enabled: Boolean = remember { chatModel.chatRunning 
 @Composable
 fun UserPickerOptionRow(icon: Painter, text: String, click: (() -> Unit)? = null, disabled: Boolean = false) {
   SectionItemView(click, disabled = disabled, extraPadding = appPlatform.isDesktop) {
-    Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else MaterialTheme.colors.secondary)
+    Box(
+      Modifier
+        .size(28.dp)
+        .clip(Corner8)
+        .background((if (disabled) MaterialTheme.colors.secondary else MaterialTheme.colors.primary).copy(alpha = 0.15f)),
+      contentAlignment = Alignment.Center
+    ) {
+      Icon(icon, text, Modifier.size(18.dp), tint = if (disabled) MaterialTheme.colors.secondary else MaterialTheme.colors.primary)
+    }
     TextIconSpaced()
-    Text(text = text, color = if (disabled) MaterialTheme.colors.secondary else Color.Unspecified)
+    Text(text = text, color = if (disabled) MaterialTheme.colors.secondary else Color.Unspecified, fontWeight = FontWeight.Medium)
   }
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.*
 import chat.simplex.common.model.*
 import chat.simplex.common.ui.theme.*
+import chat.simplex.common.ui.theme.glassSurface
 import chat.simplex.common.views.chat.item.ItemAction
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.model.ChatItem
@@ -65,8 +66,33 @@ fun SendMsgView(
   focusRequester: FocusRequester? = null,
   ) {
   val showCustomDisappearingMessageDialog = remember { mutableStateOf(false) }
-  val padding = if (appPlatform.isAndroid) PaddingValues(vertical = 8.dp) else PaddingValues(top = 3.dp, bottom = 4.dp)
-  Box(Modifier.padding(padding)) {
+  val padding = if (appPlatform.isAndroid) PaddingValues(vertical = 4.dp, horizontal = 2.dp) else PaddingValues(top = 3.dp, bottom = 4.dp)
+  val glassMode = isGlassModeActive()
+  Box(
+    Modifier
+      .padding(padding)
+      .fillMaxWidth()
+      .then(
+        if (glassMode) {
+          Modifier
+            .glassSurface(
+              shape = Corner24,
+              backgroundColor = if (isInDarkTheme()) Color(0xF0141D2B) else Color(0xFFF1F5F9),
+              borderColor = if (isInDarkTheme()) Color(0x40FFFFFF) else Color(0x20000000)
+            )
+        } else {
+          Modifier
+            .clip(Corner24)
+            .background(if (isInDarkTheme()) Color(0xFF181E2C) else Color(0xFFF1F5F9))
+            .border(
+              width = 1.dp,
+              color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x1A000000),
+              shape = Corner24
+            )
+        }
+      )
+      .padding(start = 12.dp, end = 4.dp, top = 2.dp, bottom = 2.dp)
+  ) {
     val cs = composeState.value
     val showVoiceButton = !nextConnect && cs.message.text.isEmpty() && showVoiceRecordIcon && !composeState.value.editing &&
         !composeState.value.forwarding && cs.liveMessage == null && (cs.preview is ComposePreview.NoPreview || recState.value is RecordingState.Started) && (cs.contextItem !is ComposeContextItem.ReportedItem)
@@ -120,7 +146,7 @@ fun SendMsgView(
     if (showDeleteTextButton.value) {
       DeleteTextButton(composeState)
     }
-    Box(Modifier.align(Alignment.BottomEnd).padding(bottom = if (appPlatform.isAndroid) 0.dp else 5.sp.toDp() * fontSizeSqrtMultiplier)) {
+    Box(Modifier.align(Alignment.CenterEnd).padding(end = 2.dp)) {
       val sendButtonSize = remember { Animatable(36f) }
       val sendButtonAlpha = remember { Animatable(1f) }
       val scope = rememberCoroutineScope()
@@ -315,9 +341,9 @@ private fun CustomDisappearingMessageDialog(
 private fun BoxScope.DeleteTextButton(composeState: MutableState<ComposeState>) {
   IconButton(
     { composeState.value = composeState.value.copy(message = ComposeMessage()) },
-    Modifier.align(Alignment.TopEnd).size(36.dp)
+    Modifier.align(Alignment.CenterEnd).padding(end = 40.dp).size(36.dp)
   ) {
-    Icon(painterResource(MR.images.ic_close), null, Modifier.padding(7.dp).size(36.dp), tint = MaterialTheme.colors.secondary)
+    Icon(painterResource(MR.images.ic_close), null, Modifier.padding(7.dp).size(22.dp), tint = MaterialTheme.colors.secondary)
   }
 }
 
@@ -375,12 +401,10 @@ private fun RecordVoiceView(recState: MutableState<RecordingState>, stopRecOnNex
 private fun DisallowedVoiceButton(onClick: () -> Unit) {
   IconButton(onClick, Modifier.size(36.dp)) {
     Icon(
-      painterResource(MR.images.ic_keyboard_voice),
+      ModernMicVector,
       stringResource(MR.strings.icon_descr_record_voice_message),
       tint = MaterialTheme.colors.secondary,
-      modifier = Modifier
-        .size(36.dp)
-        .padding(4.dp)
+      modifier = Modifier.size(22.dp)
     )
   }
 }
@@ -389,12 +413,10 @@ private fun DisallowedVoiceButton(onClick: () -> Unit) {
 fun VoiceButtonWithoutPermission(onClick: () -> Unit) {
   IconButton(onClick, Modifier.size(36.dp)) {
     Icon(
-      painterResource(MR.images.ic_keyboard_voice_filled),
+      ModernMicVector,
       stringResource(MR.strings.icon_descr_record_voice_message),
       tint = MaterialTheme.colors.primary,
-      modifier = Modifier
-        .size(34.dp)
-        .padding(4.dp)
+      modifier = Modifier.size(22.dp)
     )
   }
 }
@@ -406,23 +428,19 @@ private fun StopRecordButton(onClick: () -> Unit) {
       painterResource(MR.images.ic_stop_filled),
       stringResource(MR.strings.icon_descr_record_voice_message),
       tint = MaterialTheme.colors.primary,
-      modifier = Modifier
-        .size(36.dp)
-        .padding(4.dp)
+      modifier = Modifier.size(22.dp)
     )
   }
 }
 
 @Composable
 private fun RecordVoiceButton(interactionSource: MutableInteractionSource) {
-  IconButton({}, Modifier.size(36.dp), interactionSource = interactionSource) {
+  IconButton({}, Modifier.size(36.dp).bounceClick(), interactionSource = interactionSource) {
     Icon(
-      painterResource(MR.images.ic_keyboard_voice_filled),
+      ModernMicVector,
       stringResource(MR.strings.icon_descr_record_voice_message),
       tint = MaterialTheme.colors.primary,
-      modifier = Modifier
-        .size(34.dp)
-        .padding(4.dp)
+      modifier = Modifier.size(22.dp)
     )
   }
 }
@@ -436,7 +454,7 @@ fun ComposeProgressIndicator() {
 private fun CancelLiveMessageButton(
   onClick: () -> Unit
 ) {
-  IconButton(onClick, Modifier.size(36.dp)) {
+  IconButton(onClick, Modifier.size(36.dp).bounceClick()) {
     Icon(
       painterResource(MR.images.ic_close),
       stringResource(MR.strings.icon_descr_cancel_live_message),
@@ -460,9 +478,11 @@ private fun SendMsgButton(
   onLongClick: (() -> Unit)? = null
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  val ripple = remember { ripple(bounded = false, radius = 24.dp) }
+  val ripple = remember { ripple(bounded = false, radius = 20.dp) }
   Box(
-    modifier = Modifier.requiredSize(36.dp)
+    modifier = Modifier
+      .size(36.dp)
+      .bounceClick()
       .combinedClickable(
         onClick = {
           if (sendToConnect != null) {
@@ -480,27 +500,38 @@ private fun SendMsgButton(
       .onRightClick { onLongClick?.invoke() },
     contentAlignment = Alignment.Center
   ) {
-    Icon(
-      icon,
-      stringResource(MR.strings.icon_descr_send_message),
-      tint = Color.White,
+    Box(
       modifier = Modifier
-        .size(sizeDp.value.dp)
-        .padding(4.dp)
+        .size(34.dp)
         .alpha(alpha.value)
         .clip(CircleShape)
-        .background(if (enabled) sendButtonColor else MaterialTheme.colors.secondary.copy(alpha = 0.75f))
-        .padding(3.dp)
-    )
+        .background(
+          if (enabled) {
+            Brush.linearGradient(listOf(Color(0xFF2AABEE), Color(0xFF229ED9)))
+          } else {
+            Brush.linearGradient(listOf(MaterialTheme.colors.secondary.copy(alpha = 0.5f), MaterialTheme.colors.secondary.copy(alpha = 0.5f)))
+          }
+        ),
+      contentAlignment = Alignment.Center
+    ) {
+      Icon(
+        icon,
+        stringResource(MR.strings.icon_descr_send_message),
+        tint = Color.White,
+        modifier = Modifier.size(18.dp)
+      )
+    }
   }
 }
 
 @Composable
 private fun StartLiveMessageButton(onClick: () -> Unit) {
   val interactionSource = remember { MutableInteractionSource() }
-  val ripple = remember { ripple(bounded = false, radius = 24.dp) }
+  val ripple = remember { ripple(bounded = false, radius = 20.dp) }
   Box(
-    modifier = Modifier.requiredSize(36.dp)
+    modifier = Modifier
+      .size(36.dp)
+      .bounceClick()
       .clickable(
         onClick = onClick,
         role = Role.Button,
@@ -509,14 +540,20 @@ private fun StartLiveMessageButton(onClick: () -> Unit) {
       ),
     contentAlignment = Alignment.Center
   ) {
-    Icon(
-      BoltFilled,
-      stringResource(MR.strings.icon_descr_send_message),
-      tint = MaterialTheme.colors.primary,
-      modifier = Modifier
-        .size(36.dp)
-        .padding(4.dp)
-    )
+    Box(
+      Modifier
+        .size(32.dp)
+        .clip(CircleShape)
+        .background(MaterialTheme.colors.primary.copy(alpha = 0.15f)),
+      contentAlignment = Alignment.Center
+    ) {
+      Icon(
+        BoltFilled,
+        stringResource(MR.strings.icon_descr_send_message),
+        tint = MaterialTheme.colors.primary,
+        modifier = Modifier.size(18.dp)
+      )
+    }
   }
 }
 

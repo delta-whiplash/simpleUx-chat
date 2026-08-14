@@ -6,7 +6,12 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.*
@@ -137,9 +142,22 @@ fun FramedItemView(
   fun ciQuoteView(qi: CIQuote) {
     val sentColor = MaterialTheme.appColors.sentQuote
     val receivedColor = MaterialTheme.appColors.receivedQuote
+    val accentColor = if (sent) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
     Row(
       Modifier
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+        .clip(Corner8)
         .background(if (sent) sentColor else receivedColor)
+        .drawBehind {
+          val barWidth = 3.dp.toPx()
+          drawRoundRect(
+            color = accentColor,
+            topLeft = Offset(0f, 0f),
+            size = Size(barWidth, size.height),
+            cornerRadius = CornerRadius(barWidth / 2, barWidth / 2)
+          )
+        }
+        .padding(start = 4.dp)
         .fillMaxWidth()
     ) {
       when (qi.content) {
@@ -210,10 +228,25 @@ fun FramedItemView(
   val transparentBackground = (ci.content.msgContent is MsgContent.MCImage || ci.content.msgContent is MsgContent.MCVideo) &&
       !ci.meta.isLive && ci.content.text.isEmpty() && ci.quotedItem == null && ci.meta.itemForwarded == null
 
-  val sentColor = MaterialTheme.appColors.sentMessage
-  val receivedColor = MaterialTheme.appColors.receivedMessage
+  val glassMode = isGlassModeActive()
+  val sentColor = if (glassMode) GlassTokens.SentBubblePrimary.copy(alpha = GlassTokens.SentBubbleAlpha) else MaterialTheme.appColors.sentMessage
+  val receivedColor = if (glassMode) GlassTokens.ReceivedBubbleColor.copy(alpha = GlassTokens.ReceivedBubbleAlpha) else MaterialTheme.appColors.receivedMessage
   Box(Modifier
     .clipChatItem(ci, tailVisible, revealed = true)
+    .then(
+      if (glassMode && !transparentBackground) {
+        Modifier.border(
+          width = 1.dp,
+          brush = androidx.compose.ui.graphics.Brush.linearGradient(
+            colors = listOf(
+              if (sent) GlassTokens.SentBubbleAccent.copy(alpha = GlassTokens.SentBorderAlpha) else Color.White.copy(alpha = GlassTokens.ReceivedBorderAlpha),
+              if (sent) GlassTokens.SentBubbleAccent.copy(alpha = 0.05f) else Color.White.copy(alpha = 0.04f)
+            )
+          ),
+          shape = Corner18
+        )
+      } else Modifier
+    )
     .background(
       when {
         transparentBackground -> Color.Transparent

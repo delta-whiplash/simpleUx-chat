@@ -2,6 +2,7 @@ package chat.simplex.common.views.helpers
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,12 +35,15 @@ fun DefaultAppBar(
   searchTrailingContent: @Composable (() -> Unit)? = null,
   buttons: @Composable RowScope.() -> Unit = {},
 ) {
-  // If I just disable clickable modifier when don't need it, it will stop passing clicks to search. Replacing the whole modifier
-  val modifier = if (!showSearch) {
-    Modifier.clickable(enabled = onTitleClick != null, onClick = onTitleClick ?: { })
-  } else if (!onTop) Modifier.imePadding()
-  else Modifier
+  val modifier = if (showSearch) {
+    if (!onTop) Modifier.imePadding() else Modifier
+  } else if (onTitleClick != null) {
+    Modifier.clickable(onClick = onTitleClick)
+  } else {
+    Modifier
+  }
 
+  val isDark = isInDarkTheme()
   val themeBackgroundMix = MaterialTheme.colors.background.mixWith(MaterialTheme.colors.onBackground, 0.97f)
   val prefAlpha = remember { appPrefs.inAppBarsAlpha.state }
   val handler = LocalAppBarHandler.current
@@ -52,7 +56,20 @@ fun DefaultAppBar(
     }
   }
   val keyboardInset = WindowInsets.ime
-  Box(modifier) {
+  val topBarShape = if (onTop) {
+    RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp)
+  } else {
+    RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
+  }
+  Box(
+    modifier
+      .clip(topBarShape)
+      .border(
+        width = 1.dp,
+        color = if (isDark) Color(0x38FFFFFF) else Color(0x1A000000),
+        shape = topBarShape
+      )
+  ) {
     val density = LocalDensity.current
     val blurRadius = remember { appPrefs.appearanceBarsBlurRadius.state }
     Box(Modifier
@@ -62,7 +79,7 @@ fun DefaultAppBar(
         // store it as a variable, don't put it inside if without holding it here. Compiler don't see it changes otherwise
         val alpha = prefAlpha.value
         val backgroundColor = if (title != null || fixedTitleText != null || connection == null || !onTop) {
-          themeBackgroundMix.copy(alpha)
+          if (isDark) Color(0xF2141B28) else Color(0xF2F8FAFC)
         } else {
           themeBackgroundMix.copy(topTitleAlpha(false, connection))
         }
@@ -105,7 +122,9 @@ fun DefaultAppBar(
         centered = !showSearch && (title != null || !onTop),
         onTop = onTop,
       )
-      AppBarDivider(onTop, title != null || fixedTitleText != null, connection)
+      if (!onTop) {
+        AppBarDivider(onTop, title != null || fixedTitleText != null, connection)
+      }
     }
   }
 }
@@ -128,7 +147,7 @@ fun CallAppBar(
 fun NavigationButtonBack(onButtonClicked: (() -> Unit)?, tintColor: Color = if (onButtonClicked != null) MaterialTheme.colors.primary else MaterialTheme.colors.secondary, height: Dp = 24.dp) {
   IconButton(onButtonClicked ?: {}, enabled = onButtonClicked != null) {
     Icon(
-      painterResource(MR.images.ic_arrow_back_ios_new), stringResource(MR.strings.back), Modifier.height(height), tint = tintColor
+      ChevronBackVector, stringResource(MR.strings.back), Modifier.size(20.dp), tint = tintColor
     )
   }
 }

@@ -6,6 +6,11 @@ import androidx.compose.material.*
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -100,10 +105,23 @@ fun ContextItemView(
   }
 
   val sent = contextItems[0].chatDir.sent
+  val accentColor = if (sent) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
 
   Row(
     Modifier
-      .background(if (sent) sentColor else receivedColor),
+      .padding(horizontal = 8.dp, vertical = 4.dp)
+      .clip(Corner12)
+      .background((if (sent) sentColor else receivedColor).copy(alpha = 0.65f))
+      .drawBehind {
+        val barWidth = 3.dp.toPx()
+        drawRoundRect(
+          color = accentColor,
+          topLeft = Offset(0f, 0f),
+          size = Size(barWidth, size.height),
+          cornerRadius = CornerRadius(barWidth / 2, barWidth / 2)
+        )
+      }
+      .padding(start = 6.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
     Row(

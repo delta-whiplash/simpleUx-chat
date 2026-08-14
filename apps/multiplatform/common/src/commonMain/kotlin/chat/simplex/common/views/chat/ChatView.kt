@@ -36,6 +36,7 @@ import chat.simplex.common.model.ChatModel.controller
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.call.*
 import chat.simplex.common.views.chat.group.*
+import chat.simplex.common.views.chat.glass.*
 import chat.simplex.common.views.chat.item.*
 import chat.simplex.common.views.chatlist.*
 import chat.simplex.common.views.helpers.*
@@ -983,7 +984,15 @@ fun ChatLayout(
       sheetShape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp)
     ) {
       val composeViewHeight = remember { mutableStateOf(0.dp) }
-      Box(Modifier.fillMaxSize().chatViewBackgroundModifier(MaterialTheme.colors, MaterialTheme.wallpaper, LocalAppBarHandler.current?.backgroundGraphicsLayerSize, LocalAppBarHandler.current?.backgroundGraphicsLayer, drawWallpaper = chatsCtx.secondaryContextFilter == null)) {
+      val glassMode = isGlassModeActive()
+      val backgroundContent = @Composable { innerContent: @Composable () -> Unit ->
+        if (glassMode && chatsCtx.secondaryContextFilter == null) {
+          AmbientGlassBackground { innerContent() }
+        } else {
+          Box(Modifier.fillMaxSize().chatViewBackgroundModifier(MaterialTheme.colors, MaterialTheme.wallpaper, LocalAppBarHandler.current?.backgroundGraphicsLayerSize, LocalAppBarHandler.current?.backgroundGraphicsLayer, drawWallpaper = chatsCtx.secondaryContextFilter == null)) { innerContent() }
+        }
+      }
+      backgroundContent {
         val remoteHostId = remember { remoteHostId }.value
         val chat = remember { chat }.value
         val chatInfo = chat?.chatInfo
@@ -1074,10 +1083,6 @@ fun ChatLayout(
                   )
                 }
               }
-              if (oneHandUI.value) {
-                // That's placeholder to take some space for bottom app bar in oneHandUI
-                Box(Modifier.height(AppBarHeight * fontSizeSqrtMultiplier))
-              }
             }
           } else {
             Box(
@@ -1086,7 +1091,6 @@ fun ChatLayout(
                 .align(Alignment.BottomCenter)
                 .imePadding()
                 .navigationBarsPadding()
-                .then(if (oneHandUI.value && chatBottomBar.value) Modifier.padding(bottom = AppBarHeight * fontSizeSqrtMultiplier) else Modifier)
             ) {
               composeView(composeViewFocusRequester)
             }
@@ -1094,34 +1098,19 @@ fun ChatLayout(
         }
         val reportsCount = reportsCount(chatInfo?.id)
         val supportUnreadCount = supportUnreadCount(chatInfo?.id)
-        if (oneHandUI.value && chatBottomBar.value) {
-          if (
-            chatInfo is ChatInfo.Group
-            && chatsCtx.secondaryContextFilter == null
-            && (reportsCount > 0 || supportUnreadCount > 0)
-          ) {
-            SupportChatsCountToolbar(chatInfo, reportsCount, supportUnreadCount, withStatusBar = true, showReports, showSupportChats)
-          } else {
-            StatusBarBackground()
-          }
-        } else {
-          NavigationBarBackground(true, oneHandUI.value, noAlpha = true)
-        }
+        NavigationBarBackground(true, false, noAlpha = true)
         when (chatsCtx.secondaryContextFilter) {
           is SecondaryContextFilter.GroupChatScopeContext -> {
             when (chatsCtx.secondaryContextFilter.groupScopeInfo) {
               is GroupChatScopeInfo.MemberSupport -> {
-                if (oneHandUI.value) {
-                  StatusBarBackground()
-                }
-                Column(if (oneHandUI.value && chatBottomBar.value) Modifier.align(Alignment.BottomStart).imePadding() else Modifier) {
+                Column(Modifier.align(Alignment.TopStart)) {
                   Box {
                     if (selectedChatItems.value == null) {
                       if (chat != null) {
                         MemberSupportChatAppBar(chatsCtx, remoteHostId, chat, chatsCtx.secondaryContextFilter.groupScopeInfo.groupMember_, scrollToItemId, { ModalManager.end.closeModal() }, onSearchValueChanged)
                       }
                     } else {
-                      SelectedItemsCounterToolbar(selectedChatItems, !oneHandUI.value)
+                      SelectedItemsCounterToolbar(selectedChatItems, true)
                     }
                   }
                 }
@@ -1131,15 +1120,12 @@ fun ChatLayout(
           is SecondaryContextFilter.MsgContentTagContext -> {
             when (chatsCtx.secondaryContextFilter.contentTag) {
               MsgContentTag.Report -> {
-                if (oneHandUI.value) {
-                  StatusBarBackground()
-                }
-                Column(if (oneHandUI.value) Modifier.align(Alignment.BottomStart).imePadding() else Modifier) {
+                Column(Modifier.align(Alignment.TopStart)) {
                   Box {
                     if (selectedChatItems.value == null) {
                       GroupReportsAppBar(chatsCtx, { ModalManager.end.closeModal() }, onSearchValueChanged)
                     } else {
-                      SelectedItemsCounterToolbar(selectedChatItems, !oneHandUI.value)
+                      SelectedItemsCounterToolbar(selectedChatItems, true)
                     }
                   }
                 }
@@ -1148,20 +1134,19 @@ fun ChatLayout(
             }
           }
           null -> {
-            Column(if (oneHandUI.value && chatBottomBar.value) Modifier.align(Alignment.BottomStart).imePadding() else Modifier) {
+            Column(Modifier.align(Alignment.TopStart)) {
               Box {
                 if (selectedChatItems.value == null) {
                   if (chatInfo != null) {
                     ChatInfoToolbar(chatsCtx, chatInfo, back, info, startCall, endCall, addMembers, openGroupLink, changeNtfsState, onSearchValueChanged, showSearch, contentFilter, availableContent, searchPlaceholder)
                   }
                 } else {
-                  SelectedItemsCounterToolbar(selectedChatItems, !oneHandUI.value || !chatBottomBar.value)
+                  SelectedItemsCounterToolbar(selectedChatItems, true)
                 }
               }
               if (
                 chatInfo is ChatInfo.Group
                 && (reportsCount > 0 || supportUnreadCount > 0)
-                && (!oneHandUI.value || !chatBottomBar.value)
               ) {
                 SupportChatsCountToolbar(chatInfo, reportsCount, supportUnreadCount, withStatusBar = false, showReports, showSupportChats)
               }
@@ -1192,7 +1177,6 @@ fun BoxScope.ChatInfoToolbar(
 ) {
   val scope = rememberCoroutineScope()
   val showMenu = rememberSaveable { mutableStateOf(false) }
-  val showContentFilterMenu = rememberSaveable { mutableStateOf(false) }
   val showCallMenu = rememberSaveable { mutableStateOf(false) }
 
   val onBackClicked = {
@@ -1316,26 +1300,6 @@ fun BoxScope.ChatInfoToolbar(
     else -> {}
   }
 
-  // Content filter button: always in bar on desktop and for groups; on Android for direct chats it
-  // goes into the three-dots menu UNLESS calls are unavailable, in which case it appears in the bar.
-  // Must be after chat-type buttons so call buttons appear before filter during active call.
-  if (showContentFilterButton && (appPlatform.isDesktop || chatInfo is ChatInfo.Group ||
-      (appPlatform.isAndroid && chatInfo is ChatInfo.Direct && !canStartCall && activeCall == null))) {
-    val enabled = chatInfo !is ChatInfo.Local || chatInfo.noteFolder.ready
-    barButtons.add {
-      IconButton(
-        { showContentFilterMenu.value = true },
-        enabled = enabled
-      ) {
-        Icon(
-          painterResource(MR.images.ic_photo_library),
-          null,
-          tint = MaterialTheme.colors.primary
-        )
-      }
-    }
-  }
-
   val enableNtfs = chatInfo.chatSettings?.enableNtfs
   if (((chatInfo is ChatInfo.Direct && chatInfo.contact.ready && chatInfo.contact.active) || chatInfo is ChatInfo.Group) && enableNtfs != null) {
     val ntfMode = remember { mutableStateOf(enableNtfs) }
@@ -1356,9 +1320,8 @@ fun BoxScope.ChatInfoToolbar(
     }
   }
 
-  // Android only: for direct/local chats where the filter bar button is NOT shown, filter options go in the three-dots menu separated by a divider
-  if (appPlatform.isAndroid && chatInfo !is ChatInfo.Group && showContentFilterButton &&
-      !(chatInfo is ChatInfo.Direct && !canStartCall && activeCall == null)) {
+  // Unified Content Filter options (Media, Files, Links, Voice notes) integrated directly into the main dropdown
+  if (showContentFilterButton) {
     menuItems.add { Divider() }
     availableContent.value.forEach { filter ->
       menuItems.add {
@@ -1403,21 +1366,35 @@ fun BoxScope.ChatInfoToolbar(
     }
   }
 
+  // Single unified action button in Top Bar
   if (menuItems.isNotEmpty()) {
     barButtons.add {
       IconButton({ showMenu.value = true }) {
-        Icon(MoreVertFilled, stringResource(MR.strings.icon_descr_more_button), tint = MaterialTheme.colors.primary)
+        Box(
+          modifier = Modifier
+            .size(34.dp)
+            .clip(CornerPill)
+            .background(MaterialTheme.colors.primary.copy(alpha = 0.12f)),
+          contentAlignment = Alignment.Center
+        ) {
+          Icon(
+            MoreVertFilled,
+            stringResource(MR.strings.icon_descr_more_button),
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.size(20.dp)
+          )
+        }
       }
     }
   }
   val oneHandUI = remember { appPrefs.oneHandUI.state }
   val chatBottomBar = remember { appPrefs.chatBottomBar.state }
   val searchTrailingContent: @Composable (() -> Unit)? = if (showContentFilterButton) {{
-    IconButton({ showContentFilterMenu.value = true }) {
+    IconButton({ showMenu.value = true }) {
       Icon(
-        painterResource(if (contentFilter.value == null) MR.images.ic_photo_library else MR.images.ic_photo_library_filled),
+        MediaGalleryVector,
         null,
-        Modifier.padding(4.dp),
+        Modifier.padding(4.dp).size(22.dp),
         tint = MaterialTheme.colors.primary
       )
     }
@@ -1429,7 +1406,7 @@ fun BoxScope.ChatInfoToolbar(
     onTitleClick = if (chatInfo is ChatInfo.Local) null else info,
     showSearch = showSearch.value,
     searchAlwaysVisible = contentFilter.value != null,
-    onTop = !oneHandUI.value || !chatBottomBar.value,
+    onTop = true,
     searchPlaceholder = searchPlaceholder,
     onSearchValueChanged = onSearchValueChanged,
     searchTrailingContent = searchTrailingContent,
@@ -1451,65 +1428,6 @@ fun BoxScope.ChatInfoToolbar(
         menuItems.asReversed().forEach { it() }
       } else {
         menuItems.forEach { it() }
-      }
-    }
-    val contentFilterWidth = remember { mutableStateOf(250.dp) }
-    val contentFilterHeight = remember { mutableStateOf(0.dp) }
-    DefaultDropdownMenu(
-      showContentFilterMenu,
-      modifier = Modifier.onSizeChanged { with(density) {
-        contentFilterWidth.value = it.width.toDp().coerceAtLeast(250.dp)
-        if (oneHandUI.value && chatBottomBar.value && (appPlatform.isDesktop || (platform.androidApiLevel ?: 0) >= 30)) contentFilterHeight.value = it.height.toDp()
-      } },
-      offset = DpOffset(-contentFilterWidth.value, if (oneHandUI.value && chatBottomBar.value) -contentFilterHeight.value else AppBarHeight)
-    ) {
-      val contentFilterMenuItems: List<@Composable () -> Unit> = buildList {
-        availableContent.value.forEach { filter ->
-          val isSelected = contentFilter.value == filter
-          add {
-            ItemAction(
-              stringResource(filter.label),
-              painterResource(if (isSelected) filter.iconFilled else filter.icon),
-              color = if (isSelected) MaterialTheme.colors.primary else Color.Unspecified,
-              onClick = {
-                showContentFilterMenu.value = false
-                if (contentFilter.value == filter) return@ItemAction
-                contentFilter.value = filter
-                showSearch.value = true
-                scope.launch {
-                  val c = chatModel.getChat(chatInfo.id)
-                  if (c != null) {
-                    apiFindMessages(chatsCtx, c, filter.contentTag, "")
-                  }
-                }
-              }
-            )
-          }
-        }
-        if (showSearch.value) {
-          add {
-            ItemAction(
-              stringResource(MR.strings.content_filter_all_messages),
-              painterResource(MR.images.ic_forum),
-              onClick = {
-                showContentFilterMenu.value = false
-                contentFilter.value = null
-                showSearch.value = false
-                scope.launch {
-                  val c = chatModel.getChat(chatInfo.id)
-                  if (c != null) {
-                    apiFindMessages(chatsCtx, c, null, "")
-                  }
-                }
-              }
-            )
-          }
-        }
-      }
-      if (oneHandUI.value && chatBottomBar.value) {
-        contentFilterMenuItems.asReversed().forEach { it() }
-      } else {
-        contentFilterMenuItems.forEach { it() }
       }
     }
     val callMenuWidth = remember { mutableStateOf(250.dp) }
@@ -1559,7 +1477,7 @@ fun ownersContributorsCountStr(count: Int, withContributors: Boolean): String =
 @Composable
 fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Color = MaterialTheme.colors.secondaryVariant.mixWith(MaterialTheme.colors.onBackground, 0.97f)) {
   Row(
-    horizontalArrangement = Arrangement.Center,
+    horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically
   ) {
     if (cInfo.incognito) {
@@ -1567,34 +1485,44 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
     }
     ChatInfoImage(cInfo, size = imageSize * fontSizeSqrtMultiplier, iconColor)
     Column(
-      Modifier.padding(start = 8.dp),
-      horizontalAlignment = Alignment.CenterHorizontally
+      Modifier.padding(start = 10.dp),
+      horizontalAlignment = Alignment.Start
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if ((cInfo as? ChatInfo.Direct)?.contact?.verified == true) {
           ContactVerifiedShield()
         }
         NameWithBadge(
-          cInfo.displayName, cInfo.nameBadge, fontWeight = FontWeight.SemiBold,
+          cInfo.displayName, cInfo.nameBadge, fontWeight = FontWeight.Bold,
           maxLines = 1, overflow = TextOverflow.Ellipsis
         )
       }
       if (cInfo.fullName != "" && cInfo.fullName != cInfo.displayName && cInfo.localAlias.isEmpty()) {
         Text(
           cInfo.fullName,
-          maxLines = 1, overflow = TextOverflow.Ellipsis
-        )
-      }
-      val channelSubscriberCount = (cInfo as? ChatInfo.Group)?.let { g ->
-        if (g.groupInfo.useRelays) g.groupInfo.groupSummary.publicMemberCount?.takeIf { it > 0 } else null
-      }
-      if (channelSubscriberCount != null) {
-        Text(
-          subscriberCountStr(channelSubscriberCount),
           style = MaterialTheme.typography.body2,
           color = MaterialTheme.colors.secondary,
           maxLines = 1, overflow = TextOverflow.Ellipsis
         )
+      } else {
+        val memberCount = (cInfo as? ChatInfo.Group)?.let { g ->
+          g.groupInfo.groupSummary.publicMemberCount?.takeIf { it > 0 }
+        }
+        if (memberCount != null) {
+          Text(
+            if (cInfo.groupInfo.useRelays) subscriberCountStr(memberCount) else "$memberCount members",
+            style = MaterialTheme.typography.body2,
+            color = MaterialTheme.colors.secondary,
+            maxLines = 1, overflow = TextOverflow.Ellipsis
+          )
+        } else if (cInfo is ChatInfo.Group) {
+          Text(
+            if (cInfo.groupInfo.useRelays) "channel" else "group",
+            style = MaterialTheme.typography.body2.copy(fontSize = 11.5.sp),
+            color = MaterialTheme.colors.secondary,
+            maxLines = 1, overflow = TextOverflow.Ellipsis
+          )
+        }
       }
     }
     val chatSubStatus = chatModel.chatSubStatus.value
@@ -1974,6 +1902,21 @@ fun BoxScope.ChatItemsList(
         )
         val sent = cItem.chatDir.sent
 
+        val isCenterEvent = cItem.content is CIContent.SndDirectE2EEInfo ||
+            cItem.content is CIContent.RcvDirectE2EEInfo ||
+            cItem.content is CIContent.SndGroupE2EEInfo ||
+            cItem.content is CIContent.RcvGroupE2EEInfo ||
+            cItem.content is CIContent.RcvChatFeature ||
+            cItem.content is CIContent.SndChatFeature ||
+            cItem.content is CIContent.RcvGroupFeature ||
+            cItem.content is CIContent.SndGroupFeature ||
+            cItem.content is CIContent.RcvChatPreference ||
+            cItem.content is CIContent.SndChatPreference ||
+            cItem.content is CIContent.RcvDirectEventContent ||
+            cItem.content is CIContent.RcvGroupEventContent ||
+            cItem.content is CIContent.RcvConnEventContent ||
+            cItem.content is CIContent.SndConnEventContent
+
         @Composable
         fun ChatItemBox(modifier: Modifier = Modifier, content: @Composable () -> Unit = { }) {
           Box(
@@ -1986,7 +1929,7 @@ fun BoxScope.ChatItemsList(
                 }
               } else 1.dp, top = if (previousItemSeparationLargeGap) 4.dp else 1.dp
             ),
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = if (isCenterEvent) Alignment.Center else Alignment.CenterStart
           ) {
             content()
           }
@@ -2001,7 +1944,7 @@ fun BoxScope.ChatItemsList(
           return originalPadding + (if (tailRendered) 0.dp else if (start) msgTailWidthDp * 2 else msgTailWidthDp)
         }
 
-        Box {
+        Box(modifier = if (isCenterEvent) Modifier.fillMaxWidth() else Modifier) {
           val voiceWithTransparentBack = cItem.content.msgContent is MsgContent.MCVoice && cItem.content.text.isEmpty() && cItem.quotedItem == null && cItem.meta.itemForwarded == null
           val selectionVisible = selectedChatItems.value != null && cItem.canBeDeletedForSelf
           val selectionOffset by animateDpAsState(if (selectionVisible && !sent) 4.dp + 22.dp * fontSizeMultiplier else 0.dp)
@@ -2183,13 +2126,14 @@ fun BoxScope.ChatItemsList(
                 }
               }
             } else {
-              ChatItemBox {
+              ChatItemBox(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier) {
                 AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
                   SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
                 }
                 Box(
                   Modifier
-                    .padding(start = if (voiceWithTransparentBack) 12.dp else adjustTailPaddingOffset(104.dp, start = true), end = 12.dp)
+                    .padding(start = if (isCenterEvent || voiceWithTransparentBack) 12.dp else adjustTailPaddingOffset(104.dp, start = true), end = 12.dp)
+                    .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
                     .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
                     .then(if (selectionVisible) Modifier else swipeableModifier)
                 ) {
@@ -2198,16 +2142,17 @@ fun BoxScope.ChatItemsList(
               }
             }
           } else { // direct message
-            ChatItemBox {
+            ChatItemBox(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier) {
               AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
                 SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
               }
 
               Box(
                 Modifier.padding(
-                  start = if (sent && !voiceWithTransparentBack) adjustTailPaddingOffset(76.dp, start = true) else 12.dp,
-                  end = if (sent || voiceWithTransparentBack) 12.dp else adjustTailPaddingOffset(76.dp, start = false),
+                  start = if (isCenterEvent || (!sent || voiceWithTransparentBack)) 12.dp else adjustTailPaddingOffset(76.dp, start = true),
+                  end = if (isCenterEvent || (sent && !voiceWithTransparentBack)) 12.dp else adjustTailPaddingOffset(76.dp, start = false),
                 )
+                  .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
                   .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
                   .then(if (!selectionVisible || !sent) swipeableOrSelectionModifier else Modifier)
               ) {
@@ -2223,10 +2168,12 @@ fun BoxScope.ChatItemsList(
           }
         }
       }
-      if (itemSeparation.date != null) {
-        DateSeparator(itemSeparation.date)
+      Column(modifier = Modifier.fillMaxWidth()) {
+        if (itemSeparation.date != null) {
+          DateSeparator(itemSeparation.date)
+        }
+        ChatItemView(cItem, range, itemSeparation, previousItemSeparationLargeGap)
       }
-      ChatItemView(cItem, range, itemSeparation, previousItemSeparationLargeGap)
     }
   }
 
@@ -2284,21 +2231,27 @@ fun BoxScope.ChatItemsList(
 
     Box(
       Modifier
-        .clipChatItem()
-        .background(MaterialTheme.appColors.receivedMessage)
+        .clip(Corner24)
+        .background(if (isInDarkTheme()) Color(0xCC181E2C) else Color(0xF0FFFFFF))
+        .border(
+          width = 1.dp,
+          brush = Brush.verticalGradient(
+            listOf(
+              if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x33000000),
+              if (isInDarkTheme()) Color(0x0DFFFFFF) else Color(0x05000000)
+            )
+          ),
+          shape = Corner24
+        )
     ) {
       val bannerModifier = if (appPlatform.isDesktop) Modifier.width(400.dp) else Modifier.fillMaxWidth()
       Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = bannerModifier
-          .padding(horizontal = DEFAULT_PADDING)
-          .padding(bottom = DEFAULT_PADDING)
-          // ChatInfoImage has its own padding somewhere,
-          // also not doing verticalArrangement = Arrangement.spacedBy(DEFAULT_PADDING_HALF) because of it
-          .padding(top = DEFAULT_PADDING_HALF)
-          .background(MaterialTheme.appColors.receivedMessage)
+          .padding(horizontal = DEFAULT_PADDING * 1.25f, vertical = DEFAULT_PADDING * 1.25f)
       ) {
         ChatInfoImage(chatInfo, size = alertProfileImageSize, iconColor = MaterialTheme.colors.secondaryVariant.mixWith(MaterialTheme.colors.onBackground, 0.97f))
+        Spacer(Modifier.height(10.dp))
         val bannerBadge = chatInfo.nameBadge
         val uriHandler = LocalUriHandler.current
         Text(
@@ -2311,13 +2264,12 @@ fun BoxScope.ChatItemsList(
           },
           inlineContent =
             if (bannerBadge != null) mapOf("nameBadge" to nameBadgeInline(bannerBadge, MaterialTheme.typography.h3.fontSize) { showBadgeInfoAlert(chatInfo.displayName, bannerBadge, uriHandler) }) else emptyMap(),
-          style = MaterialTheme.typography.h3,
+          style = MaterialTheme.typography.h3.copy(fontWeight = FontWeight.Bold),
           color = MaterialTheme.colors.onBackground,
           textAlign = TextAlign.Center,
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
-          modifier = Modifier
-            .widthIn(max = 240.dp)
+          modifier = Modifier.widthIn(max = 240.dp)
         )
 
         val fullName = chatInfo.fullName.trim()
@@ -2325,21 +2277,21 @@ fun BoxScope.ChatItemsList(
           Text(
             fullName,
             style = MaterialTheme.typography.h4,
-            color = MaterialTheme.colors.onBackground,
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.85f),
             textAlign = TextAlign.Center,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
               .widthIn(max = 260.dp)
-              .padding(top = DEFAULT_PADDING_HALF)
+              .padding(top = 4.dp)
           )
         }
 
         ProfileDescriptionText(
           shortDescr = chatInfo.shortDescr,
           description = chatInfo.profileDescription,
-          style = MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.onBackground, lineHeight = 21.sp, textAlign = TextAlign.Center),
-          modifier = Modifier.padding(top = DEFAULT_PADDING_HALF)
+          style = MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.onBackground.copy(alpha = 0.75f), lineHeight = 21.sp, textAlign = TextAlign.Center),
+          modifier = Modifier.padding(top = 6.dp)
         )
 
         when (chatInfo) {
@@ -2350,13 +2302,20 @@ fun BoxScope.ChatItemsList(
 
         val contextStr = chatContext()
         if (contextStr != null) {
-          Text(
-            contextStr,
-            style = MaterialTheme.typography.body2,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colors.secondary,
-            modifier = Modifier.padding(top = DEFAULT_PADDING)
-          )
+          Box(
+            Modifier
+              .padding(top = 12.dp)
+              .clip(CornerPill)
+              .background(MaterialTheme.colors.primary.copy(alpha = 0.12f))
+              .padding(horizontal = 12.dp, vertical = 4.dp)
+          ) {
+            Text(
+              contextStr,
+              style = MaterialTheme.typography.body2.copy(fontWeight = FontWeight.Medium),
+              textAlign = TextAlign.Center,
+              color = MaterialTheme.colors.primary
+            )
+          }
         }
       }
     }
@@ -2383,25 +2342,17 @@ fun BoxScope.ChatItemsList(
       val item = listItem.item
 
       if (item.content is CIContent.ChatBanner) {
-        Column {
-          Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-              .fillMaxSize()
-              .padding(horizontal = DEFAULT_PADDING)
-              .padding(bottom = 90.dp, top = DEFAULT_PADDING)
-          ) {
-            ChatBannerView()
-          }
-
-          val prevItem = listItem.prevItem
-          if (prevItem != null) {
-            DateSeparator(prevItem.meta.itemTs)
-          }
+        Box(
+          contentAlignment = Alignment.Center,
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = DEFAULT_PADDING)
+            .padding(bottom = 12.dp, top = DEFAULT_PADDING)
+        ) {
+          ChatBannerView()
         }
       } else {
         val isLastItem = index == mergedItemsValue.items.lastIndex
-        val last = if (isLastItem) reversedChatItems.value.lastOrNull() else null
         val range = if (merged is MergedItem.Grouped) {
           merged.rangeInReversed.value
         } else {
@@ -2411,24 +2362,20 @@ fun BoxScope.ChatItemsList(
         val isRevealed = remember { derivedStateOf { revealedItems.value.contains(item.id) } }
         val itemSeparation: ItemSeparation
         val prevItemSeparationLargeGap: Boolean
+        val next = listItem.nextItem
         if (merged is MergedItem.Single || isRevealed.value) {
           val prev = listItem.prevItem
-          itemSeparation = getItemSeparation(item, prev)
-          val nextForGap = if ((item.mergeCategory != null && item.mergeCategory == prev?.mergeCategory) || isLastItem) null else listItem.nextItem
+          itemSeparation = getItemSeparation(item, prev, next)
+          val nextForGap = if ((item.mergeCategory != null && item.mergeCategory == prev?.mergeCategory) || isLastItem) null else next
           prevItemSeparationLargeGap = if (nextForGap == null) false else getItemSeparationLargeGap(nextForGap, item)
         } else {
-          itemSeparation = getItemSeparation(item, null)
+          itemSeparation = getItemSeparation(item, null, next)
           prevItemSeparationLargeGap = false
         }
         CompositionLocalProvider(LocalItemContext provides ItemContext(selectionIndex = index)) {
           ChatViewListItem(index == 0, rememberUpdatedState(range), showAvatar, item, itemSeparation, prevItemSeparationLargeGap, isRevealed) {
             if (merged is MergedItem.Grouped) merged.reveal(it, revealedItems)
           }
-        }
-
-        if (last != null) {
-          // no using separate item(){} block in order to have total number of items in LazyColumn match number of merged items
-          DateSeparator(last.meta.itemTs)
         }
         if (item.isRcvNew) {
           val itemIds = when (merged) {
@@ -3041,14 +2988,34 @@ private fun ButtonRow(horizontalArrangement: Arrangement.Horizontal, content: @C
 
 @Composable
 private fun DateSeparator(date: Instant) {
-  Text(
-    text = getTimestampDateText(date),
-    Modifier.padding(vertical = DEFAULT_PADDING_HALF + 4.dp, horizontal = DEFAULT_PADDING_HALF).fillMaxWidth(),
-    fontSize = 14.sp,
-    fontWeight = FontWeight.Medium,
-    textAlign = TextAlign.Center,
-    color = MaterialTheme.colors.secondary
-  )
+  Box(
+    Modifier
+      .padding(vertical = 8.dp)
+      .fillMaxWidth(),
+    contentAlignment = Alignment.Center
+  ) {
+    Box(
+      Modifier
+        .clip(CornerPill)
+        .background(
+          if (isInDarkTheme()) Color(0x80181E2C) else Color(0x66E2E8F0)
+        )
+        .border(
+          width = 0.5.dp,
+          color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x1A000000),
+          shape = CornerPill
+        )
+        .padding(horizontal = 14.dp, vertical = 5.dp)
+    ) {
+      Text(
+        text = getTimestampDateText(date),
+        fontSize = 12.sp,
+        fontWeight = FontWeight.SemiBold,
+        textAlign = TextAlign.Center,
+        color = if (isInDarkTheme()) Color(0xFFF1F5F9) else Color(0xFF1E293B)
+      )
+    }
+  }
 }
 
 @Composable
@@ -3734,9 +3701,35 @@ private fun handleForwardConfirmation(
   )
 }
 
-private fun getItemSeparation(chatItem: ChatItem, prevItem: ChatItem?): ItemSeparation {
+fun isSecurityOrFeatureItem(item: ChatItem?): Boolean {
+  if (item == null) return false
+  return when (item.content) {
+    is CIContent.SndDirectE2EEInfo,
+    is CIContent.RcvDirectE2EEInfo,
+    is CIContent.SndGroupE2EEInfo,
+    is CIContent.RcvGroupE2EEInfo,
+    is CIContent.RcvChatFeature,
+    is CIContent.SndChatFeature,
+    is CIContent.RcvGroupFeature,
+    is CIContent.SndGroupFeature,
+    is CIContent.RcvChatPreference,
+    is CIContent.SndChatPreference,
+    is CIContent.RcvChatFeatureRejected,
+    is CIContent.RcvGroupFeatureRejected -> true
+    else -> false
+  }
+}
+
+private fun getItemSeparation(chatItem: ChatItem, prevItem: ChatItem?, nextItem: ChatItem?): ItemSeparation {
+  val showDate = when {
+    chatItem.content is CIContent.ChatBanner || isSecurityOrFeatureItem(chatItem) -> null
+    nextItem == null || nextItem.content is CIContent.ChatBanner || isSecurityOrFeatureItem(nextItem) -> chatItem.meta.itemTs
+    getTimestampDateText(chatItem.meta.itemTs) != getTimestampDateText(nextItem.meta.itemTs) -> chatItem.meta.itemTs
+    else -> null
+  }
+
   if (prevItem == null) {
-    return ItemSeparation(timestamp = true, largeGap = true, date = null)
+    return ItemSeparation(timestamp = true, largeGap = true, date = showDate)
   }
 
   val sameMemberAndDirection = if (prevItem.chatDir is GroupRcv && chatItem.chatDir is GroupRcv) {
@@ -3749,7 +3742,7 @@ private fun getItemSeparation(chatItem: ChatItem, prevItem: ChatItem?): ItemSepa
   return ItemSeparation(
     timestamp = largeGap || prevItem.meta.timestampText != chatItem.meta.timestampText,
     largeGap = largeGap,
-    date = if (getTimestampDateText(chatItem.meta.itemTs) == getTimestampDateText(prevItem.meta.itemTs)) null else prevItem.meta.itemTs
+    date = showDate
   )
 }
 
