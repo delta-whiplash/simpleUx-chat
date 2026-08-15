@@ -34,6 +34,7 @@ import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.chat.*
 import chat.simplex.common.views.chatlist.openChat
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.components.QuickReactionsBar
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.StringResource
@@ -379,19 +380,20 @@ fun ChatItemView(
                 }
               }
               if (rs.isNotEmpty()) {
-                Row(modifier = Modifier.padding(horizontal = DEFAULT_PADDING).horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.CenterVertically) {
-                  rs.forEach() { r ->
-                    Box(
-                      Modifier.size(36.dp).clip(CircleShape).clickable {
-                        setReaction(cInfo, cItem, true, r)
-                        showMenu.value = false
-                      },
-                      contentAlignment = Alignment.Center
-                    ) {
-                      ReactionIcon(r.text, 12.sp)
+                QuickReactionsBar(
+                  isVisible = true,
+                  emojis = rs.map { it.text },
+                  onReactionSelected = { emojiStr ->
+                    val match = rs.firstOrNull { it.text == emojiStr }
+                    if (match != null) {
+                      setReaction(cInfo, cItem, true, match)
                     }
+                    showMenu.value = false
+                  },
+                  onMoreEmojisClicked = {
+                    showMenu.value = false
                   }
-                }
+                )
               }
             }
 

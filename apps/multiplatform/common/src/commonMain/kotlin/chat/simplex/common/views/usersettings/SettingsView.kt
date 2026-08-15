@@ -40,31 +40,38 @@ import chat.simplex.res.MR
 fun SettingsView(chatModel: ChatModel, setPerformLA: (Boolean) -> Unit, close: () -> Unit) {
   val stopped = chatModel.chatRunning.value == false
   val showSettingsModal: (@Composable (ChatModel) -> Unit) -> (() -> Unit) = { modalView -> { ModalManager.start.showModal(settings = true, cardScreen = true) { modalView(chatModel) } } }
-  SettingsLayout(
-    stopped,
-    chatModel.chatDbEncrypted.value == true,
-    remember { chatModel.controller.appPrefs.storeDBPassphrase.state }.value,
-    setPerformLA = setPerformLA,
-    showModal = { modalView -> { ModalManager.start.showModal { modalView(chatModel) } } },
-    showSettingsModal = showSettingsModal,
-    showSettingsModalWithSearch = { modalView ->
-      ModalManager.start.showCustomModal { close ->
-        val search = rememberSaveable { mutableStateOf("") }
-        ModalView(
-          { close() },
-          cardScreen = true,
-          showSearch = true,
-          searchAlwaysVisible = true,
-          onSearchValueChanged = { search.value = it },
-          content = { modalView(chatModel, search) })
-      }
-    },
-    showCustomModal = { modalView -> { ModalManager.start.showCustomModal { close -> modalView(chatModel, close) } } },
-    showVersion = {
-      ModalManager.start.showModal(cardScreen = true) { VersionInfoView(showSettingsModal, ::doWithAuth) }
-    },
-    withAuth = ::doWithAuth,
-  )
+  Column(Modifier.fillMaxSize()) {
+    DefaultAppBar(
+      navigationButton = { NavigationButtonBack(onButtonClicked = close) },
+      fixedTitleText = generalGetString(MR.strings.your_settings),
+      onTop = true
+    )
+    SettingsLayout(
+      stopped,
+      chatModel.chatDbEncrypted.value == true,
+      remember { chatModel.controller.appPrefs.storeDBPassphrase.state }.value,
+      setPerformLA = setPerformLA,
+      showModal = { modalView -> { ModalManager.start.showModal { modalView(chatModel) } } },
+      showSettingsModal = showSettingsModal,
+      showSettingsModalWithSearch = { modalView ->
+        ModalManager.start.showCustomModal { closeSettingsModal ->
+          val search = rememberSaveable { mutableStateOf("") }
+          ModalView(
+            { closeSettingsModal() },
+            cardScreen = true,
+            showSearch = true,
+            searchAlwaysVisible = true,
+            onSearchValueChanged = { search.value = it },
+            content = { modalView(chatModel, search) })
+        }
+      },
+      showCustomModal = { modalView -> { ModalManager.start.showCustomModal { closeCustom -> modalView(chatModel, closeCustom) } } },
+      showVersion = {
+        ModalManager.start.showModal(cardScreen = true) { VersionInfoView(showSettingsModal, ::doWithAuth) }
+      },
+      withAuth = ::doWithAuth,
+    )
+  }
   KeyChangeEffect(chatModel.updatingProgress.value != null) {
     close()
   }
@@ -91,8 +98,8 @@ fun SettingsLayout(
     hideKeyboard(view)
   }
   val notificationsMode = remember { chatModel.controller.appPrefs.notificationsMode.state }
-  ColumnWithScrollBar {
-    AppBarTitle(stringResource(MR.strings.your_settings))
+  ColumnWithScrollBarNoAppBar {
+    Spacer(Modifier.height(8.dp))
 
     SectionView {
       SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF8E24AA))

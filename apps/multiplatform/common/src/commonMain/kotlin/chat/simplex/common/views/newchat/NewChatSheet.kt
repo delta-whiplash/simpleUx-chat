@@ -47,12 +47,31 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
     }
   }
 
-  val oneHandUI = remember { appPrefs.oneHandUI.state }
+  val isDark = isInDarkTheme()
 
-  Box {
+  Box(Modifier.fillMaxSize()) {
     val closeAll = { ModalManager.start.closeModals() }
 
     Column(modifier = Modifier.fillMaxSize()) {
+      DefaultAppBar(
+        navigationButton = { NavigationButtonBack(onButtonClicked = close) },
+        fixedTitleText = "Contacts",
+        buttons = {
+          IconButton(onClick = {
+            ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
+              NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll)
+            }
+          }) {
+            Icon(
+              painterResource(MR.images.ic_qr_code),
+              contentDescription = "Scanner",
+              tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+              modifier = Modifier.size(23.dp)
+            )
+          }
+        },
+        onTop = true,
+      )
       NewChatSheetLayout(
         addContact = {
           ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ -> NewChatView(chatModel.currentRemoteHost.value, NewChatOption.INVITE, close = closeAll) }
@@ -61,23 +80,14 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
           ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ -> NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll) }
         },
         createGroup = {
-          ModalManager.start.showCustomModal { close -> AddGroupView(chatModel, chatModel.currentRemoteHost.value, close, closeAll) }
+          ModalManager.start.showCustomModal { closeGroup -> AddGroupView(chatModel, chatModel.currentRemoteHost.value, closeGroup, closeAll) }
         },
         createChannel = {
-          ModalManager.start.showCustomModal { close -> AddChannelView(chatModel, chatModel.currentRemoteHost.value, close, closeAll) }
+          ModalManager.start.showCustomModal { closeChannel -> AddChannelView(chatModel, chatModel.currentRemoteHost.value, closeChannel, closeAll) }
         },
         rh = rh,
         close = close
       )
-    }
-    if (oneHandUI.value) {
-      Column(Modifier.align(Alignment.BottomCenter)) {
-        DefaultAppBar(
-          navigationButton = { NavigationButtonBack(onButtonClicked = close) },
-          fixedTitleText = generalGetString(MR.strings.new_chat),
-          onTop = false,
-        )
-      }
     }
   }
 }
@@ -184,16 +194,6 @@ private fun ModalData.NewChatSheetLayout(
   }
 
   val actionButtonsOriginal = listOf(
-    Triple(
-      painterResource(MR.images.ic_add_link),
-      stringResource(MR.strings.create_1_time_link),
-      addContact,
-    ),
-    Triple(
-      painterResource(MR.images.ic_qr_code),
-      if (appPlatform.isAndroid) stringResource(MR.strings.scan_paste_link) else stringResource(MR.strings.paste_link),
-      scanPaste,
-    ),
     Triple(
       painterResource(MR.images.ic_group),
       stringResource(MR.strings.create_group_button),
@@ -356,50 +356,18 @@ private fun ModalData.NewChatSheetLayout(
 
   @Composable
   fun NonOneHandLazyColumn() {
-    val blankSpaceSize = topPaddingToContent(false)
     LazyColumnWithScrollBar(
       Modifier.imePadding(),
       state = listState,
       reverseLayout = false
     ) {
-      item {
-        Box(Modifier.padding(top = blankSpaceSize)) {
-          AppBarTitle(
-            stringResource(MR.strings.new_chat),
-            hostDevice(rh?.remoteHostId),
-            bottomPadding = DEFAULT_PADDING
-          )
-        }
-      }
       stickyHeader {
-        val scrolledSomething by remember { derivedStateOf { listState.firstVisibleItemScrollOffset > 0 || listState.firstVisibleItemIndex > 0 } }
         Column(
           Modifier
+            .fillMaxWidth()
             .zIndex(1f)
-            .offset {
-              val y = if (searchText.value.text.isNotEmpty() || (appPlatform.isAndroid && keyboardState == KeyboardState.Opened)) {
-                if (listState.firstVisibleItemIndex == 0) (listState.firstVisibleItemScrollOffset - (listState.layoutInfo.visibleItemsInfo[0].size - blankSpaceSize.roundToPx())).coerceAtLeast(0)
-                else blankSpaceSize.roundToPx()
-              } else {
-                when (listState.firstVisibleItemIndex) {
-                  0 -> 0
-                  1 -> -listState.firstVisibleItemScrollOffset
-                  else -> -1000
-                }
-              }
-              IntOffset(0, y)
-            }
-            // show background when something is scrolled because otherwise the bar is transparent.
-            // not using background always because of gradient in SimpleX theme
-            .background(
-              if (scrolledSomething && (keyboardState == KeyboardState.Opened || searchText.value.text.isNotEmpty())) {
-                MaterialTheme.colors.background
-              } else {
-                Color.Unspecified
-              }
-            )
+            .background(MaterialTheme.colors.background)
         ) {
-          Divider()
           ContactsSearchBar(
             listState = listState,
             searchText = searchText,
@@ -434,6 +402,24 @@ private fun ModalData.NewChatSheetLayout(
           }
         }
         ContactListNavLinkView(chat, nextChatSelected, showDeletedChatIcon = true)
+      }
+      if (searchText.value.text.isNotEmpty()) {
+        item {
+          PublicDirectorySearchResultsSection(
+            query = searchText.value.text,
+            onJoinGroup = { link ->
+              val target = strConnectTarget(link.trim())
+              if (target is ConnectTarget.Link) {
+                connect(
+                  link = target.text,
+                  searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
+                  close = close,
+                  cleanup = { searchText.value = TextFieldValue() }
+                )
+              }
+            }
+          )
+        }
       }
       if (appPlatform.isAndroid) {
         item {

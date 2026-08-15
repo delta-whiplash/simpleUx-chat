@@ -266,7 +266,7 @@ class AppPreferences {
   val iosCallKitEnabled = mkBoolPreference(SHARED_PREFS_IOS_CALL_KIT_ENABLED, true)
   val iosCallKitCallsInRecents = mkBoolPreference(SHARED_PREFS_IOS_CALL_KIT_CALLS_IN_RECENTS, false)
 
-  val oneHandUI = mkBoolPreference(SHARED_PREFS_ONE_HAND_UI, true)
+  val oneHandUI = mkBoolPreference(SHARED_PREFS_ONE_HAND_UI, false)
   val chatBottomBar = mkBoolPreference(SHARED_PREFS_CHAT_BOTTOM_BAR, true)
 
   val hintPreferences: List<HintPref> = listOf(

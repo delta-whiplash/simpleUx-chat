@@ -600,9 +600,16 @@ fun UnreadBadge(
   backgroundColor: Color,
   yOffset: Dp? = null
 ) {
+  val isDark = isInDarkTheme()
   val isGradient = backgroundColor != MaterialTheme.colors.secondary
   val bgModifier = if (isGradient) {
-    Modifier.background(Brush.linearGradient(listOf(Color(0xFF00E5FF), Color(0xFF0088FF))), shape = CornerPill)
+    Modifier.background(
+      Brush.linearGradient(
+        if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
+        else listOf(Color(0xFFD97706), Color(0xFFB45309))
+      ),
+      shape = CornerPill
+    )
   } else {
     Modifier.background(backgroundColor, shape = CornerPill)
   }
@@ -611,13 +618,13 @@ fun UnreadBadge(
       .offset(y = yOffset ?: 0.dp)
       .clip(CornerPill)
       .then(bgModifier)
-      .border(0.5.dp, Color(0x66FFFFFF), CornerPill)
+      .border(0.5.dp, if (isDark) Color(0x66FFFFFF) else Color(0x33000000), CornerPill)
       .padding(horizontal = 7.dp, vertical = 2.dp),
     contentAlignment = Alignment.Center
   ) {
     Text(
       text,
-      color = Color.White,
+      color = if (isGradient && isDark) Color(0xFF0F172A) else Color.White,
       fontSize = 11.sp,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center

@@ -18,35 +18,23 @@ import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.chat.item.MarkdownText
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.modals.ZeroJargonOnboarding
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.StringResource
 
 @Composable
 fun HowItWorks(user: User?, onboardingStage: SharedPreference<OnboardingStage>? = null) {
-  Column(Modifier.fillMaxSize().padding(horizontal = if (appPlatform.isDesktop) DEFAULT_PADDING * 2 else DEFAULT_PADDING)) {
-    Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier))
-    val paraPadding = PaddingValues(bottom = if (appPlatform.isDesktop) 10.dp else 12.dp)
-    Column(Modifier.weight(1f).padding(bottom = DEFAULT_PADDING).verticalScroll(rememberScrollState())) {
-      Text(stringResource(MR.strings.why_built_heading), style = MaterialTheme.typography.h1, modifier = Modifier.padding(bottom = DEFAULT_PADDING))
-      ReadableText(MR.strings.why_built_p1, padding = paraPadding)
-      ReadableText(MR.strings.why_built_p2, padding = paraPadding)
-      ReadableText(MR.strings.why_built_p3, padding = paraPadding)
-      ReadableText(MR.strings.why_built_p4, padding = paraPadding)
-      ReadableText(MR.strings.why_built_p5, padding = paraPadding)
-      ReadableText(MR.strings.why_built_p6, padding = paraPadding)
-      ReadableText(MR.strings.why_built_p7, padding = paraPadding)
-      ReadableText(MR.strings.why_built_tagline, padding = paraPadding)
-    }
-    if (onboardingStage != null) {
-      Column(
-        Modifier.widthIn(max = if (appPlatform.isAndroid) 450.dp else 1000.dp).align(Alignment.CenterHorizontally),
-        horizontalAlignment = Alignment.CenterHorizontally
-      ) {
-        OnboardingActionButton(user, onboardingStage, onclick = { ModalManager.fullscreen.closeModal() })
-        TextButtonBelowOnboardingButton("", null)
+  ZeroJargonOnboarding(
+    onContinue = {
+      if (onboardingStage != null) {
+        onboardingStage.set(OnboardingStage.Step2_CreateProfile)
       }
+      ModalManager.fullscreen.closeModal()
+    },
+    onClose = {
+      ModalManager.fullscreen.closeModal()
     }
-  }
+  )
 }
 
 @Composable

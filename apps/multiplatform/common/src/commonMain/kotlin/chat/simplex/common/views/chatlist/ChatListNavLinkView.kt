@@ -32,6 +32,8 @@ import chat.simplex.res.MR
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 
+import chat.simplex.common.views.ux.components.SwipeableChatCard
+
 // Spec: spec/client/chat-list.md#ChatListNavLinkView
 @Composable
 fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
@@ -61,6 +63,20 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
 
   val scope = rememberCoroutineScope()
 
+  val defaultClickAction: () -> Unit = {
+    if (chatModel.chatId.value != chat.id) {
+      scope.launch {
+        when (val info = chat.chatInfo) {
+          is ChatInfo.Direct -> directChatAction(chat.remoteHostId, info.contact, chatModel)
+          is ChatInfo.Group -> if (!inProgress.value) groupChatAction(chat.remoteHostId, info.groupInfo, chatModel, inProgress)
+          is ChatInfo.Local -> noteFolderChatAction(chat.remoteHostId, info.noteFolder)
+          else -> chatModel.chatId.value = chat.id
+        }
+      }
+    }
+  }
+
+  SwipeableChatCard(chat, onClick = defaultClickAction) {
   when (chat.chatInfo) {
     is ChatInfo.Direct -> {
       val defaultClickAction = { if (chatModel.chatId.value != chat.id) scope.launch { directChatAction(chat.remoteHostId, chat.chatInfo.contact, chatModel) } }
@@ -176,6 +192,7 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         selectedChat,
         nextChatSelected,
       )
+  }
   }
 }
 

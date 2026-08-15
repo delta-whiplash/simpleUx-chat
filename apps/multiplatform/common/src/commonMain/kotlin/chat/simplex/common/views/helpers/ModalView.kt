@@ -49,10 +49,7 @@ fun ModalView(
         content()
       }
       if (showAppBar) {
-        if (oneHandUI.value) {
-          StatusBarBackground()
-        }
-        Box(Modifier.align(if (oneHandUI.value) Alignment.BottomStart else Alignment.TopStart)) {
+        Box(Modifier.align(Alignment.TopStart)) {
           if (appBar != null) {
             appBar()
           } else {
@@ -60,7 +57,7 @@ fun ModalView(
               navigationButton = if (showClose) {
                 { NavigationButtonBack(onButtonClicked = if (enableClose) close else null) }
               } else null,
-              onTop = !oneHandUI.value,
+              onTop = true,
               showSearch = showSearch,
               searchAlwaysVisible = searchAlwaysVisible,
               onSearchValueChanged = onSearchValueChanged,

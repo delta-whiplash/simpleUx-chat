@@ -2,6 +2,7 @@ package chat.simplex.common.views.chat
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
@@ -40,6 +41,7 @@ import chat.simplex.common.views.chat.glass.*
 import chat.simplex.common.views.chat.item.*
 import chat.simplex.common.views.chatlist.*
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.components.*
 import chat.simplex.common.model.GroupInfo
 import chat.simplex.common.platform.*
 import chat.simplex.common.platform.AudioPlayer
@@ -1155,6 +1157,7 @@ fun ChatLayout(
         }
       }
     }
+    ThemeCircularRevealOverlay()
   }
 }
 
@@ -1194,6 +1197,34 @@ fun BoxScope.ChatInfoToolbar(
   val barButtons = arrayListOf<@Composable RowScope.() -> Unit>()
   val menuItems = arrayListOf<@Composable () -> Unit>()
   val activeCall by remember { chatModel.activeCall }
+  val isDark = isInDarkTheme()
+
+  menuItems.add {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+          showMenu.value = false
+          ThemeAnimationController.trigger(
+            originOffset = Offset(1000f, 145f),
+            currentlyDark = isDark,
+            scope = scope
+          )
+        }
+        .padding(horizontal = 16.dp, vertical = 12.dp),
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+      AnimatedThemeIcon(isDark = isDark)
+      Text(
+        text = if (isDark) "Mode Clair" else "Mode Sombre",
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Medium,
+        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+      )
+    }
+  }
+  menuItems.add { Divider(color = if (isDark) Color(0x22FFFFFF) else Color(0x15000000), thickness = 0.5.dp) }
 
   val showContentFilterButton = availableContent.value.isNotEmpty()
   val canStartCall = chatInfo is ChatInfo.Direct &&
@@ -1496,6 +1527,9 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
           cInfo.displayName, cInfo.nameBadge, fontWeight = FontWeight.Bold,
           maxLines = 1, overflow = TextOverflow.Ellipsis
         )
+        val currentChat = remember(cInfo.id) { chatModel.chats.value.firstOrNull { it.chatInfo.id == cInfo.id } }
+        Spacer(Modifier.width(6.dp))
+        SecurityBadge(chat = currentChat)
       }
       if (cInfo.fullName != "" && cInfo.fullName != cInfo.displayName && cInfo.localAlias.isEmpty()) {
         Text(

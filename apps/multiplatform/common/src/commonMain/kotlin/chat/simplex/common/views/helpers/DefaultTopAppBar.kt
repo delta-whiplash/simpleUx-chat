@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
@@ -91,7 +92,6 @@ fun DefaultAppBar(
     Box(
       Modifier
         .fillMaxWidth()
-        .then(if (!onTop) Modifier.navigationBarsPadding() else Modifier)
         .heightIn(min = AppBarHeight * fontSizeSqrtMultiplier)
     ) {
       AppBar(
@@ -101,16 +101,19 @@ fun DefaultAppBar(
             SearchTextField(Modifier.fillMaxWidth(), alwaysVisible = searchAlwaysVisible, placeholder = placeholder, trailingContent = searchTrailingContent, reducedCloseButtonPadding = 12.dp, onValueChange = onSearchValueChanged)
           } else if (title != null) {
             title()
-          } else if (titleText.value.isNotEmpty() && connection != null) {
+          } else if (titleText.value.isNotEmpty()) {
             Row(
-              Modifier
-                .graphicsLayer {
-                  alpha = if (fixedTitleText != null) 1f else topTitleAlpha(true, connection)
-                }
+              verticalAlignment = Alignment.CenterVertically
             ) {
               Text(
                 titleText.value,
-                fontWeight = FontWeight.SemiBold,
+                style = TextStyle(
+                  fontFamily = Inter,
+                  fontSize = 22.sp,
+                  fontWeight = FontWeight.Bold,
+                  color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                  letterSpacing = 0.5.sp
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
               )
@@ -144,10 +147,14 @@ fun CallAppBar(
 }
 
 @Composable
-fun NavigationButtonBack(onButtonClicked: (() -> Unit)?, tintColor: Color = if (onButtonClicked != null) MaterialTheme.colors.primary else MaterialTheme.colors.secondary, height: Dp = 24.dp) {
+fun NavigationButtonBack(
+  onButtonClicked: (() -> Unit)?,
+  tintColor: Color = if (isInDarkTheme()) Color(0xFFE2B755) else Color(0xFFD97706),
+  height: Dp = 24.dp
+) {
   IconButton(onButtonClicked ?: {}, enabled = onButtonClicked != null) {
     Icon(
-      ChevronBackVector, stringResource(MR.strings.back), Modifier.size(20.dp), tint = tintColor
+      ChevronBackVector, stringResource(MR.strings.back), Modifier.size(22.dp), tint = tintColor
     )
   }
 }

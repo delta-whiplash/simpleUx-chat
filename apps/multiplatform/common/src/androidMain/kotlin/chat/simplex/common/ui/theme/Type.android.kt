@@ -12,6 +12,5 @@ actual val Inter: FontFamily = FontFamily(
   Font(MR.fonts.PlusJakartaSans.light.fontResourceId, FontWeight.Light)
 )
 
-actual val EmojiFont: FontFamily = FontFamily(
-  Font(MR.fonts.NotoColorEmoji.regular.fontResourceId)
-)
+actual val EmojiFont: FontFamily = FontFamily.Default
+

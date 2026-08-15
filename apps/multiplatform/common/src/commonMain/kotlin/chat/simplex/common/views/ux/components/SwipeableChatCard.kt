@@ -1,0 +1,165 @@
+package chat.simplex.common.views.ux.components
+
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import chat.simplex.common.model.Chat
+import chat.simplex.common.model.ChatModel
+import chat.simplex.common.platform.ntfManager
+import chat.simplex.common.ui.theme.isInDarkTheme
+import chat.simplex.common.views.chatlist.markChatRead
+import chat.simplex.common.views.chatlist.markChatUnread
+import chat.simplex.common.views.chatlist.toggleChatFavorite
+import chat.simplex.res.MR
+import dev.icerock.moko.resources.compose.painterResource
+import kotlinx.coroutines.launch
+import kotlin.math.abs
+import kotlin.math.roundToInt
+
+@Composable
+fun SwipeableChatCard(
+    chat: Chat,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
+    chatModelInstance: ChatModel = ChatModel,
+    content: @Composable () -> Unit
+) {
+    val coroutineScope = rememberCoroutineScope()
+    val offsetX = remember { Animatable(0f) }
+    val isDark = isInDarkTheme()
+    val isUnread = chat.unreadTag || chat.chatStats.unreadCount > 0
+    val isFavorite = chat.chatInfo.chatSettings?.favorite == true
+
+    val threshold = 90f
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        // Background Actions Bar (Revealed on swipe)
+        val currentOffset = offsetX.value
+        if (abs(currentOffset) > 10f) {
+            Row(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(
+                        when {
+                            currentOffset > 0 -> if (isUnread) Color(0xFF10B981) else Color(0xFF3B82F6) // Right swipe: Read/Unread
+                            else -> if (isFavorite) Color(0xFFF59E0B) else Color(0xFF8B5CF6) // Left swipe: Favorite
+                        }
+                    )
+                    .padding(horizontal = 24.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = if (currentOffset > 0) Arrangement.Start else Arrangement.End
+            ) {
+                if (currentOffset > 0) {
+                    // Right swipe action
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(if (isUnread) MR.images.ic_check else MR.images.ic_mark_chat_unread),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Text(
+                            text = if (isUnread) "Marquer lu" else "Non lu",
+                            color = Color.White,
+                            fontSize = 13.sp
+                        )
+                    }
+                } else {
+                    // Left swipe action
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(if (isFavorite) MR.images.ic_star_off else MR.images.ic_star),
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                        Text(
+                            text = if (isFavorite) "Défavoriser" else "Favori",
+                            color = Color.White,
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+            }
+        }
+
+        // Foreground Content
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.value.roundToInt(), 0) }
+                .fillMaxWidth()
+                .background(if (abs(offsetX.value) > 1f) (if (isDark) Color(0xFF0F172A) else Color(0xFFFFFFFF)) else Color.Transparent)
+                .clickable(
+                    enabled = onClick != null,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    if (abs(offsetX.value) < 5f) {
+                        onClick?.invoke()
+                    }
+                }
+                .draggable(
+                    orientation = Orientation.Horizontal,
+                    state = rememberDraggableState { delta ->
+                        coroutineScope.launch {
+                            val newOffset = (offsetX.value + delta).coerceIn(-130f, 130f)
+                            offsetX.snapTo(newOffset)
+                        }
+                    },
+                    onDragStopped = {
+                        val endOffset = offsetX.value
+                        if (endOffset > threshold) {
+                            // Right action: Toggle read/unread
+                            if (isUnread) {
+                                markChatRead(chat)
+                                ntfManager.cancelNotificationsForChat(chat.id)
+                            } else {
+                                markChatUnread(chat, chatModelInstance)
+                            }
+                        } else if (endOffset < -threshold) {
+                            // Left action: Toggle favorite
+                            toggleChatFavorite(chat.remoteHostId, chat.chatInfo, !isFavorite, chatModelInstance)
+                        }
+                        coroutineScope.launch {
+                            offsetX.animateTo(
+                                targetValue = 0f,
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessLow
+                                )
+                            )
+                        }
+                    }
+                )
+        ) {
+            content()
+        }
+    }
+}

@@ -131,7 +131,6 @@ actual fun ColumnWithScrollBar(
         }
       }
   }
-  val oneHandUI = remember { derivedStateOf { if (appPrefs.onboardingStage.state.value == OnboardingStage.OnboardingComplete) appPrefs.oneHandUI.state.value else false } }
   Box(Modifier.fillMaxHeight()) {
     Column(
       if (maxIntrinsicSize) {
@@ -140,19 +139,11 @@ actual fun ColumnWithScrollBar(
         Modifier.copyViewToAppBar(remember { appPrefs.appearanceBarsBlurRadius.state }.value, LocalAppBarHandler.current?.graphicsLayer).then(modifier).nestedScroll(connection).verticalScroll(state)
       }, verticalArrangement, horizontalAlignment
     ) {
-      if (oneHandUI.value) {
-        Spacer(Modifier.padding(top = DEFAULT_PADDING + 5.dp).windowInsetsTopHeight(WindowInsets.statusBars))
-        content()
-        Spacer(Modifier.navigationBarsPadding().padding(bottom = AppBarHeight * fontSizeSqrtMultiplier))
-      } else {
-        Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier))
-        content()
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-      }
+      Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier))
+      content()
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
     }
-    if (!oneHandUI.value) {
-      NavigationBarBackground(false, false)
-    }
+    NavigationBarBackground(false, false)
   }
 }
 
@@ -167,7 +158,6 @@ actual fun ColumnWithScrollBarNoAppBar(
 ) {
   val modifier = modifier.imePadding()
   val state = state ?: rememberScrollState()
-  val oneHandUI = remember { appPrefs.oneHandUI.state }
   Box(Modifier.fillMaxHeight()) {
     Column(
       if (maxIntrinsicSize) {
@@ -176,16 +166,9 @@ actual fun ColumnWithScrollBarNoAppBar(
         modifier.verticalScroll(state)
       }, verticalArrangement, horizontalAlignment
     ) {
-      if (oneHandUI.value) {
-        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.systemBars))
-        content()
-      } else {
-        content()
-        Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-      }
+      content()
+      Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
     }
-    if (!oneHandUI.value) {
-      NavigationBarBackground(false, false)
-    }
+    NavigationBarBackground(false, false)
   }
 }
