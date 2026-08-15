@@ -3201,4 +3201,12 @@
   <string name="badge_unverified_desc">This badge could not be verified and may not be genuine.</string>
   <string name="badge_unknown_key_title">Badge cannot be verified</string>
   <string name="badge_unknown_key_desc">The badge is signed with a key that this version of the app does not recognize. Update the app to verify this badge.</string>
+  <string name="security_badge_verified">Verified</string>
+  <string name="security_badge_pq_encrypted">PQ encrypted</string>
+  <string name="security_badge_e2ee">E2EE</string>
+  <string name="security_badge_not_encrypted">Not encrypted</string>
+  <string name="security_badge_alert_title">Security &amp; encryption</string>
+  <string name="security_badge_contact_verified_line">Contact: security code verified ✓</string>
+  <string name="security_badge_contact_unverified_line">Contact: not verified out-of-band</string>
+  <string name="security_badge_no_e2ee_line">No established end-to-end encryption for this chat.</string>
 </resources>
