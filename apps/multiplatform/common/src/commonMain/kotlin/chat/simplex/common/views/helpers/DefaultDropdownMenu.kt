@@ -32,7 +32,7 @@ fun DefaultDropdownMenu(
       expanded = showMenu.value,
       onDismissRequest = { showMenu.value = false },
       modifier = modifier
-        .widthIn(min = 220.dp)
+        .width(220.dp)
         .clip(menuShape)
         .background(
           if (isDark) Brush.verticalGradient(listOf(Color(0xFF1E2533), Color(0xFF131720)))

@@ -49,9 +49,10 @@ fun QuickReactionsBar(
         Surface(
             shape = shape,
             color = if (isDark) Color(0xF01E293B) else Color(0xF8FFFFFF),
-            elevation = 8.dp,
+            elevation = 4.dp,
             modifier = modifier
-                .wrapContentSize()
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp, vertical = 2.dp)
                 .border(
                     width = 1.dp,
                     color = if (isDark) Color(0x33FFFFFF) else Color(0x1F000000),
@@ -59,11 +60,13 @@ fun QuickReactionsBar(
                 )
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 6.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                emojis.forEach { emoji ->
+                emojis.take(6).forEach { emoji ->
                     var isPressed by remember { mutableStateOf(false) }
                     val scale by animateFloatAsState(
                         targetValue = if (isPressed) 1.35f else 1f,
@@ -73,7 +76,7 @@ fun QuickReactionsBar(
 
                     Box(
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(28.dp)
                             .clip(CircleShape)
                             .scale(scale)
                             .clickable(
@@ -87,7 +90,7 @@ fun QuickReactionsBar(
                     ) {
                         Text(
                             text = emoji,
-                            fontSize = 20.sp
+                            fontSize = 17.sp
                         )
                     }
                 }
@@ -95,7 +98,7 @@ fun QuickReactionsBar(
                 // Plus button for full emoji picker
                 Box(
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(26.dp)
                         .clip(CircleShape)
                         .background(if (isDark) Color(0x33FFFFFF) else Color(0x14000000))
                         .clickable(
@@ -110,7 +113,7 @@ fun QuickReactionsBar(
                         painter = painterResource(MR.images.ic_add),
                         contentDescription = "Plus d'emojis",
                         tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(14.dp)
                     )
                 }
             }

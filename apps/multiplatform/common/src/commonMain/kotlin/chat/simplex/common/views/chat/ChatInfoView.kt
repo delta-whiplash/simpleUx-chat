@@ -584,8 +584,9 @@ fun ChatInfoLayout(
     val conn = contact.activeConn
     SectionView("Sécurité & Confidentialité") {
       if (conn != null) {
-        val pqText = if (conn.connPQEnabled) "Quantum resistant (Post-quantique)" else "Standard E2EE"
-        InfoRow("Chiffrement E2E", pqText)
+        val pqText = if (conn.connPQEnabled) "Post-quantique" else "Standard E2EE"
+        val pqColor = if (conn.connPQEnabled) Color(0xFF10B981) else MaterialTheme.colors.secondary
+        InfoRow("Chiffrement E2E", pqText, valueColor = pqColor)
       }
       if (contact.ready && contact.active) {
         if (connectionCode != null) {
@@ -823,18 +824,18 @@ fun LocalAliasEditor(
     mutableStateOf(TextFieldValue(initialValue))
   }
   var updatedValueAtLeastOnce = remember { false }
-  val fieldShape = RoundedCornerShape(12.dp)
+  val fieldShape = RoundedCornerShape(50)
 
   Row(
-    Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 4.dp),
+    Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 6.dp),
     horizontalArrangement = if (center) Arrangement.Center else Arrangement.Start
   ) {
     Box(
       modifier = Modifier
         .clip(fieldShape)
-        .background(if (isDark) Color(0x331E293B) else Color(0x33E2E8F0))
-        .border(1.dp, if (isDark) Color(0x22FFFFFF) else Color(0x1A000000), fieldShape)
-        .padding(horizontal = 12.dp, vertical = 6.dp)
+        .background(if (isDark) Color(0x1FFFFFFF) else Color(0x0C000000))
+        .border(1.dp, if (isDark) Color(0x28FFFFFF) else Color(0x18000000), fieldShape)
+        .padding(horizontal = 14.dp, vertical = 5.dp)
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -844,7 +845,7 @@ fun LocalAliasEditor(
           painter = painterResource(MR.images.ic_edit),
           contentDescription = null,
           tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-          modifier = Modifier.size(13.dp)
+          modifier = Modifier.size(12.dp)
         )
         Spacer(Modifier.width(6.dp))
         DefaultBasicTextField(

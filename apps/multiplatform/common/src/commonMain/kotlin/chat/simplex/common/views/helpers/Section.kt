@@ -370,14 +370,31 @@ fun TextIconSpaced(extraPadding: Boolean = false) {
 }
 
 @Composable
-fun InfoRow(title: String, value: String, icon: Painter? = null, iconTint: Color? = null, textColor: Color = MaterialTheme.colors.onBackground, padding: PaddingValues = PaddingValues(horizontal = itemHPadding)) {
+fun InfoRow(
+  title: String,
+  value: String,
+  icon: Painter? = null,
+  iconTint: Color? = null,
+  textColor: Color = MaterialTheme.colors.onBackground,
+  valueColor: Color = MaterialTheme.colors.secondary,
+  padding: PaddingValues = PaddingValues(horizontal = itemHPadding)
+) {
   SectionItemViewSpaceBetween(padding = padding) {
-    Row {
+    Row(
+      Modifier.weight(1f, fill = false),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
       val iconSize = with(LocalDensity.current) { 21.sp.toDp() }
       if (icon != null) Icon(icon, title, Modifier.padding(end = 8.dp).size(iconSize), tint = iconTint ?: MaterialTheme.colors.secondary)
       Text(title, color = textColor)
     }
-    Text(value, color = MaterialTheme.colors.secondary)
+    Spacer(Modifier.width(12.dp))
+    Text(
+      text = value,
+      color = valueColor,
+      textAlign = androidx.compose.ui.text.style.TextAlign.End,
+      modifier = Modifier.weight(1f, fill = false)
+    )
   }
 }
 

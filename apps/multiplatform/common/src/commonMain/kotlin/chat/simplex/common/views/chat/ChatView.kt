@@ -1531,7 +1531,23 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
         Spacer(Modifier.width(6.dp))
         SecurityBadge(chat = currentChat)
       }
-      if (cInfo.fullName != "" && cInfo.fullName != cInfo.displayName && cInfo.localAlias.isEmpty()) {
+      val chatSubStatus = chatModel.chatSubStatus.value
+      val subStatusText = if (cInfo is ChatInfo.Direct && cInfo.contact.ready && cInfo.contact.active) {
+        when (chatSubStatus) {
+          SubscriptionStatus.Pending -> "En attente du relais..."
+          SubscriptionStatus.NoSub, is SubscriptionStatus.Removed -> "Relais déconnecté"
+          else -> null
+        }
+      } else null
+
+      if (subStatusText != null) {
+        Text(
+          subStatusText,
+          style = MaterialTheme.typography.body2.copy(fontSize = 11.5.sp),
+          color = if (chatSubStatus == SubscriptionStatus.Pending) MaterialTheme.colors.secondary else Color(0xFFEF4444),
+          maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+      } else if (cInfo.fullName != "" && cInfo.fullName != cInfo.displayName && cInfo.localAlias.isEmpty()) {
         Text(
           cInfo.fullName,
           style = MaterialTheme.typography.body2,
@@ -1557,20 +1573,6 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
             maxLines = 1, overflow = TextOverflow.Ellipsis
           )
         }
-      }
-    }
-    val chatSubStatus = chatModel.chatSubStatus.value
-    if (
-      cInfo is ChatInfo.Direct &&
-      cInfo.contact.ready &&
-      cInfo.contact.active &&
-      chatSubStatus != null &&
-      chatSubStatus != SubscriptionStatus.Active
-      ) {
-      Box(
-        Modifier.padding(start = 10.dp)
-      ) {
-        SubStatusView(chatSubStatus)
       }
     }
   }

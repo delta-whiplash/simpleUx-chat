@@ -244,7 +244,7 @@ fun CallActivityView() {
         activity.boundService?.updateNotification()
       }
     }
-    Box(Modifier.background(Color.Black)) {
+    Box(Modifier.fillMaxSize().background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Color(0xFF0F172A), Color(0xFF080C14), Color(0xFF020617))))) {
       if (call != null) {
         val permissionsState = rememberMultiplePermissionsState(
           permissions = if (callHasVideo()) {

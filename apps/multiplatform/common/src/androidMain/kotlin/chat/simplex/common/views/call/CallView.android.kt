@@ -15,6 +15,7 @@ import android.os.PowerManager.WakeLock
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.*
+import androidx.compose.animation.core.*
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -26,11 +27,15 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
@@ -338,11 +343,23 @@ private fun ActiveCallOverlayLayout(
   toggleSound: () -> Unit,
   flipCamera: () -> Unit
 ) {
-  Column {
+  val callBackgroundBrush = Brush.verticalGradient(
+    colors = listOf(
+      Color(0xFF0F172A),
+      Color(0xFF080C14),
+      Color(0xFF020617)
+    )
+  )
+
+  Column(
+    Modifier
+      .fillMaxSize()
+      .background(callBackgroundBrush)
+  ) {
     CallAppBar(
       title = {
         if (call.hasVideo) {
-          Text(call.contact.chatViewName, Modifier.offset(x = (-4).dp).padding(end = DEFAULT_PADDING), color = Color(0xFFFFFFD8), style = MaterialTheme.typography.h2, overflow = TextOverflow.Ellipsis, maxLines = 1)
+          Text(call.contact.chatViewName, Modifier.offset(x = (-4).dp).padding(end = DEFAULT_PADDING), color = Color(0xFFF8FAFC), style = MaterialTheme.typography.h2, overflow = TextOverflow.Ellipsis, maxLines = 1)
         }
       },
       onBack = { chatModel.activeCallViewIsCollapsed.value = true }
@@ -364,7 +381,7 @@ private fun ActiveCallOverlayLayout(
             fontSize = 18.sp,
             boxSize = size,
             listIconSize = 30.dp,
-            iconColor = Color(0xFFFFFFD8),
+            iconColor = Color(0xFFF8FAFC),
             background = controlButtonsBackground(),
             minWidth = 300.dp,
             onSelected = {
@@ -385,7 +402,47 @@ private fun ActiveCallOverlayLayout(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
           ) {
-            ProfileImage(size = 192.dp, image = call.contact.profile.image)
+            val isRinging = call.callState <= CallState.InvitationSent || call.callState == CallState.OfferSent || call.callState == CallState.Negotiated
+            val infiniteTransition = rememberInfiniteTransition()
+            val pulseScale by infiniteTransition.animateFloat(
+              initialValue = 1.0f,
+              targetValue = if (isRinging) 1.25f else 1.0f,
+              animationSpec = infiniteRepeatable(
+                animation = tween(1500, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+              )
+            )
+            val pulseAlpha by infiniteTransition.animateFloat(
+              initialValue = if (isRinging) 0.35f else 0.0f,
+              targetValue = 0.0f,
+              animationSpec = infiniteRepeatable(
+                animation = tween(1500, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+              )
+            )
+
+            Box(
+              modifier = Modifier.size(160.dp),
+              contentAlignment = Alignment.Center
+            ) {
+              if (isRinging) {
+                Box(
+                  modifier = Modifier
+                    .size(130.dp)
+                    .graphicsLayer {
+                      scaleX = pulseScale
+                      scaleY = pulseScale
+                      alpha = pulseAlpha
+                    }
+                    .background(Color(0xFFE2B755), CircleShape)
+                )
+              }
+              ChatInfoImage(
+                ChatInfo.Direct(call.contact),
+                size = 120.dp,
+                iconColor = Color(0xFFE2B755)
+              )
+            }
             AudioCallInfoView(call)
           }
         }
@@ -401,7 +458,7 @@ private fun ActiveCallOverlayLayout(
         Row(horizontalArrangement = Arrangement.spacedBy(padding), verticalAlignment = Alignment.CenterVertically) {
           ToggleMicButton(call, enabled, toggleAudio, size = size)
           SelectSoundDevice(size = size)
-          ControlButton(painterResource(MR.images.ic_call_end_filled), MR.strings.icon_descr_hang_up, enabled = enabled, dismiss, background = Color.Red, size = size, iconPaddingPercent = 0.166f)
+          ControlButton(painterResource(MR.images.ic_call_end_filled), MR.strings.icon_descr_hang_up, enabled = enabled, dismiss, background = Color(0xFFDC2626), borderColor = Color(0x66EF4444), size = size, iconPaddingPercent = 0.166f)
           if (call.localMediaSources.camera) {
             ControlButton(painterResource(MR.images.ic_flip_camera_android_filled), MR.strings.icon_descr_flip_camera, enabled, flipCamera, size = size)
             ControlButton(painterResource(MR.images.ic_videocam_filled), MR.strings.icon_descr_video_off, enabled, toggleVideo, size = size)
@@ -416,19 +473,37 @@ private fun ActiveCallOverlayLayout(
 }
 
 @Composable
-private fun ControlButton(icon: Painter, iconText: StringResource, enabled: Boolean = true, action: () -> Unit, background: Color = controlButtonsBackground(), size: Dp, iconPaddingPercent: Float = 0.2f) {
-  ControlButtonWrap(enabled, action, background, size) {
-    Icon(icon, stringResource(iconText), tint = if (enabled) Color(0xFFFFFFD8) else MaterialTheme.colors.secondary, modifier = Modifier.padding(size * iconPaddingPercent).fillMaxSize())
+private fun ControlButton(
+  icon: Painter,
+  iconText: StringResource,
+  enabled: Boolean = true,
+  action: () -> Unit,
+  background: Color = controlButtonsBackground(),
+  borderColor: Color = Color(0x26FFFFFF),
+  size: Dp,
+  iconPaddingPercent: Float = 0.2f
+) {
+  ControlButtonWrap(enabled, action, background, borderColor, size) {
+    Icon(icon, stringResource(iconText), tint = if (enabled) Color(0xFFF8FAFC) else MaterialTheme.colors.secondary, modifier = Modifier.padding(size * iconPaddingPercent).fillMaxSize())
   }
 }
 
 @Composable
-private fun ControlButtonWrap(enabled: Boolean = true, action: () -> Unit, background: Color = controlButtonsBackground(), size: Dp, content: @Composable () -> Unit) {
+private fun ControlButtonWrap(
+  enabled: Boolean = true,
+  action: () -> Unit,
+  background: Color = controlButtonsBackground(),
+  borderColor: Color = Color(0x26FFFFFF),
+  size: Dp,
+  content: @Composable () -> Unit
+) {
   val ripple = remember { ripple(bounded = false, radius = size / 2, color = background.lighter(0.1f)) }
   Box(
     Modifier
-      .background(background, CircleShape)
       .size(size)
+      .clip(CircleShape)
+      .background(background)
+      .border(BorderStroke(1.dp, borderColor), CircleShape)
       .clickable(
         onClick = action,
         role = Role.Button,
@@ -461,17 +536,54 @@ private fun ToggleSoundButton(enabled: Boolean, speaker: Boolean, muted: Boolean
 }
 
 @Composable
-fun controlButtonsBackground(): Color = if (chatModel.activeCall.value?.peerMediaSources?.hasVideo == true) Color.Black.copy(0.2f) else Color.White.copy(0.2f)
+fun controlButtonsBackground(): Color = Color(0x26FFFFFF)
 
 @Composable
 fun AudioCallInfoView(call: Call) {
-  Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    InfoText(call.contact.chatViewName, style = MaterialTheme.typography.h2)
-    InfoText(call.callState.text)
-
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = Modifier.padding(top = 16.dp)
+  ) {
+    Text(
+      text = call.contact.chatViewName,
+      color = Color(0xFFF8FAFC),
+      style = MaterialTheme.typography.h1.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+      textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(6.dp))
+    Text(
+      text = call.callState.text,
+      color = Color(0xFF94A3B8),
+      style = MaterialTheme.typography.body2.copy(fontSize = 14.sp),
+      textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(10.dp))
     val connInfo = call.connectionInfo
-    val connInfoText = if (connInfo == null) ""  else " (${connInfo.text})"
-    InfoText(call.encryptionStatus + connInfoText)
+    val connInfoText = if (connInfo == null) "" else " • ${connInfo.text}"
+    Surface(
+      shape = RoundedCornerShape(50),
+      color = Color(0x2210B981),
+      border = BorderStroke(1.dp, Color(0x4410B981))
+    ) {
+      Row(
+        modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        Icon(
+          painter = painterResource(MR.images.ic_lock_filled),
+          contentDescription = null,
+          tint = Color(0xFF10B981),
+          modifier = Modifier.size(12.dp)
+        )
+        Spacer(Modifier.width(5.dp))
+        Text(
+          text = "${call.encryptionStatus}$connInfoText",
+          color = Color(0xFF10B981),
+          fontSize = 11.5.sp,
+          fontWeight = FontWeight.SemiBold
+        )
+      }
+    }
   }
 }
 
