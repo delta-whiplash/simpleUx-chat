@@ -2444,4 +2444,12 @@
     <string name="share_group_profile_via_link_alert_text">Le lien sera court, et le profil de groupe sera partagé via le lien.</string>
     <string name="the_sender_will_not_be_notified">L\'expéditeur n\'en sera PAS informé.</string>
     <string name="this_setting_is_for_your_current_profile">Ce réglage est pour votre profil actuel</string>
+    <string name="security_badge_verified">Vérifié</string>
+    <string name="security_badge_pq_encrypted">Chiffré PQ</string>
+    <string name="security_badge_e2ee">E2EE</string>
+    <string name="security_badge_not_encrypted">Non chiffré</string>
+    <string name="security_badge_alert_title">Sécurité et chiffrement</string>
+    <string name="security_badge_contact_verified_line">Contact : code de sécurité vérifié ✓</string>
+    <string name="security_badge_contact_unverified_line">Contact : non vérifié hors bande</string>
+    <string name="security_badge_no_e2ee_line">Aucun chiffrement de bout en bout établi pour cette discussion.</string>
 </resources>

@@ -404,8 +404,7 @@ fun ChatPreviewView(
         Box(
           Modifier
             .size(54.dp * fontSizeSqrtMultiplier)
-            .clip(CircleShape)
-            .border(1.dp, if (isInDarkTheme()) Color(0x38FFFFFF) else Color(0x1F000000), CircleShape),
+            .clip(CircleShape),
           contentAlignment = Alignment.Center
         ) {
           ChatInfoImage(cInfo, size = 54.dp * fontSizeSqrtMultiplier)

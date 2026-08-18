@@ -936,12 +936,60 @@ fun ChatItemView(
         }
         }
         if (canReply && swipeOffset < 0) {
-          Icon(
-            painterResource(MR.images.ic_reply),
-            contentDescription = null,
-            modifier = Modifier.align(Alignment.CenterEnd).offset(x = 26.dp).size(18.dp).alpha(minOf(1f, -swipeOffset / 30f)),
-            tint = MaterialTheme.colors.secondary
-          )
+          val isDark = isInDarkTheme()
+          val thresholdPx = with(LocalDensity.current) { 36.dp.toPx() }
+          val progress = minOf(1f, -swipeOffset / thresholdPx)
+          val thresholdReached = progress >= 0.95f
+          val iconScale = 0.45f + (progress * 0.65f)
+          val iconRotation = (1f - progress) * -35f
+
+          Box(
+            modifier = Modifier
+              .align(Alignment.CenterEnd)
+              .offset(x = 38.dp)
+              .size(34.dp)
+              .graphicsLayer {
+                scaleX = iconScale
+                scaleY = iconScale
+                rotationZ = iconRotation
+                alpha = minOf(1f, progress * 1.3f)
+              }
+              .clip(CircleShape)
+              .background(
+                if (thresholdReached) {
+                  if (isDark) Brush.linearGradient(listOf(Color(0xFFE2B755), Color(0xFFD97706)))
+                  else Brush.linearGradient(listOf(Color(0xFFD97706), Color(0xFFB45309)))
+                } else {
+                  if (isDark) SolidColor(Color(0xEE1E293B))
+                  else SolidColor(Color(0xEEF8FAFC))
+                }
+              )
+              .border(
+                width = 1.dp,
+                brush = Brush.verticalGradient(
+                  if (thresholdReached) {
+                    if (isDark) listOf(Color(0x80FFFFFF), Color(0x20FFFFFF))
+                    else listOf(Color(0x80D97706), Color(0x20D97706))
+                  } else {
+                    if (isDark) listOf(Color(0x40FFFFFF), Color(0x10FFFFFF))
+                    else listOf(Color(0x250F172A), Color(0x0C0F172A))
+                  }
+                ),
+                shape = CircleShape
+              ),
+            contentAlignment = Alignment.Center
+          ) {
+            Icon(
+              painterResource(MR.images.ic_reply),
+              contentDescription = null,
+              modifier = Modifier.size(16.dp),
+              tint = if (thresholdReached) {
+                if (isDark) Color(0xFF0F172A) else Color.White
+              } else {
+                if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+              }
+            )
+          }
         }
       }
       if (cItem.content.msgContent != null && (cItem.meta.itemDeleted == null || revealed.value) && cItem.reactions.isNotEmpty()) {

@@ -52,7 +52,7 @@ fun ActiveContactsRail(
     }
 
     AnimatedVisibility(
-        visible = isVisible && recentContacts.isNotEmpty(),
+        visible = isVisible && recentContacts.size >= 3,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
@@ -100,16 +100,16 @@ fun ActiveContactsRail(
                                     .background(
                                         when {
                                             hasUnread -> Brush.linearGradient(
-                                                listOf(Color(0xFF00E5FF), Color(0xFF0088FF))
+                                                listOf(Color(0xFFE2B755), Color(0xFFD97706))
                                             )
                                             isFavorite -> Brush.linearGradient(
                                                 listOf(Color(0xFFF59E0B), Color(0xFFD97706))
                                             )
                                             isDark -> Brush.linearGradient(
-                                                listOf(Color(0x6638BDF8), Color(0x221E293B))
+                                                listOf(Color(0x44E2B755), Color(0x221E293B))
                                             )
                                             else -> Brush.linearGradient(
-                                                listOf(Color(0x440284C7), Color(0x11E2E8F0))
+                                                listOf(Color(0x44D97706), Color(0x11E2E8F0))
                                             )
                                         }
                                     )
@@ -152,7 +152,7 @@ fun ActiveContactsRail(
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0xFF00E5FF))
+                                        .background(Color(0xFFE2B755))
                                         .border(1.5.dp, if (isDark) Color(0xFF0F172A) else Color.White, RoundedCornerShape(8.dp))
                                         .padding(horizontal = 4.dp, vertical = 1.dp)
                                     ) {
@@ -160,7 +160,7 @@ fun ActiveContactsRail(
                                         text = if (unreadCnt > 9) "9+" else if (unreadCnt > 0) "$unreadCnt" else "•",
                                         fontSize = 9.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color.Black
+                                        color = Color(0xFF0F172A)
                                     )
                                 }
                             }

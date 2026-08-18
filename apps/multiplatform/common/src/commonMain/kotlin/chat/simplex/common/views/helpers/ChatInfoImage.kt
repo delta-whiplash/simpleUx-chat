@@ -3,6 +3,7 @@ package chat.simplex.common.views.helpers
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.InlineTextContent
@@ -41,6 +42,26 @@ import dev.icerock.moko.resources.ImageResource
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+import androidx.compose.ui.text.style.TextAlign
+
+fun extractInitials(name: String?): String {
+  if (name.isNullOrBlank()) return ""
+  val clean = name.trim()
+  val lower = clean.lowercase()
+  if (lower.startsWith("invited") || lower.startsWith("invitation") || lower.startsWith("connexion") ||
+      lower.startsWith("private note") || lower.startsWith("notes priv") || lower.startsWith("simplex") ||
+      clean.startsWith("http://") || clean.startsWith("https://") || clean.startsWith("smp://")) {
+    return ""
+  }
+  val words = clean.split(Regex("[\\s_\\-\\.]+")).filter { it.isNotBlank() && it.first().isLetterOrDigit() }
+  return when {
+    words.size >= 2 -> "${words[0].first().uppercaseChar()}${words[1].first().uppercaseChar()}"
+    words.size == 1 -> "${words[0].first().uppercaseChar()}"
+    clean.isNotEmpty() && clean.first().isLetterOrDigit() -> "${clean.first().uppercaseChar()}"
+    else -> ""
+  }
+}
+
 @Composable
 fun ChatInfoImage(chatInfo: ChatInfo, size: Dp, iconColor: Color = MaterialTheme.colors.secondaryVariant, shadow: Boolean = false) {
   val icon =
@@ -50,7 +71,19 @@ fun ChatInfoImage(chatInfo: ChatInfo, size: Dp, iconColor: Color = MaterialTheme
       is ChatInfo.Direct -> chatInfo.contact.chatIconName
       else -> MR.images.ic_account_circle_filled
     }
-  ProfileImage(size, chatInfo.image, icon, if (chatInfo is ChatInfo.Local) NoteFolderIconColor else iconColor)
+  val name = when (chatInfo) {
+    is ChatInfo.Direct -> chatInfo.localDisplayName.ifEmpty { chatInfo.fullName }
+    is ChatInfo.Group -> chatInfo.localDisplayName
+    is ChatInfo.Local -> "Private notes"
+    else -> chatInfo.localDisplayName
+  }
+  ProfileImage(
+    size = size,
+    image = chatInfo.image,
+    icon = icon,
+    color = if (chatInfo is ChatInfo.Local) NoteFolderIconColor else iconColor,
+    name = name
+  )
 }
 
 @Composable
@@ -71,33 +104,92 @@ fun ProfileImage(
   icon: ImageResource = MR.images.ic_account_circle_filled,
   color: Color = MaterialTheme.colors.secondaryVariant,
   backgroundColor: Color? = null,
+  name: String? = null,
   blurred: Boolean = false,
   async: Boolean = false
 ) {
-  Box(Modifier.size(size)) {
+  val isDark = isInDarkTheme()
+  Box(
+    Modifier
+      .size(size)
+      .clip(CircleShape),
+    contentAlignment = Alignment.Center
+  ) {
     if (image == null) {
-      val iconToReplace = when (icon) {
-        MR.images.ic_account_circle_filled -> AccountCircleFilled
-        MR.images.ic_supervised_user_circle_filled -> SupervisedUserCircleFilled
-        else -> null
+      val initials = extractInitials(name)
+      val isNote = icon == MR.images.ic_folder_filled || name?.contains("note", ignoreCase = true) == true
+      val isLink = icon == MR.images.ic_link || name?.contains("invite", ignoreCase = true) == true || name?.contains("connect", ignoreCase = true) == true
+      val isGroup = icon == MR.images.ic_supervised_user_circle_filled || name?.contains("groupe", ignoreCase = true) == true || name?.contains("group", ignoreCase = true) == true
+
+      // Unified Luxury Mineral & Jewel Surfaces
+      val bgGradient = when {
+        isNote -> if (isDark) listOf(Color(0xFF2C2214), Color(0xFF161109)) else listOf(Color(0xFFFDFBF7), Color(0xFFF1E9DA))
+        isLink -> if (isDark) listOf(Color(0xFF182234), Color(0xFF0D1320)) else listOf(Color(0xFFF4F8FD), Color(0xFFDEEBFA))
+        isGroup -> if (isDark) listOf(Color(0xFF142426), Color(0xFF0A1416)) else listOf(Color(0xFFF0FDFB), Color(0xFFD3F5EF))
+        else -> if (isDark) listOf(Color(0xFF1F2533), Color(0xFF121620)) else listOf(Color(0xFFF8FAFC), Color(0xFFE2E8F0))
       }
-      if (iconToReplace != null) {
-        if (backgroundColor != null) {
-          Box(Modifier.size(size * 0.7f).align(Alignment.Center).background(backgroundColor, CircleShape))
+
+      val rimGradient = when {
+        isNote -> if (isDark) listOf(Color(0x60E2B755), Color(0x18E2B755)) else listOf(Color(0x40854D0E), Color(0x15854D0E))
+        isLink -> if (isDark) listOf(Color(0x6038BDF8), Color(0x1838BDF8)) else listOf(Color(0x402563EB), Color(0x152563EB))
+        isGroup -> if (isDark) listOf(Color(0x602DD4BF), Color(0x182DD4BF)) else listOf(Color(0x400F766E), Color(0x150F766E))
+        else -> if (isDark) listOf(Color(0x4594A3B8), Color(0x1294A3B8)) else listOf(Color(0x350F172A), Color(0x120F172A))
+      }
+
+      val accentColor = when {
+        isNote -> if (isDark) Color(0xFFE2B755) else Color(0xFF854D0E)
+        isLink -> if (isDark) Color(0xFF38BDF8) else Color(0xFF2563EB)
+        isGroup -> if (isDark) Color(0xFF2DD4BF) else Color(0xFF0F766E)
+        else -> if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+      }
+
+      if (initials.isNotEmpty()) {
+        Box(
+          Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(bgGradient))
+            .border(1.dp, Brush.verticalGradient(rimGradient), CircleShape),
+          contentAlignment = Alignment.Center
+        ) {
+          Text(
+            text = initials,
+            color = accentColor,
+            fontSize = (size.value * 0.38f).sp,
+            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.body1.copy(letterSpacing = 0.6.sp),
+            textAlign = TextAlign.Center
+          )
         }
-        Icon(
-          iconToReplace,
-          contentDescription = stringResource(MR.strings.icon_descr_profile_image_placeholder),
-          tint = color,
-          modifier = Modifier.fillMaxSize()
-        )
       } else {
-        Icon(
-          painterResource(icon),
-          contentDescription = stringResource(MR.strings.icon_descr_profile_image_placeholder),
-          tint = color,
-          modifier = Modifier.fillMaxSize()
-        )
+        val iconToReplace = when (icon) {
+          MR.images.ic_account_circle_filled -> AccountCircleFilled
+          MR.images.ic_supervised_user_circle_filled -> SupervisedUserCircleFilled
+          else -> null
+        }
+
+        Box(
+          Modifier
+            .fillMaxSize()
+            .background(Brush.verticalGradient(bgGradient))
+            .border(1.dp, Brush.verticalGradient(rimGradient), CircleShape),
+          contentAlignment = Alignment.Center
+        ) {
+          if (iconToReplace != null) {
+            Icon(
+              iconToReplace,
+              contentDescription = stringResource(MR.strings.icon_descr_profile_image_placeholder),
+              tint = accentColor,
+              modifier = Modifier.size(size * 0.54f)
+            )
+          } else {
+            Icon(
+              painterResource(icon),
+              contentDescription = stringResource(MR.strings.icon_descr_profile_image_placeholder),
+              tint = accentColor,
+              modifier = Modifier.size(size * 0.48f)
+            )
+          }
+        }
       }
     } else {
       if (async) {
@@ -105,7 +197,7 @@ fun ProfileImage(
           base64ImageString = image,
           contentDescription = stringResource(MR.strings.image_descr_profile_image),
           contentScale = ContentScale.Crop,
-          modifier = ProfileIconModifier(size, blurred = blurred)
+          modifier = Modifier.fillMaxSize().clip(CircleShape)
         )
       } else {
         val imageBitmap = base64ToBitmap(image)
@@ -113,7 +205,7 @@ fun ProfileImage(
           bitmap = imageBitmap,
           contentDescription = stringResource(MR.strings.image_descr_profile_image),
           contentScale = ContentScale.Crop,
-          modifier = ProfileIconModifier(size, blurred = blurred)
+          modifier = Modifier.fillMaxSize().clip(CircleShape)
         )
       }
     }
@@ -257,33 +349,14 @@ fun ProfileImage(size: Dp, image: ImageResource) {
     painterResource(image),
     stringResource(MR.strings.image_descr_profile_image),
     contentScale = ContentScale.Crop,
-    modifier = ProfileIconModifier(size)
+    modifier = Modifier.size(size).clip(CircleShape)
   )
 }
 
-private const val squareToCircleRatio = 0.935f
-
-private const val radiusFactor = (1 - squareToCircleRatio) / 50
-
 @Composable
-fun ProfileIconModifier(size: Dp, padding: Boolean = true, blurred: Boolean = false): Modifier {
-  val percent = remember { appPreferences.profileImageCornerRadius.state }
-  val r = max(0f, percent.value)
-  val pad = if (padding) size / 12 else 0.dp
-  val m = Modifier.size(size)
-  val m1 = when {
-    r >= 50 ->
-      m.padding(pad).clip(CircleShape)
-    r <= 0 -> {
-      val sz = (size - 2 * pad) * squareToCircleRatio
-      m.padding((size - sz) / 2)
-    }
-    else -> {
-      val sz = (size - 2 * pad) * (squareToCircleRatio + r * radiusFactor)
-      m.padding((size - sz) / 2).clip(RoundedCornerShape(size = sz * r / 100))
-    }
-  }
-  return if (blurred) m1.blur(size / 4) else m1
+fun ProfileIconModifier(size: Dp, padding: Boolean = false, blurred: Boolean = false): Modifier {
+  val m = Modifier.size(size).clip(CircleShape)
+  return if (blurred) m.blur(size / 4) else m
 }
 
 /** [AccountCircleFilled] has its inner padding which leads to visible border if there is background underneath.

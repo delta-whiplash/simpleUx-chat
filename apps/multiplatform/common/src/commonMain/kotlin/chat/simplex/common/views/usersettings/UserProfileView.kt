@@ -158,7 +158,7 @@ fun UserProfileLayout(
     }
 
     if (editingDescription) {
-      Column(Modifier.fillMaxSize().imePadding()) {
+      Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background).imePadding()) {
         DefaultAppBar(
           navigationButton = { NavigationButtonBack(onButtonClicked = { editingDescription = false }) },
           fixedTitleText = generalGetString(MR.strings.profile_description__field),
@@ -179,10 +179,10 @@ fun UserProfileLayout(
         }
       }
     } else {
-      Column(Modifier.fillMaxSize()) {
+      Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
         DefaultAppBar(
           navigationButton = { NavigationButtonBack(onButtonClicked = { onClose(close) }) },
-          fixedTitleText = generalGetString(MR.strings.your_current_profile),
+          fixedTitleText = "Votre profil",
           onTop = true
         )
         ColumnWithScrollBarNoAppBar(
@@ -192,365 +192,280 @@ fun UserProfileLayout(
           Spacer(Modifier.height(8.dp))
 
           Column(Modifier.fillMaxWidth()) {
-            // Clean Avatar (Without camera overlay inside avatar icon)
+            // Avatar with Photo Badge in bottom-right corner
             Box(
               Modifier
                 .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 12.dp),
+                .padding(top = 12.dp, bottom = 20.dp),
               contentAlignment = Alignment.Center
             ) {
-            Box(contentAlignment = Alignment.TopEnd) {
               Box(
-                modifier = Modifier
-                  .size(104.dp)
-                  .clip(CircleShape)
-                  .border(
-                    width = 2.dp,
-                    brush = Brush.linearGradient(
-                      if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
-                      else listOf(Color(0xFFD97706), Color(0xFFB45309))
-                    ),
-                    shape = CircleShape
-                  ),
+                modifier = Modifier.size(108.dp),
                 contentAlignment = Alignment.Center
               ) {
-                ProfileImage(
-                  size = 104.dp,
-                  image = profileImage.value,
-                  color = MaterialTheme.colors.secondary.copy(alpha = 0.1f)
-                )
-              }
-              if (profileImage.value != null) {
-                DeleteImageButton { profileImage.value = null }
-              }
-            }
-          }
+                // Main Avatar Circle
+                Box(
+                  modifier = Modifier
+                    .size(104.dp)
+                    .clip(CircleShape)
+                    .clickable { scope.launch { bottomSheetModalState.show() } }
+                    .border(
+                      width = 2.dp,
+                      brush = Brush.linearGradient(
+                        if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
+                        else listOf(Color(0xFFD97706), Color(0xFFB45309))
+                      ),
+                      shape = CircleShape
+                    ),
+                  contentAlignment = Alignment.Center
+                ) {
+                  ProfileImage(
+                    size = 104.dp,
+                    image = profileImage.value,
+                    name = displayName.value
+                  )
+                }
 
-          // Action Buttons Row between Avatar and Profile Name:
-          // [Edit info] [Set photo] [Settings]
-          Row(
-            modifier = Modifier
-              .fillMaxWidth()
-              .padding(bottom = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            // Button 1: Edit info
-            OutlinedButton(
-              onClick = { focusRequester.requestFocus() },
-              shape = RoundedCornerShape(14.dp),
-              colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = if (isDark) Color(0x331E293B) else Color(0x80F1F5F9),
-                contentColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
-              ),
-              border = BorderStroke(1.dp, if (isDark) Color(0x55E2B755) else Color(0x33D97706)),
-              contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-              Icon(
-                painterResource(MR.images.ic_edit),
-                contentDescription = null,
-                modifier = Modifier.size(15.dp),
-                tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
-              )
-              Spacer(Modifier.width(5.dp))
-              Text(
-                text = "Edit info",
-                style = TextStyle(
-                  fontFamily = Inter,
-                  fontSize = 12.sp,
-                  fontWeight = FontWeight.SemiBold
-                )
-              )
-            }
-
-            // Button 2: Set photo
-            Button(
-              onClick = { scope.launch { bottomSheetModalState.show() } },
-              shape = RoundedCornerShape(14.dp),
-              colors = ButtonDefaults.buttonColors(
-                backgroundColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-                contentColor = if (isDark) Color(0xFF0F172A) else Color.White
-              ),
-              elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-              contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-            ) {
-              Icon(
-                painterResource(MR.images.ic_photo_camera),
-                contentDescription = null,
-                modifier = Modifier.size(15.dp),
-                tint = if (isDark) Color(0xFF0F172A) else Color.White
-              )
-              Spacer(Modifier.width(5.dp))
-              Text(
-                text = "Set photo",
-                style = TextStyle(
-                  fontFamily = Inter,
-                  fontSize = 12.sp,
-                  fontWeight = FontWeight.SemiBold,
-                  color = if (isDark) Color(0xFF0F172A) else Color.White
-                )
-              )
-            }
-
-            // Button 3: Settings button (Icon + Text "Settings")
-            OutlinedButton(
-              onClick = {
-                ModalManager.start.closeModals()
-                if (onNavigateToSettings != null) {
-                  onNavigateToSettings()
-                } else {
-                  ModalManager.start.showModalCloseable(cardScreen = true) { closeSettings ->
-                    SettingsView(chatModel, setPerformLA = {}, closeSettings)
+                // Delete Photo Button in top-right corner if image present
+                if (profileImage.value != null) {
+                  Box(modifier = Modifier.align(Alignment.TopEnd)) {
+                    DeleteImageButton { profileImage.value = null }
                   }
+                }
+
+                // Camera Badge in bottom-right corner
+                Box(
+                  modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .size(34.dp)
+                    .clip(CircleShape)
+                    .background(if (isDark) Color(0xFFE2B755) else Color(0xFFD97706))
+                    .border(2.dp, if (isDark) Color(0xFF0F172A) else Color.White, CircleShape)
+                    .clickable { scope.launch { bottomSheetModalState.show() } },
+                  contentAlignment = Alignment.Center
+                ) {
+                  Icon(
+                    painter = painterResource(MR.images.ic_photo_camera),
+                    contentDescription = "Changer la photo",
+                    tint = if (isDark) Color(0xFF0F172A) else Color.White,
+                    modifier = Modifier.size(16.dp)
+                  )
+                }
+              }
+            }
+
+            // Profile Text Box 1: Display Name
+            ProfileTextBox(
+              value = displayName,
+              label = "Nom de profil",
+              placeholder = "Entrez votre nom de profil",
+              focusRequester = focusRequester,
+              isValid = { isValidNewProfileName(it, profile) },
+              trailingIcon = if (!isValidNewProfileName(displayName.value, profile)) {
+                {
+                  IconButton({ showInvalidNameAlert(mkValidName(displayName.value), displayName) }, Modifier.size(20.dp)) {
+                    Icon(painterResource(MR.images.ic_info), null, tint = MaterialTheme.colors.error)
+                  }
+                }
+              } else null
+            )
+
+            if (showFullName(profile)) {
+              Spacer(Modifier.height(14.dp))
+              ProfileTextBox(
+                value = fullName,
+                label = "Nom complet",
+                placeholder = "Nom complet"
+              )
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // Profile Text Box 2: Bio / Short Description
+            ProfileTextBox(
+              value = shortDescr,
+              label = "Bio / Statut",
+              placeholder = "Statut ou bio courte (ex: Dispo pour discuter)",
+              isValid = { bioFitsLimit(it) },
+              trailingIcon = if (!bioFitsLimit(shortDescr.value)) {
+                {
+                  IconButton(
+                    onClick = { AlertManager.shared.showAlertMsg(title = generalGetString(MR.strings.bio_too_large)) },
+                    Modifier.size(20.dp)
+                  ) {
+                    Icon(painterResource(MR.images.ic_info), null, tint = MaterialTheme.colors.error)
+                  }
+                }
+              } else null
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            // Profile Description Card
+            Box(
+              modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .background(if (isDark) Color(0x661E293B) else Color(0xF2F1F5F9))
+                .border(1.dp, if (isDark) Color(0x2AFFFFFF) else Color(0x18000000), RoundedCornerShape(14.dp))
+                .clickable { editingDescription = true }
+                .padding(horizontal = 14.dp, vertical = 12.dp)
+            ) {
+              Column {
+                Text(
+                  text = "Description détaillée",
+                  style = TextStyle(
+                    fontFamily = Inter,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                  )
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                  text = if (description.value.isBlank()) "Ajouter une description complète (optionnel)..." else description.value,
+                  style = TextStyle(
+                    fontFamily = Inter,
+                    fontSize = 14.sp,
+                    color = if (description.value.isBlank()) (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)) else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
+                  ),
+                  maxLines = 3
+                )
+              }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            // Save and Notify Contacts Button
+            val enabled = !dataUnchanged() && canSaveProfile(displayName.value, shortDescr.value, profile)
+            Button(
+              onClick = {
+                if (enabled) {
+                  saveProfile(displayName.value, fullName.value, shortDescr.value, description.value, profileImage.value)
                 }
               },
-              shape = RoundedCornerShape(14.dp),
-              colors = ButtonDefaults.outlinedButtonColors(
-                backgroundColor = if (isDark) Color(0x331E293B) else Color(0x80F1F5F9),
-                contentColor = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+              enabled = enabled,
+              shape = RoundedCornerShape(16.dp),
+              colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                disabledBackgroundColor = if (isDark) Color(0xFF1E293B) else Color(0xFFE2E8F0),
+                contentColor = if (isDark) Color(0xFF0F172A) else Color.White,
+                disabledContentColor = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
               ),
-              border = BorderStroke(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000)),
-              contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+              modifier = Modifier.fillMaxWidth().height(48.dp),
+              elevation = ButtonDefaults.elevation(defaultElevation = if (enabled) 4.dp else 0.dp)
             ) {
-              Icon(
-                painterResource(MR.images.ic_settings),
-                contentDescription = null,
-                modifier = Modifier.size(15.dp),
-                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
-              )
-              Spacer(Modifier.width(5.dp))
               Text(
-                text = "Settings",
+                text = if (enabled) "Enregistrer les modifications" else "Aucune modification",
                 style = TextStyle(
                   fontFamily = Inter,
-                  fontSize = 12.sp,
-                  fontWeight = FontWeight.SemiBold
+                  fontSize = 15.sp,
+                  fontWeight = FontWeight.Bold
                 )
               )
             }
-          }
 
-          // Profile Text Box 1: Display Name
-          ProfileTextBox(
-            value = displayName,
-            label = stringResource(MR.strings.display_name__field),
-            placeholder = "Entrez votre nom de profil",
-            focusRequester = focusRequester,
-            isValid = { isValidNewProfileName(it, profile) },
-            trailingIcon = if (!isValidNewProfileName(displayName.value, profile)) {
-              {
-                IconButton({ showInvalidNameAlert(mkValidName(displayName.value), displayName) }, Modifier.size(20.dp)) {
-                  Icon(painterResource(MR.images.ic_info), null, tint = MaterialTheme.colors.error)
-                }
-              }
-            } else null
-          )
+            Spacer(Modifier.height(20.dp))
 
-          if (showFullName(profile)) {
-            Spacer(Modifier.height(14.dp))
-            ProfileTextBox(
-              value = fullName,
-              label = stringResource(MR.strings.full_name__field),
-              placeholder = "Nom complet"
-            )
-          }
-
-          Spacer(Modifier.height(14.dp))
-
-          // Profile Text Box 2: Bio / Short Description
-          ProfileTextBox(
-            value = shortDescr,
-            label = stringResource(MR.strings.short_descr__field),
-            placeholder = "Statut ou bio courte (ex: Dispo pour discuter)",
-            isValid = { bioFitsLimit(it) },
-            trailingIcon = if (!bioFitsLimit(shortDescr.value)) {
-              {
-                IconButton(
-                  onClick = { AlertManager.shared.showAlertMsg(title = generalGetString(MR.strings.bio_too_large)) },
-                  Modifier.size(20.dp)
-                ) {
-                  Icon(painterResource(MR.images.ic_info), null, tint = MaterialTheme.colors.error)
-                }
-              }
-            } else null
-          )
-
-          Spacer(Modifier.height(14.dp))
-
-          // Profile Description Card
-          Box(
-            modifier = Modifier
-              .fillMaxWidth()
-              .clip(RoundedCornerShape(14.dp))
-              .background(if (isDark) Color(0x661E293B) else Color(0xF2F1F5F9))
-              .border(1.dp, if (isDark) Color(0x2AFFFFFF) else Color(0x18000000), RoundedCornerShape(14.dp))
-              .clickable { editingDescription = true }
-              .padding(horizontal = 14.dp, vertical = 12.dp)
-          ) {
-            Column {
-              Text(
-                text = "Description détaillée",
-                style = TextStyle(
-                  fontFamily = Inter,
-                  fontSize = 13.sp,
-                  fontWeight = FontWeight.SemiBold,
-                  color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
-                )
-              )
-              Spacer(Modifier.height(4.dp))
-              Text(
-                text = if (description.value.isBlank()) "Ajouter une description complète (optionnel)..." else description.value,
-                style = TextStyle(
-                  fontFamily = Inter,
-                  fontSize = 14.sp,
-                  color = if (description.value.isBlank()) (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)) else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
-                ),
-                maxLines = 3
-              )
-            }
-          }
-
-          Spacer(Modifier.height(24.dp))
-
-          // Save and Notify Contacts Button
-          val enabled = !dataUnchanged() && canSaveProfile(displayName.value, shortDescr.value, profile)
-          Button(
-            onClick = {
-              if (enabled) {
-                saveProfile(displayName.value, fullName.value, shortDescr.value, description.value, profileImage.value)
-              }
-            },
-            enabled = enabled,
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-              backgroundColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-              disabledBackgroundColor = if (isDark) Color(0x33E2B755) else Color(0x33D97706),
-              contentColor = if (isDark) Color(0xFF0F172A) else Color.White,
-              disabledContentColor = if (isDark) Color(0x66FFFFFF) else Color(0x66000000)
-            ),
-            modifier = Modifier.fillMaxWidth().height(48.dp),
-            elevation = ButtonDefaults.elevation(defaultElevation = if (enabled) 4.dp else 0.dp)
-          ) {
+            // Connection Sharing Actions (Moved from Contacts to Profile)
             Text(
-              text = stringResource(MR.strings.save_and_notify_contacts),
+              text = "Connexions & Liens",
               style = TextStyle(
                 fontFamily = Inter,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold
-              )
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)
+              ),
+              modifier = Modifier.padding(bottom = 8.dp)
             )
-          }
 
-          Spacer(Modifier.height(20.dp))
-
-          // Connection Sharing Actions (Moved from Contacts to Profile)
-          Text(
-            text = "Connexions & Liens",
-            style = TextStyle(
-              fontFamily = Inter,
-              fontSize = 14.sp,
-              fontWeight = FontWeight.Bold,
-              color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)
-            ),
-            modifier = Modifier.padding(bottom = 8.dp)
-          )
-
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-          ) {
-            // Card 1: Create 1-time link
-            Surface(
-              shape = RoundedCornerShape(16.dp),
-              color = if (isDark) Color(0x331E293B) else Color(0xF0F1F5F9),
-              modifier = Modifier
-                .weight(1f)
-                .clickable {
-                  val closeAll = { ModalManager.start.closeModals() }
-                  ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
-                    NewChatView(chatModel.currentRemoteHost.value, NewChatOption.INVITE, close = closeAll)
-                  }
-                }
-                .border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x14000000), RoundedCornerShape(16.dp))
+            Row(
+              modifier = Modifier.fillMaxWidth(),
+              horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-              Column(
-                modifier = Modifier.padding(14.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+              // Card 1: Create 1-time link
+              Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = if (isDark) Color(0x331E293B) else Color(0xF0F1F5F9),
+                modifier = Modifier
+                  .weight(1f)
+                  .clickable {
+                    val closeAll = { ModalManager.start.closeModals() }
+                    ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
+                      NewChatView(chatModel.currentRemoteHost.value, NewChatOption.INVITE, close = closeAll)
+                    }
+                  }
+                  .border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x14000000), RoundedCornerShape(16.dp))
               ) {
-                Icon(
-                  painterResource(MR.images.ic_add_link),
-                  contentDescription = null,
-                  tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-                  modifier = Modifier.size(26.dp)
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                  text = stringResource(MR.strings.create_1_time_link),
-                  textAlign = TextAlign.Center,
-                  style = TextStyle(
-                    fontFamily = Inter,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                Column(
+                  modifier = Modifier.padding(14.dp),
+                  horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                  Icon(
+                    painterResource(MR.images.ic_add_link),
+                    contentDescription = null,
+                    tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                    modifier = Modifier.size(26.dp)
                   )
-                )
+                  Spacer(Modifier.height(8.dp))
+                  Text(
+                    text = "Créer un lien unique",
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                      fontFamily = Inter,
+                      fontSize = 12.sp,
+                      fontWeight = FontWeight.SemiBold,
+                      color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                    )
+                  )
+                }
               }
-            }
 
-            // Card 2: Scan / Paste link
-            Surface(
-              shape = RoundedCornerShape(16.dp),
-              color = if (isDark) Color(0x331E293B) else Color(0xF0F1F5F9),
-              modifier = Modifier
-                .weight(1f)
-                .clickable {
-                  val closeAll = { ModalManager.start.closeModals() }
-                  ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
-                    NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll)
+              // Card 2: Scan / Paste link
+              Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = if (isDark) Color(0x331E293B) else Color(0xF0F1F5F9),
+                modifier = Modifier
+                  .weight(1f)
+                  .clickable {
+                    val closeAll = { ModalManager.start.closeModals() }
+                    ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
+                      NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll)
+                    }
                   }
-                }
-                .border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x14000000), RoundedCornerShape(16.dp))
-            ) {
-              Column(
-                modifier = Modifier.padding(14.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                  .border(1.dp, if (isDark) Color(0x26FFFFFF) else Color(0x14000000), RoundedCornerShape(16.dp))
               ) {
-                Icon(
-                  painterResource(MR.images.ic_qr_code),
-                  contentDescription = null,
-                  tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-                  modifier = Modifier.size(26.dp)
-                )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                  text = if (appPlatform.isAndroid) stringResource(MR.strings.scan_paste_link) else stringResource(MR.strings.paste_link),
-                  textAlign = TextAlign.Center,
-                  style = TextStyle(
-                    fontFamily = Inter,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                Column(
+                  modifier = Modifier.padding(14.dp),
+                  horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                  Icon(
+                    painterResource(MR.images.ic_qr_code),
+                    contentDescription = null,
+                    tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                    modifier = Modifier.size(26.dp)
                   )
-                )
+                  Spacer(Modifier.height(8.dp))
+                  Text(
+                    text = "Scanner / Coller un lien",
+                    textAlign = TextAlign.Center,
+                    style = TextStyle(
+                      fontFamily = Inter,
+                      fontSize = 12.sp,
+                      fontWeight = FontWeight.SemiBold,
+                      color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                    )
+                  )
+                }
               }
             }
           }
-        }
 
-        Spacer(Modifier.height(DEFAULT_BOTTOM_BUTTON_PADDING))
-        if (savedKeyboardState != keyboardState) {
-          LaunchedEffect(keyboardState) {
-            scope.launch {
-              savedKeyboardState = keyboardState
-              scrollState.animateScrollTo(scrollState.maxValue)
-            }
-          }
+          Spacer(Modifier.height(100.dp))
         }
-        SectionBottomSpacer()
       }
     }
   }
-}
 }
 
 @Composable

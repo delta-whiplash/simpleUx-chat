@@ -9,6 +9,7 @@ import TextIconSpaced
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.*
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import chat.simplex.common.model.*
@@ -42,10 +44,15 @@ import chat.simplex.res.MR
 fun SettingsView(chatModel: ChatModel, setPerformLA: (Boolean) -> Unit, close: () -> Unit) {
   val stopped = chatModel.chatRunning.value == false
   val showSettingsModal: (@Composable (ChatModel) -> Unit) -> (() -> Unit) = { modalView -> { ModalManager.start.showModal(settings = true, cardScreen = true) { modalView(chatModel) } } }
-  Column(Modifier.fillMaxSize()) {
+  Column(
+    Modifier
+      .fillMaxSize()
+      .background(MaterialTheme.colors.background)
+  ) {
     DefaultAppBar(
-      navigationButton = { NavigationButtonBack(onButtonClicked = close) },
+      navigationButton = if (ModalManager.start.hasModalsOpen()) { { NavigationButtonBack(onButtonClicked = close) } } else null,
       fixedTitleText = generalGetString(MR.strings.your_settings),
+      buttons = {},
       onTop = true
     )
     SettingsLayout(
@@ -103,23 +110,63 @@ fun SettingsLayout(
   ColumnWithScrollBarNoAppBar {
     Spacer(Modifier.height(8.dp))
 
-    SectionView {
-      SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF8E24AA))
-      SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, badgeColor = Color(0xFF43A047), disabled = stopped)
-      SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Color(0xFFFB8C00))
+    UserProfileHeaderCard(
+      chatModel = chatModel,
+      onEditProfile = {
+        showCustomModal { m, close -> UserProfileView(m, close) }()
+      },
+      onOpenAddressQR = {
+        showCustomModal { m, close -> UserAddressView(m, shareViaProfile = true, close = close) }()
+      }
+    )
+
+    Spacer(Modifier.height(6.dp))
+
+    // Groupe 1 : Compte & Données
+    SectionView("Compte & Données") {
       DatabaseItem(encrypted, passphraseSaved, showSettingsModal { DatabaseView() }, stopped)
-      SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, badgeColor = Color(0xFF00ACC1), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, badgeColor = Color(0xFF1E293B), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
     }
     SectionDividerSpaced()
 
-    SectionView(stringResource(MR.strings.advanced_settings)) {
-      SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, badgeColor = Color(0xFF3949AB), disabled = stopped)
+    // Groupe 2 : Préférences
+    SectionView("Préférences") {
+      SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF1E293B))
       if (appPlatform == AppPlatform.ANDROID) {
-        SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, badgeColor = Color(0xFFFFB300), disabled = stopped)
+        SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
       }
-      SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, badgeColor = Color(0xFF00897B), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
+    }
+    SectionDividerSpaced()
+
+    // Groupe 3 : Sécurité & Support
+    SectionView("Sécurité & Support") {
+      SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, badgeColor = Color(0xFF43A047), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Color(0xFF1E293B))
+    }
+    SectionDividerSpaced()
+
+    // Groupe 4 : Zone Système
+    SectionView("Système") {
       AppShutdownItem()
-      AppVersionItem(showVersion)
+    }
+
+    Spacer(Modifier.height(18.dp))
+
+    // Pied de page : Version centrée
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 100.dp),
+      contentAlignment = Alignment.Center
+    ) {
+      Text(
+        text = "SimpleUX ${appVersionInfo.first}${if (appVersionInfo.second != null) " (${appVersionInfo.second})" else ""}",
+        style = MaterialTheme.typography.caption,
+        color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
+        textAlign = TextAlign.Center
+      )
     }
 
     if (crowdfundingAvailable()) {
@@ -133,6 +180,112 @@ fun SettingsLayout(
       }
     }
     SectionBottomSpacer()
+  }
+}
+
+@Composable
+private fun UserProfileHeaderCard(
+  chatModel: ChatModel,
+  onEditProfile: () -> Unit,
+  onOpenAddressQR: () -> Unit
+) {
+  val isDark = isInDarkTheme()
+  val user = chatModel.currentUser.value ?: return
+  val profile = user.profile
+  val shape = RoundedCornerShape(18.dp)
+
+  Surface(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 6.dp)
+      .clip(shape)
+      .clickable { onEditProfile() }
+      .border(
+        1.dp,
+        if (isDark) Color(0x33FFFFFF) else Color(0x1A000000),
+        shape
+      ),
+    shape = shape,
+    color = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+    elevation = 2.dp
+  ) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(14.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      ProfileImage(
+        size = 54.dp,
+        image = profile.image,
+        name = profile.displayName
+      )
+      Spacer(Modifier.width(14.dp))
+      Column(modifier = Modifier.weight(1f)) {
+        Text(
+          text = profile.displayName.ifEmpty { "Mon Profil" },
+          fontSize = 17.sp,
+          fontWeight = FontWeight.Bold,
+          color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis
+        )
+        if (!profile.fullName.isNullOrBlank() && profile.fullName != profile.displayName) {
+          Spacer(Modifier.height(2.dp))
+          Text(
+            text = profile.fullName,
+            fontSize = 13.sp,
+            color = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+          )
+        } else if (!profile.shortDescr.isNullOrBlank()) {
+          Spacer(Modifier.height(2.dp))
+          Text(
+            text = profile.shortDescr ?: "",
+            fontSize = 13.sp,
+            color = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+          )
+        }
+        Spacer(Modifier.height(4.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+          Text(
+            text = "Modifier le profil",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+          )
+          Spacer(Modifier.width(4.dp))
+          Icon(
+            painter = painterResource(MR.images.ic_chevron_right),
+            contentDescription = null,
+            tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+            modifier = Modifier.size(12.dp)
+          )
+        }
+      }
+      IconButton(
+        onClick = onOpenAddressQR,
+        modifier = Modifier.size(40.dp)
+      ) {
+        Box(
+          modifier = Modifier
+            .size(36.dp)
+            .clip(CircleShape)
+            .background(if (isDark) Color(0x33E2B755) else Color(0x22D97706)),
+          contentAlignment = Alignment.Center
+        ) {
+          Icon(
+            painter = painterResource(MR.images.ic_qr_code),
+            contentDescription = "Mon QR Code",
+            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+            modifier = Modifier.size(18.dp)
+          )
+        }
+      }
+    }
   }
 }
 
@@ -187,6 +340,7 @@ expect fun AdvancedSettingsAppSection(
 expect fun AppShutdownItem()
 
 @Composable private fun DatabaseItem(encrypted: Boolean, saved: Boolean, openDatabaseView: () -> Unit, stopped: Boolean) {
+  val isDark = isInDarkTheme()
   SectionItemView(openDatabaseView) {
     Row(
       Modifier.fillMaxWidth(),
@@ -194,23 +348,23 @@ expect fun AppShutdownItem()
       horizontalArrangement = Arrangement.SpaceBetween
     ) {
       Row(Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
-        val badgeColor = if (encrypted && (appPlatform.isAndroid || !saved)) Color(0xFF1E88E5) else WarningOrange
         Box(
           modifier = Modifier
-            .size(30.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(badgeColor),
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+            .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), CircleShape),
           contentAlignment = Alignment.Center
         ) {
           Icon(
             painterResource(MR.images.ic_database),
             contentDescription = stringResource(MR.strings.chat_data),
-            modifier = Modifier.size(17.dp),
-            tint = Color.White,
+            modifier = Modifier.size(18.dp),
+            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
           )
         }
         Spacer(Modifier.width(14.dp))
-        Text(stringResource(MR.strings.chat_data), fontSize = 16.sp)
+        Text(stringResource(MR.strings.chat_data), fontSize = 15.5.sp)
       }
       if (stopped) {
         Icon(
@@ -218,6 +372,13 @@ expect fun AppShutdownItem()
           contentDescription = stringResource(MR.strings.chat_is_stopped),
           tint = Color.Red,
           modifier = Modifier.padding(end = 6.dp)
+        )
+      } else {
+        Icon(
+          painter = painterResource(MR.images.ic_chevron_right),
+          contentDescription = null,
+          tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+          modifier = Modifier.size(16.dp)
         )
       }
     }
@@ -391,25 +552,68 @@ fun SettingsActionItem(
   iconColor: Color = MaterialTheme.colors.secondary,
   badgeColor: Color? = null,
   disabled: Boolean = false,
-  extraPadding: Boolean = false
+  extraPadding: Boolean = false,
+  showChevron: Boolean = true
 ) {
+  val isDark = isInDarkTheme()
   SectionItemView(click, disabled = disabled, extraPadding = extraPadding) {
-    if (badgeColor != null) {
-      Box(
-        modifier = Modifier
-          .size(30.dp)
-          .clip(RoundedCornerShape(8.dp))
-          .background(if (disabled) MaterialTheme.colors.secondary.copy(alpha = 0.4f) else badgeColor),
-        contentAlignment = Alignment.Center
-      ) {
-        Icon(icon, text, Modifier.size(17.dp), tint = Color.White)
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      if (badgeColor != null) {
+        val isShutdown = badgeColor == Color(0xFFE53935) || badgeColor == Color.Red
+        val isPrivacy = badgeColor == Color(0xFF43A047)
+        val bg = if (isShutdown) {
+          if (isDark) Color(0x33EF4444) else Color(0x22EF4444)
+        } else if (isPrivacy) {
+          if (isDark) Color(0x3310B981) else Color(0x2210B981)
+        } else {
+          if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+        }
+        val iconTint = if (isShutdown) {
+          Color(0xFFEF4444)
+        } else if (isPrivacy) {
+          Color(0xFF10B981)
+        } else {
+          if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+        }
+        Box(
+          modifier = Modifier
+            .size(34.dp)
+            .clip(CircleShape)
+            .background(if (disabled) MaterialTheme.colors.secondary.copy(alpha = 0.2f) else bg)
+            .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), CircleShape),
+          contentAlignment = Alignment.Center
+        ) {
+          Icon(
+            icon,
+            contentDescription = text,
+            modifier = Modifier.size(18.dp),
+            tint = if (disabled) MaterialTheme.colors.secondary else iconTint
+          )
+        }
+        Spacer(Modifier.width(14.dp))
+      } else {
+        Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
+        TextIconSpaced(extraPadding)
       }
-      Spacer(Modifier.width(14.dp))
-    } else {
-      Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
-      TextIconSpaced(extraPadding)
+      Text(
+        text,
+        modifier = Modifier.weight(1f),
+        color = if (disabled) MaterialTheme.colors.secondary else if (textColor != Color.Unspecified) textColor else MaterialTheme.colors.onBackground,
+        fontSize = 15.5.sp,
+        fontWeight = FontWeight.Normal
+      )
+      if (showChevron && click != null && !disabled) {
+        Icon(
+          painter = painterResource(MR.images.ic_chevron_right),
+          contentDescription = null,
+          tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+          modifier = Modifier.size(16.dp)
+        )
+      }
     }
-    Text(text, color = if (disabled) MaterialTheme.colors.secondary else textColor, fontSize = 16.sp)
   }
 }
 

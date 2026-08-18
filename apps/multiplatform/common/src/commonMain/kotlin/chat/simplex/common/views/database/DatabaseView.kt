@@ -348,7 +348,8 @@ fun TtlOptions(
   current: State<ChatItemTTL?>,
   enabled: State<Boolean>,
   onSelected: (ChatItemTTL?) -> Unit,
-  default: State<ChatItemTTL>? = null
+  default: State<ChatItemTTL>? = null,
+  title: String = generalGetString(MR.strings.delete_messages_after)
 ) {
   val values = remember {
     val all: ArrayList<ChatItemTTL> = arrayListOf(ChatItemTTL.None, ChatItemTTL.Year, ChatItemTTL.Month, ChatItemTTL.Week, ChatItemTTL.Day)
@@ -365,7 +366,7 @@ fun TtlOptions(
     options
   }
   ExposedDropDownSettingRow(
-    generalGetString(MR.strings.delete_messages_after),
+    title,
     values,
     current,
     icon = null,
