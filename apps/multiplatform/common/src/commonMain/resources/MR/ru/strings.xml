@@ -3006,4 +3006,37 @@
     <string name="tray_show">Показать SimpleX</string>
     <string name="tray_quit">Выйти из SimpleX</string>
     <string name="tray_tooltip">SimpleX</string>
+
+    <!-- SimpleUX Strings -->
+    <string name="status_relay_pending">Ожидание релея…</string>
+    <string name="status_relay_disconnected">Релей отключен</string>
+    <string name="e2ee_status_post_quantum">Постквантовое</string>
+    <string name="e2ee_status_standard">Стандартное E2EE</string>
+    <string name="e2ee_banner_title">Сквозное шифрование активно</string>
+    <string name="server_radar_title">Статус релеев SimpleX SMP</string>
+    <string name="server_radar_desc">Ваши очереди сообщений (SMP Queues) синхронизируются в реальном времени. Без утечки метаданных и постоянных идентификаторов.</string>
+    <string name="server_radar_net_proto">Сетевой протокол</string>
+    <string name="server_radar_net_proto_val">SimpleX SMP v2</string>
+    <string name="server_radar_file_transfer">Передача файлов</string>
+    <string name="server_radar_file_transfer_val">Зашифрованный XFTP</string>
+    <string name="server_radar_file_isolation">Изоляция очередей</string>
+    <string name="server_radar_unidirectional">Полностью Однонаправленная</string>
+    <string name="server_radar_configure_btn">Настроить SMP-серверы</string>
+    <string name="more_emojis">Больше эмодзи</string>
+    <string name="profile_switcher_title">Профили и Личности</string>
+    <string name="profile_switcher_subtitle">Мгновенное переключение профилей</string>
+    <string name="profile_switcher_active">Активен</string>
+    <string name="profile_switcher_manage">Управление</string>
+
+    <!-- Onboarding Strings -->
+    <string name="onboarding_badge">SimpleUX — Приватность по Дизайну</string>
+    <string name="onboarding_hero_title">Приватные сообщения заново</string>
+    <string name="onboarding_feature_1_title">Ноль Идентификаторов, Ноль Номеров</string>
+    <string name="onboarding_feature_1_sub">Без номеров телефонов, без email, без централизованных серверов. Полная анонимность по дизайну.</string>
+    <string name="onboarding_feature_2_title">Постквантовое Шифрование</string>
+    <string name="onboarding_feature_2_sub">Ваши сообщения и файлы защищены протоколом SimpleX с double-ratchet и квантовой устойчивостью.</string>
+    <string name="onboarding_feature_3_title">Современный и Плавный Интерфейс</string>
+    <string name="onboarding_feature_3_sub">Быстрые жесты свайпа, звуковые волны, мгновенные мульти-профили и исчезающие чаты в 1 клик.</string>
+    <string name="onboarding_get_started">Начать</string>
+    <string name="modal_close">Закрыть</string>
 </resources>

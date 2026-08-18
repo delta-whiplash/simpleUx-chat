@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun ServerRadarSheet(
@@ -60,7 +61,7 @@ fun ServerRadarSheet(
                     .background(if (isConnected) Color(0xFF10B981) else Color(0xFFEF4444))
             )
             Text(
-                text = "État des Relais SMP SimpleX",
+                text = stringResource(MR.strings.server_radar_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
@@ -71,9 +72,9 @@ fun ServerRadarSheet(
 
         Text(
             text = if (isConnected)
-                "Vos files de messages (SMP Queues) sont synchronisées en temps réel. Aucune fuite de métadonnées ni identifiant persistant."
+                stringResource(MR.strings.server_radar_desc)
             else
-                "Connexion aux relais en cours d'établissement...",
+                stringResource(MR.strings.status_relay_pending),
             fontSize = 13.sp,
             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
         )
@@ -94,22 +95,22 @@ fun ServerRadarSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Protocole Réseau", fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-                Text("SimpleX SMP v2", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A))
+                Text(stringResource(MR.strings.server_radar_net_proto), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+                Text(stringResource(MR.strings.server_radar_net_proto_val), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Transfert Fichiers", fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-                Text("XFTP Chiffré", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A))
+                Text(stringResource(MR.strings.server_radar_file_transfer), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+                Text(stringResource(MR.strings.server_radar_file_transfer_val), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A))
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Isolation des Files", fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-                Text("100% Unidirectionnelle", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                Text(stringResource(MR.strings.server_radar_file_isolation), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+                Text(stringResource(MR.strings.server_radar_unidirectional), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
             }
         }
 
@@ -128,7 +129,7 @@ fun ServerRadarSheet(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Configurer mes serveurs SMP",
+                text = stringResource(MR.strings.server_radar_configure_btn),
                 color = Color.White,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
@@ -150,7 +151,7 @@ fun ServerRadarSheet(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Fermer",
+                text = stringResource(MR.strings.modal_close),
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium

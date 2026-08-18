@@ -1534,8 +1534,8 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
       val chatSubStatus = chatModel.chatSubStatus.value
       val subStatusText = if (cInfo is ChatInfo.Direct && cInfo.contact.ready && cInfo.contact.active) {
         when (chatSubStatus) {
-          SubscriptionStatus.Pending -> "En attente du relais..."
-          SubscriptionStatus.NoSub, is SubscriptionStatus.Removed -> "Relais déconnecté"
+          SubscriptionStatus.Pending -> generalGetString(MR.strings.status_relay_pending)
+          SubscriptionStatus.NoSub, is SubscriptionStatus.Removed -> generalGetString(MR.strings.status_relay_disconnected)
           else -> null
         }
       } else null

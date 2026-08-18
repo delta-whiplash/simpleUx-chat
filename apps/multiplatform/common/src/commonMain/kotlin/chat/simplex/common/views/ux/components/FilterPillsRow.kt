@@ -70,9 +70,9 @@ fun FilterPillsRow(
             val bgColor = animateColorAsState(
                 targetValue = when {
                     isSelected && isDark -> Color(0x33E2B755)
-                    isSelected && !isDark -> Color(0x22D97706)
+                    isSelected && !isDark -> Color(0xFFFEF3C7)
                     isDark -> Color(0x1F1E293B)
-                    else -> Color(0x140F172A)
+                    else -> Color(0xFFFFFFFF)
                 },
                 animationSpec = spring(),
                 label = "pillBg"
@@ -81,9 +81,9 @@ fun FilterPillsRow(
             val borderColor = animateColorAsState(
                 targetValue = when {
                     isSelected && isDark -> Color(0x80E2B755)
-                    isSelected && !isDark -> Color(0x66D97706)
+                    isSelected && !isDark -> Color(0xFFF59E0B)
                     isDark -> Color(0x2EFFFFFF)
-                    else -> Color(0x1F000000)
+                    else -> Color(0xFFE2E8F0)
                 },
                 animationSpec = spring(),
                 label = "pillBorder"
@@ -92,9 +92,9 @@ fun FilterPillsRow(
             val textColor = animateColorAsState(
                 targetValue = when {
                     isSelected && isDark -> Color(0xFFE2B755)
-                    isSelected && !isDark -> Color(0xFFD97706)
+                    isSelected && !isDark -> Color(0xFFB45309)
                     isDark -> Color(0xFF94A3B8)
-                    else -> Color(0xFF64748B)
+                    else -> Color(0xFF475569)
                 },
                 animationSpec = spring(),
                 label = "pillText"

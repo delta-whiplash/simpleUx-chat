@@ -30,6 +30,7 @@ import chat.simplex.common.views.chatlist.markChatUnread
 import chat.simplex.common.views.chatlist.toggleChatFavorite
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -83,7 +84,7 @@ fun SwipeableChatCard(
                             modifier = Modifier.size(22.dp)
                         )
                         Text(
-                            text = if (isUnread) "Marquer lu" else "Non lu",
+                            text = stringResource(if (isUnread) MR.strings.mark_read else MR.strings.mark_unread),
                             color = Color.White,
                             fontSize = 13.sp
                         )
@@ -101,7 +102,7 @@ fun SwipeableChatCard(
                             modifier = Modifier.size(22.dp)
                         )
                         Text(
-                            text = if (isFavorite) "Défavoriser" else "Favori",
+                            text = stringResource(if (isFavorite) MR.strings.unfavorite_chat else MR.strings.favorite_chat),
                             color = Color.White,
                             fontSize = 13.sp
                         )

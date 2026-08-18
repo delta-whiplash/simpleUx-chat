@@ -3003,4 +3003,37 @@
     <string name="v7_0_simplex_names">Öffentliche SimpleX-Namen (BETA)</string>
     <string name="info_row_file_servers">Datei-Server</string>
     <string name="share_text_file_servers">Datei-Server: %s</string>
+
+    <!-- SimpleUX Strings -->
+    <string name="status_relay_pending">Warten auf Relay…</string>
+    <string name="status_relay_disconnected">Relay getrennt</string>
+    <string name="e2ee_status_post_quantum">Post-Quanten</string>
+    <string name="e2ee_status_standard">Standard E2EE</string>
+    <string name="e2ee_banner_title">Ende-zu-Ende-Verschlüsselung aktiv</string>
+    <string name="server_radar_title">SimpleX SMP Relay-Status</string>
+    <string name="server_radar_desc">Ihre Nachrichtenwarteschlangen (SMP Queues) werden in Echtzeit synchronisiert. Keine Metadaten-Lecks oder dauerhaften Kennungen.</string>
+    <string name="server_radar_net_proto">Netzwerkprotokoll</string>
+    <string name="server_radar_net_proto_val">SimpleX SMP v2</string>
+    <string name="server_radar_file_transfer">Dateiübertragung</string>
+    <string name="server_radar_file_transfer_val">Verschlüsseltes XFTP</string>
+    <string name="server_radar_file_isolation">Warteschlangen-Isolation</string>
+    <string name="server_radar_unidirectional">Vollständig Unidirektional</string>
+    <string name="server_radar_configure_btn">SMP-Server konfigurieren</string>
+    <string name="more_emojis">Mehr Emojis</string>
+    <string name="profile_switcher_title">Profile &amp; Identitäten</string>
+    <string name="profile_switcher_subtitle">Identitäten sofort wechseln</string>
+    <string name="profile_switcher_active">Aktiv</string>
+    <string name="profile_switcher_manage">Verwalten</string>
+
+    <!-- Onboarding Strings -->
+    <string name="onboarding_badge">SimpleUX — Privatsphäre nach Design</string>
+    <string name="onboarding_hero_title">Private Nachrichten, neu definiert</string>
+    <string name="onboarding_feature_1_title">Null Kennungen, Null Nummern</string>
+    <string name="onboarding_feature_1_sub">Keine Telefonnummern, keine E-Mails, keine zentralen Konten. Vollständig anonym durch Design.</string>
+    <string name="onboarding_feature_2_title">Post-Quanten-Verschlüsselung</string>
+    <string name="onboarding_feature_2_sub">Ihre Nachrichten und Dateien werden durch das SimpleX-Protokoll mit Double-Ratchet und Quantensicherheit geschützt.</string>
+    <string name="onboarding_feature_3_title">Moderne, flüssige Bedienung</string>
+    <string name="onboarding_feature_3_sub">Flüssige Wischgesten, Sprachwellenformen, sofortige Multi-Profile und selbstlöschende Chats mit einem Fingertipp.</string>
+    <string name="onboarding_get_started">Loslegen</string>
+    <string name="modal_close">Schließen</string>
 </resources>

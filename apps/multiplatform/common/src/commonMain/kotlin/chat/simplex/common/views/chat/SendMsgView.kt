@@ -77,16 +77,16 @@ fun SendMsgView(
           Modifier
             .glassSurface(
               shape = Corner24,
-              backgroundColor = if (isInDarkTheme()) Color(0xF0141D2B) else Color(0xFFF1F5F9),
-              borderColor = if (isInDarkTheme()) Color(0x40FFFFFF) else Color(0x20000000)
+              backgroundColor = if (isInDarkTheme()) Color(0xF0141D2B) else Color(0xFFFFFFFF),
+              borderColor = if (isInDarkTheme()) Color(0x40FFFFFF) else Color(0xFFCBD5E1)
             )
         } else {
           Modifier
             .clip(Corner24)
-            .background(if (isInDarkTheme()) Color(0xFF181E2C) else Color(0xFFF1F5F9))
+            .background(if (isInDarkTheme()) Color(0xFF181E2C) else Color(0xFFFFFFFF))
             .border(
               width = 1.dp,
-              color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0x1A000000),
+              color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0xFFE2E8F0),
               shape = Corner24
             )
         }

@@ -684,23 +684,23 @@ val DarkColorPaletteApp = AppColors(
 )
 
 val LightColorPalette = lightColors(
-  primary = Color(0xFF0088CC),  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = Color(0xFF0088CC),
-  secondary = Color(0xFF70798C),
-  secondaryVariant = Color(0xFFE8EDF5),
-  background = Color(0xFFF4F6FB),
+  primary = Color(0xFF0284C7),  // If this value changes also need to update #0088ff in string resource files
+  primaryVariant = Color(0xFF0369A1),
+  secondary = Color(0xFF64748B),
+  secondaryVariant = Color(0xFFE2E8F0),
+  background = Color(0xFFF8FAFC),
   surface = Color.White,
   error = CoralRed,
   onBackground = Color(0xFF0F172A),
   onSurface = Color(0xFF0F172A),
 )
 val LightColorPaletteApp = AppColors(
-  title = Color(0xFF0088CC),
-  primaryVariant2 = Color(0xFFE3F2FD),
-  sentMessage = Color(0xFFE3F2FD),
-  sentQuote = Color(0xFFD0E8FC),
+  title = Color(0xFF0369A1),
+  primaryVariant2 = Color(0xFFE0F2FE),
+  sentMessage = Color(0xFFE1EFFE),
+  sentQuote = Color(0xFFCEE5FD),
   receivedMessage = Color.White,
-  receivedQuote = Color(0xFFF0F2F6),
+  receivedQuote = Color(0xFFF1F5F9),
 )
 
 val SimplexColorPalette = darkColors(

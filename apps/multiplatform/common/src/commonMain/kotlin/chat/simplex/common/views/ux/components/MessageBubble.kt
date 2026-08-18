@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -74,7 +75,7 @@ fun MessageBubble(
             ) {
                 Icon(
                     painter = painterResource(MR.images.ic_reply),
-                    contentDescription = "Répondre",
+                    contentDescription = stringResource(MR.strings.reply_verb),
                     tint = Color.White,
                     modifier = Modifier.size(18.dp)
                 )
@@ -118,12 +119,12 @@ fun MessageBubble(
                         )
                     } else {
                         if (isDark) Brush.linearGradient(listOf(Color(0xFF1E293B), Color(0xFF1E293B)))
-                        else Brush.linearGradient(listOf(Color(0xFFF1F5F9), Color(0xFFF1F5F9)))
+                        else Brush.linearGradient(listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF)))
                     }
                 )
                 .border(
                     width = 1.dp,
-                    color = if (isSentByMe) Color(0x33FFFFFF) else (if (isDark) Color(0x22FFFFFF) else Color(0x1A000000)),
+                    color = if (isSentByMe) Color(0x33FFFFFF) else (if (isDark) Color(0x22FFFFFF) else Color(0xFFE2E8F0)),
                     shape = bubbleShape
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)

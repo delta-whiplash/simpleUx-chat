@@ -1310,7 +1310,7 @@ fun BoxScope.TelegramBottomIslandBar(
   ) {
     Surface(
       shape = shape,
-      color = if (isDark) Color(0xEE121A26) else Color(0xF5F8FAFC),
+      color = if (isDark) Color(0xEE121A26) else Color(0xFAFFFFFF),
       elevation = 12.dp,
       modifier = Modifier
         .wrapContentWidth()
@@ -1318,8 +1318,8 @@ fun BoxScope.TelegramBottomIslandBar(
           width = 1.dp,
           brush = Brush.linearGradient(
             listOf(
-              if (isDark) Color(0x4DFFFFFF) else Color(0x26000000),
-              if (isDark) Color(0x1AFFFFFF) else Color(0x0D000000)
+              if (isDark) Color(0x4DFFFFFF) else Color(0x220F172A),
+              if (isDark) Color(0x1AFFFFFF) else Color(0x0A0F172A)
             )
           ),
           shape = shape
@@ -1333,7 +1333,7 @@ fun BoxScope.TelegramBottomIslandBar(
       ) {
         // Tab 1: Chats
         IslandTabItem(
-          label = "Chats",
+          label = stringResource(MR.strings.settings_section_title_chats),
           icon = MR.images.ic_forum,
           isActive = (currentTab == SimpleUxTab.CHATS),
           onClick = {
@@ -1349,7 +1349,7 @@ fun BoxScope.TelegramBottomIslandBar(
 
         // Tab 2: Contacts
         IslandTabItem(
-          label = "Contacts",
+          label = stringResource(MR.strings.settings_section_title_contact),
           icon = MR.images.ic_supervised_user_circle_filled,
           isActive = (currentTab == SimpleUxTab.CONTACTS),
           onClick = {
@@ -1361,7 +1361,7 @@ fun BoxScope.TelegramBottomIslandBar(
 
         // Tab 3: Settings
         IslandTabItem(
-          label = "Settings",
+          label = stringResource(MR.strings.settings_section_title_settings),
           icon = MR.images.ic_settings,
           isActive = (currentTab == SimpleUxTab.SETTINGS),
           onClick = {
@@ -1387,7 +1387,7 @@ private fun IslandTabItem(
   val activeShape = RoundedCornerShape(20.dp)
   val activeBg = if (isActive) {
     if (isDark) Brush.linearGradient(listOf(Color(0x33E2B755), Color(0x22D97706)))
-    else Brush.linearGradient(listOf(Color(0x28D97706), Color(0x18D97706)))
+    else Brush.linearGradient(listOf(Color(0xFFFEF3C7), Color(0xFFFDE68A)))
   } else {
     SolidColor(Color.Transparent)
   }
@@ -1398,7 +1398,7 @@ private fun IslandTabItem(
     modifier = Modifier
       .clip(activeShape)
       .background(activeBg)
-      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0x44D97706), activeShape) else Modifier)
+      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0xFFF59E0B), activeShape) else Modifier)
       .then(
         if (onLongClick != null) {
           Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
@@ -1417,14 +1417,14 @@ private fun IslandTabItem(
         painterResource(icon),
         contentDescription = label,
         modifier = Modifier.size(20.dp),
-        tint = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else inactiveColor
+        tint = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFB45309)) else inactiveColor
       )
       Spacer(Modifier.height(2.dp))
       Text(
         label,
         fontSize = 11.sp,
         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
-        color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else inactiveColor
+        color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFB45309)) else inactiveColor
       )
     }
   }

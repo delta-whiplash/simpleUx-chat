@@ -79,7 +79,7 @@ object GlassTokens {
         return if (isInDarkTheme()) {
             Color.White.copy(alpha = SurfaceAlphaDark)
         } else {
-            Color.Black.copy(alpha = SurfaceAlphaLight)
+            Color.White.copy(alpha = 0.92f)
         }
     }
 
@@ -92,26 +92,36 @@ object GlassTokens {
         return if (isInDarkTheme()) {
             Color.White.copy(alpha = BorderAlphaDark)
         } else {
-            Color.Black.copy(alpha = BorderAlphaLight)
+            Color(0x1A0F172A)
         }
     }
 
     // ── Chat List Tokens ───────────────────────────────────────────
     val ChatListCardBgDark = Color(0x66182232)
-    val ChatListCardBgLight = Color(0x88FFFFFF)
+    val ChatListCardBgLight = Color(0xFAFFFFFF)
     val ChatListCardBorderDark = Color(0x2EFFFFFF)
-    val ChatListCardBorderLight = Color(0x1F000000)
+    val ChatListCardBorderLight = Color(0x140F172A)
     val ChatListCardSelectedDark = Color(0x991E3A5F)
+    val ChatListCardSelectedLight = Color(0xFFE0F2FE)
 
-    val FilterChipActiveBg = Color(0x2900E5FF)
-    val FilterChipActiveBorder = Color(0x6600E5FF)
-    val FilterChipActiveText = Color(0xFF38BDF8)
-    val FilterChipInactiveBg = Color(0x331E293B)
-    val FilterChipInactiveBorder = Color(0x22FFFFFF)
-    val FilterChipInactiveText = Color(0xFF94A3B8)
+    val FilterChipActiveBgDark = Color(0x2900E5FF)
+    val FilterChipActiveBorderDark = Color(0x6600E5FF)
+    val FilterChipActiveTextDark = Color(0xFF38BDF8)
+    val FilterChipInactiveBgDark = Color(0x331E293B)
+    val FilterChipInactiveBorderDark = Color(0x22FFFFFF)
+    val FilterChipInactiveTextDark = Color(0xFF94A3B8)
+
+    val FilterChipActiveBgLight = Color(0xFFE0F2FE)
+    val FilterChipActiveBorderLight = Color(0xFF0284C7)
+    val FilterChipActiveTextLight = Color(0xFF0369A1)
+    val FilterChipInactiveBgLight = Color(0xFFF1F5F9)
+    val FilterChipInactiveBorderLight = Color(0xFFE2E8F0)
+    val FilterChipInactiveTextLight = Color(0xFF475569)
 
     val SearchBarBgDark = Color(0x661E293B)
     val SearchBarBorderDark = Color(0x33FFFFFF)
+    val SearchBarBgLight = Color(0xFFF1F5F9)
+    val SearchBarBorderLight = Color(0xFFE2E8F0)
 
     val UnreadBadgeStart = Color(0xFF00E5FF)
     val UnreadBadgeEnd = Color(0xFF0088FF)

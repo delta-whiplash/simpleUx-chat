@@ -582,11 +582,11 @@ fun ChatInfoLayout(
 
     // Carte 1 : Sécurité & Confidentialité
     val conn = contact.activeConn
-    SectionView("Sécurité & Confidentialité") {
+    SectionView(stringResource(MR.strings.security_badge_alert_title)) {
       if (conn != null) {
-        val pqText = if (conn.connPQEnabled) "Post-quantique" else "Standard E2EE"
+        val pqText = if (conn.connPQEnabled) generalGetString(MR.strings.e2ee_status_post_quantum) else generalGetString(MR.strings.e2ee_status_standard)
         val pqColor = if (conn.connPQEnabled) Color(0xFF10B981) else MaterialTheme.colors.secondary
-        InfoRow("Chiffrement E2E", pqText, valueColor = pqColor)
+        InfoRow(stringResource(MR.strings.security_badge_e2ee), pqText, valueColor = pqColor)
       }
       if (contact.ready && contact.active) {
         if (connectionCode != null) {
@@ -597,12 +597,12 @@ fun ChatInfoLayout(
           SynchronizeConnectionButton(syncContactConnection)
         }
       }
-      ChatTTLOption(chatItemTTL, setChatItemTTL, deletingItems, title = "Messages éphémères")
+      ChatTTLOption(chatItemTTL, setChatItemTTL, deletingItems, title = stringResource(MR.strings.timed_messages))
     }
     SectionDividerSpaced()
 
     // Carte 2 : Personnalisation
-    SectionView("Personnalisation") {
+    SectionView(stringResource(MR.strings.settings_section_title_chat_theme)) {
       WallpaperButton {
         ModalManager.end.showModal(cardScreen = true) {
           val chat = remember { derivedStateOf { chatModel.chats.value.firstOrNull { it.id == chat.id } } }

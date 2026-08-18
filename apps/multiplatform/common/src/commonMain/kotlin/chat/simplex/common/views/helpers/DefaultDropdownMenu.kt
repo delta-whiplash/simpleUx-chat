@@ -36,13 +36,13 @@ fun DefaultDropdownMenu(
         .clip(menuShape)
         .background(
           if (isDark) Brush.verticalGradient(listOf(Color(0xFF1E2533), Color(0xFF131720)))
-          else Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+          else Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF8FAFC)))
         )
         .border(
           width = 1.dp,
           brush = Brush.verticalGradient(
             if (isDark) listOf(Color(0x45FFFFFF), Color(0x10FFFFFF))
-            else listOf(Color(0x250F172A), Color(0x0C0F172A))
+            else listOf(Color(0x1E0F172A), Color(0x0A0F172A))
           ),
           shape = menuShape
         )
@@ -77,13 +77,13 @@ fun ExposedDropdownMenuBoxScope.DefaultExposedDropdownMenu(
         .clip(menuShape)
         .background(
           if (isDark) Brush.verticalGradient(listOf(Color(0xFF1E2533), Color(0xFF131720)))
-          else Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+          else Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF8FAFC)))
         )
         .border(
           width = 1.dp,
           brush = Brush.verticalGradient(
             if (isDark) listOf(Color(0x45FFFFFF), Color(0x10FFFFFF))
-            else listOf(Color(0x250F172A), Color(0x0C0F172A))
+            else listOf(Color(0x1E0F172A), Color(0x0A0F172A))
           ),
           shape = menuShape
         )

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 
 val DEFAULT_QUICK_EMOJIS = listOf("👍", "❤️", "🔥", "😂", "😮", "😢")
 
@@ -111,7 +112,7 @@ fun QuickReactionsBar(
                 ) {
                     Icon(
                         painter = painterResource(MR.images.ic_add),
-                        contentDescription = "Plus d'emojis",
+                        contentDescription = stringResource(MR.strings.more_emojis),
                         tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
                         modifier = Modifier.size(14.dp)
                     )

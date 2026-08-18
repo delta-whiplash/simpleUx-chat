@@ -146,7 +146,7 @@ fun ProfileSwitcherOverlay(
                   }
                   Column {
                     Text(
-                      text = "Profils & Identités",
+                      text = stringResource(MR.strings.profile_switcher_title),
                       style = TextStyle(
                         fontFamily = Inter,
                         fontSize = 16.sp,
@@ -155,7 +155,7 @@ fun ProfileSwitcherOverlay(
                       )
                     )
                     Text(
-                      text = "Basculez d'identité en un clic",
+                      text = stringResource(MR.strings.profile_switcher_subtitle),
                       style = TextStyle(
                         fontFamily = Inter,
                         fontSize = 12.sp,
@@ -174,7 +174,7 @@ fun ProfileSwitcherOverlay(
                 ) {
                   Icon(
                     painter = painterResource(MR.images.ic_close),
-                    contentDescription = "Fermer",
+                    contentDescription = stringResource(MR.strings.modal_close),
                     tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
                     modifier = Modifier.size(16.dp)
                   )
@@ -342,12 +342,12 @@ fun ProfileSwitcherOverlay(
                         ) {
                           Icon(
                             painter = painterResource(MR.images.ic_done_filled),
-                            contentDescription = "Actif",
+                            contentDescription = stringResource(MR.strings.profile_switcher_active),
                             tint = goldAccent,
                             modifier = Modifier.size(12.dp)
                           )
                           Text(
-                            text = "Actif",
+                            text = stringResource(MR.strings.profile_switcher_active),
                             style = TextStyle(
                               fontFamily = Inter,
                               fontSize = 11.sp,
@@ -360,7 +360,7 @@ fun ProfileSwitcherOverlay(
                     } else {
                       Icon(
                         painter = painterResource(MR.images.ic_arrow_forward),
-                        contentDescription = "Basculez",
+                        contentDescription = null,
                         tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
                         modifier = Modifier.size(16.dp)
                       )
@@ -408,7 +408,7 @@ fun ProfileSwitcherOverlay(
                   )
                   Spacer(Modifier.width(6.dp))
                   Text(
-                    text = "Nouveau profil",
+                    text = stringResource(MR.strings.create_profile),
                     style = TextStyle(
                       fontFamily = Inter,
                       fontSize = 13.sp,
@@ -457,7 +457,7 @@ fun ProfileSwitcherOverlay(
                   )
                   Spacer(Modifier.width(6.dp))
                   Text(
-                    text = "Gérer",
+                    text = stringResource(MR.strings.profile_switcher_manage),
                     style = TextStyle(
                       fontFamily = Inter,
                       fontSize = 13.sp,

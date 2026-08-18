@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.isInDarkTheme
+import chat.simplex.res.MR
+import dev.icerock.moko.resources.compose.stringResource
 
 data class OnboardingFeature(
     val icon: String,
@@ -41,31 +43,29 @@ fun ZeroJargonOnboarding(
     val bgGradient = if (isDark) {
         Brush.verticalGradient(listOf(Color(0xFF0F172A), Color(0xFF070B14)))
     } else {
-        Brush.verticalGradient(listOf(Color(0xFFF8FAFC), Color(0xFFEDE9FE)))
+        Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF8FAFC)))
     }
 
-    val features = remember {
-        listOf(
-            OnboardingFeature(
-                icon = "🛡️",
-                title = "Zéro Identifiant, Zéro Numéro",
-                subtitle = "Pas de numéro de téléphone, pas d'email, pas de compte centralisé. Vous êtes 100% anonyme par conception.",
-                accentColor = Color(0xFF38BDF8)
-            ),
-            OnboardingFeature(
-                icon = "🔒",
-                title = "Chiffrement Post-Quantum",
-                subtitle = "Vos messages et fichiers sont protégés par le protocole SimpleX avec double-ratchet et sécurité quantique.",
-                accentColor = Color(0xFF10B981)
-            ),
-            OnboardingFeature(
-                icon = "✨",
-                title = "Fluidité & Expérience Moderne",
-                subtitle = "Gestes swipe rapides, formes d'ondes vocales, profils multiples instantanés et messages éphémères en 1 tap.",
-                accentColor = Color(0xFFF59E0B)
-            )
+    val features = listOf(
+        OnboardingFeature(
+            icon = "🛡️",
+            title = stringResource(MR.strings.onboarding_feature_1_title),
+            subtitle = stringResource(MR.strings.onboarding_feature_1_sub),
+            accentColor = Color(0xFF38BDF8)
+        ),
+        OnboardingFeature(
+            icon = "🔒",
+            title = stringResource(MR.strings.onboarding_feature_2_title),
+            subtitle = stringResource(MR.strings.onboarding_feature_2_sub),
+            accentColor = Color(0xFF10B981)
+        ),
+        OnboardingFeature(
+            icon = "✨",
+            title = stringResource(MR.strings.onboarding_feature_3_title),
+            subtitle = stringResource(MR.strings.onboarding_feature_3_sub),
+            accentColor = Color(0xFFF59E0B)
         )
-    }
+    )
 
     Box(
         modifier = Modifier
@@ -90,16 +90,16 @@ fun ZeroJargonOnboarding(
                 // App Brand Badge
                 Surface(
                     shape = RoundedCornerShape(20.dp),
-                    color = if (isDark) Color(0x33F59E0B) else Color(0x1FF59E0B),
+                    color = if (isDark) Color(0x33F59E0B) else Color(0xFFFEF3C7),
                     modifier = Modifier.border(
                         1.dp,
-                        if (isDark) Color(0x66F59E0B) else Color(0x33F59E0B),
+                        if (isDark) Color(0x66F59E0B) else Color(0xFFF59E0B),
                         RoundedCornerShape(20.dp)
                     )
                 ) {
                     Text(
-                        text = "Bienvenue sur SimpleUX",
-                        color = if (isDark) Color(0xFFFBBF24) else Color(0xFFD97706),
+                        text = stringResource(MR.strings.onboarding_badge),
+                        color = if (isDark) Color(0xFFFBBF24) else Color(0xFFB45309),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
@@ -109,7 +109,7 @@ fun ZeroJargonOnboarding(
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = "La messagerie privée,\nréinventée pour vous.",
+                    text = stringResource(MR.strings.onboarding_hero_title),
                     style = MaterialTheme.typography.h1.copy(
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
@@ -117,19 +117,6 @@ fun ZeroJargonOnboarding(
                         textAlign = TextAlign.Center
                     ),
                     color = if (isDark) Color.White else Color(0xFF0F172A)
-                )
-
-                Spacer(Modifier.height(12.dp))
-
-                Text(
-                    text = "Toute la puissance cryptographique de SimpleX dans une interface intuitive, fluide et élégante.",
-                    style = MaterialTheme.typography.body1.copy(
-                        fontSize = 15.sp,
-                        lineHeight = 22.sp,
-                        textAlign = TextAlign.Center
-                    ),
-                    color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
-                    modifier = Modifier.padding(horizontal = 8.dp)
                 )
 
                 Spacer(Modifier.height(28.dp))
@@ -143,14 +130,14 @@ fun ZeroJargonOnboarding(
                     ) {
                         Surface(
                             shape = RoundedCornerShape(18.dp),
-                            color = if (isDark) Color(0x801E293B) else Color(0xCCFFFFFF),
+                            color = if (isDark) Color(0x801E293B) else Color(0xFAFFFFFF),
                             elevation = 2.dp,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp)
                                 .border(
                                     1.dp,
-                                    if (isDark) Color(0x26FFFFFF) else Color(0x1F000000),
+                                    if (isDark) Color(0x26FFFFFF) else Color(0xFFE2E8F0),
                                     RoundedCornerShape(18.dp)
                                 )
                         ) {
@@ -208,12 +195,12 @@ fun ZeroJargonOnboarding(
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-                        contentColor = Color.Black
+                        contentColor = if (isDark) Color.Black else Color.White
                     ),
                     elevation = ButtonDefaults.elevation(defaultElevation = 4.dp)
                 ) {
                     Text(
-                        text = "Commencer l'expérience SimpleUX",
+                        text = stringResource(MR.strings.onboarding_get_started),
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp
                     )
@@ -223,7 +210,7 @@ fun ZeroJargonOnboarding(
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = onClose) {
                         Text(
-                            text = "Fermer",
+                            text = stringResource(MR.strings.modal_close),
                             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
                             fontSize = 14.sp
                         )

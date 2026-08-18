@@ -3210,4 +3210,37 @@
   <string name="security_badge_contact_verified_line">Contact: security code verified ✓</string>
   <string name="security_badge_contact_unverified_line">Contact: not verified out-of-band</string>
   <string name="security_badge_no_e2ee_line">No established end-to-end encryption for this chat.</string>
+
+  <!-- SimpleUX Strings -->
+  <string name="status_relay_pending">Waiting for relay…</string>
+  <string name="status_relay_disconnected">Relay disconnected</string>
+  <string name="e2ee_status_post_quantum">Post-quantum</string>
+  <string name="e2ee_status_standard">Standard E2EE</string>
+  <string name="e2ee_banner_title">End-to-end encryption active</string>
+  <string name="server_radar_title">SimpleX SMP Relay Status</string>
+  <string name="server_radar_desc">Your message queues (SMP Queues) are synchronized in real time. Zero metadata leakage or persistent identifiers.</string>
+  <string name="server_radar_net_proto">Network Protocol</string>
+  <string name="server_radar_net_proto_val">SimpleX SMP v2</string>
+  <string name="server_radar_file_transfer">File Transfer</string>
+  <string name="server_radar_file_transfer_val">Encrypted XFTP</string>
+  <string name="server_radar_file_isolation">Queue Isolation</string>
+  <string name="server_radar_unidirectional">Fully Unidirectional</string>
+  <string name="server_radar_configure_btn">Configure SMP servers</string>
+  <string name="more_emojis">More emojis</string>
+  <string name="profile_switcher_title">Your Profiles</string>
+  <string name="profile_switcher_subtitle">Switch identities instantly</string>
+  <string name="profile_switcher_active">Active</string>
+  <string name="profile_switcher_manage">Manage</string>
+
+  <!-- Onboarding Strings -->
+  <string name="onboarding_badge">SimpleUX — Private by Design</string>
+  <string name="onboarding_hero_title">Private Messaging, Redefined</string>
+  <string name="onboarding_feature_1_title">Zero Identifiers, Zero Numbers</string>
+  <string name="onboarding_feature_1_sub">No phone numbers, no emails, no centralized accounts. Completely metadata-free by design.</string>
+  <string name="onboarding_feature_2_title">Post-Quantum Encryption</string>
+  <string name="onboarding_feature_2_sub">Your messages and files are safeguarded by the SimpleX protocol with double-ratchet &amp; quantum resistance.</string>
+  <string name="onboarding_feature_3_title">Modern Fluid Experience</string>
+  <string name="onboarding_feature_3_sub">Fluid swipe gestures, audio waveforms, instant multi-profiles and disappearing chats in 1 tap.</string>
+  <string name="onboarding_get_started">Get Started</string>
+  <string name="modal_close">Close</string>
 </resources>

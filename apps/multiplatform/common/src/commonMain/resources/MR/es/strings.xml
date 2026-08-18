@@ -2931,4 +2931,37 @@
     <string name="v7_0_channels_relays">Gestiona tus servidores.</string>
     <string name="v7_0_simplex_names_descr">Nombres públicos para tu canal o negocio.</string>
     <string name="v7_0_simplex_names">Nombres públicos SimpleX (BETA)</string>
+
+    <!-- SimpleUX Strings -->
+    <string name="status_relay_pending">En espera del retransmisor…</string>
+    <string name="status_relay_disconnected">Retransmisor desconectado</string>
+    <string name="e2ee_status_post_quantum">Post-cuántica</string>
+    <string name="e2ee_status_standard">Standard E2EE</string>
+    <string name="e2ee_banner_title">Cifrado de extremo a extremo activo</string>
+    <string name="server_radar_title">Estado de Retransmisores SMP SimpleX</string>
+    <string name="server_radar_desc">Tus colas de mensajes (SMP Queues) están sincronizadas en tiempo real. Cero fugas de metadatos o identificadores persistentes.</string>
+    <string name="server_radar_net_proto">Protocolo de Red</string>
+    <string name="server_radar_net_proto_val">SimpleX SMP v2</string>
+    <string name="server_radar_file_transfer">Transferencia de Archivos</string>
+    <string name="server_radar_file_transfer_val">XFTP Cifrado</string>
+    <string name="server_radar_file_isolation">Aislamiento de Colas</string>
+    <string name="server_radar_unidirectional">Completamente Unidireccional</string>
+    <string name="server_radar_configure_btn">Configurar servidores SMP</string>
+    <string name="more_emojis">Más emojis</string>
+    <string name="profile_switcher_title">Perfiles e Identidades</string>
+    <string name="profile_switcher_subtitle">Cambia de identidad al instante</string>
+    <string name="profile_switcher_active">Activo</string>
+    <string name="profile_switcher_manage">Gestionar</string>
+
+    <!-- Onboarding Strings -->
+    <string name="onboarding_badge">SimpleUX — Privado por Diseño</string>
+    <string name="onboarding_hero_title">Mensajería privada reinventada</string>
+    <string name="onboarding_feature_1_title">Cero Identificadores, Cero Números</string>
+    <string name="onboarding_feature_1_sub">Sin números de teléfono, sin correos, sin cuentas centralizadas. Completamente anónimo por diseño.</string>
+    <string name="onboarding_feature_2_title">Cifrado Post-Cuántico</string>
+    <string name="onboarding_feature_2_sub">Tus mensajes y archivos están protegidos por el protocolo SimpleX con doble ratchet y resistencia cuántica.</string>
+    <string name="onboarding_feature_3_title">Experiencia Moderna y Fluida</string>
+    <string name="onboarding_feature_3_sub">Gestos deslizantes fluidos, notas de voz con onda de audio, perfiles múltiples instantáneos y mensajes temporales en 1 toque.</string>
+    <string name="onboarding_get_started">Comenzar</string>
+    <string name="modal_close">Cerrar</string>
 </resources>
