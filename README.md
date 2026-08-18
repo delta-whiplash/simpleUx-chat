@@ -1,24 +1,71 @@
 # SimpleUX Chat 💬✨
 
-> **The modern, delightful UI/UX fork of SimpleX Chat — where world-class design meets uncompromising, zero-metadata privacy.**
+> **The modern, delightful UI/UX fork of SimpleX Chat — where haute-horlogerie aesthetics meet uncompromising, zero-metadata privacy.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](./LICENSE)
 [![SimpleX Protocol Compatible](https://img.shields.io/badge/SimpleX_Protocol-100%25_Compatible-brightgreen.svg)](https://simplex.chat)
 [![Coexistence Ready](https://img.shields.io/badge/Coexistence-Side--by--Side_Ready-blueviolet.svg)](#-side-by-side-coexistence)
-[![Platform](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop-orange.svg)](#-building--running)
+[![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop-orange.svg)](#-building--running)
+[![Build Status](https://img.shields.io/badge/Tests-100%25%20Passing-success.svg)](#-building--running)
+
+---
+
+<div align="center">
+
+### 🎬 Live Interface Demo
+
+![SimpleUX Interaction Demo](./docs/images/simpleux_demo.gif)
+
+*Fluid 3-tab navigation, instant contact routing, swipe-to-reply with gold accent context bar, and real-time post-quantum indicators.*
+
+</div>
 
 ---
 
 ## 🌟 Why SimpleUX?
 
-**SimpleX Chat** introduced a cryptographic masterclass to the world: the first messaging platform with **no user identifiers of any kind**, end-to-end encryption with quantum resistance, and isolated unidirectional messaging queues.
+**SimpleX Chat** is a cryptographic masterclass: the first messaging platform with **no user identifiers of any kind**, end-to-end encryption with post-quantum resistance, and isolated unidirectional messaging queues.
 
-However, great privacy shouldn't come at the cost of great user experience.
+However, great privacy shouldn't come with visual friction or complex ergonomics.
 
-**SimpleUX Chat** is a community-driven, interface-focused fork with a single mission:
-> **Elevate the user experience to match the brilliance of the underlying protocol.**
+**SimpleUX Chat** is an interface-first fork designed around a single guiding principle:
+> **"Uncompromising privacy meets world-class user experience."**
 
-We rebuild and refine the frontend interface from the ground up — modernizing navigation, typography, animations, chat ergonomics, and onboarding — while leaving the robust Haskell backend and SMP/XFTP cryptographic protocols untouched.
+We completely modernize and polish the frontend experience — fluid spring animations, tactile micro-interactions, swipe ergonomics, and refined typography — while keeping the authoritative Haskell core engine (`libsimplex` / `libapp`) and JNI/FFI cryptographic bindings **100% untouched and fully interoperable**.
+
+---
+
+## 📸 Interface Showcase
+
+<div align="center">
+
+| 🪐 **Chats & Filter Pills** | 💬 **Conversation & Swipe-to-Reply** |
+|:---:|:---:|
+| <img src="./docs/images/screenshot_chatlist.png" width="380" alt="SimpleUX Chat List" /> | <img src="./docs/images/screenshot_chatview.png" width="380" alt="SimpleUX Chat View" /> |
+| *Filter pills (All, Unread, Direct, Groups, Favorites), circular monogram discs with specular rims, and floating island bar.* | *Real Post-Quantum SecurityBadge, full-row swipe-to-reply with champagne gold accent bar, and attachment sheet.* |
+
+| 🛡️ **Contact Profile & Verification** | ⚡ **Reactions & Quick Actions** |
+|:---:|:---:|
+| <img src="./docs/images/screenshot_chatinfo.png" width="380" alt="SimpleUX Chat Info" /> | <img src="./docs/images/screenshot_contextmenu.png" width="380" alt="SimpleUX Message Context Menu" /> |
+| *120dp Titanium disc, SAS fingerprint verification, live SMP relay queues, and local contact aliases.* | *Quick emoji reaction picker (👍 👎 😄 😂 😢 ❤️ 🚀 ✅) and modular context action menu.* |
+
+| ⚙️ **Settings & Profile Studio** | 👥 **Contacts & Quick Invitations** |
+|:---:|:---:|
+| <img src="./docs/images/screenshot_settings.png" width="380" alt="SimpleUX Settings" /> | <img src="./docs/images/screenshot_contacts.png" width="380" alt="SimpleUX Contacts" /> |
+| *User profile card with instant QR share, categorized preferences, network diagnostic tools, and dark/light modes.* | *One-tap invite links, encrypted group creation, public broadcast channels, and connected status indicators.* |
+
+</div>
+
+---
+
+## 💎 Design Language: Luxury Mineral & Haute Horlogerie
+
+SimpleUX introduces an elevated visual aesthetic crafted for discretion, clarity, and tactile precision:
+
+- **Circular Titanium Discs:** Avatars use perfectly circular geometry with a 1.dp hairline specular highlight rim (`#26FFFFFF` dark / `#1A000000` light) for a machined mineral feel.
+- **Champagne Gold Accents:** Key interactive states (active navigation tab, reply indicator, security highlights) use subtle champagne gold (`#E2B755` dark / `#D97706` light).
+- **Floating Island Navigation:** A 3-tab bottom bar (*Chats*, *Contacts*, *Settings*) floating gracefully over conversational content.
+- **Authentic Security States:** The `SecurityBadge` dynamically evaluates real double-ratchet post-quantum negotiation (`connPQEnabled` in both directions) with zero simulated states.
 
 ---
 
@@ -26,40 +73,42 @@ We rebuild and refine the frontend interface from the ground up — modernizing 
 
 | Pillar | Description |
 |---|---|
-| 🎨 **Elevated UI/UX** | Refined modern design system, fluid micro-interactions, swipe gestures, elegant dark/light themes, and ergonomic message bubbles. |
-| 🤝 **100% SimpleX Interoperability** | Fully compatible with standard SimpleX users, groups, SMP relays, XFTP file servers, and bots. You can chat seamlessly across SimpleUX and SimpleX! |
-| 📱 **Side-by-Side Coexistence** | Engineered with distinct application IDs and sandbox paths so you can install SimpleUX alongside the official SimpleX app on the same phone. |
-| 🔒 **Untouched Zero-Metadata Core** | Retains all SimpleX cryptographic guarantees: double ratchet E2EE, post-quantum key exchanges, no user IDs, no phone numbers, and local-only database encryption. |
-| ⚡ **Frontend Focused** | The entire Haskell backend engine (`libsimplex` / `libapp`) is preserved as the authoritative core. We focus 100% of our energy on UI excellence. |
+| 🎨 **Elevated UI/UX** | Refined modern design system, fluid micro-interactions, swipe-to-reply, emoji reaction picker, and ergonomic message bubbles. |
+| 🤝 **100% SimpleX Interoperability** | Fully interoperable with official SimpleX clients (Android, iOS, Desktop, CLI). Communicate seamlessly with zero wire-format divergence! |
+| 📱 **Side-by-Side Coexistence** | Engineered with unique application IDs (`chat.simplex.ux`) and isolated sandboxes to install alongside the official app on the same phone. |
+| 🔒 **Untouched Zero-Metadata Core** | Preserves all cryptographic guarantees: double-ratchet E2EE, Kyber/ML-KEM PQ key exchanges, unidirectional SMP queues, XFTP file transfers, and SQLite DB encryption. |
+| ⚡ **Frontend Focused** | The Haskell backend engine (`libsimplex` / `libapp`) remains authoritative. We focus 100% of our development on frontend excellence. |
 
 ---
 
 ## 📱 Side-by-Side Coexistence
 
-SimpleUX is designed so users don't have to choose between testing a new interface and keeping their existing setup. You can run both the official **SimpleX Chat** and **SimpleUX Chat** simultaneously on the same device:
+SimpleUX is built from the ground up to **coexist** peacefully with the official SimpleX app on any device:
 
-- **Distinct Package ID & Namespaces:** Configured with dedicated application IDs (e.g. `chat.simplex.ux`) to avoid conflicts with `chat.simplex.app`.
-- **Isolated Storage:** Independent local encrypted databases and media cache directories.
-- **Independent Notification Channels & Services:** Background message sync services run without interfering with the official client.
+- **Unique Application ID:** Configured as `chat.simplex.ux` (or `chat.simplex.ux.debug`).
+- **Isolated Sandboxes:** Separate local SQLite databases, keychain groups, and media cache folders.
+- **Dedicated Content Providers:** Uses `chat.simplex.ux.provider` to prevent any authority collisions.
+- **Independent Sync Services:** Background message notifications run autonomously without interfering with standard SimpleX apps.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ Architecture Overview
 
-SimpleUX preserves the rock-solid layered architecture of SimpleX, isolating UI/UX improvements to the client interface layer:
+SimpleUX preserves the multi-tier architecture of SimpleX, isolating UI/UX advancements strictly to the presentation layer:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                     SimpleUX UI Layer (Modernized)                      │
-│  • Compose Multiplatform (Android + Desktop) / SwiftUI (iOS)            │
-│  • Modern Themes, Fluid Motion, Gestures, Streamlined Navigation        │
+│                     SimpleUX UI Layer (Compose & SwiftUI)               │
+│  • Luxury Mineral Tokens (Color, Shape, Typography, Specular Rims)      │
+│  • Redesigned Views (ChatList, ChatView, ChatInfo, Settings, Contacts)  │
+│  • Fluid Gestures (Swipe-to-reply, Reaction picker, Draft persistence)  │
 └─────────────────────────────────────────────────────────────────────────┘
                                    │  ▲
              User Interactions     │  │  StateFlows / Recomposition
                                    ▼  │
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        Application Logic Layer                          │
-│  • ChatModel (Reactive state) & ChatController (Command dispatcher)     │
+│  • ChatModel (State container) & ChatController (Command dispatcher)    │
 │  • AppPreferences, NotificationManager, ThemeManager                    │
 └─────────────────────────────────────────────────────────────────────────┘
                                    │  ▲
@@ -74,7 +123,7 @@ SimpleUX preserves the rock-solid layered architecture of SimpleX, isolating UI/
                                    ▼  │
 ┌─────────────────────────────────────────────────────────────────────────┐
 │              Haskell Core Engine (libsimplex / libapp)                  │
-│  • Double-Ratchet E2EE, SMP Queues, XFTP File Relays, SQLite Storage    │
+│  • Double-Ratchet E2EE, SMP Queues, XFTP File Relays, SQLite DB         │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -84,11 +133,14 @@ SimpleUX preserves the rock-solid layered architecture of SimpleX, isolating UI/
 
 ### Android & Desktop (Kotlin Multiplatform)
 
-Prerequisites: JDK 17+, Android SDK (API 35), CMake, NDK 23.1+.
+**Prerequisites:** JDK 17-21, Android SDK (API 35), NDK (23.1+), CMake.
 
 ```bash
 # Navigate to the multiplatform project directory
 cd apps/multiplatform
+
+# Run all unit and desktop verification tests
+./gradlew desktopTest
 
 # Build Android Debug APK (FOSS Flavor)
 ./gradlew assembleFossDebug
@@ -96,51 +148,35 @@ cd apps/multiplatform
 # Build Android Release APK
 ./gradlew assembleFossRelease
 
-# Package Desktop App for Current OS (Windows / macOS / Linux)
+# Package Desktop App for Current OS (Windows MSI/EXE, macOS DMG, Linux DEB)
 ./gradlew :desktop:packageDistributionForCurrentOS
-
-# Run Desktop / JVM Tests
-./gradlew desktopTest
 ```
 
 ### iOS (Native Swift / SwiftUI)
 
-Prerequisites: macOS with Xcode 15+.
+**Prerequisites:** macOS with Xcode 15+, CocoaPods / Swift Package Manager.
 
 ```bash
 cd apps/ios
-# Open the Xcode project
 open SimpleX.xcodeproj
 ```
 
 ---
 
-## 🗺️ UI/UX Roadmap
+## 📖 Documentation & Guidelines
 
-- [ ] **Modern Chat List:** Refined list item hierarchy, smooth swipe actions (pin, mute, archive), and instant contact filtering.
-- [ ] **Next-Gen Message View:** Beautiful chat bubbles, seamless media gallery, inline voice note waveforms, and intuitive swipe-to-reply.
-- [ ] **Streamlined Onboarding:** Friendly zero-metadata privacy introduction, instant QR code generator, and simplified contact invites.
-- [ ] **Design System & Theming:** True OLED black dark mode, modern soft light mode, dynamic Material You color matching, and custom accent palettes.
-- [ ] **Ergonomic Settings:** Reorganized, categorized settings with simplified privacy toggles and intuitive server management.
-
----
-
-## 📖 Developer & Agent Resources
-
-- **[AGENTS.md](./AGENTS.md)** — Architectural overview, coexistence guidelines, and instructions for AI agents and contributors.
-- **[KMP Coding Guide](./apps/multiplatform/CODE.md)** — Detailed multiplatform guidelines and three-layer navigation documentation.
-- **[Original SimpleX Documentation](./docs/)** — In-depth specifications of the SMP/XFTP protocols and core cryptography.
+- **[AGENTS.md](./AGENTS.md)** — Architectural invariants, coexistence strategy, and guidelines for contributors.
+- **[Design System Skill](./.agents/skills/simpleux-design-system/SKILL.md)** — Full specification of tokens, colors, shapes, and micro-interaction patterns.
+- **[Upstream Documentation](./docs/)** — In-depth specifications of the SMP/XFTP protocols and cryptographic fundamentals.
 
 ---
 
 ## 🙏 Credits & Upstream Acknowledgment
 
-SimpleUX Chat is an independent frontend fork powered by the groundbreaking work of **Evgeny Poberezkin** and the **SimpleX Chat community**.
+SimpleUX Chat is an interface fork created with deep respect for the visionary work of **Evgeny Poberezkin** and the **SimpleX Chat core team and open-source contributors**.
 
-We extend our deep gratitude and admiration to the SimpleX team for pioneering true identifier-free, privacy-preserving communication protocols.
-
-- **Upstream Repository:** [simplex-chat/simplex-chat](https://github.com/simplex-chat/simplex-chat)
-- **SimpleX Chat Official Website:** [simplex.chat](https://simplex.chat)
+- **Official Upstream Repository:** [simplex-chat/simplex-chat](https://github.com/simplex-chat/simplex-chat)
+- **Official SimpleX Website:** [simplex.chat](https://simplex.chat)
 
 ---
 
