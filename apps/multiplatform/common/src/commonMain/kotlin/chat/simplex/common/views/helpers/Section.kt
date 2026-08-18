@@ -94,10 +94,11 @@ private fun CardColumn(
 @Composable
 fun SectionView(title: String? = null, contentPadding: PaddingValues = PaddingValues(), headerBottomPadding: Dp = DEFAULT_PADDING, cardShape: Shape = SectionCardShape, content: (@Composable ColumnScope.() -> Unit)) {
   val card = LocalCardScreen.current
+  val isDark = isInDarkTheme()
   Column {
     if (title != null) {
       Text(
-        title, color = MaterialTheme.colors.secondary, style = MaterialTheme.typography.body2,
+        title, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B), style = MaterialTheme.typography.body2,
         modifier = Modifier.padding(start = if (card) DEFAULT_PADDING + DEFAULT_PADDING_HALF else DEFAULT_PADDING, bottom = if (card) 8.dp else headerBottomPadding),
         fontSize = if (card) 14.sp else 12.sp,
         fontWeight = if (card) FontWeight.Medium else FontWeight.Normal
@@ -118,13 +119,14 @@ fun SectionView(
   content: (@Composable ColumnScope.() -> Unit)
 ) {
   val card = LocalCardScreen.current
+  val isDark = isInDarkTheme()
   Column {
     val iconSize = with(LocalDensity.current) { 21.sp.toDp() }
     val interactionSource = remember { MutableInteractionSource() }
     val iconClickable = if (onIconClick != null) Modifier.clickable(interactionSource = interactionSource, indication = ripple(bounded = false, radius = iconSize * 0.75f), onClick = onIconClick) else Modifier
     Row(Modifier.padding(start = if (card) DEFAULT_PADDING + DEFAULT_PADDING_HALF else DEFAULT_PADDING, bottom = 5.dp), verticalAlignment = Alignment.CenterVertically) {
       if (leadingIcon) Icon(icon, null, Modifier.padding(end = DEFAULT_PADDING_HALF).size(iconSize).then(iconClickable), tint = iconTint)
-      Text(title, color = MaterialTheme.colors.secondary, style = MaterialTheme.typography.body2, fontSize = if (card) 14.sp else 12.sp, fontWeight = if (card) FontWeight.Medium else FontWeight.Normal)
+      Text(title, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B), style = MaterialTheme.typography.body2, fontSize = if (card) 14.sp else 12.sp, fontWeight = if (card) FontWeight.Medium else FontWeight.Normal)
       if (!leadingIcon) Icon(icon, null, Modifier.padding(start = DEFAULT_PADDING_HALF).size(iconSize).then(iconClickable), tint = iconTint)
     }
     CardColumn(padding) { content() }
@@ -134,12 +136,13 @@ fun SectionView(
 @Composable
 fun SectionViewWithButton(title: String? = null, titleButton: (@Composable () -> Unit)?, contentPadding: PaddingValues = PaddingValues(), headerBottomPadding: Dp = DEFAULT_PADDING, content: (@Composable ColumnScope.() -> Unit)) {
   val card = LocalCardScreen.current
+  val isDark = isInDarkTheme()
   Column {
     if (title != null || titleButton != null) {
       val hPadding = if (card) DEFAULT_PADDING + DEFAULT_PADDING_HALF else DEFAULT_PADDING
       Row(modifier = Modifier.padding(start = hPadding, end = hPadding, bottom = if (card) 8.dp else headerBottomPadding).fillMaxWidth()) {
         if (title != null) {
-          Text(title, color = MaterialTheme.colors.secondary, style = MaterialTheme.typography.body2, fontSize = if (card) 14.sp else 12.sp, fontWeight = if (card) FontWeight.Medium else FontWeight.Normal)
+          Text(title, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B), style = MaterialTheme.typography.body2, fontSize = if (card) 14.sp else 12.sp, fontWeight = if (card) FontWeight.Medium else FontWeight.Normal)
         }
         if (titleButton != null) {
           Spacer(modifier = Modifier.weight(1f))

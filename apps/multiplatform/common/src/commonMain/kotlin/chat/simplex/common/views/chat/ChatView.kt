@@ -1932,7 +1932,7 @@ fun BoxScope.ChatItemsList(
         val swipeableModifier = if (appPlatform.isDesktop || !chatInfo.sendMsgEnabled || cItem.meta.itemDeleted != null) Modifier else SwipeToDismissModifier(
           state = dismissState,
           directions = setOf(DismissDirection.EndToStart),
-          swipeDistance = with(LocalDensity.current) { 30.dp.toPx() },
+          swipeDistance = with(LocalDensity.current) { 44.dp.toPx() },
         )
         val sent = cItem.chatDir.sent
 
@@ -1954,15 +1954,18 @@ fun BoxScope.ChatItemsList(
         @Composable
         fun ChatItemBox(modifier: Modifier = Modifier, content: @Composable () -> Unit = { }) {
           Box(
-            modifier = modifier.padding(
-              bottom = if (itemSeparation.largeGap) {
-                if (itemAtZeroIndexInWholeList) {
-                  8.dp
-                } else {
-                  4.dp
-                }
-              } else 1.dp, top = if (previousItemSeparationLargeGap) 4.dp else 1.dp
-            ),
+            modifier = Modifier
+              .fillMaxWidth()
+              .then(modifier)
+              .padding(
+                bottom = if (itemSeparation.largeGap) {
+                  if (itemAtZeroIndexInWholeList) {
+                    8.dp
+                  } else {
+                    4.dp
+                  }
+                } else 1.dp, top = if (previousItemSeparationLargeGap) 4.dp else 1.dp
+              ),
             contentAlignment = if (isCenterEvent) Alignment.Center else Alignment.CenterStart
           ) {
             content()
@@ -1978,11 +1981,11 @@ fun BoxScope.ChatItemsList(
           return originalPadding + (if (tailRendered) 0.dp else if (start) msgTailWidthDp * 2 else msgTailWidthDp)
         }
 
-        Box(modifier = if (isCenterEvent) Modifier.fillMaxWidth() else Modifier) {
+        Box(modifier = Modifier.fillMaxWidth()) {
           val voiceWithTransparentBack = cItem.content.msgContent is MsgContent.MCVoice && cItem.content.text.isEmpty() && cItem.quotedItem == null && cItem.meta.itemForwarded == null
           val selectionVisible = selectedChatItems.value != null && cItem.canBeDeletedForSelf
           val selectionOffset by animateDpAsState(if (selectionVisible && !sent) 4.dp + 22.dp * fontSizeMultiplier else 0.dp)
-          val swipeableOrSelectionModifier = (if (selectionVisible) Modifier else swipeableModifier).graphicsLayer { translationX = selectionOffset.toPx() }
+          val swipeModifierToUse = if (selectionVisible || isCenterEvent) Modifier else swipeableModifier
           if (chatInfo is ChatInfo.Group) {
             if (cItem.chatDir is CIDirection.GroupRcv) {
               if (showAvatar) {
@@ -1991,7 +1994,7 @@ fun BoxScope.ChatItemsList(
                     .padding(top = 8.dp)
                     .padding(start = 8.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
                     .fillMaxWidth()
-                    .then(swipeableModifier),
+                    .then(swipeModifierToUse),
                   verticalArrangement = Arrangement.spacedBy(4.dp),
                   horizontalAlignment = Alignment.Start
                 ) {
@@ -2062,7 +2065,7 @@ fun BoxScope.ChatItemsList(
                   }
                 }
               } else {
-                ChatItemBox {
+                ChatItemBox(swipeModifierToUse) {
                   AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
                     SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
                   }
@@ -2070,7 +2073,7 @@ fun BoxScope.ChatItemsList(
                     Modifier
                       .padding(start = if (chatInfo.isChannel) 12.dp else 8.dp + (MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier) + 4.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
                       .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                      .then(swipeableOrSelectionModifier)
+                      .graphicsLayer { translationX = selectionOffset.toPx() }
                   ) {
                     ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
                   }
@@ -2083,7 +2086,7 @@ fun BoxScope.ChatItemsList(
                     .padding(top = 8.dp)
                     .padding(start = 8.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
                     .fillMaxWidth()
-                    .then(swipeableModifier),
+                    .then(swipeModifierToUse),
                   verticalArrangement = Arrangement.spacedBy(4.dp),
                   horizontalAlignment = Alignment.Start
                 ) {
@@ -2145,7 +2148,7 @@ fun BoxScope.ChatItemsList(
                   }
                 }
               } else {
-                ChatItemBox {
+                ChatItemBox(swipeModifierToUse) {
                   AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
                     SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
                   }
@@ -2153,14 +2156,14 @@ fun BoxScope.ChatItemsList(
                     Modifier
                       .padding(start = if (chatInfo.isChannel) 12.dp else 8.dp + (MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier) + 4.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
                       .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                      .then(swipeableOrSelectionModifier)
+                      .graphicsLayer { translationX = selectionOffset.toPx() }
                   ) {
-                    ChatItemViewShortHand(cItem, itemSeparation, range)
+                    ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
                   }
                 }
               }
             } else {
-              ChatItemBox(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier) {
+              ChatItemBox(swipeModifierToUse) {
                 AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
                   SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
                 }
@@ -2169,14 +2172,14 @@ fun BoxScope.ChatItemsList(
                     .padding(start = if (isCenterEvent || voiceWithTransparentBack) 12.dp else adjustTailPaddingOffset(104.dp, start = true), end = 12.dp)
                     .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
                     .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                    .then(if (selectionVisible) Modifier else swipeableModifier)
+                    .graphicsLayer { translationX = selectionOffset.toPx() }
                 ) {
                   ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
                 }
               }
             }
           } else { // direct message
-            ChatItemBox(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier) {
+            ChatItemBox(swipeModifierToUse) {
               AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
                 SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
               }
@@ -2188,7 +2191,7 @@ fun BoxScope.ChatItemsList(
                 )
                   .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
                   .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                  .then(if (!selectionVisible || !sent) swipeableOrSelectionModifier else Modifier)
+                  .graphicsLayer { translationX = selectionOffset.toPx() }
               ) {
                 ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
               }

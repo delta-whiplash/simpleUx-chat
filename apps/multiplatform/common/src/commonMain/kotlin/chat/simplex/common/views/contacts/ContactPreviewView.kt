@@ -86,8 +86,33 @@ fun ContactPreviewView(
 
         Spacer(Modifier.width(DEFAULT_SPACE_AFTER_ICON))
 
-        Box(modifier = Modifier.weight(10f, fill = true)) {
+        Column(modifier = Modifier.weight(10f, fill = true)) {
             chatPreviewTitle()
+            Spacer(Modifier.height(2.dp))
+            val subtitle = when {
+                deleting -> "Suppression..."
+                contactType == ContactType.REQUEST -> "Demande de contact reçue"
+                contactType == ContactType.CONTACT_WITH_REQUEST -> "Demande en attente"
+                contactType == ContactType.CARD -> "Carte de contact"
+                cInfo.chatDeleted -> "Discussion archivée"
+                cInfo is ChatInfo.Direct -> {
+                    val contact = cInfo.contact
+                    when {
+                        !contact.active -> "Non connecté"
+                        !contact.ready -> "Connexion en cours..."
+                        contact.activeConn?.connPQEnabled == true -> "Connecté • Post-quantique"
+                        else -> "Connecté • E2EE"
+                    }
+                }
+                else -> "Connecté"
+            }
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.body2.copy(fontSize = 12.sp),
+                color = MaterialTheme.colors.secondary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 
         Spacer(Modifier.fillMaxWidth().weight(1f))

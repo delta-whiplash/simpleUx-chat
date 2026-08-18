@@ -12,12 +12,14 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.*
@@ -578,33 +580,28 @@ fun ChatInfoLayout(
       }
     }
 
-    SectionDividerSpaced()
-
-    if (customUserProfile != null) {
-      SectionView(generalGetString(MR.strings.incognito)) {
-        SectionItemViewSpaceBetween {
-          Text(generalGetString(MR.strings.incognito_random_profile))
-          Text(customUserProfile.chatViewName, color = Indigo)
-        }
+    // Carte 1 : Sécurité & Confidentialité
+    val conn = contact.activeConn
+    SectionView("Sécurité & Confidentialité") {
+      if (conn != null) {
+        val pqText = if (conn.connPQEnabled) "Quantum resistant (Post-quantique)" else "Standard E2EE"
+        InfoRow("Chiffrement E2E", pqText)
       }
-      SectionDividerSpaced()
-    }
-
-    SectionView {
       if (contact.ready && contact.active) {
         if (connectionCode != null) {
           VerifyCodeButton(contact.verified, verifyClicked)
         }
-        ContactPreferencesButton(openPreferences)
         SendReceiptsOption(currentUser, sendReceipts, setSendReceipts)
         if (cStats != null && cStats.ratchetSyncAllowed) {
           SynchronizeConnectionButton(syncContactConnection)
         }
-        // } else if (developerTools) {
-        //   SynchronizeConnectionButtonForce(syncContactConnectionForce)
-        // }
       }
+      ChatTTLOption(chatItemTTL, setChatItemTTL, deletingItems, title = "Messages éphémères")
+    }
+    SectionDividerSpaced()
 
+    // Carte 2 : Personnalisation
+    SectionView("Personnalisation") {
       WallpaperButton {
         ModalManager.end.showModal(cardScreen = true) {
           val chat = remember { derivedStateOf { chatModel.chats.value.firstOrNull { it.id == chat.id } } }
@@ -614,33 +611,19 @@ fun ChatInfoLayout(
           }
         }
       }
+      if (contact.ready && contact.active) {
+        ContactPreferencesButton(openPreferences)
+      }
+      if (customUserProfile != null) {
+        SectionItemViewSpaceBetween {
+          Text(generalGetString(MR.strings.incognito_random_profile))
+          Text(customUserProfile.chatViewName, color = Indigo)
+        }
+      }
     }
     SectionDividerSpaced()
 
-    SectionView {
-      ChatTTLOption(chatItemTTL, setChatItemTTL, deletingItems)
-    }
-    SectionTextFooter(stringResource(MR.strings.chat_ttl_options_footer))
-    SectionDividerSpaced()
-
-    val conn = contact.activeConn
-    if (conn != null) {
-      SectionView {
-        InfoRow("E2E encryption", if (conn.connPQEnabled) "Quantum resistant" else "Standard")
-      }
-      SectionDividerSpaced()
-    }
-
-    if (contact.contactLink != null) {
-      SectionView(stringResource(MR.strings.address_section_title)) {
-        SimpleXLinkQRCode(contact.contactLink)
-        val clipboard = LocalClipboardManager.current
-        ShareAddressButton { clipboard.shareText(simplexChatLink(contact.contactLink)) }
-      }
-      SectionTextFooter(stringResource(MR.strings.you_can_share_this_address_with_your_contacts).format(contact.displayName))
-      SectionDividerSpaced()
-    }
-
+    // Carte 3 : Relais SMP & Technique
     if (contact.ready && contact.active) {
       SectionView(title = stringResource(MR.strings.conn_stats_section_title_servers)) {
         val chatSubStatus = chatModel.chatSubStatus.value
@@ -655,6 +638,14 @@ fun ChatInfoLayout(
           }
         }
         if (cStats != null) {
+          val rcvServers = cStats.rcvQueuesInfo.map { it.rcvServer }
+          if (rcvServers.isNotEmpty()) {
+            SimplexServers(stringResource(MR.strings.receiving_via), rcvServers)
+          }
+          val sndServers = cStats.sndQueuesInfo.map { it.sndServer }
+          if (sndServers.isNotEmpty()) {
+            SimplexServers(stringResource(MR.strings.sending_via), sndServers)
+          }
           SwitchAddressButton(
             disabled = cStats.rcvQueuesInfo.any { it.rcvSwitchStatus != null } || cStats.ratchetSyncSendProhibited,
             switchAddress = switchContactAddress
@@ -665,19 +656,17 @@ fun ChatInfoLayout(
               abortSwitchAddress = abortSwitchContactAddress
             )
           }
-          val rcvServers = cStats.rcvQueuesInfo.map { it.rcvServer }
-          if (rcvServers.isNotEmpty()) {
-            SimplexServers(stringResource(MR.strings.receiving_via), rcvServers)
-          }
-          val sndServers = cStats.sndQueuesInfo.map { it.sndServer }
-          if (sndServers.isNotEmpty()) {
-            SimplexServers(stringResource(MR.strings.sending_via), sndServers)
-          }
+        }
+        if (contact.contactLink != null) {
+          SimpleXLinkQRCode(contact.contactLink)
+          val clipboard = LocalClipboardManager.current
+          ShareAddressButton { clipboard.shareText(simplexChatLink(contact.contactLink)) }
         }
       }
       SectionDividerSpaced()
     }
 
+    // Carte 4 : Actions destructives
     SectionView {
       ClearChatButton(clearChat)
       DeleteContactButton(deleteContact)
@@ -710,10 +699,11 @@ fun ChatInfoLayout(
 @Composable
 fun ChatInfoHeader(cInfo: ChatInfo, contact: Contact) {
   Column(
-    Modifier.padding(horizontal = DEFAULT_PADDING),
+    Modifier.padding(horizontal = DEFAULT_PADDING, vertical = 6.dp),
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    ChatInfoImage(cInfo, size = 192.dp, iconColor = if (isInDarkTheme()) GroupDark else SettingsSecondaryLight)
+    ChatInfoImage(cInfo, size = 120.dp, iconColor = if (isInDarkTheme()) GroupDark else SettingsSecondaryLight)
+    Spacer(Modifier.height(8.dp))
     val displayName = contact.profile.displayName.trim()
     val badge = cInfo.nameBadge
     val text = buildAnnotatedString {
@@ -828,35 +818,60 @@ fun LocalAliasEditor(
   isContact: Boolean = true,
   updateValue: (String) -> Unit
 ) {
+  val isDark = isInDarkTheme()
   val state = remember(chatId) {
     mutableStateOf(TextFieldValue(initialValue))
   }
   var updatedValueAtLeastOnce = remember { false }
-  val modifier = if (center)
-    Modifier.padding(horizontal = if (!leadingIcon) DEFAULT_PADDING else 0.dp).widthIn(min = 100.dp)
-  else
-    Modifier.padding(horizontal = if (!leadingIcon) DEFAULT_PADDING else 0.dp).fillMaxWidth()
-  Row(Modifier.fillMaxWidth(), horizontalArrangement = if (center) Arrangement.Center else Arrangement.Start) {
-    DefaultBasicTextField(
-      modifier,
-      state,
-      {
-        Text(
-          generalGetString(if (isContact) MR.strings.text_field_set_contact_placeholder else MR.strings.text_field_set_chat_placeholder),
-          textAlign = if (center) TextAlign.Center else TextAlign.Start,
-          color = MaterialTheme.colors.secondary
-        )
-      },
-      leadingIcon = if (leadingIcon) {
-        { Icon(painterResource(MR.images.ic_edit_filled), null, Modifier.padding(start = 7.dp)) }
-      } else null,
-      color = MaterialTheme.colors.secondary,
-      focus = focus,
-      textStyle = TextStyle.Default.copy(textAlign = if (state.value.text.isEmpty() || !center) TextAlign.Start else TextAlign.Center),
-      keyboardActions = KeyboardActions(onDone = { updateValue(state.value.text) })
+  val fieldShape = RoundedCornerShape(12.dp)
+
+  Row(
+    Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 4.dp),
+    horizontalArrangement = if (center) Arrangement.Center else Arrangement.Start
+  ) {
+    Box(
+      modifier = Modifier
+        .clip(fieldShape)
+        .background(if (isDark) Color(0x331E293B) else Color(0x33E2E8F0))
+        .border(1.dp, if (isDark) Color(0x22FFFFFF) else Color(0x1A000000), fieldShape)
+        .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
-      state.value = it
-      updatedValueAtLeastOnce = true
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+      ) {
+        Icon(
+          painter = painterResource(MR.images.ic_edit),
+          contentDescription = null,
+          tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+          modifier = Modifier.size(13.dp)
+        )
+        Spacer(Modifier.width(6.dp))
+        DefaultBasicTextField(
+          Modifier.widthIn(min = 100.dp, max = 260.dp),
+          state,
+          {
+            Text(
+              generalGetString(if (isContact) MR.strings.text_field_set_contact_placeholder else MR.strings.text_field_set_chat_placeholder),
+              textAlign = if (center) TextAlign.Center else TextAlign.Start,
+              color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+              fontSize = 13.sp
+            )
+          },
+          leadingIcon = null,
+          color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A),
+          focus = focus,
+          textStyle = TextStyle.Default.copy(
+            textAlign = if (state.value.text.isEmpty() || !center) TextAlign.Start else TextAlign.Center,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Medium
+          ),
+          keyboardActions = KeyboardActions(onDone = { updateValue(state.value.text) })
+        ) {
+          state.value = it
+          updatedValueAtLeastOnce = true
+        }
+      }
     }
   }
   LaunchedEffect(chatId) {
@@ -1066,39 +1081,66 @@ fun InfoViewActionButton(
   disabledLook: Boolean,
   onClick: () -> Unit
 ) {
+  val isDark = isInDarkTheme()
+  val shape = CircleShape
+  val bg = if (disabledLook) {
+    if (isDark) Color(0x22334155) else Color(0x2294A3B8)
+  } else {
+    if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+  }
+  val border = if (disabledLook) {
+    Color.Transparent
+  } else {
+    if (isDark) Color(0x33FFFFFF) else Color(0x1F000000)
+  }
+  val iconTint = if (disabledLook) {
+    if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+  } else {
+    if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+  }
+  val textTint = if (disabledLook) {
+    if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+  } else {
+    if (isDark) Color(0xFFCBD5E1) else Color(0xFF334155)
+  }
+
   Box(modifier) {
     Column(
       Modifier
         .fillMaxWidth()
-        .padding(8.dp),
+        .padding(vertical = 6.dp, horizontal = 4.dp),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
       IconButton(
         onClick = onClick,
-        enabled = !disabled
+        enabled = !disabled,
+        modifier = Modifier.size(48.dp)
       ) {
         Box(
           Modifier
-            .size(56.dp)
-            .background(
-              if (disabledLook) MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.primary,
-              shape = CircleShape
-            ),
+            .size(48.dp)
+            .clip(shape)
+            .background(bg)
+            .border(1.dp, border, shape),
           contentAlignment = Alignment.Center
         ) {
           Icon(
             icon,
             contentDescription = null,
             Modifier.size(22.dp * fontSizeSqrtMultiplier),
-            tint = if (disabledLook) MaterialTheme.colors.secondary else MaterialTheme.colors.onPrimary
+            tint = iconTint
           )
         }
       }
+      Spacer(Modifier.height(4.dp))
       Text(
         title.capitalize(Locale.current),
-        Modifier.padding(top = DEFAULT_SPACE_AFTER_ICON),
-        style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.Normal, fontSize = 12.sp),
-        color = MaterialTheme.colors.secondary,
+        style = MaterialTheme.typography.subtitle2.copy(
+          fontWeight = FontWeight.Medium,
+          fontSize = 11.5.sp,
+          color = textTint
+        ),
+        textAlign = TextAlign.Center,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
       )

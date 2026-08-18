@@ -1,16 +1,16 @@
 package chat.simplex.common.views.chat
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import androidx.compose.desktop.ui.tooling.preview.Preview
@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.*
@@ -37,11 +38,10 @@ fun ContextItemView(
   contextIcon: Painter,
   showSender: Boolean = true,
   chatInfo: ChatInfo,
-  contextIconColor: Color = MaterialTheme.colors.secondary,
+  contextIconColor: Color? = null,
   cancelContextItem: () -> Unit,
 ) {
-  val sentColor = MaterialTheme.appColors.sentMessage
-  val receivedColor = MaterialTheme.appColors.receivedMessage
+  val isDark = isInDarkTheme()
 
   @Composable
   fun MessageText(contextItem: ChatItem, attachment: ImageResource?, lines: Int, prefix: AnnotatedString? = null, stripLink: String? = null) {
@@ -55,7 +55,7 @@ fun ContextItemView(
           "attachmentIcon" to InlineTextContent(
             Placeholder(20.sp, 20.sp, PlaceholderVerticalAlign.TextCenter)
           ) {
-            Icon(painterResource(attachment), null, tint = MaterialTheme.colors.secondary)
+            Icon(painterResource(attachment), null, tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706))
           }
         )
         inlineContentBuilder to inlineContent
@@ -104,43 +104,68 @@ fun ContextItemView(
     }
   }
 
-  val sent = contextItems[0].chatDir.sent
-  val accentColor = if (sent) MaterialTheme.colors.primary else MaterialTheme.colors.secondary
+  val shape = RoundedCornerShape(16.dp)
+  val effectiveIconColor = contextIconColor ?: (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706))
 
   Row(
     Modifier
       .padding(horizontal = 8.dp, vertical = 4.dp)
-      .clip(Corner12)
-      .background((if (sent) sentColor else receivedColor).copy(alpha = 0.65f))
-      .drawBehind {
-        val barWidth = 3.dp.toPx()
-        drawRoundRect(
-          color = accentColor,
-          topLeft = Offset(0f, 0f),
-          size = Size(barWidth, size.height),
-          cornerRadius = CornerRadius(barWidth / 2, barWidth / 2)
-        )
-      }
-      .padding(start = 6.dp),
+      .clip(shape)
+      .background(
+        if (isDark) Brush.verticalGradient(listOf(Color(0xFF1E2533), Color(0xFF131720)))
+        else Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+      )
+      .border(
+        width = 1.dp,
+        brush = Brush.verticalGradient(
+          if (isDark) listOf(Color(0x38FFFFFF), Color(0x0EFFFFFF))
+          else listOf(Color(0x250F172A), Color(0x0C0F172A))
+        ),
+        shape = shape
+      )
+      .padding(start = 4.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
+    // Left Accent Bar with rounded caps
+    Box(
+      modifier = Modifier
+        .padding(vertical = 8.dp, horizontal = 6.dp)
+        .width(3.5.dp)
+        .height(36.dp)
+        .clip(RoundedCornerShape(3.dp))
+        .background(
+          Brush.verticalGradient(
+            if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
+            else listOf(Color(0xFFD97706), Color(0xFFB45309))
+          )
+        )
+    )
+
+    // Context Icon inside subtle disc
+    Box(
+      modifier = Modifier
+        .size(28.dp)
+        .clip(CircleShape)
+        .background(if (isDark) Color(0x22E2B755) else Color(0x18D97706)),
+      contentAlignment = Alignment.Center
+    ) {
+      Icon(
+        contextIcon,
+        modifier = Modifier.size(15.dp),
+        contentDescription = stringResource(MR.strings.icon_descr_context),
+        tint = effectiveIconColor,
+      )
+    }
+
+    Spacer(Modifier.width(8.dp))
+
     Row(
       Modifier
-        .padding(vertical = 12.dp)
+        .padding(vertical = 8.dp)
         .fillMaxWidth()
         .weight(1F),
       verticalAlignment = Alignment.CenterVertically
     ) {
-      Icon(
-        contextIcon,
-        modifier = Modifier
-          .padding(horizontal = 8.dp)
-          .height(20.dp)
-          .width(20.dp),
-        contentDescription = stringResource(MR.strings.icon_descr_context),
-        tint = contextIconColor,
-        )
-
       if (contextItems.count() == 1) {
         val contextItem = contextItems[0]
         val sender = contextItem.memberDisplayName
@@ -148,28 +173,50 @@ fun ContextItemView(
         if (showSender && sender != null) {
           Column(
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
           ) {
             Text(
               sender,
-              style = TextStyle(fontSize = 13.5.sp, color = CurrentColors.value.colors.secondary)
+              style = TextStyle(
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+              )
             )
-            ContextMsgPreview(contextItem, lines = 2)
+            ContextMsgPreview(contextItem, lines = 1)
           }
         } else {
-          ContextMsgPreview(contextItem, lines = 3)
+          ContextMsgPreview(contextItem, lines = 2)
         }
       } else if (contextItems.isNotEmpty()) {
-        Text(String.format(generalGetString(if (chatInfo.chatType == ChatType.Local) MR.strings.compose_save_messages_n else MR.strings.compose_forward_messages_n), contextItems.count()), fontStyle = FontStyle.Italic)
+        Text(
+          String.format(generalGetString(if (chatInfo.chatType == ChatType.Local) MR.strings.compose_save_messages_n else MR.strings.compose_forward_messages_n), contextItems.count()),
+          fontStyle = FontStyle.Italic,
+          color = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+          fontSize = 13.sp
+        )
       }
     }
-    IconButton(onClick = cancelContextItem) {
-      Icon(
-        painterResource(MR.images.ic_close),
-        contentDescription = stringResource(MR.strings.cancel_verb),
-        tint = MaterialTheme.colors.primary,
-        modifier = Modifier.padding(10.dp)
-      )
+
+    // Polished Close Button
+    IconButton(
+      onClick = cancelContextItem,
+      modifier = Modifier.size(32.dp)
+    ) {
+      Box(
+        modifier = Modifier
+          .size(24.dp)
+          .clip(CircleShape)
+          .background(if (isDark) Color(0x2A94A3B8) else Color(0x1F64748B)),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          painterResource(MR.images.ic_close),
+          contentDescription = stringResource(MR.strings.cancel_verb),
+          tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+          modifier = Modifier.size(13.dp)
+        )
+      }
     }
   }
 }

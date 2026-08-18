@@ -182,6 +182,8 @@ private fun ToolbarSegment(
   }
 }
 
+val LocalSimpleUxTab = compositionLocalOf<MutableState<SimpleUxTab>> { mutableStateOf(SimpleUxTab.CHATS) }
+
 // Spec: spec/client/chat-list.md#ChatListView
 @Composable
 fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<AnimatedViewState>, setPerformLA: (Boolean) -> Unit, stopped: Boolean) {
@@ -213,16 +215,17 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
 
-  Box(Modifier.fillMaxSize()) {
-    when (currentTab.value) {
-      SimpleUxTab.CHATS -> {
-        ChatListWithLoadingScreen(searchText, listState, userPickerState, setPerformLA, stopped)
-      }
+  CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
+    Box(Modifier.fillMaxSize()) {
+      when (currentTab.value) {
+        SimpleUxTab.CHATS -> {
+          ChatListWithLoadingScreen(searchText, listState, userPickerState, setPerformLA, stopped)
+        }
       SimpleUxTab.CONTACTS -> {
         if (appPlatform.isAndroid) {
           BackHandler { currentTab.value = SimpleUxTab.CHATS }
         }
-        Box(Modifier.fillMaxSize().padding(bottom = 56.dp)) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = 56.dp)) {
           val modalData = remember { ModalData() }
           modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
         }
@@ -231,20 +234,8 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
         if (appPlatform.isAndroid) {
           BackHandler { currentTab.value = SimpleUxTab.CHATS }
         }
-        Box(Modifier.fillMaxSize().padding(bottom = 56.dp)) {
+        Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = 56.dp)) {
           SettingsView(chatModel, setPerformLA, close = { currentTab.value = SimpleUxTab.CHATS })
-        }
-      }
-      SimpleUxTab.PROFILE -> {
-        if (appPlatform.isAndroid) {
-          BackHandler { currentTab.value = SimpleUxTab.CHATS }
-        }
-        Box(Modifier.fillMaxSize().padding(bottom = 56.dp).clipToBounds()) {
-          UserProfileView(
-            chatModel,
-            close = { currentTab.value = SimpleUxTab.CHATS },
-            onNavigateToSettings = { currentTab.value = SimpleUxTab.SETTINGS }
-          )
         }
       }
     }
@@ -276,11 +267,12 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
       onDismiss = { showProfileSwitcherPopup.value = false },
       onNavigateToProfile = {
         showProfileSwitcherPopup.value = false
-        currentTab.value = SimpleUxTab.PROFILE
+        currentTab.value = SimpleUxTab.SETTINGS
       }
     )
 
     ThemeCircularRevealOverlay()
+    }
   }
 
   if (searchText.value.text.isEmpty()) {
@@ -1063,47 +1055,9 @@ private fun TelegramTopHeader(
       verticalAlignment = Alignment.CenterVertically
     ) {
       Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-      ) {
-        Text(
-          text = "SimpleUX",
-          color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-          style = TextStyle(
-            fontFamily = Inter,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
-          )
-        )
-      }
-
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        IconButton(onClick = { searchVisible.value = true }) {
-          Icon(
-            painterResource(MR.images.ic_search),
-            contentDescription = "Recherche",
-            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-            modifier = Modifier.size(24.dp)
-          )
-        }
-
-        IconButton(onClick = {
-          val closeAll = { ModalManager.start.closeModals() }
-          ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
-            NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll)
-          }
-        }) {
-          Icon(
-            painterResource(MR.images.ic_qr_code),
-            contentDescription = "Scanner ou coller un lien",
-            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-            modifier = Modifier.size(23.dp)
-          )
-        }
-
-        SubscriptionStatusIndicator(
-          click = {
+        modifier = Modifier
+          .clip(RoundedCornerShape(8.dp))
+          .clickable {
             ModalManager.start.showCustomModal { close ->
               ServerRadarSheet(
                 isConnected = chatModel.chatRunning.value == true,
@@ -1117,21 +1071,62 @@ private fun TelegramTopHeader(
               )
             }
           }
+          .padding(vertical = 4.dp, horizontal = 2.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+      ) {
+        Text(
+          text = "SimpleUX",
+          color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+          style = TextStyle(
+            fontFamily = Inter,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            letterSpacing = 0.5.sp
+          )
         )
+        val isConnected = chatModel.chatRunning.value == true
+        if (!isConnected) {
+          Box(
+            modifier = Modifier
+              .size(8.dp)
+              .clip(CircleShape)
+              .background(Color(0xFFEF4444))
+          )
+        }
+      }
+
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
+      ) {
+        // Search Button - Natural & Borderless
+        IconButton(onClick = { searchVisible.value = true }) {
+          Icon(
+            painterResource(MR.images.ic_search),
+            contentDescription = "Recherche",
+            tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+            modifier = Modifier.size(22.dp)
+          )
+        }
 
         val headerScope = rememberCoroutineScope()
         Box {
+          // Options Menu Trigger - Natural & Borderless
           IconButton(onClick = { showMenu.value = true }) {
             Icon(
-              painterResource(MR.images.ic_more_horiz),
+              painterResource(MR.images.ic_more_vert),
               contentDescription = "Options",
-              tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-              modifier = Modifier.size(24.dp)
+              tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+              modifier = Modifier.size(22.dp)
             )
           }
 
-          DefaultDropdownMenu(showMenu) {
-            // Theme Switch Item with Rotating Sun/Moon Icon & Ripple Animation
+          DefaultDropdownMenu(
+            showMenu = showMenu,
+            offset = DpOffset(0.dp, 4.dp)
+          ) {
+            // Theme Switch Item
             Row(
               modifier = Modifier
                 .fillMaxWidth()
@@ -1151,38 +1146,94 @@ private fun TelegramTopHeader(
               Text(
                 text = if (isDark) "Mode Clair" else "Mode Sombre",
                 fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
+                fontWeight = FontWeight.Normal,
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
               )
             }
-            Divider(color = if (isDark) Color(0x22FFFFFF) else Color(0x15000000), thickness = 0.5.dp)
 
-            ItemAction(
-              stringResource(MR.strings.new_chat),
-              painterResource(MR.images.ic_edit_filled),
-              onClick = {
-                showMenu.value = false
-                showNewChatSheet(oneHandUI)
-              }
-            )
-            ItemAction(
-              "Profils & Identités",
-              painterResource(MR.images.ic_supervised_user_circle_filled),
-              onClick = {
-                showMenu.value = false
-                userPickerState.value = AnimatedViewState.VISIBLE
-              }
-            )
-            ItemAction(
-              stringResource(MR.strings.settings_section_title_settings),
-              painterResource(MR.images.ic_settings),
-              onClick = {
-                showMenu.value = false
-                ModalManager.start.showCustomModal { close ->
-                  SettingsView(chatModel, setPerformLA, close)
+            Divider(color = if (isDark) Color(0x15FFFFFF) else Color(0x10000000), thickness = 0.5.dp)
+
+            val tabState = LocalSimpleUxTab.current
+
+            // Profiles & Identities
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                  showMenu.value = false
+                  userPickerState.value = AnimatedViewState.VISIBLE
                 }
-              }
-            )
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+              Icon(
+                painterResource(MR.images.ic_supervised_user_circle_filled),
+                contentDescription = null,
+                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                modifier = Modifier.size(20.dp)
+              )
+              Text(
+                text = "Profils & Identités",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+              )
+            }
+
+            // New Contact
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                  showMenu.value = false
+                  ModalManager.start.closeModals()
+                  tabState.value = SimpleUxTab.CONTACTS
+                }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+              Icon(
+                painterResource(MR.images.ic_person_add),
+                contentDescription = null,
+                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                modifier = Modifier.size(20.dp)
+              )
+              Text(
+                text = "Nouveau contact",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+              )
+            }
+
+            // Settings
+            Row(
+              modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                  showMenu.value = false
+                  ModalManager.start.closeModals()
+                  tabState.value = SimpleUxTab.SETTINGS
+                }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+              Icon(
+                painterResource(MR.images.ic_settings),
+                contentDescription = null,
+                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                modifier = Modifier.size(20.dp)
+              )
+              Text(
+                text = "Paramètres",
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Normal,
+                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+              )
+            }
           }
         }
       }
@@ -1234,7 +1285,7 @@ private fun TelegramTopHeader(
 }
 
 enum class SimpleUxTab {
-  CHATS, CONTACTS, SETTINGS, PROFILE
+  CHATS, CONTACTS, SETTINGS
 }
 
 @Composable
@@ -1276,7 +1327,7 @@ fun BoxScope.TelegramBottomIslandBar(
     ) {
       Row(
         modifier = Modifier
-          .padding(horizontal = 10.dp, vertical = 6.dp),
+          .padding(horizontal = 14.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -1294,7 +1345,7 @@ fun BoxScope.TelegramBottomIslandBar(
           }
         )
 
-        Spacer(Modifier.width(6.dp))
+        Spacer(Modifier.width(10.dp))
 
         // Tab 2: Contacts
         IslandTabItem(
@@ -1306,7 +1357,7 @@ fun BoxScope.TelegramBottomIslandBar(
           }
         )
 
-        Spacer(Modifier.width(6.dp))
+        Spacer(Modifier.width(10.dp))
 
         // Tab 3: Settings
         IslandTabItem(
@@ -1315,19 +1366,6 @@ fun BoxScope.TelegramBottomIslandBar(
           isActive = (currentTab == SimpleUxTab.SETTINGS),
           onClick = {
             onSelectTab(SimpleUxTab.SETTINGS)
-          }
-        )
-
-        Spacer(Modifier.width(6.dp))
-
-        // Tab 4: Profile
-        val currentUser = chatModel.currentUser.value
-        IslandProfileTabItem(
-          label = "Profile",
-          user = currentUser,
-          isActive = (currentTab == SimpleUxTab.PROFILE),
-          onClick = {
-            onSelectTab(SimpleUxTab.PROFILE)
           },
           onLongClick = onProfileLongClick
         )
@@ -1336,12 +1374,14 @@ fun BoxScope.TelegramBottomIslandBar(
   }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun IslandTabItem(
   label: String,
   icon: ImageResource,
   isActive: Boolean,
-  onClick: () -> Unit
+  onClick: () -> Unit,
+  onLongClick: (() -> Unit)? = null
 ) {
   val isDark = isInDarkTheme()
   val activeShape = RoundedCornerShape(20.dp)
@@ -1352,13 +1392,21 @@ private fun IslandTabItem(
     SolidColor(Color.Transparent)
   }
 
+  val inactiveColor = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569)
+
   Box(
     modifier = Modifier
       .clip(activeShape)
       .background(activeBg)
       .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0x44D97706), activeShape) else Modifier)
-      .clickable(onClick = onClick)
-      .padding(horizontal = 14.dp, vertical = 6.dp),
+      .then(
+        if (onLongClick != null) {
+          Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
+        } else {
+          Modifier.clickable(onClick = onClick)
+        }
+      )
+      .padding(horizontal = 16.dp, vertical = 6.dp),
     contentAlignment = Alignment.Center
   ) {
     Column(
@@ -1369,109 +1417,14 @@ private fun IslandTabItem(
         painterResource(icon),
         contentDescription = label,
         modifier = Modifier.size(20.dp),
-        tint = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+        tint = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else inactiveColor
       )
       Spacer(Modifier.height(2.dp))
       Text(
         label,
         fontSize = 11.sp,
-        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
-        color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-      )
-    }
-  }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun IslandProfileTabItem(
-  label: String,
-  user: User?,
-  isActive: Boolean,
-  onClick: () -> Unit,
-  onLongClick: () -> Unit
-) {
-  val isDark = isInDarkTheme()
-  val activeShape = RoundedCornerShape(20.dp)
-  val activeBg = if (isActive) {
-    if (isDark) Brush.linearGradient(listOf(Color(0x33E2B755), Color(0x22D97706)))
-    else Brush.linearGradient(listOf(Color(0x28D97706), Color(0x18D97706)))
-  } else {
-    SolidColor(Color.Transparent)
-  }
-
-  val profileImage = user?.profile?.image
-  val displayName = user?.displayName ?: ""
-
-  Box(
-    modifier = Modifier
-      .clip(activeShape)
-      .background(activeBg)
-      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0x44D97706), activeShape) else Modifier)
-      .combinedClickable(
-        onClick = onClick,
-        onLongClick = onLongClick
-      )
-      .padding(horizontal = 14.dp, vertical = 6.dp),
-    contentAlignment = Alignment.Center
-  ) {
-    Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center
-    ) {
-      Box(
-        modifier = Modifier
-          .size(22.dp)
-          .clip(CircleShape)
-          .border(
-            width = if (isActive) 1.5.dp else 1.dp,
-            color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0x44FFFFFF) else Color(0x22000000)),
-            shape = CircleShape
-          ),
-        contentAlignment = Alignment.Center
-      ) {
-        if (profileImage != null) {
-          ProfileImage(
-            image = profileImage,
-            size = 22.dp
-          )
-        } else if (displayName.isNotBlank()) {
-          Box(
-            modifier = Modifier
-              .fillMaxSize()
-              .background(
-                Brush.linearGradient(
-                  if (isActive) listOf(Color(0xFFE2B755), Color(0xFFD97706))
-                  else if (isDark) listOf(Color(0xFF334155), Color(0xFF1E293B))
-                  else listOf(Color(0xFFE2E8F0), Color(0xFFCBD5E1))
-                )
-              ),
-            contentAlignment = Alignment.Center
-          ) {
-            Text(
-              text = displayName.take(1).uppercase(),
-              style = TextStyle(
-                fontFamily = Inter,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = if (isActive) (if (isDark) Color(0xFF0F172A) else Color.White) else (if (isDark) Color(0xFFE2E8F0) else Color(0xFF334155))
-              )
-            )
-          }
-        } else {
-          ProfileImage(
-            image = null,
-            size = 22.dp,
-            color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-          )
-        }
-      }
-      Spacer(Modifier.height(2.dp))
-      Text(
-        label,
-        fontSize = 11.sp,
-        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal,
-        color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
+        color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else inactiveColor
       )
     }
   }
@@ -1504,8 +1457,9 @@ private fun BoxScope.ChatList(
   val chats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
 
   LazyColumnWithScrollBar(
-    Modifier.imePadding().nestedScroll(nestedScrollConnection),
-    listState,
+    modifier = Modifier.imePadding().nestedScroll(nestedScrollConnection),
+    state = listState,
+    contentPadding = PaddingValues(bottom = 90.dp),
     reverseLayout = false
   ) {
     stickyHeader {

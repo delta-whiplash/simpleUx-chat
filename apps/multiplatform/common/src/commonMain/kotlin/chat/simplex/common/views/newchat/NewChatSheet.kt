@@ -8,11 +8,13 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.painter.Painter
@@ -47,29 +49,22 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
     }
   }
 
-  val isDark = isInDarkTheme()
-
-  Box(Modifier.fillMaxSize()) {
+  Box(
+    Modifier
+      .fillMaxSize()
+      .background(MaterialTheme.colors.background)
+  ) {
     val closeAll = { ModalManager.start.closeModals() }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colors.background)
+    ) {
       DefaultAppBar(
-        navigationButton = { NavigationButtonBack(onButtonClicked = close) },
+        navigationButton = if (ModalManager.start.hasModalsOpen()) { { NavigationButtonBack(onButtonClicked = close) } } else null,
         fixedTitleText = "Contacts",
-        buttons = {
-          IconButton(onClick = {
-            ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
-              NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll)
-            }
-          }) {
-            Icon(
-              painterResource(MR.images.ic_qr_code),
-              contentDescription = "Scanner",
-              tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-              modifier = Modifier.size(23.dp)
-            )
-          }
-        },
+        buttons = {},
         onTop = true,
       )
       NewChatSheetLayout(
@@ -195,6 +190,11 @@ private fun ModalData.NewChatSheetLayout(
 
   val actionButtonsOriginal = listOf(
     Triple(
+      painterResource(MR.images.ic_person_add_filled),
+      "Inviter / Se connecter",
+      addContact,
+    ),
+    Triple(
       painterResource(MR.images.ic_group),
       stringResource(MR.strings.create_group_button),
       createGroup,
@@ -209,13 +209,10 @@ private fun ModalData.NewChatSheetLayout(
   @Composable
   fun DeletedChatsItem(actionButtons: List<Triple<Painter, String, () -> Unit>>) {
     if (searchText.value.text.isEmpty()) {
-      Spacer(Modifier.padding(bottom = 27.dp))
-    }
-
-    if (searchText.value.text.isEmpty()) {
-      Row {
+      Spacer(Modifier.padding(bottom = 12.dp))
+      Row(Modifier.fillMaxWidth()) {
         SectionView {
-          actionButtons.map {
+          actionButtons.forEach {
             NewChatButton(
               icon = it.first,
               text = it.second,
@@ -331,7 +328,8 @@ private fun ModalData.NewChatSheetLayout(
       item {
         if (filteredContactChats.isNotEmpty() && searchText.value.text.isEmpty()) {
           SectionDividerSpaced(maxTopPadding = false, maxBottomPadding = false)
-          SectionView(stringResource(MR.strings.contact_list_header_title), headerBottomPadding = DEFAULT_PADDING_HALF) {}
+          val count = filteredContactChats.size
+          SectionView("Vos contacts ($count)", headerBottomPadding = DEFAULT_PADDING_HALF) {}
           Spacer(Modifier.height(DEFAULT_PADDING_HALF))
         }
       }
@@ -389,7 +387,8 @@ private fun ModalData.NewChatSheetLayout(
       item {
         if (filteredContactChats.isNotEmpty() && searchText.value.text.isEmpty()) {
           SectionDividerSpaced()
-          SectionView(stringResource(MR.strings.contact_list_header_title), headerBottomPadding = DEFAULT_PADDING_HALF) {}
+          val count = filteredContactChats.size
+          SectionView("Vos contacts ($count)", headerBottomPadding = DEFAULT_PADDING_HALF) {}
         }
       }
       item {
@@ -446,14 +445,36 @@ private fun NewChatButton(
   text: String,
   click: () -> Unit,
   textColor: Color = Color.Unspecified,
-  iconColor: Color = MaterialTheme.colors.primary,
+  iconColor: Color = if (isInDarkTheme()) Color(0xFFE2B755) else Color(0xFFD97706),
   disabled: Boolean = false
 ) {
+  val isDark = isInDarkTheme()
   SectionItemView(click, disabled = disabled) {
-    Row {
-      Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
-      TextIconSpaced(false)
-      Text(text, color = if (disabled) MaterialTheme.colors.secondary else textColor)
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.fillMaxWidth()
+    ) {
+      Box(
+        modifier = Modifier
+          .size(36.dp)
+          .clip(CircleShape)
+          .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+          .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), CircleShape),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          icon,
+          contentDescription = text,
+          tint = if (disabled) MaterialTheme.colors.secondary else iconColor,
+          modifier = Modifier.size(18.dp)
+        )
+      }
+      Spacer(Modifier.width(12.dp))
+      Text(
+        text,
+        color = if (disabled) MaterialTheme.colors.secondary else if (textColor != Color.Unspecified) textColor else MaterialTheme.colors.onBackground,
+        style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium)
+      )
     }
   }
 }
@@ -495,6 +516,8 @@ private fun ContactsSearchBar(
       }
     }
 
+    val isDark = isInDarkTheme()
+    val closeAll = { ModalManager.start.closeModals() }
     val hasText = remember { derivedStateOf { searchText.value.text.isNotEmpty() } }
     if (hasText.value) {
       val hideSearchOnBack: () -> Unit = { searchText.value = TextFieldValue() }
@@ -503,10 +526,19 @@ private fun ContactsSearchBar(
         hideSearchOnBack()
       }
     } else {
-      Row {
+      Row(verticalAlignment = Alignment.CenterVertically) {
         val padding = if (appPlatform.isDesktop) 0.dp else 7.dp
-        if (chatModel.chats.size > 0) {
-          ToggleFilterButton()
+        IconButton(onClick = {
+          ModalManager.start.showModalCloseable(endButtons = { AddContactLearnMoreButton() }) { _ ->
+            NewChatView(chatModel.currentRemoteHost.value, NewChatOption.CONNECT, showQRCodeScanner = appPlatform.isAndroid, close = closeAll)
+          }
+        }) {
+          Icon(
+            painterResource(MR.images.ic_qr_code),
+            contentDescription = "Scanner",
+            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+            modifier = Modifier.size(22.dp)
+          )
         }
         Spacer(Modifier.width(padding))
       }

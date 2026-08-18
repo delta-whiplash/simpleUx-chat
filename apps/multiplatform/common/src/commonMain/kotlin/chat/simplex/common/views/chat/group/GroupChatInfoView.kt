@@ -939,13 +939,19 @@ private fun SelectedItemsCounterToolbarSetter(
 }
 
 @Composable
-fun ChatTTLOption(chatItemTTL: State<ChatItemTTL?>, setChatItemTTL: (ChatItemTTL?) -> Unit, deletingItems: State<Boolean>) {
+fun ChatTTLOption(
+  chatItemTTL: State<ChatItemTTL?>,
+  setChatItemTTL: (ChatItemTTL?) -> Unit,
+  deletingItems: State<Boolean>,
+  title: String = "Messages éphémères"
+) {
   Box {
     TtlOptions(
       chatItemTTL,
       enabled = remember { derivedStateOf { !deletingItems.value } },
       onSelected = setChatItemTTL,
-      default = chatModel.chatItemTTL
+      default = chatModel.chatItemTTL,
+      title = title
     )
     if (deletingItems.value) {
       Box(Modifier.matchParentSize()) {

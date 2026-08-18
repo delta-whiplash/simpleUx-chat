@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -35,14 +36,6 @@ fun SecurityBadge(
         (chat?.chatInfo as? ChatInfo.Direct)?.contact
     }
     val isVerified = contact?.verified == true
-    val shape = RoundedCornerShape(12.dp)
-
-    val labelText = when {
-        isVerified -> stringResource(MR.strings.security_badge_verified)
-        encryption == SecurityBadgeEncryption.POST_QUANTUM -> stringResource(MR.strings.security_badge_pq_encrypted)
-        encryption == SecurityBadgeEncryption.STANDARD_E2EE -> stringResource(MR.strings.security_badge_e2ee)
-        else -> stringResource(MR.strings.security_badge_not_encrypted)
-    }
 
     val accentColor = when {
         isVerified -> Color(0xFF00E5FF) // Cyan for Verified
@@ -65,14 +58,15 @@ fun SecurityBadge(
 
     Box(
         modifier = modifier
-            .clip(shape)
+            .size(22.dp)
+            .clip(CircleShape)
             .background(
-                if (isDark) accentColor.copy(alpha = 0.12f) else accentColor.copy(alpha = 0.08f)
+                if (isDark) accentColor.copy(alpha = 0.15f) else accentColor.copy(alpha = 0.10f)
             )
             .border(
                 width = 1.dp,
-                color = accentColor.copy(alpha = if (isDark) 0.35f else 0.25f),
-                shape = shape
+                color = accentColor.copy(alpha = if (isDark) 0.40f else 0.30f),
+                shape = CircleShape
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -82,32 +76,20 @@ fun SecurityBadge(
                     title = alertTitle,
                     text = "$encryptionLine\n$contactLine"
                 )
-            }
-            .padding(horizontal = 8.dp, vertical = 3.dp),
+            },
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Icon(
-                painter = painterResource(
-                    when {
-                        isVerified -> MR.images.ic_verified_user
-                        encryption == SecurityBadgeEncryption.NOT_ENCRYPTED -> MR.images.ic_lock_open_right
-                        else -> MR.images.ic_lock
-                    }
-                ),
-                contentDescription = null,
-                tint = accentColor,
-                modifier = Modifier.size(12.dp)
-            )
-            Text(
-                text = labelText,
-                color = accentColor,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+        Icon(
+            painter = painterResource(
+                when {
+                    isVerified -> MR.images.ic_verified_user
+                    encryption == SecurityBadgeEncryption.NOT_ENCRYPTED -> MR.images.ic_lock_open_right
+                    else -> MR.images.ic_lock
+                }
+            ),
+            contentDescription = "Chiffrement",
+            tint = accentColor,
+            modifier = Modifier.size(12.dp)
+        )
     }
 }
