@@ -20,6 +20,7 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontStyle
@@ -570,14 +571,14 @@ private fun SmallContentPreview(borderColor: Color = MaterialTheme.colors.onSurf
 
 @Composable
 private fun SmallContentPreviewVoice(content: @Composable () -> Unit) {
-  Box(Modifier.padding(top = 2.sp.toDp(), end = 8.sp.toDp()).height(voiceMessageSizeBasedOnSquareSize(36f).sp.toDp())) {
+  Box(Modifier.padding(top = 2.sp.toDp(), end = 8.sp.toDp()).widthIn(max = 48.dp).height(voiceMessageSizeBasedOnSquareSize(36f).sp.toDp()).clipToBounds()) {
     content()
   }
 }
 
 @Composable
 private fun SmallContentPreviewFile(content: @Composable () -> Unit) {
-  Box(Modifier.padding(top = 3.sp.toDp(), end = 8.sp.toDp()).offset(x = -8.sp.toDp(), y = -4.sp.toDp()).height(41.sp.toDp())) {
+  Box(Modifier.padding(top = 3.sp.toDp(), end = 8.sp.toDp()).offset(x = -8.sp.toDp(), y = -4.sp.toDp()).widthIn(max = 48.dp).height(41.sp.toDp()).clipToBounds()) {
     content()
   }
 }

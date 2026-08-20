@@ -105,7 +105,10 @@ fun CIImageView(
       // .width(DEFAULT_MAX_IMAGE_WIDTH) is a hack for image to increase IntrinsicSize of FramedItemView
       // if text is short and take all available width if text is long
       modifier = Modifier
-        .width(if (imageBitmap.width * 0.97 <= imageBitmap.height) imageViewFullWidth() * 0.75f else DEFAULT_MAX_IMAGE_WIDTH)
+        .then(
+          if (smallView) Modifier.fillMaxSize()
+          else Modifier.width(if (imageBitmap.width * 0.97 <= imageBitmap.height) imageViewFullWidth() * 0.75f else DEFAULT_MAX_IMAGE_WIDTH)
+        )
         .combinedClickable(
           onLongClick = { showMenu.value = true },
           onClick = onClick
@@ -129,7 +132,10 @@ fun CIImageView(
         // .width(DEFAULT_MAX_IMAGE_WIDTH) is a hack for image to increase IntrinsicSize of FramedItemView
         // if text is short and take all available width if text is long
         modifier = Modifier
-          .width(if (painter.intrinsicSize.width * 0.97 <= painter.intrinsicSize.height) imageViewFullWidth() * 0.75f else DEFAULT_MAX_IMAGE_WIDTH)
+          .then(
+            if (smallView) Modifier.fillMaxSize()
+            else Modifier.width(if (painter.intrinsicSize.width * 0.97 <= painter.intrinsicSize.height) imageViewFullWidth() * 0.75f else DEFAULT_MAX_IMAGE_WIDTH)
+          )
           .combinedClickable(
             onLongClick = { showMenu.value = true },
             onClick = onClick
@@ -140,7 +146,10 @@ fun CIImageView(
       )
     } else {
       Box(Modifier
-        .width(if (painter.intrinsicSize != Size.Unspecified && painter.intrinsicSize.width * 0.97 <= painter.intrinsicSize.height) imageViewFullWidth() * 0.75f else DEFAULT_MAX_IMAGE_WIDTH)
+        .then(
+          if (smallView) Modifier.fillMaxSize()
+          else Modifier.width(if (painter.intrinsicSize != Size.Unspecified && painter.intrinsicSize.width * 0.97 <= painter.intrinsicSize.height) imageViewFullWidth() * 0.75f else DEFAULT_MAX_IMAGE_WIDTH)
+        )
         .combinedClickable(
           onLongClick = { showMenu.value = true },
           onClick = {}
