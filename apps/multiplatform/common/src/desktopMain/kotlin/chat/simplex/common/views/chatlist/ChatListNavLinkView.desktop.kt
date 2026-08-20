@@ -58,9 +58,4 @@ actual fun ChatListNavLinkLayout(
       }
     }
   }
-  if (selectedChat.value || nextChatSelected.value) {
-    Divider()
-  } else {
-    Divider(Modifier.padding(horizontal = 8.dp))
-  }
 }
