@@ -52,8 +52,7 @@ fun CIChatLinkHeader(
         }
       }
     }
-    Divider(Modifier.fillMaxWidth().padding(top = 8.dp))
-    Column(Modifier.padding(top = 8.dp, bottom = 4.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(Modifier.padding(top = 12.dp, bottom = 4.dp, start = 4.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
       chatLink.shortDescription?.let { descr ->
         Text(
           descr,
