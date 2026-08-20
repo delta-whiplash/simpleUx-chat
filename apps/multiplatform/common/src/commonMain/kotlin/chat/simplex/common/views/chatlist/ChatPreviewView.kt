@@ -77,7 +77,7 @@ fun ChatPreviewView(
           GroupMemberStatus.MemRemoved -> inactiveIcon()
           GroupMemberStatus.MemGroupDeleted -> inactiveIcon()
           else -> {}
-      }
+        }
       else -> {}
     }
   }
@@ -91,9 +91,12 @@ fun ChatPreviewView(
       cInfo.chatViewName,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
-      style = MaterialTheme.typography.h3,
-      fontWeight = FontWeight.Bold,
-      color = titleColor
+      style = TextStyle(
+        fontFamily = Inter,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.SemiBold,
+        color = titleColor
+      )
     )
   }
 
@@ -156,15 +159,21 @@ fun ChatPreviewView(
           } else {
             if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A)
           }
-          NameWithBadge(
-            cInfo.chatViewName,
-            cInfo.nameBadge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            style = MaterialTheme.typography.h3,
-            fontWeight = FontWeight.Bold,
-            color = color
-          )
+          val isStarred = chatModel.starredChatIds.contains(chat.id)
+          Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            NameWithBadge(
+              cInfo.chatViewName,
+              cInfo.nameBadge,
+              maxLines = 1,
+              overflow = TextOverflow.Ellipsis,
+              style = MaterialTheme.typography.h3,
+              fontWeight = FontWeight.Bold,
+              color = color
+            )
+            if (isStarred) {
+              Text("⭐", fontSize = 12.sp)
+            }
+          }
         }
       }
       is ChatInfo.Group -> {
@@ -231,25 +240,39 @@ fun ChatPreviewView(
     val previewText = chatPreviewInfoText()
     val ci = chat.chatItems.lastOrNull()
     if (chatModelDraftChatId == chat.id && chatModelDraft != null) {
-      val sp20 = with(LocalDensity.current) { 20.sp.toDp() }
-      val (text: CharSequence, inlineTextContent) = remember(chatModelDraft) { chatModelDraft.message.text to messageDraft(chatModelDraft, sp20) }
-      val formattedText = null
-      MarkdownText(
-        text,
-        formattedText,
-        toggleSecrets = false,
-        linkMode = linkMode,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        style = TextStyle(
-          fontFamily = Inter,
-          fontSize = 14.sp,
-          color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF475569),
-          lineHeight = 19.sp
-        ),
-        inlineContent = inlineTextContent,
+      val isDark = isInDarkTheme()
+      val draftText = chatModelDraft.message.text.ifBlank { "Brouillon..." }
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = Modifier.fillMaxWidth()
-      )
+      ) {
+        Box(
+          modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(if (isDark) Color(0x33E2B755) else Color(0xFFFEF3C7))
+            .border(0.5.dp, if (isDark) Color(0x66E2B755) else Color(0xFFF59E0B), RoundedCornerShape(6.dp))
+            .padding(horizontal = 5.dp, vertical = 1.dp)
+        ) {
+          Text(
+            text = "Brouillon",
+            color = if (isDark) Color(0xFFE2B755) else Color(0xFFB45309),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold
+          )
+        }
+        Text(
+          text = draftText,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          style = TextStyle(
+            fontFamily = Inter,
+            fontStyle = FontStyle.Italic,
+            fontSize = 14.sp,
+            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+          )
+        )
+      }
     } else if (ci?.content?.hasMsgContent != true && previewText != null) {
       Text(previewText.first, color = previewText.second)
     } else if (ci != null && showChatPreviews) {

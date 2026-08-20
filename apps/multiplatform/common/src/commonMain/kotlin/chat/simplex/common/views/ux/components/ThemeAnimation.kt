@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import chat.simplex.common.model.ChatController
 import chat.simplex.common.ui.theme.DefaultTheme
 import chat.simplex.common.ui.theme.ThemeManager
 import chat.simplex.res.MR
@@ -51,7 +52,12 @@ object ThemeAnimationController {
                 )
             }
             delay(180)
-            ThemeManager.applyTheme(if (newIsDark) DefaultTheme.DARK.themeName else DefaultTheme.LIGHT.themeName)
+            val targetTheme: String = if (newIsDark) {
+                ChatController.appPrefs.systemDarkTheme.get() ?: DefaultTheme.DARK.themeName
+            } else {
+                DefaultTheme.LIGHT.themeName
+            }
+            ThemeManager.applyTheme(targetTheme)
             job.join()
             isAnimating.value = false
         }
@@ -65,13 +71,11 @@ fun AnimatedThemeIcon(
 ) {
     val rotation by animateFloatAsState(
         targetValue = if (isDark) 180f else 0f,
-        animationSpec = spring(dampingRatio = 0.55f, stiffness = 350f),
-        label = "themeIconRotation"
+        animationSpec = spring(dampingRatio = 0.55f, stiffness = 350f)
     )
     val scale by animateFloatAsState(
         targetValue = 1f,
-        animationSpec = spring(dampingRatio = 0.5f, stiffness = 500f),
-        label = "themeIconScale"
+        animationSpec = spring(dampingRatio = 0.5f, stiffness = 500f)
     )
 
     Box(

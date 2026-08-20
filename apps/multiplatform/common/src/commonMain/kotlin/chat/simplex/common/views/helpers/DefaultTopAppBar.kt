@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.*
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import chat.simplex.common.model.ChatController.appPrefs
+import chat.simplex.common.platform.appPlatform
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.chat.item.CenteredRowLayout
 import chat.simplex.res.MR
@@ -58,16 +59,23 @@ fun DefaultAppBar(
   }
   val keyboardInset = WindowInsets.ime
   val topBarShape = if (onTop) {
-    RoundedCornerShape(bottomStart = 22.dp, bottomEnd = 22.dp)
+    RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
   } else {
-    RoundedCornerShape(topStart = 22.dp, topEnd = 22.dp)
+    RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
   }
   Box(
     modifier
       .clip(topBarShape)
+      .background(
+        if (title != null || fixedTitleText != null || connection == null || !onTop) {
+          if (isDark) Color(0xF2141B28) else Color(0xF2F8FAFC)
+        } else {
+          themeBackgroundMix.copy(topTitleAlpha(false, connection))
+        }
+      )
       .border(
         width = 1.dp,
-        color = if (isDark) Color(0x38FFFFFF) else Color(0x1A000000),
+        color = if (isDark) Color(0x38FFFFFF) else Color(0x14000000),
         shape = topBarShape
       )
   ) {
@@ -76,23 +84,9 @@ fun DefaultAppBar(
     Box(Modifier
       .matchParentSize()
       .blurredBackgroundModifier(keyboardInset, handler, blurRadius, prefAlpha, handler?.keyboardCoversBar == true, onTop, density)
-      .drawWithCache {
-        // store it as a variable, don't put it inside if without holding it here. Compiler don't see it changes otherwise
-        val alpha = prefAlpha.value
-        val backgroundColor = if (title != null || fixedTitleText != null || connection == null || !onTop) {
-          if (isDark) Color(0xF2141B28) else Color(0xF2F8FAFC)
-        } else {
-          themeBackgroundMix.copy(topTitleAlpha(false, connection))
-        }
-        onDrawBehind {
-          drawRect(backgroundColor)
-        }
-      }
     )
     Box(
-      Modifier
-        .fillMaxWidth()
-        .heightIn(min = AppBarHeight * fontSizeSqrtMultiplier)
+      Modifier.fillMaxWidth()
     ) {
       AppBar(
         title = {
@@ -109,10 +103,10 @@ fun DefaultAppBar(
                 titleText.value,
                 style = TextStyle(
                   fontFamily = Inter,
-                  fontSize = 22.sp,
+                  fontSize = 20.sp,
                   fontWeight = FontWeight.Bold,
                   color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-                  letterSpacing = 0.5.sp
+                  letterSpacing = 0.3.sp
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -122,7 +116,7 @@ fun DefaultAppBar(
         },
         navigationIcon = navigationButton,
         buttons = if (!showSearch) buttons else {{}},
-        centered = !showSearch && (title != null || !onTop),
+        centered = !showSearch && (title != null || fixedTitleText != null || !onTop),
         onTop = onTop,
       )
       if (!onTop) {
@@ -212,15 +206,26 @@ private fun AppBar(
   centered: Boolean,
   onTop: Boolean,
 ) {
-  val adjustedModifier = modifier
-    .then(if (onTop) Modifier.statusBarsPadding() else Modifier)
-    .height(AppBarHeight * fontSizeSqrtMultiplier)
-    .fillMaxWidth()
-    .padding(horizontal = AppBarHorizontalPadding)
-  if (centered) {
-    AppBarCenterAligned(adjustedModifier, title, navigationIcon, buttons)
-  } else {
-    AppBarStartAligned(adjustedModifier, title, navigationIcon, buttons)
+  val statusBarPadding = if (onTop) {
+    val insetsPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    if (insetsPadding >= 20.dp) insetsPadding else (if (appPlatform.isAndroid) 48.dp else 0.dp)
+  } else 0.dp
+
+  Column(
+    modifier = modifier.fillMaxWidth()
+  ) {
+    if (onTop) {
+      Spacer(Modifier.height(statusBarPadding))
+    }
+    val contentModifier = Modifier
+      .fillMaxWidth()
+      .height(AppBarHeight * fontSizeSqrtMultiplier)
+      .padding(horizontal = AppBarHorizontalPadding)
+    if (centered) {
+      AppBarCenterAligned(contentModifier, title, navigationIcon, buttons)
+    } else {
+      AppBarStartAligned(contentModifier, title, navigationIcon, buttons)
+    }
   }
 }
 

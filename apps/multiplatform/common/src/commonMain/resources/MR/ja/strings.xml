@@ -631,7 +631,7 @@
     <string name="incognito_info_share">連絡相手にシークレットモードのプロフィールを共有すると、その連絡相手に招待されたグループでも同じプロフィールが使われます。</string>
     <string name="theme">テーマ</string>
     <string name="voice_messages">音声メッセージ</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="you_will_join_group">グループメンバー全員と接続する。</string>
     <string name="connected_to_server_to_receive_messages_from_contact">この連絡先から受信するメッセージのサーバに既に接続してます。</string>
     <string name="sending_files_not_yet_supported">ファイル送信機能がまだ実装されてません</string>

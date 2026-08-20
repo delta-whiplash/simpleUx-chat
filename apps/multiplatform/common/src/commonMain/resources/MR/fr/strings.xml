@@ -2,7 +2,7 @@
 <resources>
     <string name="thousand_abbreviation">k</string>
     <string name="connect_via_contact_link">Se connecter via l\'adresse du contact ?</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="profile_will_be_sent_to_contact_sending_link">Votre profil va être envoyé au contact qui vous a envoyé ce lien.</string>
     <string name="you_will_join_group">Vous vous connecterez à tous les membres du groupe.</string>
     <string name="connect_via_link_verb">Se connecter</string>
@@ -2467,6 +2467,7 @@
     <string name="server_radar_file_transfer_val">XFTP Chiffré</string>
     <string name="server_radar_file_isolation">Isolation des Files</string>
     <string name="server_radar_unidirectional">Entièrement Unidirectionnelle</string>
+    <string name="server_radar_illustrative_notice">Aperçu de l\'architecture du protocole SimpleX</string>
     <string name="server_radar_configure_btn">Configurer mes serveurs SMP</string>
     <string name="more_emojis">Plus d\'émojis</string>
     <string name="profile_switcher_title">Profils &amp; Identités</string>

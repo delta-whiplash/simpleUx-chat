@@ -86,7 +86,7 @@ fun SimpleButtonIconEnded(
 
 @Composable
 fun SimpleButtonFrame(click: () -> Unit, modifier: Modifier = Modifier, disabled: Boolean = false, content: @Composable RowScope.() -> Unit) {
-  Box(Modifier.clip(RoundedCornerShape(20.dp))) {
+  Box(Modifier.clip(RoundedCornerShape(20.dp)).then(if (!disabled) Modifier.bounceClick(scaleDown = 0.96f) else Modifier)) {
     val modifier = if (disabled) modifier else modifier.clickable { click() }
     Row(
       verticalAlignment = Alignment.CenterVertically,

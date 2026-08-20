@@ -125,14 +125,14 @@ fun ProfileImage(
       val bgGradient = when {
         isNote -> if (isDark) listOf(Color(0xFF2C2214), Color(0xFF161109)) else listOf(Color(0xFFFDFBF7), Color(0xFFF1E9DA))
         isLink -> if (isDark) listOf(Color(0xFF182234), Color(0xFF0D1320)) else listOf(Color(0xFFF4F8FD), Color(0xFFDEEBFA))
-        isGroup -> if (isDark) listOf(Color(0xFF142426), Color(0xFF0A1416)) else listOf(Color(0xFFF0FDFB), Color(0xFFD3F5EF))
-        else -> if (isDark) listOf(Color(0xFF1F2533), Color(0xFF121620)) else listOf(Color(0xFFF8FAFC), Color(0xFFE2E8F0))
+        isGroup -> if (isDark) listOf(Color(0xFF0F2B26), Color(0xFF061513)) else listOf(Color(0xFFCCFBF1), Color(0xFF99F6E4))
+        else -> if (isDark) listOf(Color(0xFF1E293B), Color(0xFF0F172A)) else listOf(Color(0xFFF1F5F9), Color(0xFFE2E8F0))
       }
 
       val rimGradient = when {
         isNote -> if (isDark) listOf(Color(0x60E2B755), Color(0x18E2B755)) else listOf(Color(0x40854D0E), Color(0x15854D0E))
         isLink -> if (isDark) listOf(Color(0x6038BDF8), Color(0x1838BDF8)) else listOf(Color(0x402563EB), Color(0x152563EB))
-        isGroup -> if (isDark) listOf(Color(0x602DD4BF), Color(0x182DD4BF)) else listOf(Color(0x400F766E), Color(0x150F766E))
+        isGroup -> if (isDark) listOf(Color(0x602DD4BF), Color(0x182DD4BF)) else listOf(Color(0x600D9488), Color(0x200D9488))
         else -> if (isDark) listOf(Color(0x4594A3B8), Color(0x1294A3B8)) else listOf(Color(0x350F172A), Color(0x120F172A))
       }
 
@@ -154,8 +154,8 @@ fun ProfileImage(
           Text(
             text = initials,
             color = accentColor,
-            fontSize = (size.value * 0.38f).sp,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = (size.value * 0.42f).sp,
+            fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.body1.copy(letterSpacing = 0.6.sp),
             textAlign = TextAlign.Center
           )

@@ -1030,7 +1030,7 @@
     <string name="group_info_member_you">sinä: %1$s</string>
     <string name="you_wont_lose_your_contacts_if_delete_address">Et menetä kontaktejasi, jos poistat osoitteesi myöhemmin.</string>
     <string name="onboarding_notifications_mode_off">Kun sovellus on käynnissä</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="profile_will_be_sent_to_contact_sending_link">Profiilisi lähetetään kontaktille, jolta sait tämän linkin.</string>
     <string name="you_will_join_group">Liityt ryhmään, johon tämä linkki viittaa, ja muodostat yhteyden sen ryhmän jäseniin.</string>
     <string name="connected_to_server_to_receive_messages_from_contact">Olet yhteydessä palvelimeen, jota käytetään vastaanottamaan viestejä tältä kontaktilta.</string>

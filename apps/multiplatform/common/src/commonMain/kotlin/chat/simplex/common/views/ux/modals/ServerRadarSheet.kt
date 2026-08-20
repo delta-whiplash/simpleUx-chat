@@ -112,6 +112,12 @@ fun ServerRadarSheet(
                 Text(stringResource(MR.strings.server_radar_file_isolation), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
                 Text(stringResource(MR.strings.server_radar_unidirectional), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
             }
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = stringResource(MR.strings.server_radar_illustrative_notice),
+                fontSize = 11.5.sp,
+                color = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+            )
         }
 
         Spacer(Modifier.height(20.dp))

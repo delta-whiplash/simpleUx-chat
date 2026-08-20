@@ -485,6 +485,7 @@ private fun SendMsgButton(
       .bounceClick()
       .combinedClickable(
         onClick = {
+          performHapticFeedback(SimpleUXHapticType.LIGHT)
           if (sendToConnect != null) {
             sendToConnect()
           } else {

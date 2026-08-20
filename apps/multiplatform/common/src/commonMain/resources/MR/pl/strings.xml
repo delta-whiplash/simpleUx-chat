@@ -28,7 +28,7 @@
     <string name="trying_to_connect_to_server_to_receive_messages">Próba połączenia z serwerem, który służył do odbierania wiadomości z tego połączenia.</string>
     <string name="error_connecting_to_server_to_receive_messages">Próbowanie połączenia z serwerem używanym do odbierania wiadomości od tego kontaktu (błąd: %1$s).</string>
     <string name="unknown_message_format">nieznany format wiadomości</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="sender_you_pronoun">Ty</string>
     <string name="connected_to_server_to_receive_messages_from_contact">Jesteś połączony z serwerem, który służył do odbierania wiadomości z tego połączenia.</string>
     <string name="profile_will_be_sent_to_contact_sending_link">Twój profil zostanie wysłany do kontaktu, od którego otrzymałeś ten link.</string>

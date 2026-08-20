@@ -406,14 +406,20 @@ private fun ModalData.NewChatSheetLayout(
         item {
           PublicDirectorySearchResultsSection(
             query = searchText.value.text,
-            onJoinGroup = { link ->
-              val target = strConnectTarget(link.trim())
-              if (target is ConnectTarget.Link) {
-                connect(
-                  link = target.text,
-                  searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
-                  close = close,
-                  cleanup = { searchText.value = TextFieldValue() }
+            onJoinGroup = { link, onComplete ->
+              withBGApi {
+                planAndConnect(
+                  chatModel.currentRemoteHost.value?.remoteHostId,
+                  link,
+                  close = {
+                    searchText.value = TextFieldValue()
+                    onComplete()
+                    close()
+                  },
+                  cleanup = {
+                    onComplete()
+                  },
+                  autoJoin = true
                 )
               }
             }
@@ -428,14 +434,8 @@ private fun ModalData.NewChatSheetLayout(
     }
   }
 
-  Box {
-    if (oneHandUI.value) {
-      OneHandLazyColumn()
-      StatusBarBackground()
-    } else {
-      NonOneHandLazyColumn()
-      NavigationBarBackground(oneHandUI.value, true)
-    }
+  Box(Modifier.fillMaxSize()) {
+    NonOneHandLazyColumn()
   }
 }
 
@@ -783,8 +783,6 @@ private fun ModalData.DeletedContactsView(rh: RemoteHostInfo?, closeDeletedChats
       }
       if (oneHandUI.value) {
         StatusBarBackground()
-      } else {
-        NavigationBarBackground(oneHandUI.value, true)
       }
     }
     if (oneHandUI.value) {

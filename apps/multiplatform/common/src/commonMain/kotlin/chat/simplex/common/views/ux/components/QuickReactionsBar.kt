@@ -41,6 +41,7 @@ fun QuickReactionsBar(
 ) {
     val isDark = isInDarkTheme()
     val shape = RoundedCornerShape(24.dp)
+    val scope = rememberCoroutineScope()
 
     AnimatedVisibility(
         visible = isVisible,
@@ -71,8 +72,7 @@ fun QuickReactionsBar(
                     var isPressed by remember { mutableStateOf(false) }
                     val scale by animateFloatAsState(
                         targetValue = if (isPressed) 1.35f else 1f,
-                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                        label = "emojiScale"
+                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
                     )
 
                     Box(
@@ -85,6 +85,8 @@ fun QuickReactionsBar(
                                 indication = null
                             ) {
                                 isPressed = true
+                                chat.simplex.common.platform.performHapticFeedback(chat.simplex.common.platform.SimpleUXHapticType.LIGHT)
+                                FullscreenEmojiEffectManager.trigger(emoji, scope)
                                 onReactionSelected(emoji)
                             },
                         contentAlignment = Alignment.Center

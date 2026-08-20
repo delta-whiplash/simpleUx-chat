@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -80,42 +81,102 @@ fun OnboardingConditionsView(chatModel: ChatModel) {
                 lineHeight = 42.sp,
                 modifier = Modifier.padding(top = DEFAULT_PADDING_HALF)
               )
-              Column(
-                Modifier.fillMaxWidth()
-                  .padding(horizontal = DEFAULT_PADDING_HALF)
-                  .padding(top = DEFAULT_PADDING),
-                horizontalAlignment = Alignment.Start
+              val isDark = isInDarkTheme()
+              val cardShape = RoundedCornerShape(20.dp)
+
+              Surface(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(top = DEFAULT_PADDING)
+                  .clip(cardShape)
+                  .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+                  .border(
+                    1.dp,
+                    if (isDark) Color(0x35FFFFFF) else Color(0x150F172A),
+                    cardShape
+                  ),
+                color = Color.Transparent,
+                shape = cardShape
               ) {
-                Text(
-                  stringResource(MR.strings.onboarding_conditions_private_chats_not_accessible),
-                  style = MaterialTheme.typography.body2,
-                  lineHeight = 22.sp
-                )
-                Spacer(Modifier.height(DEFAULT_PADDING))
-                Text(
-                  stringResource(MR.strings.onboarding_conditions_by_using_you_agree),
-                  style = MaterialTheme.typography.body2,
-                  lineHeight = 22.sp
-                )
-                Spacer(Modifier.height(DEFAULT_PADDING))
-                Text(
-                  stringResource(MR.strings.onboarding_conditions_privacy_policy_and_conditions_of_use),
-                  style = MaterialTheme.typography.body1,
-                  fontWeight = FontWeight.Medium,
-                  color = MaterialTheme.colors.primary,
+                Column(
                   modifier = Modifier
-                    .clickable(
-                      interactionSource = remember { MutableInteractionSource() },
-                      indication = null
+                    .fillMaxWidth()
+                    .padding(18.dp),
+                  horizontalAlignment = Alignment.Start
+                ) {
+                  Row(verticalAlignment = Alignment.Top) {
+                    Box(
+                      modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(if (isDark) Color(0x2210B981) else Color(0x15059669)),
+                      contentAlignment = Alignment.Center
                     ) {
-                      ModalManager.fullscreen.showModal(endButtons = { ConditionsLinkButton() }) {
-                        SimpleConditionsView(rhId = null) {
-                          ModalManager.fullscreen.closeModal()
-                          acceptConditions(selectedOperatorIds.value)
+                      Icon(
+                        painter = painterResource(MR.images.ic_shield),
+                        contentDescription = null,
+                        tint = if (isDark) Color(0xFF10B981) else Color(0xFF059669),
+                        modifier = Modifier.size(14.dp)
+                      )
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                      stringResource(MR.strings.onboarding_conditions_private_chats_not_accessible),
+                      style = MaterialTheme.typography.body2,
+                      color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                      lineHeight = 20.sp,
+                      modifier = Modifier.weight(1f)
+                    )
+                  }
+
+                  Spacer(Modifier.height(14.dp))
+
+                  Row(verticalAlignment = Alignment.Top) {
+                    Box(
+                      modifier = Modifier
+                        .size(24.dp)
+                        .clip(CircleShape)
+                        .background(if (isDark) Color(0x2238BDF8) else Color(0x150284C7)),
+                      contentAlignment = Alignment.Center
+                    ) {
+                      Icon(
+                        painter = painterResource(MR.images.ic_check_filled),
+                        contentDescription = null,
+                        tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                        modifier = Modifier.size(14.dp)
+                      )
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                      stringResource(MR.strings.onboarding_conditions_by_using_you_agree),
+                      style = MaterialTheme.typography.body2,
+                      color = if (isDark) Color(0xFFCBD5E1) else Color(0xFF334155),
+                      lineHeight = 20.sp,
+                      modifier = Modifier.weight(1f)
+                    )
+                  }
+
+                  Spacer(Modifier.height(16.dp))
+
+                  Text(
+                    stringResource(MR.strings.onboarding_conditions_privacy_policy_and_conditions_of_use),
+                    style = MaterialTheme.typography.body2,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                    modifier = Modifier
+                      .clip(RoundedCornerShape(8.dp))
+                      .clickable {
+                        performHapticFeedback(SimpleUXHapticType.LIGHT)
+                        ModalManager.fullscreen.showModal(endButtons = { ConditionsLinkButton() }) {
+                          SimpleConditionsView(rhId = null) {
+                            ModalManager.fullscreen.closeModal()
+                            acceptConditions(selectedOperatorIds.value)
+                          }
                         }
                       }
-                    }
-                )
+                      .padding(vertical = 4.dp)
+                  )
+                }
               }
             }
           },

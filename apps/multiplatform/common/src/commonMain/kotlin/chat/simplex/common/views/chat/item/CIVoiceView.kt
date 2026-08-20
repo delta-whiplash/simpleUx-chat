@@ -23,7 +23,6 @@ import chat.simplex.common.model.*
 import chat.simplex.common.platform.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
-import chat.simplex.common.views.chat.glass.GlassVoiceNotePlayer
 import chat.simplex.common.views.ux.components.VoiceWaveformPlayer
 import kotlinx.coroutines.flow.*
 import kotlin.math.*
@@ -89,21 +88,23 @@ fun CIVoiceView(
           durationText(time / 1000)
         }
       }
-      val progressRatio = if (duration.value > 0) progress.value.toFloat() / duration.value.toFloat() else 0f
-      VoiceWaveformPlayer(
-        isPlaying = audioPlaying.value,
-        progress = progressRatio,
-        durationFormatted = text.value,
-        onPlayPauseToggle = { if (audioPlaying.value) pause() else play() },
-        onSeek = { ratio ->
-          val targetMs = (ratio * duration.value).toInt()
-          AudioPlayer.seekTo(targetMs, progress, fileSource.value?.filePath)
-        }
-      )
       if (smallView) {
+        VoiceMsgIndicator(file, audioPlaying.value, sent, hasText, progress, duration, brokenAudio, sizeMultiplier, play, pause, longClick, receiveFile)
         KeyChangeEffect(chatModel.chatId.value, chatModel.currentUser.value?.userId, chatModel.currentRemoteHost.value) {
           AudioPlayer.stop()
         }
+      } else {
+        val progressRatio = if (duration.value > 0) progress.value.toFloat() / duration.value.toFloat() else 0f
+        VoiceWaveformPlayer(
+          isPlaying = audioPlaying.value,
+          progress = progressRatio,
+          durationFormatted = text.value,
+          onPlayPauseToggle = { if (audioPlaying.value) pause() else play() },
+          onSeek = { ratio ->
+            val targetMs = (ratio * duration.value).toInt()
+            AudioPlayer.seekTo(targetMs, progress, fileSource.value?.filePath)
+          }
+        )
       }
     } else if (smallView) {
       VoiceMsgIndicator(null, false, sent, hasText, null, null, false, sizeMultiplier, {}, {}, longClick, receiveFile)

@@ -253,11 +253,12 @@ fun ChatView(
       }
     }
     val clipboard = LocalClipboardManager.current
-    CompositionLocalProvider(
-      LocalAppBarHandler provides rememberAppBarHandler(chatInfo.id, keyboardCoversBar = false),
-      LocalSelectionManager provides selectionManager,
-    ) {
-    when (chatInfo) {
+    Box(Modifier.fillMaxSize()) {
+      CompositionLocalProvider(
+        LocalAppBarHandler provides rememberAppBarHandler(chatInfo.id, keyboardCoversBar = false),
+        LocalSelectionManager provides selectionManager,
+      ) {
+      when (chatInfo) {
       is ChatInfo.Direct, is ChatInfo.Group, is ChatInfo.Local -> {
         var groupMembersJob: Job = remember { Job() }
         val perChatTheme = remember(chatInfo, CurrentColors.value.base) { if (chatInfo is ChatInfo.Direct) chatInfo.contact.uiThemes?.preferredMode(!CurrentColors.value.colors.isLight) else if (chatInfo is ChatInfo.Group) chatInfo.groupInfo.uiThemes?.preferredMode(!CurrentColors.value.colors.isLight) else null }
@@ -836,6 +837,8 @@ fun ChatView(
       else -> {}
     }
     }
+    FullscreenEmojiEffectOverlay()
+  }
   }
 }
 
@@ -988,10 +991,10 @@ fun ChatLayout(
       val composeViewHeight = remember { mutableStateOf(0.dp) }
       val glassMode = isGlassModeActive()
       val backgroundContent = @Composable { innerContent: @Composable () -> Unit ->
-        if (glassMode && chatsCtx.secondaryContextFilter == null) {
+        if (glassMode && chatsCtx.secondaryContextFilter !is SecondaryContextFilter.MsgContentTagContext) {
           AmbientGlassBackground { innerContent() }
         } else {
-          Box(Modifier.fillMaxSize().chatViewBackgroundModifier(MaterialTheme.colors, MaterialTheme.wallpaper, LocalAppBarHandler.current?.backgroundGraphicsLayerSize, LocalAppBarHandler.current?.backgroundGraphicsLayer, drawWallpaper = chatsCtx.secondaryContextFilter == null)) { innerContent() }
+          Box(Modifier.fillMaxSize().chatViewBackgroundModifier(MaterialTheme.colors, MaterialTheme.wallpaper, LocalAppBarHandler.current?.backgroundGraphicsLayerSize, LocalAppBarHandler.current?.backgroundGraphicsLayer, drawWallpaper = chatsCtx.secondaryContextFilter !is SecondaryContextFilter.MsgContentTagContext)) { innerContent() }
         }
       }
       backgroundContent {

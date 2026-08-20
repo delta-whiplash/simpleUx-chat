@@ -61,7 +61,7 @@
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
 
-      <!-- open simplex:/ connection URI -->
+      <!-- open simplex:/ and simpleux:/ connection URIs without hijacking -->
       <intent-filter>
         <action android:name="android.intent.action.VIEW" />
 
@@ -69,8 +69,10 @@
         <category android:name="android.intent.category.BROWSABLE" />
 
         <data android:scheme="simplex" />
+        <data android:scheme="simplex-ux" />
+        <data android:scheme="simpleux" />
       </intent-filter>
-      <intent-filter android:autoVerify="true">
+      <intent-filter>
         <action android:name="android.intent.action.VIEW" />
 
         <category android:name="android.intent.category.DEFAULT" />

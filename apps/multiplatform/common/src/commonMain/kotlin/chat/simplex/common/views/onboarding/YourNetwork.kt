@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.layout.ContentScale
@@ -171,26 +172,73 @@ private fun YourNetworkDesktop(
 
 @Composable
 private fun ConfigureRoutersButton(serverOperators: State<List<ServerOperator>>, selectedOperatorIds: State<Set<Long>>, onClick: () -> Unit) {
-  Box(
+  val isDark = isInDarkTheme()
+  val shape = RoundedCornerShape(16.dp)
+
+  Surface(
     modifier = Modifier
-      .clip(CircleShape)
-      .clickable { onClick() }
+      .fillMaxWidth()
+      .clip(shape)
+      .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+      .border(
+        1.dp,
+        if (isDark) Color(0x35FFFFFF) else Color(0x150F172A),
+        shape
+      )
+      .clickable {
+        performHapticFeedback(SimpleUXHapticType.LIGHT)
+        onClick()
+      },
+    color = Color.Transparent,
+    shape = shape
   ) {
-    Row(Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 12.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Box(
+        modifier = Modifier
+          .size(36.dp)
+          .clip(CircleShape)
+          .background(if (isDark) Color(0x2238BDF8) else Color(0x150284C7)),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          painter = painterResource(MR.images.ic_dns),
+          contentDescription = null,
+          tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+          modifier = Modifier.size(18.dp)
+        )
+      }
+      Spacer(Modifier.width(12.dp))
       Text(
         stringResource(MR.strings.onboarding_configure_routers),
-        style = MaterialTheme.typography.button,
+        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
         fontWeight = FontWeight.Medium,
-        color = MaterialTheme.colors.primary
+        fontSize = 15.sp,
+        modifier = Modifier.weight(1f)
       )
-      serverOperators.value.forEach { op ->
-        Image(
-          painterResource(op.logo),
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically
+      ) {
+        serverOperators.value.forEach { op ->
+          Image(
+            painterResource(op.logo),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            colorFilter = if (selectedOperatorIds.value.contains(op.operatorId)) null else ColorFilter.colorMatrix(ColorMatrix().apply {
+              setToSaturation(0f)
+            })
+          )
+        }
+        Icon(
+          painter = painterResource(MR.images.ic_chevron_right),
           contentDescription = null,
-          modifier = Modifier.size(22.dp),
-          colorFilter = if (selectedOperatorIds.value.contains(op.operatorId)) null else ColorFilter.colorMatrix(ColorMatrix().apply {
-            setToSaturation(0f)
-          })
+          tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+          modifier = Modifier.size(18.dp)
         )
       }
     }
@@ -199,27 +247,64 @@ private fun ConfigureRoutersButton(serverOperators: State<List<ServerOperator>>,
 
 @Composable
 private fun ConfigureNotificationsButton(notificationMode: State<NotificationsMode>, onClick: () -> Unit) {
+  val isDark = isInDarkTheme()
+  val shape = RoundedCornerShape(16.dp)
   val icon = when (notificationMode.value) {
     NotificationsMode.SERVICE -> MR.images.ic_bolt
     NotificationsMode.PERIODIC -> MR.images.ic_timer
     NotificationsMode.OFF -> MR.images.ic_bolt_off
   }
-  Box(
+
+  Surface(
     modifier = Modifier
-      .clip(CircleShape)
-      .clickable { onClick() }
+      .fillMaxWidth()
+      .clip(shape)
+      .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+      .border(
+        1.dp,
+        if (isDark) Color(0x35FFFFFF) else Color(0x150F172A),
+        shape
+      )
+      .clickable {
+        performHapticFeedback(SimpleUXHapticType.LIGHT)
+        onClick()
+      },
+    color = Color.Transparent,
+    shape = shape
   ) {
-    Row(Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 12.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Box(
+        modifier = Modifier
+          .size(36.dp)
+          .clip(CircleShape)
+          .background(if (isDark) Color(0x22E2B755) else Color(0x15D97706)),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          painter = painterResource(icon),
+          contentDescription = null,
+          tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+          modifier = Modifier.size(18.dp)
+        )
+      }
+      Spacer(Modifier.width(12.dp))
       Text(
         stringResource(MR.strings.onboarding_configure_notifications),
-        style = MaterialTheme.typography.button,
+        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
         fontWeight = FontWeight.Medium,
-        color = MaterialTheme.colors.primary
+        fontSize = 15.sp,
+        modifier = Modifier.weight(1f)
       )
       Icon(
-        painterResource(icon),
+        painter = painterResource(MR.images.ic_chevron_right),
         contentDescription = null,
-        tint = MaterialTheme.colors.primary
+        tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+        modifier = Modifier.size(18.dp)
       )
     }
   }

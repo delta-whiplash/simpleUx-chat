@@ -25,3 +25,8 @@ actual class GlobalExceptionsHandler: Thread.UncaughtExceptionHandler {
     Log.e(TAG, "App crashed, thread name: " + thread.name + ", exception: " + e.stackTraceToString())
   }
 }
+
+actual fun performHapticFeedback(type: SimpleUXHapticType) {
+  // No-op on JVM Desktop
+}
+

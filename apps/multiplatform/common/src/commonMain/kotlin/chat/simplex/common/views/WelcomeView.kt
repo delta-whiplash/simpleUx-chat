@@ -415,58 +415,94 @@ fun createProfileOnboarding(chatModel: ChatModel, displayName: String, close: ()
 fun ProfileNameField(name: MutableState<String>, placeholder: String = "", isValid: (String) -> Boolean = { true }, focusRequester: FocusRequester? = null) {
   var valid by rememberSaveable { mutableStateOf(true) }
   var focused by rememberSaveable { mutableStateOf(false) }
-  val strokeColor by remember {
-    derivedStateOf {
-      if (valid) {
-        if (focused) {
-          CurrentColors.value.colors.secondary.copy(alpha = 0.6f)
-        } else {
-          CurrentColors.value.colors.secondary.copy(alpha = 0.3f)
-        }
-      } else Color.Red
+  val isDark = isInDarkTheme()
+  val shape = RoundedCornerShape(18.dp)
+
+  val borderBrush = if (!valid) {
+    Brush.verticalGradient(listOf(Color(0xFFEF4444), Color(0xFFDC2626)))
+  } else if (focused) {
+    if (isDark) {
+      Brush.verticalGradient(listOf(Color(0xFF38BDF8), Color(0x6038BDF8)))
+    } else {
+      Brush.verticalGradient(listOf(Color(0xFF0284C7), Color(0x600284C7)))
+    }
+  } else {
+    if (isDark) {
+      Brush.verticalGradient(listOf(Color(0x35FFFFFF), Color(0x10FFFFFF)))
+    } else {
+      Brush.verticalGradient(listOf(Color(0x200F172A), Color(0x0A0F172A)))
     }
   }
+
+  val containerBg = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+
   val modifier = Modifier
     .fillMaxWidth()
-    .heightIn(min = 50.dp)
+    .clip(shape)
+    .background(containerBg)
+    .border(if (focused) 1.5.dp else 1.dp, borderBrush, shape)
     .onFocusChanged { focused = it.isFocused }
-  Column(
-    Modifier
-      .fillMaxWidth(),
-    horizontalAlignment = Alignment.CenterHorizontally
+    .padding(horizontal = 18.dp, vertical = 14.dp)
+
+  Box(
+    modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
+    contentAlignment = Alignment.Center
   ) {
     BasicTextField(
       value = name.value,
       onValueChange = { name.value = it },
       modifier = if (focusRequester == null) modifier else modifier.focusRequester(focusRequester),
-      textStyle = TextStyle(fontSize = 18.sp, color = colors.onBackground),
+      textStyle = TextStyle(
+        fontSize = 17.sp,
+        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+        fontWeight = FontWeight.Medium
+      ),
       singleLine = true,
-      cursorBrush = SolidColor(MaterialTheme.colors.secondary),
+      cursorBrush = SolidColor(if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)),
       decorationBox = @Composable { innerTextField ->
-        TextFieldDefaults.TextFieldDecorationBox(
-          value = name.value,
-          innerTextField = innerTextField,
-          placeholder = if (placeholder != "") {{ Text(placeholder, style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.secondary, lineHeight = 22.sp)) }} else null,
-          contentPadding = PaddingValues(),
-          label = null,
-          visualTransformation = VisualTransformation.None,
-          leadingIcon = null,
-          trailingIcon = if (!valid && placeholder != "") {
-            {
-              IconButton({ showInvalidNameAlert(mkValidName(name.value), name) }, Modifier.size(20.dp)) {
-                Icon(painterResource(MR.images.ic_info), null, tint = MaterialTheme.colors.error)
-              }
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Icon(
+            painter = painterResource(MR.images.ic_person),
+            contentDescription = null,
+            tint = if (focused) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)),
+            modifier = Modifier.size(20.dp)
+          )
+          Spacer(Modifier.width(12.dp))
+          Box(Modifier.weight(1f)) {
+            if (name.value.isEmpty() && placeholder.isNotEmpty()) {
+              Text(
+                placeholder,
+                style = MaterialTheme.typography.body1.copy(
+                  color = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+                  fontSize = 16.sp
+                )
+              )
             }
-          } else null,
-          singleLine = true,
-          enabled = true,
-          isError = false,
-          interactionSource = remember { MutableInteractionSource() },
-          colors = TextFieldDefaults.textFieldColors(backgroundColor = Color.Unspecified)
-        )
+            innerTextField()
+          }
+          if (name.value.isNotEmpty()) {
+            IconButton(
+              onClick = { name.value = "" },
+              modifier = Modifier.size(22.dp)
+            ) {
+              Icon(
+                painter = painterResource(MR.images.ic_close),
+                contentDescription = "Clear",
+                tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+                modifier = Modifier.size(16.dp)
+              )
+            }
+          } else if (!valid && placeholder.isNotEmpty()) {
+            IconButton({ showInvalidNameAlert(mkValidName(name.value), name) }, Modifier.size(20.dp)) {
+              Icon(painterResource(MR.images.ic_info), null, tint = MaterialTheme.colors.error)
+            }
+          }
+        }
       }
     )
-    Divider(color = strokeColor)
   }
   LaunchedEffect(Unit) {
     snapshotFlow { name.value }

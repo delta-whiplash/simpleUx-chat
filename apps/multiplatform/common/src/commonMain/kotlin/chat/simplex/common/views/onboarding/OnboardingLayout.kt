@@ -2,6 +2,7 @@ package chat.simplex.common.views.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -15,6 +16,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -83,12 +85,92 @@ fun OnboardingShrinkingLayout(
 }
 
 @Composable
+fun OnboardingHeroJewel(
+    icon: ImageResource,
+    accentColor: androidx.compose.ui.graphics.Color? = null,
+    modifier: Modifier = Modifier,
+    aspectRatio: Float = 1.15f
+) {
+    val isDark = isInDarkTheme()
+
+    // Haute Horlogerie & Mineral Jewels Palettes
+    val resolvedAccent = accentColor ?: when (icon) {
+        MR.images.ic_forum -> if (isDark) androidx.compose.ui.graphics.Color(0xFF38BDF8) else androidx.compose.ui.graphics.Color(0xFF0284C7)
+        MR.images.ic_person -> if (isDark) androidx.compose.ui.graphics.Color(0xFFE2B755) else androidx.compose.ui.graphics.Color(0xFFD97706)
+        MR.images.ic_dns -> if (isDark) androidx.compose.ui.graphics.Color(0xFF2DD4BF) else androidx.compose.ui.graphics.Color(0xFF0F766E)
+        MR.images.ic_shield -> if (isDark) androidx.compose.ui.graphics.Color(0xFF10B981) else androidx.compose.ui.graphics.Color(0xFF059669)
+        else -> if (isDark) androidx.compose.ui.graphics.Color(0xFFE2B755) else androidx.compose.ui.graphics.Color(0xFF0284C7)
+    }
+
+    val cardBg = if (isDark) {
+        Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color(0xFF1E2533), androidx.compose.ui.graphics.Color(0xFF111722)))
+    } else {
+        Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color(0xFFFFFFFF), androidx.compose.ui.graphics.Color(0xFFF1F5F9)))
+    }
+
+    val specularRim = if (isDark) {
+        Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color(0x45FFFFFF), androidx.compose.ui.graphics.Color(0x10FFFFFF)))
+    } else {
+        Brush.verticalGradient(listOf(androidx.compose.ui.graphics.Color(0x250F172A), androidx.compose.ui.graphics.Color(0x0C0F172A)))
+    }
+
+    val cardShape = RoundedCornerShape(32.dp)
+
+    Box(
+        modifier = modifier
+            .aspectRatio(aspectRatio)
+            .clip(cardShape)
+            .background(cardBg)
+            .border(1.dp, specularRim, cardShape),
+        contentAlignment = Alignment.Center
+    ) {
+        // Concentric precision glow and inner ring
+        Box(
+            modifier = Modifier
+                .size(130.dp)
+                .clip(androidx.compose.foundation.shape.CircleShape)
+                .background(resolvedAccent.copy(alpha = if (isDark) 0.12f else 0.08f))
+                .border(
+                    1.dp,
+                    resolvedAccent.copy(alpha = if (isDark) 0.25f else 0.18f),
+                    androidx.compose.foundation.shape.CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(90.dp)
+                    .clip(androidx.compose.foundation.shape.CircleShape)
+                    .background(
+                        if (isDark) androidx.compose.ui.graphics.Color(0xFF0B0F17) else androidx.compose.ui.graphics.Color(0xFFFFFFFF)
+                    )
+                    .border(
+                        1.5.dp,
+                        Brush.verticalGradient(
+                            listOf(resolvedAccent.copy(alpha = 0.8f), resolvedAccent.copy(alpha = 0.2f))
+                        ),
+                        androidx.compose.foundation.shape.CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(46.dp),
+                    tint = resolvedAccent
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun OnboardingImage(
     lightImage: ImageResource,
     darkImage: ImageResource,
     fallbackIcon: ImageResource,
     modifier: Modifier = Modifier,
-    aspectRatio: Float = 1f
+    aspectRatio: Float = 1.15f
 ) {
     if (BuildConfigCommon.SIMPLEX_ASSETS) {
         Image(
@@ -98,32 +180,11 @@ fun OnboardingImage(
             modifier = Modifier.fillMaxWidth().then(modifier)
         )
     } else {
-        val isDark = isInDarkTheme()
-        val stops = if (isDark) darkStops else lightStops
-        val scale = if (isDark) 1.5f else 1.2f
-        Box(
-            modifier
-                .aspectRatio(aspectRatio)
-                .clip(RoundedCornerShape(24.dp))
-                .drawBehind {
-                    val gp = gradientPoints(size.height / size.width, scale)
-                    drawRect(
-                        Brush.linearGradient(
-                            colorStops = stops,
-                            start = Offset(gp.startX * size.width, gp.startY * size.height),
-                            end = Offset(gp.endX * size.width, gp.endY * size.height)
-                        )
-                    )
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painterResource(fallbackIcon),
-                contentDescription = null,
-                modifier = Modifier.size(80.dp),
-                tint = MaterialTheme.colors.primary
-            )
-        }
+        OnboardingHeroJewel(
+            icon = fallbackIcon,
+            modifier = modifier,
+            aspectRatio = aspectRatio
+        )
     }
 }
 

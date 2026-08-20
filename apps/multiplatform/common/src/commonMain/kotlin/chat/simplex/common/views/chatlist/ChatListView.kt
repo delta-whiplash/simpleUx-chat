@@ -2,6 +2,7 @@ package chat.simplex.common.views.chatlist
 
 import LocalCardScreen
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -211,55 +212,76 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   }
   val currentTab = rememberSaveable { mutableStateOf(SimpleUxTab.CHATS) }
   val searchText = rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
+  val searchVisible = rememberSaveable { mutableStateOf(false) }
   val listState = rememberLazyListState(lazyListState.first, lazyListState.second)
+  val keyboardState by getKeyboardState()
+  DisposableEffect(Unit) {
+    onDispose {
+      lazyListState = listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
+    }
+  }
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
 
   CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
     Box(Modifier.fillMaxSize()) {
-      when (currentTab.value) {
-        SimpleUxTab.CHATS -> {
-          ChatListWithLoadingScreen(searchText, listState, userPickerState, setPerformLA, stopped)
-        }
-      SimpleUxTab.CONTACTS -> {
-        if (appPlatform.isAndroid) {
-          BackHandler { currentTab.value = SimpleUxTab.CHATS }
-        }
-        Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = 56.dp)) {
-          val modalData = remember { ModalData() }
-          modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
+      AnimatedContent(
+        targetState = currentTab.value,
+        transitionSpec = {
+          fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing)) +
+            scaleIn(initialScale = 0.96f, animationSpec = tween(220, easing = FastOutSlowInEasing)) togetherWith
+            fadeOut(animationSpec = tween(180))
+        },
+        modifier = Modifier.fillMaxSize()
+      ) { tab ->
+        when (tab) {
+          SimpleUxTab.CHATS -> {
+            ChatListWithLoadingScreen(searchText, searchVisible, listState, userPickerState, setPerformLA, stopped)
+          }
+          SimpleUxTab.CONTACTS -> {
+            if (appPlatform.isAndroid) {
+              BackHandler { currentTab.value = SimpleUxTab.CHATS }
+            }
+            val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
+            Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
+              val modalData = remember { ModalData() }
+              modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
+            }
+          }
+          SimpleUxTab.SETTINGS -> {
+            if (appPlatform.isAndroid) {
+              BackHandler { currentTab.value = SimpleUxTab.CHATS }
+            }
+            val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
+            Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
+              SettingsView(chatModel, setPerformLA, close = { currentTab.value = SimpleUxTab.CHATS })
+            }
+          }
         }
       }
-      SimpleUxTab.SETTINGS -> {
-        if (appPlatform.isAndroid) {
-          BackHandler { currentTab.value = SimpleUxTab.CHATS }
-        }
-        Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = 56.dp)) {
-          SettingsView(chatModel, setPerformLA, close = { currentTab.value = SimpleUxTab.CHATS })
-        }
-      }
-    }
 
-    TelegramBottomIslandBar(
-      currentTab = currentTab.value,
-      onSelectTab = { tab ->
-        ModalManager.start.closeModals()
-        currentTab.value = tab
-      },
-      onProfileLongClick = {
-        showProfileSwitcherPopup.value = true
-      },
-      userPickerState = userPickerState,
-      setPerformLA = setPerformLA,
-      onChatsClick = {
-        if (listState.firstVisibleItemIndex != 0) {
-          scope.launch { listState.animateScrollToItem(0) }
-        } else {
-          chatModel.activeChatTagFilter.value = null
-          searchText.value = TextFieldValue("")
+    if (keyboardState == KeyboardState.Closed && searchText.value.text.isEmpty() && !searchVisible.value) {
+      TelegramBottomIslandBar(
+        currentTab = currentTab.value,
+        onSelectTab = { tab ->
+          ModalManager.start.closeModals()
+          currentTab.value = tab
+        },
+        onProfileLongClick = {
+          showProfileSwitcherPopup.value = true
+        },
+        userPickerState = userPickerState,
+        setPerformLA = setPerformLA,
+        onChatsClick = {
+          if (listState.firstVisibleItemIndex != 0) {
+            scope.launch { listState.animateScrollToItem(0) }
+          } else {
+            chatModel.activeChatTagFilter.value = null
+            searchText.value = TextFieldValue("")
+          }
         }
-      }
-    )
+      )
+    }
 
     ProfileSwitcherOverlay(
       chatModel = chatModel,
@@ -289,13 +311,6 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
     if (wasAllowedToSetupNotifications.value || canEnableNotifications.value) {
       SetNotificationsModeAdditions()
       LaunchedEffect(Unit) { wasAllowedToSetupNotifications.value = true }
-    }
-    tryOrShowError("UserPicker", error = {}) {
-      UserPicker(
-        chatModel = chatModel,
-        userPickerState = userPickerState,
-        setPerformLA = AppLock::setPerformLA
-      )
     }
   }
 }
@@ -458,6 +473,7 @@ private fun ConnectBannerCard() {
 @Composable
 private fun BoxScope.ChatListWithLoadingScreen(
   searchText: MutableState<TextFieldValue>,
+  searchVisible: MutableState<Boolean>,
   listState: LazyListState,
   userPickerState: MutableStateFlow<AnimatedViewState>,
   setPerformLA: (Boolean) -> Unit,
@@ -465,14 +481,9 @@ private fun BoxScope.ChatListWithLoadingScreen(
 ) {
   if (chatModel.chatRunning.value == null) {
     Text(stringResource(MR.strings.loading_chats), Modifier.align(Alignment.Center), color = MaterialTheme.colors.secondary)
-  } else if (shouldShowOnboarding()) {
-    if (appPlatform.isAndroid) AndroidOnboardingCards()
   } else {
     if (!chatModel.desktopNoUserNoRemote) {
-      ChatList(searchText = searchText, listState, userPickerState, setPerformLA, stopped)
-    }
-    if (chatModel.chats.value.isEmpty() && !chatModel.switchingUsersAndHosts.value && !chatModel.desktopNoUserNoRemote) {
-      Text(stringResource(MR.strings.you_have_no_chats), Modifier.align(Alignment.Center), color = MaterialTheme.colors.secondary)
+      ChatList(searchText = searchText, searchVisible = searchVisible, listState = listState, userPickerState = userPickerState, setPerformLA = setPerformLA, stopped = stopped)
     }
   }
 }
@@ -947,13 +958,20 @@ enum class ScrollDirection {
 fun BoxScope.StatusBarBackground() {
   if (appPlatform.isAndroid) {
     val bg = if (LocalCardScreen.current) canvasColorForCurrentTheme() else MaterialTheme.colors.background
-    Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars).background(bg.copy(0.88f)))
+    Box(
+      Modifier
+        .fillMaxWidth()
+        .windowInsetsTopHeight(WindowInsets.statusBars)
+        .zIndex(50f)
+        .background(bg)
+    )
   }
 }
 
 @Composable
 fun BoxScope.NavigationBarBackground(appBarOnBottom: Boolean = false, mixedColor: Boolean, noAlpha: Boolean = false) {
-  if (appPlatform.isAndroid) {
+  val keyboardState = getKeyboardState()
+  if (appPlatform.isAndroid && keyboardState.value == KeyboardState.Closed) {
     val barPadding = WindowInsets.navigationBars.asPaddingValues()
     val paddingBottom = barPadding.calculateBottomPadding()
     val color = if (mixedColor) MaterialTheme.colors.background.mixWith(MaterialTheme.colors.onBackground, 0.97f) else MaterialTheme.colors.background
@@ -1151,35 +1169,7 @@ private fun TelegramTopHeader(
               )
             }
 
-            Divider(color = if (isDark) Color(0x15FFFFFF) else Color(0x10000000), thickness = 0.5.dp)
-
             val tabState = LocalSimpleUxTab.current
-
-            // Profiles & Identities
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                  showMenu.value = false
-                  userPickerState.value = AnimatedViewState.VISIBLE
-                }
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-              verticalAlignment = Alignment.CenterVertically,
-              horizontalArrangement = Arrangement.spacedBy(14.dp)
-            ) {
-              Icon(
-                painterResource(MR.images.ic_supervised_user_circle_filled),
-                contentDescription = null,
-                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
-                modifier = Modifier.size(20.dp)
-              )
-              Text(
-                text = "Profils & Identités",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
-              )
-            }
 
             // New Contact
             Row(
@@ -1401,11 +1391,12 @@ private fun IslandTabItem(
       .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0xFFF59E0B), activeShape) else Modifier)
       .then(
         if (onLongClick != null) {
-          Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
+          Modifier.combinedClickable(role = androidx.compose.ui.semantics.Role.Tab, onClick = onClick, onLongClick = onLongClick)
         } else {
-          Modifier.clickable(onClick = onClick)
+          Modifier.clickable(role = androidx.compose.ui.semantics.Role.Tab, onClick = onClick)
         }
       )
+      .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
       .padding(horizontal = 16.dp, vertical = 6.dp),
     contentAlignment = Alignment.Center
   ) {
@@ -1433,6 +1424,7 @@ private fun IslandTabItem(
 @Composable
 private fun BoxScope.ChatList(
   searchText: MutableState<TextFieldValue>,
+  searchVisible: MutableState<Boolean>,
   listState: LazyListState,
   userPickerState: MutableStateFlow<AnimatedViewState>,
   setPerformLA: (Boolean) -> Unit,
@@ -1443,32 +1435,62 @@ private fun BoxScope.ChatList(
   val searchShowingSimplexLink = remember { mutableStateOf(false) }
   val searchChatFilteredBySimplexLink = remember { mutableStateOf<Set<String>>(emptySet()) }
   val connectNameCandidate = remember { mutableStateOf<String?>(null) }
-  val searchVisible = rememberSaveable { mutableStateOf(false) }
+  val pullOffset = remember { mutableStateOf(0f) }
+  val isRefreshing = remember { mutableStateOf(false) }
   val nestedScrollConnection = remember {
     object : NestedScrollConnection {
       override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
         if (available.y > 15f && listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
           searchVisible.value = true
         }
+        if (available.y > 0 && listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
+          pullOffset.value = (pullOffset.value + available.y * 0.4f).coerceAtMost(180f)
+        } else if (available.y < 0 && pullOffset.value > 0) {
+          pullOffset.value = (pullOffset.value + available.y).coerceAtLeast(0f)
+        }
         return Offset.Zero
+      }
+
+      override suspend fun onPostFling(consumed: androidx.compose.ui.unit.Velocity, available: androidx.compose.ui.unit.Velocity): androidx.compose.ui.unit.Velocity {
+        if (pullOffset.value > 100f) {
+          isRefreshing.value = true
+          chat.simplex.common.platform.performHapticFeedback(chat.simplex.common.platform.SimpleUXHapticType.MEDIUM)
+          delay(800)
+          isRefreshing.value = false
+        }
+        pullOffset.value = 0f
+        return super.onPostFling(consumed, available)
       }
     }
   }
-  val chats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
+  val rawChats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
+  val chats = if (activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES)) {
+    rawChats.filter { chatModel.starredChatIds.contains(it.id) }
+  } else {
+    rawChats
+  }
 
-  LazyColumnWithScrollBar(
-    modifier = Modifier.imePadding().nestedScroll(nestedScrollConnection),
-    state = listState,
-    contentPadding = PaddingValues(bottom = 90.dp),
-    reverseLayout = false
-  ) {
+  val isSearching = searchText.value.text.isNotEmpty() || searchVisible.value
+  val bottomPadding = if (isSearching) 16.dp else 96.dp
+
+  Box(Modifier.fillMaxSize().clipToBounds()) {
+    LazyColumnWithScrollBarNoAppBar(
+      modifier = Modifier
+        .fillMaxSize()
+        .imePadding()
+        .clipToBounds()
+        .nestedScroll(nestedScrollConnection),
+      state = listState,
+      contentPadding = PaddingValues(bottom = bottomPadding),
+      reverseLayout = false
+    ) {
     stickyHeader {
       Column(
         Modifier
           .fillMaxWidth()
-          .zIndex(1f)
-          .windowInsetsPadding(WindowInsets.statusBars)
+          .zIndex(20f)
           .background(MaterialTheme.colors.background)
+          .windowInsetsPadding(WindowInsets.statusBars)
       ) {
         TelegramTopHeader(
           userPickerState = userPickerState,
@@ -1497,8 +1519,12 @@ private fun BoxScope.ChatList(
               else -> UxFilterCategory.ALL
             }
           }
+          val totalUnread = remember(allChats.value) {
+            allChats.value.sumOf { chat -> chat.chatStats.unreadCount }
+          }
           FilterPillsRow(
             activeCategory = currentUxCategory,
+            totalUnread = totalUnread,
             onCategorySelected = { cat ->
               chatModel.activeChatTagFilter.value = if (cat == currentUxCategory) {
                 null
@@ -1567,24 +1593,99 @@ private fun BoxScope.ChatList(
       item {
         PublicDirectorySearchResultsSection(
           query = searchText.value.text.trim(),
-          onJoinGroup = { link ->
-            connectIfOpenedViaUri(chatModel.currentRemoteHost.value?.remoteHostId, link, chatModel)
-            searchText.value = TextFieldValue("")
+          onJoinGroup = { link, onComplete ->
+            val rhId = chatModel.currentRemoteHost.value?.remoteHostId
+            withBGApi {
+              chatModel.appOpenUrlConnecting.value = true
+              planAndConnect(
+                rhId,
+                link,
+                close = {
+                  searchText.value = TextFieldValue("")
+                  onComplete()
+                },
+                cleanup = {
+                  chatModel.appOpenUrlConnecting.value = false
+                  onComplete()
+                },
+                autoJoin = true
+              )
+            }
           }
         )
       }
     }
 
-    item {
-      Spacer(Modifier.height(110.dp))
+    if (chats.isEmpty() && searchText.value.text.isBlank()) {
+      item {
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 40.dp),
+          contentAlignment = Alignment.Center
+        ) {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+          ) {
+            Box(
+              modifier = Modifier
+                .size(64.dp)
+                .clip(CircleShape)
+                .background(if (isInDarkTheme()) Color(0x2238BDF8) else Color(0x1A0284C7)),
+              contentAlignment = Alignment.Center
+            ) {
+              Icon(
+                painter = painterResource(MR.images.ic_forum),
+                contentDescription = null,
+                tint = if (isInDarkTheme()) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                modifier = Modifier.size(32.dp)
+              )
+            }
+            Text(
+              text = "Aucune conversation pour le moment",
+              style = TextStyle(
+                fontFamily = Inter,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = if (isInDarkTheme()) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+              ),
+              textAlign = TextAlign.Center
+            )
+            Text(
+              text = "Créez un lien ou scannez un QR code pour commencer à échanger en toute confidentialité.",
+              style = TextStyle(
+                fontFamily = Inter,
+                fontSize = 13.sp,
+                color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF64748B)
+              ),
+              textAlign = TextAlign.Center,
+              modifier = Modifier.padding(horizontal = 16.dp)
+            )
+          }
+        }
+      }
+    }
+
+    if (!isSearching) {
+      item {
+        Spacer(Modifier.height(100.dp))
+      }
     }
   }
 
-  if (chats.isEmpty() && chatModel.chats.value.isNotEmpty() && searchText.value.text.isBlank()) {
-    Box(Modifier.fillMaxSize().imePadding().padding(horizontal = DEFAULT_PADDING), contentAlignment = Alignment.Center) {
-      NoChatsView(searchText = searchText)
-    }
+    MineralPullToRefreshIndicator(
+      pullFraction = pullOffset.value / 100f,
+      isRefreshing = isRefreshing.value,
+      modifier = Modifier
+        .align(Alignment.TopCenter)
+        .windowInsetsPadding(WindowInsets.statusBars)
+        .padding(top = (pullOffset.value * 0.4f).dp + 10.dp)
+        .zIndex(10f)
+    )
   }
+
+
 
   StatusBarBackground()
 
@@ -1665,30 +1766,79 @@ private fun TagsOrConnectByName(
 @Composable
 internal fun ConnectByNameRow(name: String, searchText: MutableState<TextFieldValue>, connectNameCandidate: MutableState<String?>, close: (() -> Unit)?) {
   val view = LocalMultiplatformView()
-  Row(
-    Modifier
+  val isDark = isInDarkTheme()
+  val isGroup = name.startsWith("#")
+  val shape = RoundedCornerShape(16.dp)
+
+  Surface(
+    modifier = Modifier
       .fillMaxWidth()
+      .padding(horizontal = 12.dp, vertical = 4.dp)
+      .clip(shape)
+      .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+      .border(1.dp, if (isDark) Color(0x35FFFFFF) else Color(0x150F172A), shape)
       .clickable {
         hideKeyboard(view)
+        performHapticFeedback(SimpleUXHapticType.LIGHT)
         withBGApi {
           planAndConnect(
             chatModel.remoteHostId(),
             name,
-            close = close,
-            cleanup = {
+            close = {
               searchText.value = TextFieldValue()
+              connectNameCandidate.value = null
+              close?.invoke()
+            },
+            cleanup = {
               connectNameCandidate.value = null
             },
           )
         }
-      }
-      .padding(vertical = DEFAULT_PADDING_HALF),
-    verticalAlignment = Alignment.CenterVertically
+      },
+    color = Color.Transparent,
+    shape = shape
   ) {
-    // icon and text aligned with the search bar's icon and text (same paddings and icon size)
-    val icon = if (name.startsWith("@")) MR.images.ic_at else MR.images.ic_tag
-    Icon(painterResource(icon), null, Modifier.padding(start = DEFAULT_PADDING, end = DEFAULT_PADDING_HALF).size(22.dp * fontSizeSqrtMultiplier), tint = MaterialTheme.colors.primary)
-    Text(String.format(generalGetString(MR.strings.connect_plan_connect_to_name), name), color = MaterialTheme.colors.primary)
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(horizontal = 14.dp, vertical = 12.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Box(
+        modifier = Modifier
+          .size(36.dp)
+          .clip(CircleShape)
+          .background(if (isGroup) (if (isDark) Color(0x2238BDF8) else Color(0x150284C7)) else (if (isDark) Color(0x22E2B755) else Color(0x15D97706))),
+        contentAlignment = Alignment.Center
+      ) {
+        Icon(
+          painter = painterResource(if (isGroup) MR.images.ic_group else MR.images.ic_person),
+          contentDescription = null,
+          tint = if (isGroup) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)),
+          modifier = Modifier.size(18.dp)
+        )
+      }
+      Spacer(Modifier.width(12.dp))
+      Column(Modifier.weight(1f)) {
+        Text(
+          text = if (isGroup) "Rejoindre le groupe public $name" else "Se connecter à $name",
+          color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+          fontWeight = FontWeight.SemiBold,
+          fontSize = 14.5.sp
+        )
+        Text(
+          text = "Rechercher et se connecter via le répertoire décentralisé",
+          color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+          fontSize = 11.5.sp
+        )
+      }
+      Icon(
+        painter = painterResource(MR.images.ic_chevron_right),
+        contentDescription = null,
+        tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+        modifier = Modifier.size(18.dp)
+      )
+    }
   }
 }
 
@@ -2137,66 +2287,29 @@ fun scrollToBottom(scope: CoroutineScope, listState: LazyListState) {
   scope.launch { try { listState.animateScrollToItem(0) } catch (e: Exception) { Log.e(TAG, e.stackTraceToString()) } }
 }
 
-data class SimpleUxDirectoryGroup(
-  val name: String,
-  val description: String,
-  val link: String,
-  val category: String,
-  val members: String
-)
-
-val sampleDirectoryGroups = listOf(
-  SimpleUxDirectoryGroup(
-    name = "SimpleX Chat Community",
-    description = "Groupe officiel SimpleX Chat pour annonces et discussions générales.",
-    link = "https://smp6.simplex.im/g#r5z3uzHp8_pL3ZPyuBCJWmvzQxMnc0Tj3QMLTEnyw6c",
-    category = "Officiel",
-    members = "1,500+ membres"
-  ),
-  SimpleUxDirectoryGroup(
-    name = "SimpleX Francophone",
-    description = "Entraide, actualités et échanges autour du réseau SimpleX en français.",
-    link = "https://smp4.simplex.im/g#x9z9uzHp8_pL3ZPyuBCJWmvzQxMnc0Tj3QMLTEnyw6c",
-    category = "Français",
-    members = "420 membres"
-  ),
-  SimpleUxDirectoryGroup(
-    name = "Privacy & Freedom Tech",
-    description = "Technologies décentralisées, chiffrement, open-source et vie privée.",
-    link = "https://smp4.simplex.im/g#r5z3uzHp8_pL3ZPyuBCJWmvzQxMnc0Tj3QMLTEnyw6c",
-    category = "Privacy",
-    members = "890 membres"
-  ),
-  SimpleUxDirectoryGroup(
-    name = "Bitcoin & Lightning P2P",
-    description = "Échanges P2P, Lightning Network, finance souveraine et nœuds.",
-    link = "https://smp4.simplex.im/g#-xXBhQRrvRB1ffhxcPpB44Im1_ci4BMIdCHwj8m8IHo",
-    category = "Crypto",
-    members = "640 membres"
-  ),
-  SimpleUxDirectoryGroup(
-    name = "FOSS & Linux Hub",
-    description = "Logiciels libres, auto-hébergement, serveurs SMP et sécurité système.",
-    link = "https://smp4.simplex.im/g#d7z9uzHp8_pL3ZPyuBCJWmvzQxMnc0Tj3QMLTEnyw6c",
-    category = "Open-source",
-    members = "530 membres"
-  )
-)
-
 @Composable
 fun PublicDirectorySearchResultsSection(
   query: String,
-  onJoinGroup: (String) -> Unit
+  onJoinGroup: (String, () -> Unit) -> Unit
 ) {
   val isDark = isInDarkTheme()
   val trimmed = query.trim().lowercase()
+  val joiningLink = remember { mutableStateOf<String?>(null) }
+  val scope = rememberCoroutineScope()
 
-  val matchingGroups = remember(query) {
+  LaunchedEffect(Unit) {
+    SimpleUxDirectoryRepository.fetchDirectoryIfNeeded(scope)
+  }
+
+  val allDirectoryGroups by SimpleUxDirectoryRepository.groups.collectAsState()
+
+  val matchingGroups = remember(query, allDirectoryGroups) {
     if (trimmed.isEmpty()) emptyList()
-    else sampleDirectoryGroups.filter {
+    else allDirectoryGroups.filter {
       it.name.lowercase().contains(trimmed) ||
       it.description.lowercase().contains(trimmed) ||
-      it.category.lowercase().contains(trimmed)
+      it.category.lowercase().contains(trimmed) ||
+      it.link.lowercase().contains(trimmed)
     }
   }
 
@@ -2244,6 +2357,7 @@ fun PublicDirectorySearchResultsSection(
       verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
       matchingGroups.forEach { group ->
+        val isJoining = joiningLink.value == group.link
         Row(
           modifier = Modifier
             .fillMaxWidth()
@@ -2262,13 +2376,14 @@ fun PublicDirectorySearchResultsSection(
                 .clip(CircleShape)
                 .background(
                   Brush.linearGradient(
-                    listOf(Color(0xFF38BDF8), Color(0xFF0284C7))
+                    if (group.link.contains("/a#")) listOf(Color(0xFF8B5CF6), Color(0xFF6366F1))
+                    else listOf(Color(0xFF38BDF8), Color(0xFF0284C7))
                   )
                 ),
               contentAlignment = Alignment.Center
             ) {
               Icon(
-                painterResource(MR.images.ic_group),
+                painterResource(if (group.link.contains("/a#")) MR.images.ic_travel_explore else MR.images.ic_group),
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier.size(20.dp)
@@ -2321,23 +2436,39 @@ fun PublicDirectorySearchResultsSection(
           Spacer(Modifier.width(8.dp))
 
           Button(
-            onClick = { onJoinGroup(group.link) },
+            onClick = {
+              joiningLink.value = group.link
+              performHapticFeedback(SimpleUXHapticType.MEDIUM)
+              onJoinGroup(group.link) {
+                joiningLink.value = null
+              }
+            },
+            enabled = !isJoining,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-              backgroundColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
-              contentColor = Color.White
+              backgroundColor = if (group.link.contains("/a#")) (if (isDark) Color(0xFF8B5CF6) else Color(0xFF6366F1)) else (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)),
+              contentColor = Color.White,
+              disabledBackgroundColor = (if (group.link.contains("/a#")) (if (isDark) Color(0xFF8B5CF6) else Color(0xFF6366F1)) else (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7))).copy(alpha = 0.5f)
             ),
-            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 7.dp),
             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp)
           ) {
-            Text(
-              text = "Rejoindre",
-              style = TextStyle(
-                fontFamily = Inter,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold
+            if (isJoining) {
+              CircularProgressIndicator(
+                modifier = Modifier.size(14.dp),
+                color = Color.White,
+                strokeWidth = 2.dp
               )
-            )
+            } else {
+              Text(
+                text = if (group.link.contains("/a#")) "Ouvrir" else "Rejoindre",
+                style = TextStyle(
+                  fontFamily = Inter,
+                  fontSize = 12.sp,
+                  fontWeight = FontWeight.SemiBold
+                )
+              )
+            }
           }
         }
       }

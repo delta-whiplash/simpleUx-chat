@@ -24,3 +24,14 @@ fun registerGlobalErrorHandler() {
 expect class GlobalExceptionsHandler(): Thread.UncaughtExceptionHandler {
   override fun uncaughtException(thread: Thread, e: Throwable)
 }
+
+enum class SimpleUXHapticType {
+  LIGHT,
+  MEDIUM,
+  HEAVY,
+  SUCCESS,
+  CLICK
+}
+
+expect fun performHapticFeedback(type: SimpleUXHapticType = SimpleUXHapticType.LIGHT)
+

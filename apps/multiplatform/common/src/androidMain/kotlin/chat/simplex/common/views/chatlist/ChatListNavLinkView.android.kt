@@ -2,10 +2,12 @@ package chat.simplex.common.views.chatlist
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import chat.simplex.common.platform.onRightClick
@@ -27,13 +29,20 @@ actual fun ChatListNavLinkLayout(
   val rowBg = if (selectedChat.value) {
     if (isDark) Color(0x3338BDF8) else Color(0x1A0284C7)
   } else {
-    Color.Transparent
+    if (isDark) Color(0xFF131A27) else Color(0xFFFFFFFF)
   }
 
   Box(
     modifier = Modifier
       .fillMaxWidth()
+      .padding(horizontal = 8.dp, vertical = 4.dp)
+      .clip(RoundedCornerShape(16.dp))
       .background(rowBg)
+      .border(
+        width = 1.dp,
+        color = if (isDark) Color(0x1FFFFFFF) else Color(0x0D000000),
+        shape = RoundedCornerShape(16.dp)
+      )
       .then(
         if (!disabled) {
           Modifier
@@ -45,20 +54,11 @@ actual fun ChatListNavLinkLayout(
     Row(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(horizontal = 14.dp, vertical = 9.dp),
+        .padding(horizontal = 14.dp, vertical = 12.dp),
       verticalAlignment = Alignment.CenterVertically
     ) {
       chatLinkPreview()
     }
-    // Indented subtle divider after avatar (74dp padding start, like Telegram)
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .align(Alignment.BottomEnd)
-        .padding(start = 74.dp)
-        .height(0.5.dp)
-        .background(if (isDark) Color(0x1FFFFFFF) else Color(0x12000000))
-    )
     if (dropdownMenuItems != null) {
       DefaultDropdownMenu(showMenu, dropdownMenuItems = dropdownMenuItems)
     }

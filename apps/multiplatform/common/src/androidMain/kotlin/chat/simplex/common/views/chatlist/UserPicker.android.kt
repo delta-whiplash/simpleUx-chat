@@ -1,6 +1,9 @@
 package chat.simplex.common.views.chatlist
 
 import SectionItemView
+import androidx.compose.animation.*
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -75,148 +78,121 @@ fun UserPickerUserBox(
   modifier: Modifier = Modifier,
   onClick: (user: User) -> Unit,
 ) {
+  val isDark = isInDarkTheme()
+  val user = userInfo.user
+  val cardBg = if (user.activeUser) {
+    if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+  } else {
+    if (isDark) Color(0xFF121A26) else Color(0xFFFFFFFF)
+  }
+
   Row(
     modifier = modifier
-      .userPickerBoxModifier()
-      .clickable (
+      .clip(RoundedCornerShape(18.dp))
+      .border(
+        width = 1.dp,
+        color = if (user.activeUser) {
+          if (isDark) Color(0x6638BDF8) else Color(0x330284C7)
+        } else {
+          if (isDark) Color(0x1FFFFFFF) else Color(0x0D000000)
+        },
+        shape = RoundedCornerShape(18.dp)
+      )
+      .background(cardBg)
+      .clickable(
         onClick = { onClick(userInfo.user) },
         enabled = !stopped
       )
-      .background(MaterialTheme.colors.background)
-      .padding(USER_PICKER_ROW_PADDING),
+      .padding(horizontal = 16.dp, vertical = 14.dp),
     verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(USER_PICKER_ROW_PADDING)
+    horizontalArrangement = Arrangement.spacedBy(14.dp)
   ) {
     Box {
-      ProfileImageForActiveCall(size = USER_PICKER_IMAGE_SIZE, image = userInfo.user.profile.image, color = MaterialTheme.colors.secondaryVariant)
+      ProfileImage(size = USER_PICKER_IMAGE_SIZE, image = userInfo.user.profile.image, name = user.displayName)
 
       if (userInfo.unreadCount > 0 && !userInfo.user.activeUser) {
         userUnreadBadge(userInfo.unreadCount, userInfo.user.showNtfs, false)
       }
     }
-    val user = userInfo.user
     NameWithBadge(
       user.displayName,
       user.profile.localBadge,
-      fontWeight = if (user.activeUser) FontWeight.Bold else FontWeight.Normal,
+      color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+      fontWeight = if (user.activeUser) FontWeight.Bold else FontWeight.Medium,
       maxLines = 1,
       overflow = TextOverflow.Ellipsis,
     )
   }
 }
 
-@Composable
-private fun Modifier.userPickerBoxModifier(): Modifier {
-  val percent = remember { appPreferences.profileImageCornerRadius.state }
-  val r = kotlin.math.max(0f, percent.value)
-
-  val cornerSize = when {
-    r >= 50 -> 50
-    r <= 0 -> 0
-    else -> r.toInt()
-  }
-
-  val shape = RoundedCornerShape(CornerSize(cornerSize))
-  return this.clip(shape).border(1.dp, MaterialTheme.colors.background.mixWith(MaterialTheme.colors.onBackground, 1 - userPickerAlpha() - 0.02f), shape)
-}
-
-
-private fun calculateFraction(pos: Float) =
-  (pos / 1f).coerceIn(0f, 1f)
 
 @Composable
 actual fun PlatformUserPicker(modifier: Modifier, pickerState: MutableStateFlow<AnimatedViewState>, content: @Composable () -> Unit) {
-  val pickerIsVisible = pickerState.collectAsState().value.isVisible()
-  val dismissState = rememberDismissState(initialValue = if (pickerIsVisible) DismissValue.Default else DismissValue.DismissedToEnd) {
-    if (it == DismissValue.DismissedToEnd && pickerState.value.isVisible()) {
-      pickerState.value = AnimatedViewState.HIDING
-    }
-    true
-  }
-  val height = remember { mutableIntStateOf(0) }
-  val heightValue = height.intValue
-  val clickableModifier = if (pickerIsVisible) {
-    Modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null, onClick = { pickerState.value = AnimatedViewState.HIDING })
-  } else {
-    Modifier
-  }
-  Box {
+  val currentState by pickerState.collectAsState()
+  val isDark = isInDarkTheme()
+  val sheetShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+
+  AnimatedVisibility(
+    visible = currentState.isVisible(),
+    enter = fadeIn(animationSpec = androidx.compose.animation.core.tween(220)) + slideInVertically(
+      initialOffsetY = { it },
+      animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.8f, stiffness = 400f)
+    ),
+    exit = fadeOut(animationSpec = androidx.compose.animation.core.tween(180)) + slideOutVertically(
+      targetOffsetY = { it },
+      animationSpec = androidx.compose.animation.core.tween(180)
+    )
+  ) {
     Box(
-      Modifier
+      modifier = Modifier
         .fillMaxSize()
-        .then(clickableModifier)
-        .drawBehind {
-          val pos = calculatePosition(dismissState)
-          val colors = CurrentColors.value.colors
-          val resultingColor = if (colors.isLight) colors.onSurface.copy(alpha = ScrimOpacity) else Color.Black.copy(0.64f)
-          drawRect(
-            if (pos != 0f) resultingColor else Color.Transparent,
-            alpha = calculateFraction(pos = pos)
-          )
-        }
-        .graphicsLayer {
-          if (heightValue == 0) {
-            alpha = 0f
-          }
-          translationY = dismissState.offset.value
-        },
+        .background(Color.Black.copy(alpha = 0.55f))
+        .clickable(
+          interactionSource = remember { MutableInteractionSource() },
+          indication = null,
+          onClick = { pickerState.value = AnimatedViewState.HIDING }
+        ),
       contentAlignment = Alignment.BottomCenter
     ) {
       Box(
-        Modifier.onSizeChanged { height.intValue = it.height }
-      ) {
-        KeyChangeEffect(pickerIsVisible) {
-          if (pickerState.value.isVisible()) {
-            try {
-              dismissState.animateTo(DismissValue.Default, userPickerAnimSpec())
-            } catch (e: CancellationException) {
-              Log.e(TAG, "Cancelled animateTo: ${e.stackTraceToString()}")
-              pickerState.value = AnimatedViewState.GONE
-            }
-          } else {
-            try {
-              dismissState.animateTo(DismissValue.DismissedToEnd, userPickerAnimSpec())
-            } catch (e: CancellationException) {
-              Log.e(TAG, "Cancelled animateTo2: ${e.stackTraceToString()}")
-              pickerState.value = AnimatedViewState.VISIBLE
-            }
-          }
-        }
-        val draggableModifier = if (height.intValue != 0)
-          Modifier.draggableBottomDrawerModifier(
-            state = dismissState,
-            swipeDistance = height.intValue.toFloat(),
+        modifier = Modifier
+          .fillMaxWidth()
+          .clip(sheetShape)
+          .background(if (isDark) Color(0xFF0F172A) else Color(0xFFFFFFFF))
+          .border(
+            width = 1.dp,
+            brush = Brush.verticalGradient(
+              listOf(
+                if (isDark) Color(0x38FFFFFF) else Color(0x1F000000),
+                Color.Transparent
+              )
+            ),
+            shape = sheetShape
           )
-        else Modifier
-        Box(draggableModifier.then(modifier).navigationBarsPadding()) {
+          .then(modifier)
+          .clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+            onClick = {}
+          )
+          .navigationBarsPadding()
+      ) {
+        Column {
+          // Drag handle pill
+          Box(
+            modifier = Modifier
+              .padding(top = 12.dp, bottom = 4.dp)
+              .size(width = 38.dp, height = 4.dp)
+              .clip(RoundedCornerShape(2.dp))
+              .background(if (isDark) Color(0x40FFFFFF) else Color(0x20000000))
+              .align(Alignment.CenterHorizontally)
+          )
           content()
         }
       }
     }
-    NavigationBarBackground(
-      modifier = Modifier.graphicsLayer { alpha = if (calculatePosition(dismissState) > 0.1f) 1f else 0f },
-      color = MaterialTheme.colors.background.mixWith(MaterialTheme.colors.onBackground, alpha = 1 - userPickerAlpha())
-    )
   }
 }
-
-private fun calculatePosition(dismissState: DismissState): Float = when {
-  dismissState.progress.from == DismissValue.Default && dismissState.progress.to == DismissValue.Default -> 1f
-  dismissState.progress.from == DismissValue.DismissedToEnd && dismissState.progress.to == DismissValue.DismissedToEnd -> 0f
-  dismissState.progress.to == DismissValue.Default -> dismissState.progress.fraction
-  else -> 1 - dismissState.progress.fraction
-}
-
-private fun Modifier.draggableBottomDrawerModifier(
-  state: DismissState,
-  swipeDistance: Float,
-): Modifier = this.swipeable(
-  state = state,
-  anchors = mapOf(0f to DismissValue.Default, swipeDistance to DismissValue.DismissedToEnd),
-  thresholds = { _, _ -> FractionalThreshold(0.3f) },
-  orientation = Orientation.Vertical,
-  resistance = null
-)
 
 private fun Modifier.userBoxWidth(user: User, totalUsers: Int, windowWidth: Dp): Modifier {
   return if (totalUsers == 1) {

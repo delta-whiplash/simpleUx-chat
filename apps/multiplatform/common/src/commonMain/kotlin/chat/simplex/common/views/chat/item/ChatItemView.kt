@@ -124,8 +124,32 @@ fun ChatItemView(
   val onLinkLongClick = { _: String -> showMenu.value = true }
   val live = remember { derivedStateOf { composeState.value.liveMessage != null } }.value
 
+  val bubbleEnterScale = remember { androidx.compose.animation.core.Animatable(if (sent && cItem.meta.itemStatus is CIStatus.SndNew) 0.88f else 1f) }
+  val bubbleEnterAlpha = remember { androidx.compose.animation.core.Animatable(if (sent && cItem.meta.itemStatus is CIStatus.SndNew) 0.6f else 1f) }
+
+  LaunchedEffect(cItem.id) {
+    if (sent && cItem.meta.itemStatus is CIStatus.SndNew) {
+      bubbleEnterScale.animateTo(
+        targetValue = 1f,
+        animationSpec = androidx.compose.animation.core.spring(
+          dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy,
+          stiffness = androidx.compose.animation.core.Spring.StiffnessLow
+        )
+      )
+      bubbleEnterAlpha.animateTo(
+        targetValue = 1f,
+        animationSpec = androidx.compose.animation.core.tween(150)
+      )
+    }
+  }
+
   Box(
-    modifier = (if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier),
+    modifier = (if (fillMaxWidth) Modifier.fillMaxWidth() else Modifier)
+      .graphicsLayer {
+        scaleX = bubbleEnterScale.value
+        scaleY = bubbleEnterScale.value
+        alpha = bubbleEnterAlpha.value
+      },
     contentAlignment = alignment,
   ) {
     val info = cItem.meta.itemStatus.statusInto ?: cItem.meta.msgVerified?.sigMissingInfo

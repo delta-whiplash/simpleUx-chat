@@ -196,46 +196,112 @@ fun OnboardingActionButton(
   iconColor: Color = Color.White,
   onclick: (() -> Unit)?
 ) {
-  Button(
-    onClick = {
-      onclick?.invoke()
-      if (onboarding != null) {
-        appPrefs.onboardingStage.set(onboarding)
-      }
-    },
-    modifier = modifier,
-    shape = CircleShape,
-    enabled = enabled,
-//    elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, focusedElevation = 0.dp, pressedElevation = 0.dp, hoveredElevation = 0.dp),
-    contentPadding = PaddingValues(horizontal = if (icon == null) DEFAULT_PADDING * 2 else DEFAULT_PADDING * 1.5f, vertical = 17.dp),
-    colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary, disabledBackgroundColor = MaterialTheme.colors.secondary)
-  ) {
-    if (icon != null) {
-      Icon(icon, stringResource(labelId), Modifier.padding(end = DEFAULT_PADDING_HALF), tint = iconColor)
+  val isDark = isInDarkTheme()
+  val shape = RoundedCornerShape(22.dp)
+
+  val bgBrush = if (enabled) {
+    if (isDark) {
+      Brush.verticalGradient(listOf(Color(0xFF0284C7), Color(0xFF0369A1)))
+    } else {
+      Brush.verticalGradient(listOf(Color(0xFF0284C7), Color(0xFF0369A1)))
     }
-    Text(stringResource(labelId), style = MaterialTheme.typography.h2, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Medium)
+  } else {
+    if (isDark) {
+      Brush.verticalGradient(listOf(Color(0xFF1E293B), Color(0xFF0F172A)))
+    } else {
+      Brush.verticalGradient(listOf(Color(0xFFE2E8F0), Color(0xFFCBD5E1)))
+    }
+  }
+
+  val specularBorder = if (enabled) {
+    Brush.verticalGradient(listOf(Color(0x60FFFFFF), Color(0x15FFFFFF)))
+  } else {
+    Brush.verticalGradient(listOf(Color(0x20FFFFFF), Color(0x05FFFFFF)))
+  }
+
+  Surface(
+    modifier = modifier
+      .fillMaxWidth()
+      .height(54.dp)
+      .clip(shape)
+      .background(bgBrush)
+      .border(1.dp, specularBorder, shape)
+      .clickable(
+        enabled = enabled,
+        onClick = {
+          performHapticFeedback(SimpleUXHapticType.MEDIUM)
+          onclick?.invoke()
+          if (onboarding != null) {
+            appPrefs.onboardingStage.set(onboarding)
+          }
+        }
+      ),
+    color = Color.Transparent,
+    shape = shape
+  ) {
+    Row(
+      modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      if (icon != null) {
+        Icon(icon, stringResource(labelId), Modifier.padding(end = DEFAULT_PADDING_HALF), tint = if (enabled) iconColor else (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)))
+      }
+      Text(
+        stringResource(labelId),
+        color = if (enabled) Color.White else (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)),
+        fontSize = 16.5.sp,
+        fontWeight = FontWeight.SemiBold,
+        letterSpacing = 0.3.sp
+      )
+    }
   }
 }
 
 @Composable
 fun TextButtonBelowOnboardingButton(text: String, onClick: (() -> Unit)?, icon: Painter? = null) {
+  val isDark = isInDarkTheme()
   val state = getKeyboardState()
   val enabled = onClick != null
-  val topPadding by animateDpAsState(if (appPlatform.isAndroid && state.value == KeyboardState.Opened) 0.dp else 7.5.dp)
-  val bottomPadding by animateDpAsState(if (appPlatform.isAndroid && state.value == KeyboardState.Opened) 0.dp else 7.5.dp)
+  val topPadding by animateDpAsState(if (appPlatform.isAndroid && state.value == KeyboardState.Opened) 0.dp else 10.dp)
+  val bottomPadding by animateDpAsState(if (appPlatform.isAndroid && state.value == KeyboardState.Opened) 0.dp else 10.dp)
   if ((appPlatform.isAndroid && state.value == KeyboardState.Closed) || topPadding > 0.dp) {
-    TextButton({ onClick?.invoke() }, Modifier.padding(top = topPadding, bottom = bottomPadding).clip(CircleShape), enabled = enabled) {
-      if (icon != null) {
-        Icon(icon, null, tint = MaterialTheme.colors.primary)
-        Spacer(Modifier.width(4.dp))
+    Surface(
+      modifier = Modifier
+        .padding(top = topPadding, bottom = bottomPadding)
+        .clip(RoundedCornerShape(16.dp))
+        .clickable(
+          enabled = enabled,
+          onClick = {
+            performHapticFeedback(SimpleUXHapticType.LIGHT)
+            onClick?.invoke()
+          }
+        ),
+      color = Color.Transparent,
+      shape = RoundedCornerShape(16.dp)
+    ) {
+      Row(
+        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+      ) {
+        if (icon != null) {
+          Icon(
+            icon,
+            null,
+            tint = if (enabled) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else MaterialTheme.colors.secondary,
+            modifier = Modifier.size(16.dp)
+          )
+          Spacer(Modifier.width(6.dp))
+        }
+        Text(
+          text,
+          color = if (enabled) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else MaterialTheme.colors.secondary,
+          fontWeight = FontWeight.Medium,
+          fontSize = 14.sp,
+          textAlign = TextAlign.Center
+        )
       }
-      Text(
-        text,
-        Modifier.padding(vertical = 5.dp),
-        color = if (enabled) MaterialTheme.colors.primary else MaterialTheme.colors.secondary,
-        fontWeight = FontWeight.Medium,
-        textAlign = TextAlign.Center
-      )
     }
   } else {
     // Hide from view when keyboard is open and move the view down

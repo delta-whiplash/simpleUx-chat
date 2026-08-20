@@ -158,7 +158,7 @@ fun ActiveContactsRail(
                                     ) {
                                     Text(
                                         text = if (unreadCnt > 9) "9+" else if (unreadCnt > 0) "$unreadCnt" else "•",
-                                        fontSize = 9.sp,
+                                        fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
                                         color = Color(0xFF0F172A)
                                     )
@@ -172,7 +172,7 @@ fun ActiveContactsRail(
                             text = name,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
-                            fontSize = 11.sp,
+                            fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                             color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B),
                             textAlign = TextAlign.Center,

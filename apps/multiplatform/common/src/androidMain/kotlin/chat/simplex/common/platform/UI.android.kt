@@ -114,3 +114,52 @@ actual class GlobalExceptionsHandler: Thread.UncaughtExceptionHandler {
     }
   }
 }
+
+actual fun performHapticFeedback(type: SimpleUXHapticType) {
+  try {
+    val activity = mainActivity.get()
+    val view = activity?.window?.decorView
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && view != null) {
+      val feedbackConstant = when (type) {
+        SimpleUXHapticType.LIGHT -> HapticFeedbackConstants.GESTURE_THRESHOLD_ACTIVATE
+        SimpleUXHapticType.MEDIUM -> HapticFeedbackConstants.CONFIRM
+        SimpleUXHapticType.HEAVY -> HapticFeedbackConstants.REJECT
+        SimpleUXHapticType.SUCCESS -> HapticFeedbackConstants.CONFIRM
+        SimpleUXHapticType.CLICK -> HapticFeedbackConstants.KEYBOARD_TAP
+      }
+      view.performHapticFeedback(feedbackConstant, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING)
+    } else if (view != null) {
+      val feedbackConstant = when (type) {
+        SimpleUXHapticType.HEAVY -> HapticFeedbackConstants.LONG_PRESS
+        else -> HapticFeedbackConstants.KEYBOARD_TAP
+      }
+      view.performHapticFeedback(feedbackConstant)
+    } else {
+      val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val vibratorManager = androidAppContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
+        vibratorManager?.defaultVibrator
+      } else {
+        @Suppress("DEPRECATION")
+        androidAppContext.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+      }
+      if (vibrator != null && vibrator.hasVibrator()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          val effect = when (type) {
+            SimpleUXHapticType.LIGHT -> VibrationEffect.createOneShot(12, VibrationEffect.DEFAULT_AMPLITUDE)
+            SimpleUXHapticType.MEDIUM -> VibrationEffect.createOneShot(25, VibrationEffect.DEFAULT_AMPLITUDE)
+            SimpleUXHapticType.HEAVY -> VibrationEffect.createOneShot(45, VibrationEffect.DEFAULT_AMPLITUDE)
+            SimpleUXHapticType.SUCCESS -> VibrationEffect.createWaveform(longArrayOf(0, 15, 40, 20), -1)
+            SimpleUXHapticType.CLICK -> VibrationEffect.createOneShot(8, VibrationEffect.DEFAULT_AMPLITUDE)
+          }
+          vibrator.vibrate(effect)
+        } else {
+          @Suppress("DEPRECATION")
+          vibrator.vibrate(20)
+        }
+      }
+    }
+  } catch (_: Throwable) {
+    // Ignore haptic errors gracefully
+  }
+}
+

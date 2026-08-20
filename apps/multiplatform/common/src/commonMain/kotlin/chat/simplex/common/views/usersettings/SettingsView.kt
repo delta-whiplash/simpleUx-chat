@@ -152,23 +152,6 @@ fun SettingsLayout(
       AppShutdownItem()
     }
 
-    Spacer(Modifier.height(18.dp))
-
-    // Pied de page : Version centrée
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(bottom = 100.dp),
-      contentAlignment = Alignment.Center
-    ) {
-      Text(
-        text = "SimpleUX ${appVersionInfo.first}${if (appVersionInfo.second != null) " (${appVersionInfo.second})" else ""}",
-        style = MaterialTheme.typography.caption,
-        color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
-        textAlign = TextAlign.Center
-      )
-    }
-
     if (crowdfundingAvailable()) {
       SectionDividerSpaced()
       SectionView(stringResource(MR.strings.v7_0_invest)) {
@@ -178,6 +161,23 @@ fun SettingsLayout(
           { ModalManager.start.showModalCloseable(cardScreen = true) { close -> GetStakeView(fromSettings = true, close = close) } }
         )
       }
+    }
+
+    Spacer(Modifier.height(24.dp))
+
+    // Pied de page : Version centrée tout en bas
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(bottom = 90.dp),
+      contentAlignment = Alignment.Center
+    ) {
+      Text(
+        text = "SimpleUX ${appVersionInfo.first}${if (appVersionInfo.second != null) " (${appVersionInfo.second})" else ""}",
+        style = MaterialTheme.typography.caption,
+        color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
+        textAlign = TextAlign.Center
+      )
     }
     SectionBottomSpacer()
   }

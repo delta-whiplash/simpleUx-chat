@@ -1043,7 +1043,7 @@
     <string name="incognito_random_profile">โปรไฟล์แบบสุ่มของคุณ</string>
     <string name="theme">ธีม</string>
     <string name="error_connecting_to_server_to_receive_messages">กำลังพยายามเชื่อมต่อกับเซิร์ฟเวอร์ที่ใช้รับข้อความจากผู้ติดต่อนี้ (ข้อผิดพลาด: %1$s)</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="connected_to_server_to_receive_messages_from_contact">คุณเชื่อมต่อกับเซิร์ฟเวอร์ที่ใช้รับข้อความจากผู้ติดต่อนี้</string>
     <string name="profile_will_be_sent_to_contact_sending_link">โปรไฟล์ของคุณจะถูกส่งไปยังผู้ติดต่อที่ส่งลิงก์นี้มาให้คุณ</string>
     <string name="trying_to_connect_to_server_to_receive_messages">พยายามเชื่อมต่อกับเซิร์ฟเวอร์ที่ใช้รับข้อความจากผู้ติดต่อนี้</string>

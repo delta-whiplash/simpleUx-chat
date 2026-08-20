@@ -37,6 +37,7 @@ import chat.simplex.common.views.chat.group.hostFromRelayLink
 import chat.simplex.common.views.chat.group.relayConnStatus
 import chat.simplex.common.views.chat.item.*
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.components.*
 import chat.simplex.common.views.newchat.RelayProgressIndicator
 import chat.simplex.common.views.newchat.RelayStatusIndicator
 import chat.simplex.common.views.newchat.relayDisplayName
@@ -1676,15 +1677,6 @@ fun ComposeView(
   val relayListExpanded = remember { mutableStateOf(false) }
 
   Column {
-    val currentUser = chatModel.currentUser.value
-    if (chat.chatInfo.nextConnectPrepared && !composeState.value.inProgress && currentUser != null) {
-      ComposeContextProfilePickerView(
-        rhId = rhId,
-        chat = chat,
-        currentUser = currentUser
-      )
-    }
-
     val gInfo = (chat.chatInfo as? ChatInfo.Group)?.groupInfo
     if (gInfo != null && gInfo.useRelays
       && gInfo.membership.memberStatus !in listOf(GroupMemberStatus.MemRejected, GroupMemberStatus.MemLeft, GroupMemberStatus.MemRemoved, GroupMemberStatus.MemGroupDeleted)
@@ -1756,91 +1748,82 @@ fun ComposeView(
       }
     }
 
-    Surface(
-      color = if (isInDarkTheme()) Color(0xEB0E121B) else Color(0xF5F8FAFC),
-      contentColor = MaterialTheme.colors.onBackground
-    ) {
-      if (chat.chatInfo is ChatInfo.Group && chat.chatInfo.groupInfo.nextConnectPrepared) {
-        if (chat.chatInfo.groupInfo.businessChat == null) {
-          val isChannel = chat.chatInfo.groupInfo.useRelays
-          ConnectButtonView(
-            text = stringResource(if (isChannel) MR.strings.compose_view_join_channel else MR.strings.compose_view_join_group),
-            icon = if (isChannel) MR.images.ic_bigtop_updates else MR.images.ic_group_filled,
-            connect = { withApi { connectPreparedGroup() } }
-          )
-        } else {
-          SendContactRequestView(
-            disableSendButton = disableSendButton,
-            icon = MR.images.ic_work_filled,
-            sendRequest = { withApi { connectPreparedGroup() } }
-          )
-        }
-      } else if (nextSendGrpInv.value) {
-        Column {
-          ContextSendMessageToConnect(generalGetString(MR.strings.compose_send_direct_message_to_connect))
-          Divider()
-          Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-            AttachmentAndCommandsButtons()
-            SendMsgView_(
-              disableSendButton = disableSendButton,
-              sendToConnect = { withApi { sendMemberContactInvitation() } }
-            )
-          }
-        }
-      } else if (
-        chat.chatInfo is ChatInfo.Direct
-        && chat.chatInfo.contact.nextConnectPrepared
-        && chat.chatInfo.contact.preparedContact != null
+    val currentUser = chatModel.currentUser.value
+    if (chat.chatInfo is ChatInfo.Group && chat.chatInfo.groupInfo.nextConnectPrepared && currentUser != null) {
+      val isChannel = chat.chatInfo.groupInfo.useRelays
+      PreparedChatJoinBar(
+        rhId = rhId,
+        chat = chat,
+        currentUser = currentUser,
+        inProgress = composeState.value.inProgress,
+        actionText = stringResource(if (isChannel) MR.strings.compose_view_join_channel else MR.strings.compose_view_join_group),
+        actionIcon = if (isChannel) MR.images.ic_bigtop_updates else MR.images.ic_group_filled,
+        onAction = { withApi { connectPreparedGroup() } }
+      )
+    } else if (chat.chatInfo is ChatInfo.Direct && chat.chatInfo.contact.nextConnectPrepared && chat.chatInfo.contact.preparedContact != null && currentUser != null) {
+      val isBot = chat.chatInfo.contact.isBot
+      PreparedChatJoinBar(
+        rhId = rhId,
+        chat = chat,
+        currentUser = currentUser,
+        inProgress = composeState.value.inProgress,
+        actionText = stringResource(MR.strings.compose_view_connect),
+        actionIcon = if (isBot) MR.images.ic_bolt_filled else MR.images.ic_person_add_filled,
+        onAction = { withApi { sendConnectPreparedContact() } }
+      )
+    } else {
+      Surface(
+        color = if (isInDarkTheme()) Color(0xEB0E121B) else Color(0xF5F8FAFC),
+        contentColor = MaterialTheme.colors.onBackground
       ) {
-        when (chat.chatInfo.contact.preparedContact.uiConnLinkType) {
-          ConnectionMode.Inv ->
-            ConnectButtonView(
-              text = stringResource(MR.strings.compose_view_connect),
-              icon = MR.images.ic_person_add_filled,
-              connect = { withApi { sendConnectPreparedContact() } }
-            )
-          ConnectionMode.Con ->
-            if (chat.chatInfo.contact.isBot) {
-              ConnectButtonView(
-                text = stringResource(MR.strings.compose_view_connect),
-                icon = MR.images.ic_bolt_filled,
-                connect = { withApi { sendConnectPreparedContact() } }
-              )
-            } else {
-              SendContactRequestView(
+        if (nextSendGrpInv.value) {
+          Column {
+            ContextSendMessageToConnect(generalGetString(MR.strings.compose_send_direct_message_to_connect))
+            Divider()
+            Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+              AttachmentAndCommandsButtons()
+              SendMsgView_(
                 disableSendButton = disableSendButton,
-                icon = MR.images.ic_person_add_filled,
-                sendRequest = { showSendConnectPreparedContactAlert() }
+                sendToConnect = { withApi { sendMemberContactInvitation() } }
               )
             }
-        }
-      } else if (
-        chat.chatInfo is ChatInfo.Direct
-        && chat.chatInfo.contact.nextAcceptContactRequest
-        && chat.chatInfo.contact.contactRequestId != null
-      ) {
-        ComposeContextContactRequestActionsView(
-          rhId = rhId,
-          contactRequestId = chat.chatInfo.contact.contactRequestId
-        )
-      } else if (
-        chat.chatInfo is ChatInfo.Direct
-        && chat.chatInfo.contact.nextAcceptContactRequest
-        && chat.chatInfo.contact.groupDirectInv != null
-      ) {
-        ComposeContextMemberContactActionsView(
-          rhId = rhId,
-          contact = chat.chatInfo.contact,
-          groupDirectInv = chat.chatInfo.contact.groupDirectInv
-        )
-      } else {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-          AttachmentAndCommandsButtons()
-          val broadcastPlaceholder = (chat.chatInfo as? ChatInfo.Group)?.groupInfo?.let { gi ->
-            if (gi.useRelays && gi.membership.memberRole >= GroupMemberRole.Owner && chat.chatInfo.groupChatScope() == null) generalGetString(MR.strings.compose_view_broadcast)
-            else null
           }
-          SendMsgView_(disableSendButton = disableSendButton, placeholder = broadcastPlaceholder)
+        } else if (
+          chat.chatInfo is ChatInfo.Direct
+          && chat.chatInfo.contact.nextAcceptContactRequest
+          && chat.chatInfo.contact.contactRequestId != null
+        ) {
+          ComposeContextContactRequestActionsView(
+            rhId = rhId,
+            contactRequestId = chat.chatInfo.contact.contactRequestId
+          )
+        } else if (
+          chat.chatInfo is ChatInfo.Direct
+          && chat.chatInfo.contact.nextAcceptContactRequest
+          && chat.chatInfo.contact.groupDirectInv != null
+        ) {
+          ComposeContextMemberContactActionsView(
+            rhId = rhId,
+            contact = chat.chatInfo.contact,
+            groupDirectInv = chat.chatInfo.contact.groupDirectInv
+          )
+        } else {
+          Column {
+            QuickRepliesBar(
+              isVisible = composeState.value.whitespaceOnly && composeState.value.preview is ComposePreview.NoPreview,
+              onQuickReplySelected = { text: String ->
+                onMessageChange(ComposeMessage(text))
+              }
+            )
+            Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+              AttachmentAndCommandsButtons()
+              val broadcastPlaceholder = (chat.chatInfo as? ChatInfo.Group)?.groupInfo?.let { gi ->
+                if (gi.useRelays && gi.membership.memberRole >= GroupMemberRole.Owner && chat.chatInfo.groupChatScope() == null) generalGetString(MR.strings.compose_view_broadcast)
+                else null
+              }
+              SendMsgView_(disableSendButton = disableSendButton, placeholder = broadcastPlaceholder)
+            }
+          }
         }
       }
     }

@@ -82,7 +82,7 @@
     <string name="v4_3_irreversible_message_deletion_desc">Vaše kontakty mohou povolit úplné mazání zpráv.</string>
     <string name="v4_4_disappearing_messages">Mizící zprávy</string>
     <string name="v4_4_verify_connection_security_desc">Porovnejte bezpečnostní kódy se svými kontakty.</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="thousand_abbreviation">k</string>
     <string name="connect_via_contact_link">Připojit přes kontaktní adresu?</string>
     <string name="connect_via_invitation_link">Připojit přes jednorázovou pozvánku?</string>

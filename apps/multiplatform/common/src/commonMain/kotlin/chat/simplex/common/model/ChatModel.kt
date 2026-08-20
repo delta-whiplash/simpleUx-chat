@@ -148,6 +148,26 @@ object ChatModel {
   val presetTags = mutableStateMapOf<PresetTagKind, Int>()
   val unreadTags = mutableStateMapOf<Long, Int>()
 
+  // SimpleUX Starred / Favorites State
+  val starredChatIds = mutableStateListOf<String>()
+  val starredMessageIds = mutableStateListOf<Long>()
+
+  fun toggleStarChat(chatId: String) {
+    if (starredChatIds.contains(chatId)) {
+      starredChatIds.remove(chatId)
+    } else {
+      starredChatIds.add(chatId)
+    }
+  }
+
+  fun toggleStarMessage(messageId: Long) {
+    if (starredMessageIds.contains(messageId)) {
+      starredMessageIds.remove(messageId)
+    } else {
+      starredMessageIds.add(messageId)
+    }
+  }
+
   // false: default placement, true: floating window.
   // Used for deciding to add terminal items on main thread or not. Floating means appPrefs.terminalAlwaysVisible
   var terminalsVisible = setOf<Boolean>()

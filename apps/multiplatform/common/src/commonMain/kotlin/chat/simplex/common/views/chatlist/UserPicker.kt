@@ -140,16 +140,15 @@ fun UserPicker(
   }
 
   val oneHandUI = remember { appPrefs.oneHandUI.state }
+  val isDark = isInDarkTheme()
   val iconColor = MaterialTheme.colors.secondaryVariant
-  val background = if (appPlatform.isAndroid) MaterialTheme.colors.background.mixWith(MaterialTheme.colors.onBackground, alpha = 1 - userPickerAlpha()) else MaterialTheme.colors.surface
+  val background = if (isDark) Color(0xFF0F172A) else Color(0xFFFFFFFF)
   PlatformUserPicker(
     modifier = Modifier
       .height(IntrinsicSize.Min)
       .fillMaxWidth()
-      .then(if (newChat.isVisible()) Modifier.shadow(8.dp, clip = true, ambientColor = background) else Modifier)
-      .padding(top = if (appPlatform.isDesktop && oneHandUI.value) 7.dp else 0.dp)
       .background(background)
-      .padding(bottom = USER_PICKER_SECTION_SPACING - DEFAULT_MIN_SECTION_ITEM_PADDING_VERTICAL),
+      .padding(bottom = 16.dp),
     pickerState = userPickerState
   ) {
     val showCustomModal: (@Composable() (ModalData.(ChatModel, () -> Unit) -> Unit)) -> () -> Unit = { modalView ->
@@ -378,26 +377,32 @@ private fun GlobalSettingsSection(
     )
   }
 
-  SectionItemView(
-    click = {
-      ModalManager.start.showModalCloseable(cardScreen = true) { close ->
-        SettingsView(chatModel, setPerformLA, close)
+  val isDark = isInDarkTheme()
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 4.dp)
+      .clip(RoundedCornerShape(14.dp))
+      .clickable {
+        ModalManager.start.showModalCloseable(cardScreen = true) { close ->
+          SettingsView(chatModel, setPerformLA, close)
+        }
       }
-    },
-    padding = if (appPlatform.isDesktop) PaddingValues(start = DEFAULT_PADDING * 1.7f, end = DEFAULT_PADDING + 2.dp) else PaddingValues(start = DEFAULT_PADDING, end = DEFAULT_PADDING_HALF)
+      .padding(horizontal = 12.dp, vertical = 10.dp),
+    verticalAlignment = Alignment.CenterVertically
   ) {
-    val text = generalGetString(MR.strings.settings_section_title_settings).lowercase().capitalize(Locale.current)
     Box(
       Modifier
-        .size(28.dp)
-        .clip(Corner8)
-        .background(MaterialTheme.colors.primary.copy(alpha = 0.15f)),
+        .size(36.dp)
+        .clip(RoundedCornerShape(10.dp))
+        .background(if (isDark) Color(0x2238BDF8) else Color(0x150284C7)),
       contentAlignment = Alignment.Center
     ) {
-      Icon(painterResource(MR.images.ic_settings), text, Modifier.size(18.dp), tint = MaterialTheme.colors.primary)
+      Icon(painterResource(MR.images.ic_settings), contentDescription = "Settings", Modifier.size(20.dp), tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7))
     }
-    TextIconSpaced()
-    Text(text, color = Color.Unspecified, fontWeight = FontWeight.Medium)
+    Spacer(Modifier.width(14.dp))
+    val text = generalGetString(MR.strings.settings_section_title_settings).lowercase().capitalize(Locale.current)
+    Text(text, color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A), fontSize = 15.sp, fontWeight = FontWeight.Medium)
     Spacer(Modifier.weight(1f))
     ColorModeSwitcher()
   }
@@ -489,18 +494,55 @@ fun UserProfileRow(u: User, enabled: Boolean = remember { chatModel.chatRunning 
 
 @Composable
 fun UserPickerOptionRow(icon: Painter, text: String, click: (() -> Unit)? = null, disabled: Boolean = false) {
-  SectionItemView(click, disabled = disabled, extraPadding = appPlatform.isDesktop) {
+  val isDark = isInDarkTheme()
+  Row(
+    modifier = Modifier
+      .fillMaxWidth()
+      .padding(horizontal = 16.dp, vertical = 4.dp)
+      .clip(RoundedCornerShape(14.dp))
+      .then(
+        if (click != null && !disabled) {
+          Modifier.clickable(onClick = click)
+        } else Modifier
+      )
+      .padding(horizontal = 12.dp, vertical = 10.dp),
+    verticalAlignment = Alignment.CenterVertically
+  ) {
     Box(
       Modifier
-        .size(28.dp)
-        .clip(Corner8)
-        .background((if (disabled) MaterialTheme.colors.secondary else MaterialTheme.colors.primary).copy(alpha = 0.15f)),
+        .size(36.dp)
+        .clip(RoundedCornerShape(10.dp))
+        .background(
+          if (disabled) {
+            if (isDark) Color(0x1FFFFFFF) else Color(0x0A000000)
+          } else {
+            if (isDark) Color(0x2238BDF8) else Color(0x150284C7)
+          }
+        ),
       contentAlignment = Alignment.Center
     ) {
-      Icon(icon, text, Modifier.size(18.dp), tint = if (disabled) MaterialTheme.colors.secondary else MaterialTheme.colors.primary)
+      Icon(
+        icon,
+        contentDescription = text,
+        Modifier.size(20.dp),
+        tint = if (disabled) {
+          if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+        } else {
+          if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
+        }
+      )
     }
-    TextIconSpaced()
-    Text(text = text, color = if (disabled) MaterialTheme.colors.secondary else Color.Unspecified, fontWeight = FontWeight.Medium)
+    Spacer(Modifier.width(14.dp))
+    Text(
+      text = text,
+      color = if (disabled) {
+        if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+      } else {
+        if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+      },
+      fontSize = 15.sp,
+      fontWeight = FontWeight.Medium
+    )
   }
 }
 

@@ -29,6 +29,7 @@ suspend fun planAndConnect(
   cleanup: (() -> Unit)? = null,
   filterKnownContact: ((Contact) -> Unit)? = null,
   filterKnownGroup: ((GroupInfo) -> Unit)? = null,
+  autoJoin: Boolean = false,
 ): CompletableDeferred<Boolean> {
   when (val target = strConnectTarget(shortOrFullLink.trim())) {
     is ConnectTarget.Link -> {
@@ -51,7 +52,7 @@ suspend fun planAndConnect(
     inProgress.value = false
     cleanup?.invoke()
   }
-  return planAndConnectTask(rhId, shortOrFullLink, linkOwnerSig, close, cleanup, filterKnownContact, filterKnownGroup, inProgress)
+  return planAndConnectTask(rhId, shortOrFullLink, linkOwnerSig, close, cleanup, filterKnownContact, filterKnownGroup, inProgress, autoJoin)
 }
 
 private suspend fun planAndConnectTask(
@@ -62,7 +63,8 @@ private suspend fun planAndConnectTask(
   cleanup: (() -> Unit)? = null,
   filterKnownContact: ((Contact) -> Unit)? = null,
   filterKnownGroup: ((GroupInfo) -> Unit)? = null,
-  inProgress: MutableState<Boolean>
+  inProgress: MutableState<Boolean>,
+  autoJoin: Boolean = false,
 ): CompletableDeferred<Boolean> {
   val completable = CompletableDeferred<Boolean>()
   val close: (() -> Unit) = {
@@ -155,17 +157,35 @@ private suspend fun planAndConnectTask(
         is ContactAddressPlan.Ok ->
           if (connectionPlan.contactAddressPlan.contactSLinkData_ != null) {
             Log.d(TAG, "planAndConnect, .ContactAddress, .Ok, short link data present")
-            showPrepareContactAlert(
-              rhId,
-              connectionLink,
-              connectionPlan.contactAddressPlan.contactSLinkData_,
-              ownerVerification = connectionPlan.contactAddressPlan.ownerVerification,
-              planSimplexName = planSimplexName,
-              connectOtherButton = connectOtherButton,
-              connectOtherLink = connectOtherLink,
-              close,
-              cleanup
-            )
+            if (autoJoin) {
+              withBGApi {
+                val chat = chatModel.controller.apiPrepareContact(
+                  rhId,
+                  connectionLink,
+                  connectionPlan.contactAddressPlan.contactSLinkData_,
+                  planSimplexName?.nameDomain
+                )
+                if (chat != null) {
+                  withContext(Dispatchers.Main) {
+                    ChatController.chatModel.chatsContext.addChat(chat)
+                    openChat_(chatModel, rhId, close, chat)
+                  }
+                }
+                cleanup()
+              }
+            } else {
+              showPrepareContactAlert(
+                rhId,
+                connectionLink,
+                connectionPlan.contactAddressPlan.contactSLinkData_,
+                ownerVerification = connectionPlan.contactAddressPlan.ownerVerification,
+                planSimplexName = planSimplexName,
+                connectOtherButton = connectOtherButton,
+                connectOtherLink = connectOtherLink,
+                close,
+                cleanup
+              )
+            }
           } else {
             Log.d(TAG, "planAndConnect, .ContactAddress, .Ok, no short link data")
             askCurrentOrIncognitoProfileAlert(
@@ -208,6 +228,9 @@ private suspend fun planAndConnectTask(
           val contact = connectionPlan.contactAddressPlan.contact
           if (filterKnownContact != null) {
             filterKnownContact(contact)
+          } else if (autoJoin) {
+            chatModel.getContactChat(contact.contactId)?.let { openChat_(chatModel, rhId, close, it) }
+            cleanup()
           } else {
             showOpenKnownContactAlert(chatModel, rhId, close, contact, planSimplexName = planSimplexName, connectOtherButton = connectOtherButton, connectOtherLink = connectOtherLink)
             cleanup()
@@ -224,6 +247,9 @@ private suspend fun planAndConnectTask(
           }
           if (filterKnownContact != null) {
             filterKnownContact(contact)
+          } else if (autoJoin) {
+            chatModel.getContactChat(contact.contactId)?.let { openChat_(chatModel, rhId, close, it) }
+            cleanup()
           } else {
             showOpenKnownContactAlert(chatModel, rhId, close, contact, planSimplexName = planSimplexName, connectOtherButton = connectOtherButton, connectOtherLink = connectOtherLink)
             cleanup()
@@ -239,6 +265,9 @@ private suspend fun planAndConnectTask(
           }
           if (filterKnownContact != null) {
             filterKnownContact(contact)
+          } else if (autoJoin) {
+            chatModel.getContactChat(contact.contactId)?.let { openChat_(chatModel, rhId, close, it) }
+            cleanup()
           } else {
             showOpenKnownContactAlert(chatModel, rhId, close, contact, planSimplexName = planSimplexName, connectOtherButton = connectOtherButton, connectOtherLink = connectOtherLink)
             cleanup()
@@ -249,18 +278,45 @@ private suspend fun planAndConnectTask(
         is GroupLinkPlan.Ok ->
           if (connectionPlan.groupLinkPlan.groupSLinkData_ != null) {
             Log.d(TAG, "planAndConnect, .GroupLink, .Ok, short link data present")
-            showPrepareGroupAlert(
-              rhId,
-              connectionLink,
-              connectionPlan.groupLinkPlan.groupSLinkInfo_,
-              connectionPlan.groupLinkPlan.groupSLinkData_,
-              ownerVerification = connectionPlan.groupLinkPlan.ownerVerification,
-              planSimplexName = planSimplexName,
-              connectOtherButton = connectOtherButton,
-              connectOtherLink = connectOtherLink,
-              close,
-              cleanup
-            )
+            if (autoJoin) {
+              withBGApi {
+                val directLink = connectionPlan.groupLinkPlan.groupSLinkInfo_?.direct ?: true
+                val chat = chatModel.controller.apiPrepareGroup(
+                  rhId,
+                  connectionLink,
+                  directLink = directLink,
+                  connectionPlan.groupLinkPlan.groupSLinkData_,
+                  planSimplexName?.nameDomain
+                )
+                if (chat != null) {
+                  withContext(Dispatchers.Main) {
+                    val relays = connectionPlan.groupLinkPlan.groupSLinkInfo_?.groupRelays
+                    if (!relays.isNullOrEmpty()) {
+                      val chatInfo = chat.chatInfo
+                      if (chatInfo is ChatInfo.Group) {
+                        chatModel.channelRelayHostnames[chatInfo.groupInfo.groupId] = relays
+                      }
+                    }
+                    ChatController.chatModel.chatsContext.addChat(chat)
+                    openChat_(chatModel, rhId, close, chat)
+                  }
+                }
+                cleanup()
+              }
+            } else {
+              showPrepareGroupAlert(
+                rhId,
+                connectionLink,
+                connectionPlan.groupLinkPlan.groupSLinkInfo_,
+                connectionPlan.groupLinkPlan.groupSLinkData_,
+                ownerVerification = connectionPlan.groupLinkPlan.ownerVerification,
+                planSimplexName = planSimplexName,
+                connectOtherButton = connectOtherButton,
+                connectOtherLink = connectOtherLink,
+                close,
+                cleanup
+              )
+            }
           } else {
             Log.d(TAG, "planAndConnect, .GroupLink, .Ok, no short link data")
             askCurrentOrIncognitoProfileAlert(
@@ -329,6 +385,9 @@ private suspend fun planAndConnectTask(
           }
           if (filterKnownGroup != null) {
             filterKnownGroup(groupInfo)
+          } else if (autoJoin) {
+            openKnownGroup(chatModel, rhId, close, groupInfo)
+            cleanup()
           } else {
             showOpenKnownGroupAlert(chatModel, rhId, close, groupInfo, planSimplexName = planSimplexName, connectOtherButton = connectOtherButton, connectOtherLink = connectOtherLink)
             cleanup()

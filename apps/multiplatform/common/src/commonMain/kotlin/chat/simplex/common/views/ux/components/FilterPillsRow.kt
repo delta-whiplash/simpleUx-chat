@@ -23,7 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.ChatModel
+import chat.simplex.common.platform.SimpleUXHapticType
+import chat.simplex.common.platform.performHapticFeedback
 import chat.simplex.common.ui.theme.isInDarkTheme
+import chat.simplex.common.views.helpers.bounceClick
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 
@@ -40,15 +43,10 @@ fun FilterPillsRow(
     activeCategory: UxFilterCategory,
     onCategorySelected: (UxFilterCategory) -> Unit,
     modifier: Modifier = Modifier,
-    chatModelInstance: ChatModel = ChatModel
+    totalUnread: Int = 0
 ) {
     val isDark = isInDarkTheme()
     val scrollState = rememberScrollState()
-
-    // Calculate unread count
-    val totalUnread: Int = remember(chatModelInstance.chats.value) {
-        chatModelInstance.chats.value.sumOf { chat -> chat.chatStats.unreadCount }
-    }
 
     Row(
         modifier = modifier
@@ -74,8 +72,7 @@ fun FilterPillsRow(
                     isDark -> Color(0x1F1E293B)
                     else -> Color(0xFFFFFFFF)
                 },
-                animationSpec = spring(),
-                label = "pillBg"
+                animationSpec = spring()
             )
 
             val borderColor = animateColorAsState(
@@ -85,8 +82,7 @@ fun FilterPillsRow(
                     isDark -> Color(0x2EFFFFFF)
                     else -> Color(0xFFE2E8F0)
                 },
-                animationSpec = spring(),
-                label = "pillBorder"
+                animationSpec = spring()
             )
 
             val textColor = animateColorAsState(
@@ -96,8 +92,7 @@ fun FilterPillsRow(
                     isDark -> Color(0xFF94A3B8)
                     else -> Color(0xFF475569)
                 },
-                animationSpec = spring(),
-                label = "pillText"
+                animationSpec = spring()
             )
 
             Box(
@@ -105,12 +100,14 @@ fun FilterPillsRow(
                     .clip(shape)
                     .background(bgColor.value)
                     .border(width = 1.dp, color = borderColor.value, shape = shape)
+                    .bounceClick(scaleDown = 0.95f)
                     .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) {
-                        onCategorySelected(category)
-                    }
+                        role = androidx.compose.ui.semantics.Role.Tab,
+                        onClick = {
+                            performHapticFeedback(SimpleUXHapticType.LIGHT)
+                            onCategorySelected(category)
+                        }
+                    )
                     .padding(horizontal = 14.dp, vertical = 7.dp),
                 contentAlignment = Alignment.Center
             ) {

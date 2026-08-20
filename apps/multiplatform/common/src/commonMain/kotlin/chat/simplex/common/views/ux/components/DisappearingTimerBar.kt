@@ -7,8 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.DefaultDropdownMenu
-import chat.simplex.common.views.chat.item.ItemAction
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 
@@ -100,14 +98,30 @@ fun DisappearingTimerBar(
 
         DefaultDropdownMenu(showMenu) {
             DISAPPEARING_PRESETS.forEach { preset ->
-                ItemAction(
-                    preset.label,
-                    painterResource(if (preset.seconds == currentTTL) MR.images.ic_check else MR.images.ic_timer),
+                DropdownMenuItem(
                     onClick = {
                         showMenu.value = false
                         onTTLSelected(preset.seconds)
+                    },
+                    modifier = Modifier.height(38.dp),
+                    contentPadding = PaddingValues(horizontal = 14.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painterResource(if (preset.seconds == currentTTL) MR.images.ic_check else MR.images.ic_timer),
+                            contentDescription = preset.label,
+                            tint = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Text(
+                            text = preset.label,
+                            color = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                            fontSize = 14.sp,
+                            fontWeight = if (preset.seconds == currentTTL) FontWeight.Bold else FontWeight.Medium
+                        )
                     }
-                )
+                }
             }
         }
     }

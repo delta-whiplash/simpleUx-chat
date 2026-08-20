@@ -385,42 +385,62 @@ class AlertManager {
               }
 
               Column(
-                Modifier.fillMaxWidth().padding(horizontal = DEFAULT_PADDING_HALF).padding(top = DEFAULT_PADDING, bottom = 2.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
               ) {
                 val focusRequester = remember { FocusRequester() }
                 LaunchedEffect(Unit) {
-                  // Wait before focusing to prevent auto-confirming if a user used Enter key on hardware keyboard
                   delay(200)
                   focusRequester.requestFocus()
                 }
                 if (confirmText != null && onConfirm != null) {
-                  TextButton(onClick = {
-                    onConfirm.invoke()
-                    hideAlert()
-                  }, Modifier.focusRequester(focusRequester)) {
-                    Text(confirmText)
+                  Button(
+                    onClick = {
+                      onConfirm.invoke()
+                      hideAlert()
+                    },
+                    modifier = Modifier.fillMaxWidth().height(46.dp).focusRequester(focusRequester),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(
+                      backgroundColor = Color(0xFF0284C7),
+                      contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.elevation(0.dp)
+                  ) {
+                    Text(
+                      confirmText,
+                      style = MaterialTheme.typography.button.copy(fontWeight = FontWeight.SemiBold, color = Color.White)
+                    )
                   }
                 }
                 if (connectOtherButton != null && onConnectOther != null) {
-                  TextButton(onClick = {
-                    onConnectOther.invoke()
-                    hideAlert()
-                  }) {
+                  OutlinedButton(
+                    onClick = {
+                      onConnectOther.invoke()
+                      hideAlert()
+                    },
+                    modifier = Modifier.fillMaxWidth().height(42.dp),
+                    shape = RoundedCornerShape(14.dp)
+                  ) {
                     Text(connectOtherButton)
                   }
                 }
-                TextButton(onClick = {
-                  onDismiss?.invoke()
-                  hideAlert()
-                }, if (confirmText == null) Modifier.focusRequester(focusRequester) else Modifier) {
-                  Text(dismissText)
+                TextButton(
+                  onClick = {
+                    onDismiss?.invoke()
+                    hideAlert()
+                  },
+                  modifier = Modifier.fillMaxWidth().height(38.dp),
+                  shape = RoundedCornerShape(12.dp)
+                ) {
+                  Text(dismissText, color = MaterialTheme.colors.secondary)
                 }
               }
             }
           }
         },
-        shape = RoundedCornerShape(corner = CornerSize(25.dp))
+        shape = RoundedCornerShape(corner = CornerSize(24.dp))
       )
     }
   }

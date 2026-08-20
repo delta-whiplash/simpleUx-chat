@@ -28,16 +28,16 @@ import dev.icerock.moko.resources.compose.painterResource
 
 @Composable
 fun QuickProfileSwitcher(
+    users: List<chat.simplex.common.model.UserInfo>,
     onProfileSelected: (Long) -> Unit,
     onNewProfileClicked: () -> Unit,
     onIncognitoInviteClicked: () -> Unit,
     onClose: () -> Unit,
-    modifier: Modifier = Modifier,
-    chatModelInstance: ChatModel = ChatModel
+    modifier: Modifier = Modifier
 ) {
     val isDark = isInDarkTheme()
-    val users = remember(chatModelInstance.users) {
-        chatModelInstance.users.filter { !it.user.hidden }
+    val visibleUsers = remember(users) {
+        users.filter { !it.user.hidden }
     }
 
     Column(
@@ -73,7 +73,7 @@ fun QuickProfileSwitcher(
             modifier = Modifier.fillMaxWidth().weight(1f, fill = false),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(users) { userItem ->
+            items(visibleUsers) { userItem ->
                 val isActive = userItem.user.activeUser
                 val shape = RoundedCornerShape(16.dp)
 

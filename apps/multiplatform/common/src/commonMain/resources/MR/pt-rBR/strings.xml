@@ -815,7 +815,7 @@
     <string name="star_on_github">Estrela no GitHub</string>
     <string name="alert_text_connection_pending_they_need_to_be_online_can_delete_and_retry">Seu contato precisa estar online para completar a conexão.
 \nVocê pode cancelar esta conexão e remover o contato (e tentar mais tarde com um novo link).</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="only_group_owners_can_enable_voice">Somente o proprietários de grupo podem ativar mensagens de voz</string>
     <string name="description_you_shared_one_time_link">você compartilhou um link de uso único</string>
     <string name="you_will_be_connected_when_your_connection_request_is_accepted">Você será conectado quando sua solicitação de conexão for aceita, aguarde ou verifique mais tarde!</string>

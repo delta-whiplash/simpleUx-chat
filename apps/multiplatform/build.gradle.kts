@@ -20,8 +20,7 @@ buildscript {
     // Whether the app is debuggable or not. Specify `false` if yo`u want good performance in debug builds
     extra.set("enable_debuggable", prop["debuggable"] != "false")
     // Ending part of package name.
-    // Provide, for example, `application_id.suffix=.debug` in local.properties
-    // to allow debug & release versions to coexist
+    // Default to empty string to ensure continuity of user databases across builds
     extra.set("application_id.suffix", prop["application_id.suffix"] ?: "")
     // Compression level for debug AND release apk. 0 = disable compression. Max is 9
     extra.set("compression.level", (prop["compression.level"] as String?)?.toIntOrNull() ?: 0)

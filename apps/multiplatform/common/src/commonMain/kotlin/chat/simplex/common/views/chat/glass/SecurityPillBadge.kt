@@ -53,7 +53,7 @@ fun SecurityPillBadge(
             )
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = "End-to-end encryption active",
+                text = dev.icerock.moko.resources.compose.stringResource(chat.simplex.res.MR.strings.e2ee_banner_title),
                 color = GlassTokens.SecurityPillText,
                 fontSize = 11.5.sp
             )

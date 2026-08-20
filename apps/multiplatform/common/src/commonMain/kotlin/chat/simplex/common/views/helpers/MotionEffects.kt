@@ -37,8 +37,7 @@ fun Modifier.bounceClick(
   var pressState by remember { mutableStateOf(PressState.Idle) }
   val scale by animateFloatAsState(
     targetValue = if (pressState == PressState.Pressed) scaleDown else 1f,
-    animationSpec = SnappySpringSpec,
-    label = "bounceScale"
+    animationSpec = SnappySpringSpec
   )
 
   this

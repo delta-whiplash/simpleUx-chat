@@ -809,7 +809,7 @@
     <string name="v4_4_verify_connection_security">Controleer de verbindingsbeveiliging</string>
     <string name="v4_4_french_interface_descr">Dank aan de gebruikers – draag bij via Weblate!</string>
     <string name="v4_5_transport_isolation">Transport isolation</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="connected_to_server_to_receive_messages_from_contact">U bent verbonden met de server die wordt gebruikt om berichten van deze verbinding te ontvangen.</string>
     <string name="profile_will_be_sent_to_contact_sending_link">Je profiel wordt verzonden naar het contact van wie je deze link hebt ontvangen.</string>
     <string name="you_will_join_group">Je maakt verbinding met alle groepsleden.</string>

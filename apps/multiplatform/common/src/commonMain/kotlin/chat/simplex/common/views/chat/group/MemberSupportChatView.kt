@@ -1,21 +1,27 @@
 package chat.simplex.common.views.chat.group
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.*
 import chat.simplex.common.platform.*
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.chat.*
 import chat.simplex.common.views.chatlist.*
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.components.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -58,9 +64,11 @@ fun MemberSupportChatAppBar(
   close: () -> Unit,
   onSearchValueChanged: (String) -> Unit
 ) {
-  val oneHandUI = remember { ChatController.appPrefs.oneHandUI.state }
-  val chatBottomBar = remember { ChatController.appPrefs.chatBottomBar.state }
   val showSearch = rememberSaveable { mutableStateOf(false) }
+  val showMenu = rememberSaveable { mutableStateOf(false) }
+  val scope = rememberCoroutineScope()
+  val isDark = isInDarkTheme()
+
   val onBackClicked = {
     if (!showSearch.value) {
       close()
@@ -70,12 +78,19 @@ fun MemberSupportChatAppBar(
     }
   }
   BackHandler(onBack = onBackClicked)
-  if (chat.chatInfo is ChatInfo.Group && scopeMember_ != null) {
-    val groupInfo = chat.chatInfo.groupInfo
-    DefaultAppBar(
-      navigationButton = { NavigationButtonBack(onBackClicked) },
-      title = { MemberSupportChatToolbarTitle(scopeMember_) },
-      onTitleClick = {
+
+  DefaultAppBar(
+    navigationButton = { NavigationButtonBack(onBackClicked) },
+    title = {
+      if (chat.chatInfo is ChatInfo.Group && scopeMember_ != null) {
+        MemberSupportChatToolbarTitle(scopeMember_)
+      } else {
+        AdminSupportToolbarTitle(chat.chatInfo)
+      }
+    },
+    onTitleClick = {
+      if (chat.chatInfo is ChatInfo.Group && scopeMember_ != null) {
+        val groupInfo = chat.chatInfo.groupInfo
         withBGApi {
           val r = chatModel.controller.apiGroupMemberInfo(rhId, groupInfo.groupId, scopeMember_.groupMemberId)
           val stats = r?.second
@@ -94,60 +109,116 @@ fun MemberSupportChatAppBar(
             }
           }
         }
-      },
-      onTop = !oneHandUI.value || !chatBottomBar.value,
-      showSearch = showSearch.value,
-      onSearchValueChanged = onSearchValueChanged,
-      buttons = {
-        IconButton({ showSearch.value = true }) {
-          Icon(painterResource(MR.images.ic_search), stringResource(MR.strings.search_verb), tint = MaterialTheme.colors.primary)
-        }
       }
-    )
-  } else {
-    DefaultAppBar(
-      navigationButton = { NavigationButtonBack(onBackClicked) },
-      fixedTitleText = stringResource(MR.strings.support_chat),
-      onTitleClick = null,
-      onTop = !oneHandUI.value || !chatBottomBar.value,
-      showSearch = showSearch.value,
-      onSearchValueChanged = onSearchValueChanged,
-      buttons = {
-        IconButton({ showSearch.value = true }) {
-          Icon(painterResource(MR.images.ic_search), stringResource(MR.strings.search_verb), tint = MaterialTheme.colors.primary)
-        }
+    },
+    onTop = true,
+    showSearch = showSearch.value,
+    onSearchValueChanged = onSearchValueChanged,
+    buttons = {
+      IconButton({ showSearch.value = true }) {
+        Icon(painterResource(MR.images.ic_search), stringResource(MR.strings.search_verb), tint = MaterialTheme.colors.primary)
       }
-    )
+      IconButton({ showMenu.value = true }) {
+        Icon(painterResource(MR.images.ic_more_vert), stringResource(MR.strings.icon_descr_settings), tint = MaterialTheme.colors.primary)
+      }
+    }
+  )
+
+  Box(Modifier.fillMaxWidth().wrapContentSize(Alignment.TopEnd)) {
+    DefaultDropdownMenu(
+      showMenu,
+      offset = DpOffset(0.dp, AppBarHeight)
+    ) {
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .clickable {
+            showMenu.value = false
+            ThemeAnimationController.trigger(
+              originOffset = androidx.compose.ui.geometry.Offset(1000f, 145f),
+              currentlyDark = isDark,
+              scope = scope
+            )
+          }
+          .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+      ) {
+        AnimatedThemeIcon(isDark = isDark)
+        Text(
+          text = if (isDark) "Mode Clair" else "Mode Sombre",
+          fontSize = 15.sp,
+          fontWeight = FontWeight.Medium,
+          color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+        )
+      }
+    }
   }
   ItemsReload(chatsCtx)
 }
 
 @Composable
+fun AdminSupportToolbarTitle(
+  chatInfo: ChatInfo,
+  imageSize: Dp = 40.dp,
+  iconColor: Color = MaterialTheme.colors.secondaryVariant.mixWith(MaterialTheme.colors.onBackground, 0.97f)
+) {
+  Row(
+    horizontalArrangement = Arrangement.Start,
+    verticalAlignment = Alignment.CenterVertically
+  ) {
+    ChatInfoImage(chatInfo, size = imageSize * fontSizeSqrtMultiplier, iconColor)
+    Column(
+      Modifier.padding(start = 10.dp),
+      horizontalAlignment = Alignment.Start
+    ) {
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        NameWithBadge(
+          chatInfo.displayName, chatInfo.nameBadge, fontWeight = FontWeight.Bold,
+          maxLines = 1, overflow = TextOverflow.Ellipsis
+        )
+        val currentChat = remember(chatInfo.id) { chatModel.chats.value.firstOrNull { it.chatInfo.id == chatInfo.id } }
+        Spacer(Modifier.width(6.dp))
+        SecurityBadge(chat = currentChat)
+      }
+      Text(
+        stringResource(MR.strings.support_chat),
+        style = MaterialTheme.typography.body2.copy(fontSize = 11.5.sp),
+        color = MaterialTheme.colors.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+      )
+    }
+  }
+}
+
+@Composable
 fun MemberSupportChatToolbarTitle(member: GroupMember, imageSize: Dp = 40.dp, iconColor: Color = MaterialTheme.colors.secondaryVariant.mixWith(MaterialTheme.colors.onBackground, 0.97f)) {
   Row(
-    horizontalArrangement = Arrangement.Center,
+    horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically
   ) {
     MemberProfileImage(size = imageSize * fontSizeSqrtMultiplier, member, iconColor)
     Column(
-      Modifier.padding(start = 8.dp),
-      horizontalAlignment = Alignment.CenterHorizontally
+      Modifier.padding(start = 10.dp),
+      horizontalAlignment = Alignment.Start
     ) {
       Row(verticalAlignment = Alignment.CenterVertically) {
         if (member.verified) {
           MemberVerifiedShield()
         }
         NameWithBadge(
-          member.displayName, member.nameBadge, fontWeight = FontWeight.SemiBold,
+          member.displayName, member.nameBadge, fontWeight = FontWeight.Bold,
           maxLines = 1, overflow = TextOverflow.Ellipsis
         )
       }
-      if (member.fullName != "" && member.fullName != member.displayName && member.localAlias.isEmpty()) {
-        Text(
-          member.fullName,
-          maxLines = 1, overflow = TextOverflow.Ellipsis
-        )
-      }
+      Text(
+        stringResource(MR.strings.support_chat),
+        style = MaterialTheme.typography.body2.copy(fontSize = 11.5.sp),
+        color = MaterialTheme.colors.secondary,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+      )
     }
   }
 }

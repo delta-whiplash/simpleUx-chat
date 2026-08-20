@@ -27,7 +27,11 @@ fun HowItWorks(user: User?, onboardingStage: SharedPreference<OnboardingStage>? 
   ZeroJargonOnboarding(
     onContinue = {
       if (onboardingStage != null) {
-        onboardingStage.set(OnboardingStage.Step2_CreateProfile)
+        if (user == null) {
+          onboardingStage.set(OnboardingStage.Step2_CreateProfile)
+        } else {
+          onboardingStage.set(OnboardingStage.OnboardingComplete)
+        }
       }
       ModalManager.fullscreen.closeModal()
     },

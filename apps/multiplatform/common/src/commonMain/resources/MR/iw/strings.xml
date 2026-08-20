@@ -1084,7 +1084,7 @@
     <string name="callstate_waiting_for_confirmation">ממתין לאישור…</string>
     <string name="callstate_waiting_for_answer">ממתין למענה…</string>
     <string name="we_do_not_store_contacts_or_messages_on_servers">איננו מאחסנים את אנשי הקשר או ההודעות שלך (לאחר המסירה) בשרתים.</string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="sender_you_pronoun">אתם</string>
     <string name="description_via_contact_address_link">באמצעות קישור לכתובת איש קשר</string>
     <string name="description_via_group_link">באמצעות קישור לקבוצה</string>

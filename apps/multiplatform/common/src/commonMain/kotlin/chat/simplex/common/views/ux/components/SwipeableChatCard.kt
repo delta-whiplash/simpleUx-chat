@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.Chat
 import chat.simplex.common.model.ChatModel
-import chat.simplex.common.platform.ntfManager
+import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.chatlist.markChatRead
 import chat.simplex.common.views.chatlist.markChatUnread
@@ -40,7 +40,8 @@ fun SwipeableChatCard(
     chat: Chat,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    chatModelInstance: ChatModel = ChatModel,
+    onToggleRead: ((Chat) -> Unit)? = null,
+    onToggleFavorite: ((Chat) -> Unit)? = null,
     content: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -137,16 +138,13 @@ fun SwipeableChatCard(
                     onDragStopped = {
                         val endOffset = offsetX.value
                         if (endOffset > threshold) {
+                            performHapticFeedback(SimpleUXHapticType.MEDIUM)
                             // Right action: Toggle read/unread
-                            if (isUnread) {
-                                markChatRead(chat)
-                                ntfManager.cancelNotificationsForChat(chat.id)
-                            } else {
-                                markChatUnread(chat, chatModelInstance)
-                            }
+                            onToggleRead?.invoke(chat)
                         } else if (endOffset < -threshold) {
+                            performHapticFeedback(SimpleUXHapticType.MEDIUM)
                             // Left action: Toggle favorite
-                            toggleChatFavorite(chat.remoteHostId, chat.chatInfo, !isFavorite, chatModelInstance)
+                            onToggleFavorite?.invoke(chat)
                         }
                         coroutineScope.launch {
                             offsetX.animateTo(

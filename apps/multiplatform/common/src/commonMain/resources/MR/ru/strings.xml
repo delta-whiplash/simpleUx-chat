@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="thousand_abbreviation">т</string>
     <!-- Connect via Link - MainActivity.kt -->
     <string name="connect_via_contact_link">Соединиться через адрес?</string>

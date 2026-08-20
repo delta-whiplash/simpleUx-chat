@@ -887,7 +887,7 @@
     <string name="you_can_share_group_link_anybody_will_be_able_to_connect">你可以共享链接或二维码——任何人都可以加入该群。如果你稍后将其删除，你不会失去该群的成员。</string>
     <string name="conn_level_desc_indirect">间接（%1$s）</string>
     <string name="you_can_also_connect_by_clicking_the_link"><![CDATA[你也可以通过点击链接进行连接。 如果它在浏览器中打开，请单击<b>在移动应用程序中打开</b>按钮。]]></string>
-    <string name="app_name">SimpleX</string>
+    <string name="app_name">SimpleUX</string>
     <string name="you_will_join_group">你将连接到所有群成员。</string>
     <string name="description_via_group_link">通过群链接</string>
     <string name="description_via_one_time_link">通过一次性链接</string>
