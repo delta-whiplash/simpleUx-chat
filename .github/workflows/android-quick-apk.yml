@@ -1,0 +1,126 @@
+name: android-quick-apk
+
+# On-demand only (manual trigger from the Actions tab) — this is NOT part of
+# the regular CI. It builds a debug APK you can side-load to quickly try out
+# UI changes, without waiting for a real release build.
+#
+# How it gets a working APK fast: this fork never touches the native
+# Haskell core (see AGENTS.md's frontend-only tenet, and the audit in
+# plans/2026-08-15-ux-audit-backlog.md — zero protocol/FFI changes). Building
+# that core from scratch (scripts/android/build-android.sh, via Nix) can take
+# hours on a cold runner. Instead, this workflow reuses the precompiled
+# libsimplex.so / libsupport.so from an upstream simplex-chat release and
+# only compiles this fork's own Kotlin/Compose + JNI shim on top of them.
+# The resulting APK is clearly named to reflect that.
+
+on:
+  workflow_dispatch:
+    inputs:
+      upstream_tag:
+        description: "Upstream simplex-chat release tag to source native libs from (e.g. v6.5.4). Leave empty for the latest release."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-quick-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-quick-apk:
+    name: Build debug APK (borrowed upstream native libs)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install NDK, CMake, platform, build-tools
+        run: |
+          set -e
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;23.1.7779620" "cmake;3.22.1"
+
+      - name: Resolve upstream release
+        id: release
+        run: |
+          set -e
+          if [ -n "${{ inputs.upstream_tag }}" ]; then
+            url="https://api.github.com/repos/simplex-chat/simplex-chat/releases/tags/${{ inputs.upstream_tag }}"
+          else
+            url="https://api.github.com/repos/simplex-chat/simplex-chat/releases/latest"
+          fi
+          curl -sS -H "Accept: application/vnd.github+json" "$url" -o /tmp/release.json
+          tag=$(jq -r '.tag_name' /tmp/release.json)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Resolved upstream release: $tag"
+
+          # Prefer an asset name that looks arm64-specific; fall back to any .apk asset.
+          apk_url=$(jq -r '[.assets[] | select(.name | test("\\.apk$"; "i"))] |
+            (map(select(.name | test("arm64|aarch64"; "i"))) + .) | .[0].browser_download_url // empty' /tmp/release.json)
+
+          if [ -z "$apk_url" ] || [ "$apk_url" = "null" ]; then
+            echo "::error::No .apk asset found on upstream release $tag. Check https://github.com/simplex-chat/simplex-chat/releases and adjust this workflow's asset selection."
+            exit 1
+          fi
+          echo "apk_url=$apk_url" >> "$GITHUB_OUTPUT"
+          echo "Using upstream APK asset: $apk_url"
+
+      - name: Download upstream APK and extract native libs
+        run: |
+          set -e
+          curl -sS -L "${{ steps.release.outputs.apk_url }}" -o /tmp/upstream.apk
+
+          libs_root="apps/multiplatform/common/src/commonMain/cpp/android/libs"
+          found_any=false
+          for abi in arm64-v8a armeabi-v7a; do
+            mkdir -p "$libs_root/$abi"
+            if unzip -o /tmp/upstream.apk "lib/$abi/libsimplex.so" "lib/$abi/libsupport.so" -d /tmp/extract-$abi 2>/dev/null; then
+              cp "/tmp/extract-$abi/lib/$abi/libsimplex.so" "$libs_root/$abi/libsimplex.so"
+              cp "/tmp/extract-$abi/lib/$abi/libsupport.so" "$libs_root/$abi/libsupport.so"
+              echo "Extracted native libs for $abi"
+              found_any=true
+            else
+              echo "No $abi libs in upstream APK (skipping that split)"
+            fi
+          done
+
+          if [ "$found_any" != "true" ]; then
+            echo "::error::Could not extract libsimplex.so/libsupport.so for any ABI from the upstream APK. Its internal layout may have changed — inspect it with 'unzip -l /tmp/upstream.apk' and update this workflow."
+            exit 1
+          fi
+
+      - name: Write local.properties
+        run: echo "sdk.dir=$ANDROID_HOME" > apps/multiplatform/local.properties
+
+      - name: Assemble FOSS debug APK
+        working-directory: apps/multiplatform
+        run: ./gradlew :android:assembleFossDebug --stacktrace
+
+      - name: Write job summary
+        run: |
+          {
+            echo "### SimpleUX quick-try APK"
+            echo ""
+            echo "- Fork commit: \`${{ github.sha }}\`"
+            echo "- Native libs (libsimplex.so / libsupport.so) borrowed from upstream simplex-chat release: \`${{ steps.release.outputs.tag }}\`"
+            echo "- This fork makes zero changes to the native/protocol layer, so this substitution is safe for trying out UI changes. It is **not** a reproducible release build — do not distribute it as one."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload APK(s)
+        uses: actions/upload-artifact@v4
+        with:
+          name: simpleux-quick-try-apk
+          path: apps/multiplatform/android/build/outputs/apk/foss/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
