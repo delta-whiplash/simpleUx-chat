@@ -49,18 +49,32 @@ code : rien ne contraint les régressions à être visibles.
 5. **Badge README corrigé** pour pointer vers la vraie CI au lieu d'une
    affirmation invérifiée.
 
+## Suite (session du même jour) : extraction partielle du shell (#04)
+
+`TelegramTopHeader`, `TelegramBottomIslandBar`, `SimpleUxTab` et `IslandTabItem`
+(457 lignes) ont été déplacés de `ChatListView.kt` vers
+`views/ux/ChatListShell.kt`, avec un seul point d'appel conservé à chaque
+endroit d'usage. Vérifié sans compilateur disponible (pas de SDK Android dans
+cet environnement) par : extraction du bloc exact par plage de lignes (pas de
+retype à la main — une première tentative de reconstitution manuelle du
+contenu a été jetée après relecture car elle ne correspondait pas au code
+réel), équilibrage accolades/parenthèses sur les trois fichiers touchés,
+vérification qu'aucun symbole n'est déclaré deux fois, et que les arguments
+nommés des points d'appel correspondent exactement aux signatures déplacées.
+
+`ChatListView.kt` : 2127 → 1670 lignes. Le diff vs upstream reste à **525
+lignes** (vs. la cible `< 120`) — la navigation par onglets elle-même
+(`currentTab`, le `when` de routage, les filter pills, la gestion de l'état de
+recherche) est encore intriquée dans le fichier upstream et n'a pas été
+extraite dans cette passe. C'est un travail incrémental à poursuivre par
+étapes similaires, chacune validée par la CI avant de continuer.
+
 ## Volontairement non fait dans cette session
 
-- **Extraction complète du shell hors de `ChatListView.kt`** (issue #04,
-  aujourd'hui `+1 186` lignes vs upstream) : c'est le chantier qui débloque
-  tous les merges futurs, mais c'est un refactor large qui touche la
-  navigation par onglets ; il doit être fait avec un vrai environnement de
-  build (Android SDK) pour être vérifié avant de pousser. Pas d'Android SDK
-  disponible dans cette session — la CI ajoutée ci-dessus le validera dès la
-  prochaine PR.
 - **Retrait des `chatModelInstance: ChatModel = ChatModel`** (issue #09,
-  3 occurrences) : même raison — un refactor de signature sans compilateur
-  pour vérifier est le genre d'erreur qui casse un side-project.
+  3 occurrences) : un refactor de signature sans compilateur pour vérifier
+  est le genre d'erreur qui casse un side-project ; la CI ajoutée ci-dessus
+  le validera dès la prochaine PR.
 - **Tokenisation complète des couleurs / consolidation du glassmorphism**
   (issues #15–#17) : gros volume, à traiter par petites PR une fois la CI en
   place pour les valider.
