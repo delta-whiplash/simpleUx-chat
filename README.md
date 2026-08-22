@@ -6,7 +6,7 @@
 [![SimpleX Protocol Compatible](https://img.shields.io/badge/SimpleX_Protocol-100%25_Compatible-brightgreen.svg)](https://simplex.chat)
 [![Coexistence Ready](https://img.shields.io/badge/Coexistence-Side--by--Side_Ready-blueviolet.svg)](#-side-by-side-coexistence)
 [![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop-orange.svg)](#-building--running)
-[![Build Status](https://img.shields.io/badge/Tests-100%25%20Passing-success.svg)](#-building--running)
+[![SimpleUX Frontend CI](https://github.com/delta-whiplash/simpleUx-chat/actions/workflows/simpleux.yml/badge.svg)](https://github.com/delta-whiplash/simpleUx-chat/actions/workflows/simpleux.yml)
 
 ---
 

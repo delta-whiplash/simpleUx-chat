@@ -402,24 +402,6 @@ private fun ModalData.NewChatSheetLayout(
         }
         ContactListNavLinkView(chat, nextChatSelected, showDeletedChatIcon = true)
       }
-      if (searchText.value.text.isNotEmpty()) {
-        item {
-          PublicDirectorySearchResultsSection(
-            query = searchText.value.text,
-            onJoinGroup = { link ->
-              val target = strConnectTarget(link.trim())
-              if (target is ConnectTarget.Link) {
-                connect(
-                  link = target.text,
-                  searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
-                  close = close,
-                  cleanup = { searchText.value = TextFieldValue() }
-                )
-              }
-            }
-          )
-        }
-      }
       if (appPlatform.isAndroid) {
         item {
           Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
