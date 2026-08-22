@@ -69,6 +69,20 @@ recherche) est encore intriquée dans le fichier upstream et n'a pas été
 extraite dans cette passe. C'est un travail incrémental à poursuivre par
 étapes similaires, chacune validée par la CI avant de continuer.
 
+**Mise à jour** : un SDK Android minimal (cmdline-tools, `platform-35`,
+`build-tools;35.0.0`) a été installé dans cette session pour vérifier
+réellement la compilation au lieu de se fier à des contrôles structurels
+(équilibrage d'accolades). Résultat : `./gradlew :common:compileKotlinDesktop`
+et `./gradlew :common:compileDebugKotlinAndroid` compilent tous les deux avec
+succès (`BUILD SUCCESSFUL`), zéro erreur dans `ChatListShell.kt`,
+`ChatListView.kt` ou `NewChatSheet.kt`. L'APK complet (`assembleFossDebug`,
+la tâche que la CI utilise) n'a pas été tenté : il nécessite le NDK et la
+librairie native `libsimplex`/`libapp`, qui provient d'un cross-build Haskell
+séparé (voir `Dockerfile.build`) et n'est pas pré-compilée dans le dépôt —
+hors de portée pour vérifier un changement purement Kotlin/Compose, et hors
+du périmètre frontend-only de toute façon. La CI GitHub Actions
+(`simpleux.yml`), elle, dispose de cette chaîne complète et validera l'APK.
+
 ## Volontairement non fait dans cette session
 
 - **Retrait des `chatModelInstance: ChatModel = ChatModel`** (issue #09,
