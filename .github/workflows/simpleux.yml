@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: Assemble FOSS debug APK + desktop tests
+    name: Compile Kotlin (desktop + Android) + desktop tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -45,9 +45,20 @@ jobs:
           restore-keys: |
             gradle-${{ runner.os }}-
 
-      - name: Assemble FOSS debug APK
+      # Note: this intentionally stops at Kotlin compilation, not a full APK.
+      # apps/multiplatform's Android variant links against libsimplex.so /
+      # libsupport.so, which come from a separate Nix cross-build of the
+      # Haskell core (scripts/android/build-android.sh) — not available here
+      # and not needed to validate a Kotlin/Compose-only change. Full APK
+      # assembly (with upstream's precompiled native libs substituted in) is
+      # what android-quick-apk.yml is for, on demand.
+      - name: Compile Android Kotlin (common + android source sets)
         working-directory: apps/multiplatform
-        run: ./gradlew assembleFossDebug --stacktrace
+        run: ./gradlew :common:compileDebugKotlinAndroid --stacktrace
+
+      - name: Compile desktop Kotlin
+        working-directory: apps/multiplatform
+        run: ./gradlew :common:compileKotlinDesktop --stacktrace
 
       - name: Run desktop/common tests
         working-directory: apps/multiplatform
