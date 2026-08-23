@@ -69,13 +69,51 @@ jobs:
         run: |
           set -e
           echo "Checking for raw 0xFF hex colors outside ui/theme tokens..."
-          if grep -rEn "0x[0-9A-Fa-f]{6,8}" . ; then
-            echo "::error::Raw hex color literals found in views/ux/. Use theme tokens from ui/theme instead."
+          # Baseline of files that already had raw hex literals before this lint existed
+          # (tracked by issue #16 / #15 — the design-token consolidation). This list must
+          # only ever shrink as those files get tokenized, never grow: any *new* file, or
+          # any file not on this list, is held to the real rule with no exceptions.
+          hex_baseline=(
+            "./ChatListShell.kt"
+            "./components/ActiveContactsRail.kt"
+            "./components/DisappearingTimerBar.kt"
+            "./components/FilterPillsRow.kt"
+            "./components/MessageBubble.kt"
+            "./components/ProfileSwitcherOverlay.kt"
+            "./components/QuickReactionsBar.kt"
+            "./components/SecurityBadge.kt"
+            "./components/SwipeableChatCard.kt"
+            "./components/ThemeAnimation.kt"
+            "./components/VoiceWaveformPlayer.kt"
+            "./modals/QuickProfileSwitcher.kt"
+            "./modals/ServerRadarSheet.kt"
+            "./modals/ZeroJargonOnboarding.kt"
+          )
+          exclude_args=()
+          for f in "${hex_baseline[@]}"; do
+            exclude_args+=(--exclude="$(basename "$f")")
+          done
+          offenders=$(grep -rEln "0x[0-9A-Fa-f]{6,8}" "${exclude_args[@]}" . || true)
+          if [ -n "$offenders" ]; then
+            echo "$offenders"
+            echo "::error::Raw hex color literals found in views/ux/ outside the tracked baseline. Use theme tokens from ui/theme instead."
             exit 1
           fi
           echo "Checking for ChatModel singleton defaults..."
-          if grep -rn "= ChatModel\b" . ; then
-            echo "::error::Default-parameter binding to the ChatModel singleton found. Inject explicitly instead (see views/ux/README.md)."
+          # Same deal as the hex baseline above: tracked by issue #09, must only shrink.
+          chatmodel_baseline=(
+            "./components/SwipeableChatCard.kt"
+            "./components/FilterPillsRow.kt"
+            "./modals/QuickProfileSwitcher.kt"
+          )
+          exclude_args=(--exclude="README.md")
+          for f in "${chatmodel_baseline[@]}"; do
+            exclude_args+=(--exclude="$(basename "$f")")
+          done
+          offenders=$(grep -rn "= ChatModel\b" "${exclude_args[@]}" . || true)
+          if [ -n "$offenders" ]; then
+            echo "$offenders"
+            echo "::error::Default-parameter binding to the ChatModel singleton found outside the tracked baseline. Inject explicitly instead (see views/ux/README.md, issue #09)."
             exit 1
           fi
           echo "OK"

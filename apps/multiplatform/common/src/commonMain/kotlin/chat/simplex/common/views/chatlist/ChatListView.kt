@@ -51,6 +51,7 @@ import chat.simplex.common.views.onboarding.*
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServersView
 import chat.simplex.common.views.ux.*
+import chat.simplex.common.views.ux.camera.openQuickCameraSheet
 import chat.simplex.common.views.ux.components.*
 import chat.simplex.common.views.ux.modals.*
 import chat.simplex.res.MR
@@ -215,6 +216,7 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   val listState = rememberLazyListState(lazyListState.first, lazyListState.second)
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
+  val quickCameraConnectFilter = remember { mutableStateOf(emptySet<String>()) }
 
   CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
     Box(Modifier.fillMaxSize()) {
@@ -259,7 +261,31 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
           chatModel.activeChatTagFilter.value = null
           searchText.value = TextFieldValue("")
         }
-      }
+      },
+      onOpenCamera = if (appPlatform.isAndroid) {
+        {
+          openQuickCameraSheet(
+            onPhotoCaptured = { uri ->
+              // Reuses the same cross-chat hand-off as Android's system share-into-SimpleX
+              // flow: setting sharedContent swaps this screen for ShareListView (App.kt's
+              // StartPartOfScreen), which already knows how to pick a chat and attach media.
+              // (The camera button lives on the chat-LIST screen, not inside an open
+              // conversation -- ChatView slides over this screen on mobile -- so there is no
+              // "currently active chat" to silently attach to; picking one is the real flow.)
+              chatModel.sharedContent.value = SharedContent.Media(text = "", uris = listOf(uri))
+            },
+            onQrCode = { link ->
+              val target = strConnectTarget(link.trim())
+              if (target is ConnectTarget.Link) {
+                connect(target.text, quickCameraConnectFilter) {}
+                true
+              } else {
+                false
+              }
+            }
+          )
+        }
+      } else null
     )
 
     ProfileSwitcherOverlay(

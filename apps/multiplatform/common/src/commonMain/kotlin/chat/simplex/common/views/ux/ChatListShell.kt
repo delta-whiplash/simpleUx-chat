@@ -383,7 +383,8 @@ fun BoxScope.TelegramBottomIslandBar(
   onProfileLongClick: () -> Unit = {},
   userPickerState: MutableStateFlow<AnimatedViewState>,
   setPerformLA: (Boolean) -> Unit,
-  onChatsClick: () -> Unit
+  onChatsClick: () -> Unit,
+  onOpenCamera: (() -> Unit)? = null
 ) {
   val isDark = isInDarkTheme()
   val shape = RoundedCornerShape(32.dp)
@@ -444,6 +445,23 @@ fun BoxScope.TelegramBottomIslandBar(
             onSelectTab(SimpleUxTab.CONTACTS)
           }
         )
+
+        if (onOpenCamera != null) {
+          Spacer(Modifier.width(10.dp))
+
+          // Central quick-access camera button (see views/ux/camera/QuickCameraSheet.kt,
+          // Android-only for now). v1 visual treatment only — a raised disc overlapping
+          // the capsule's top edge (the Instagram/WeChat look this was modeled on) is a
+          // follow-up polish pass once this can be screenshotted on a real device.
+          IconButton(onClick = onOpenCamera) {
+            Icon(
+              painterResource(MR.images.ic_photo_camera),
+              contentDescription = stringResource(MR.strings.quick_camera_open),
+              tint = MaterialTheme.colors.primary,
+              modifier = Modifier.size(26.dp)
+            )
+          }
+        }
 
         Spacer(Modifier.width(10.dp))
 
