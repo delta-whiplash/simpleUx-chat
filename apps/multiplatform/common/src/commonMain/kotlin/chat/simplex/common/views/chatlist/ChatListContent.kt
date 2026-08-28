@@ -41,6 +41,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 // (not views/ux) because the empty-state palette has no exact ui/theme tokens yet (issue #16) and
 // the views/ux hex-lint baseline must not grow. State ownership, remember keys and call order are
 // unchanged.
+//
+// The header (TelegramTopHeader + filter pills) is composed OUTSIDE the LazyColumn, as a sibling
+// above it. It used to be a `stickyHeader` inside the list; that pinned-sticky mechanism left a
+// background-colored "hole" across the middle of the viewport whenever long search results
+// scrolled under it (issue #58, reproduced and root-caused 2026-08-28 on emulator-5554 — see
+// issue comments). The header is always pinned anyway, so hoisting it is visually identical and
+// removes the sticky machinery entirely.
 @Composable
 internal fun BoxScope.ChatListContent(
   searchText: MutableState<TextFieldValue>,
@@ -93,22 +100,15 @@ internal fun BoxScope.ChatListContent(
   val isSearching = searchText.value.text.isNotEmpty() || searchVisible.value
   val bottomPadding = if (isSearching) 16.dp else 96.dp
 
+  val allDirectoryGroups by SimpleUxDirectoryRepository.groups.collectAsState()
+  val directoryBotDescription = stringResource(MR.strings.directory_bot_description)
+  val directoryBotCategory = stringResource(MR.strings.directory_category)
+
   Box(Modifier.fillMaxSize().clipToBounds()) {
-    LazyColumnWithScrollBarNoAppBar(
-      modifier = Modifier
-        .fillMaxSize()
-        .imePadding()
-        .clipToBounds()
-        .nestedScroll(nestedScrollConnection),
-      state = listState,
-      contentPadding = PaddingValues(bottom = bottomPadding),
-      reverseLayout = false
-    ) {
-    stickyHeader {
+    Column(Modifier.fillMaxSize().imePadding()) {
       Column(
         Modifier
           .fillMaxWidth()
-          .zIndex(20f)
           .background(MaterialTheme.colors.background)
           .windowInsetsPadding(WindowInsets.statusBars)
       ) {
@@ -182,130 +182,139 @@ internal fun BoxScope.ChatListContent(
         }
         Spacer(Modifier.height(4.dp))
       }
-    }
 
-    itemsIndexed(chats, key = { _, chat -> chat.remoteHostId to chat.id }) { index, chat ->
-      val nextChatSelected = remember(chat.id, chats) { derivedStateOf {
-        chatModel.chatId.value != null && chats.getOrNull(index + 1)?.id == chatModel.chatId.value
-      } }
-      ChatListNavLinkView(chat, nextChatSelected)
-    }
-
-    if (searchText.value.text.isNotBlank() && chats.isEmpty()) {
-      item {
-        Box(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
-          contentAlignment = Alignment.Center
+      Box(Modifier.fillMaxWidth().weight(1f).clipToBounds()) {
+        LazyColumnWithScrollBarNoAppBar(
+          modifier = Modifier
+            .fillMaxSize()
+            .clipToBounds()
+            .nestedScroll(nestedScrollConnection),
+          state = listState,
+          contentPadding = PaddingValues(bottom = bottomPadding),
+          reverseLayout = false
         ) {
-          Text(
-            text = stringResource(MR.strings.chat_list_no_local_results, searchText.value.text),
-            style = TextStyle(
-              fontFamily = Inter,
-              fontSize = 13.sp,
-              color = MaterialTheme.colors.secondary
-            )
-          )
-        }
-      }
-    }
+          itemsIndexed(chats, key = { _, chat -> chat.remoteHostId to chat.id }) { index, chat ->
+            val nextChatSelected = remember(chat.id, chats) { derivedStateOf {
+              chatModel.chatId.value != null && chats.getOrNull(index + 1)?.id == chatModel.chatId.value
+            } }
+            ChatListNavLinkView(chat, nextChatSelected)
+          }
 
-    if (searchText.value.text.isNotBlank()) {
-      item {
-        PublicDirectorySearchResultsSection(
-          query = searchText.value.text.trim(),
-          onJoinGroup = { link, onComplete ->
-            val rhId = chatModel.currentRemoteHost.value?.remoteHostId
-            withBGApi {
-              chatModel.appOpenUrlConnecting.value = true
-              planAndConnect(
-                rhId,
-                link,
-                close = {
-                  searchText.value = TextFieldValue("")
-                  onComplete()
-                },
-                cleanup = {
-                  chatModel.appOpenUrlConnecting.value = false
-                  onComplete()
-                },
-                autoJoin = true
-              )
+          if (searchText.value.text.isNotBlank() && chats.isEmpty()) {
+            item {
+              Box(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                contentAlignment = Alignment.Center
+              ) {
+                Text(
+                  text = stringResource(MR.strings.chat_list_no_local_results, searchText.value.text),
+                  style = TextStyle(
+                    fontFamily = Inter,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colors.secondary
+                  )
+                )
+              }
             }
           }
+
+          if (searchText.value.text.isNotBlank()) {
+            directorySearchItems(
+              query = searchText.value.text,
+              groups = allDirectoryGroups,
+              botDescription = directoryBotDescription,
+              botCategory = directoryBotCategory,
+              onJoinGroup = { link, onComplete ->
+                val rhId = chatModel.currentRemoteHost.value?.remoteHostId
+                withBGApi {
+                  chatModel.appOpenUrlConnecting.value = true
+                  planAndConnect(
+                    rhId,
+                    link,
+                    close = {
+                      searchText.value = TextFieldValue("")
+                      onComplete()
+                    },
+                    cleanup = {
+                      chatModel.appOpenUrlConnecting.value = false
+                      onComplete()
+                    },
+                    autoJoin = true
+                  )
+                }
+              }
+            )
+          }
+
+          if (chats.isEmpty() && searchText.value.text.isBlank()) {
+            item {
+              Box(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .padding(horizontal = 24.dp, vertical = 40.dp),
+                contentAlignment = Alignment.Center
+              ) {
+                Column(
+                  horizontalAlignment = Alignment.CenterHorizontally,
+                  verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                  Box(
+                    modifier = Modifier
+                      .size(64.dp)
+                      .clip(CircleShape)
+                      .background(if (isInDarkTheme()) Color(0x2238BDF8) else Color(0x1A0284C7)),
+                    contentAlignment = Alignment.Center
+                  ) {
+                    Icon(
+                      painter = painterResource(MR.images.ic_forum),
+                      contentDescription = null,
+                      tint = if (isInDarkTheme()) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                      modifier = Modifier.size(32.dp)
+                    )
+                  }
+                  Text(
+                    text = stringResource(MR.strings.chat_list_empty_title),
+                    style = TextStyle(
+                      fontFamily = Inter,
+                      fontSize = 15.sp,
+                      fontWeight = FontWeight.SemiBold,
+                      color = if (isInDarkTheme()) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                    ),
+                    textAlign = TextAlign.Center
+                  )
+                  Text(
+                    text = stringResource(MR.strings.chat_list_empty_subtitle),
+                    style = TextStyle(
+                      fontFamily = Inter,
+                      fontSize = 13.sp,
+                      color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                  )
+                }
+              }
+            }
+          }
+
+          if (!isSearching) {
+            item {
+              Spacer(Modifier.height(100.dp))
+            }
+          }
+        }
+
+        MineralPullToRefreshIndicator(
+          pullFraction = pullOffset.value / 100f,
+          isRefreshing = isRefreshing.value,
+          modifier = Modifier
+            .align(Alignment.TopCenter)
+            .padding(top = (pullOffset.value * 0.4f).dp + 10.dp)
+            .zIndex(10f)
         )
       }
     }
-
-    if (chats.isEmpty() && searchText.value.text.isBlank()) {
-      item {
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 40.dp),
-          contentAlignment = Alignment.Center
-        ) {
-          Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-          ) {
-            Box(
-              modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(if (isInDarkTheme()) Color(0x2238BDF8) else Color(0x1A0284C7)),
-              contentAlignment = Alignment.Center
-            ) {
-              Icon(
-                painter = painterResource(MR.images.ic_forum),
-                contentDescription = null,
-                tint = if (isInDarkTheme()) Color(0xFF38BDF8) else Color(0xFF0284C7),
-                modifier = Modifier.size(32.dp)
-              )
-            }
-            Text(
-              text = stringResource(MR.strings.chat_list_empty_title),
-              style = TextStyle(
-                fontFamily = Inter,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = if (isInDarkTheme()) Color(0xFFF1F5F9) else Color(0xFF0F172A)
-              ),
-              textAlign = TextAlign.Center
-            )
-            Text(
-              text = stringResource(MR.strings.chat_list_empty_subtitle),
-              style = TextStyle(
-                fontFamily = Inter,
-                fontSize = 13.sp,
-                color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF64748B)
-              ),
-              textAlign = TextAlign.Center,
-              modifier = Modifier.padding(horizontal = 16.dp)
-            )
-          }
-        }
-      }
-    }
-
-    if (!isSearching) {
-      item {
-        Spacer(Modifier.height(100.dp))
-      }
-    }
   }
-
-    MineralPullToRefreshIndicator(
-      pullFraction = pullOffset.value / 100f,
-      isRefreshing = isRefreshing.value,
-      modifier = Modifier
-        .align(Alignment.TopCenter)
-        .windowInsetsPadding(WindowInsets.statusBars)
-        .padding(top = (pullOffset.value * 0.4f).dp + 10.dp)
-        .zIndex(10f)
-    )
-  }
-
-
 
   StatusBarBackground()
 

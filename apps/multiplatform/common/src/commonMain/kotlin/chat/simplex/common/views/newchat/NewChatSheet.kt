@@ -66,6 +66,7 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
         fixedTitleText = stringResource(MR.strings.chat_list_contacts),
         buttons = {},
         onTop = true,
+        solidBackground = true,
       )
       NewChatSheetLayout(
         addContact = {
@@ -354,6 +355,9 @@ private fun ModalData.NewChatSheetLayout(
 
   @Composable
   fun NonOneHandLazyColumn() {
+    val allDirectoryGroups by SimpleUxDirectoryRepository.groups.collectAsState()
+    val directoryBotDescription = stringResource(MR.strings.directory_bot_description)
+    val directoryBotCategory = stringResource(MR.strings.directory_category)
     LazyColumnWithScrollBar(
       Modifier.imePadding(),
       state = listState,
@@ -403,28 +407,29 @@ private fun ModalData.NewChatSheetLayout(
         ContactListNavLinkView(chat, nextChatSelected, showDeletedChatIcon = true)
       }
       if (searchText.value.text.isNotEmpty()) {
-        item {
-          PublicDirectorySearchResultsSection(
-            query = searchText.value.text,
-            onJoinGroup = { link, onComplete ->
-              withBGApi {
-                planAndConnect(
-                  chatModel.currentRemoteHost.value?.remoteHostId,
-                  link,
-                  close = {
-                    searchText.value = TextFieldValue()
-                    onComplete()
-                    close()
-                  },
-                  cleanup = {
-                    onComplete()
-                  },
-                  autoJoin = true
-                )
-              }
+        directorySearchItems(
+          query = searchText.value.text,
+          groups = allDirectoryGroups,
+          botDescription = directoryBotDescription,
+          botCategory = directoryBotCategory,
+          onJoinGroup = { link, onComplete ->
+            withBGApi {
+              planAndConnect(
+                chatModel.currentRemoteHost.value?.remoteHostId,
+                link,
+                close = {
+                  searchText.value = TextFieldValue()
+                  onComplete()
+                  close()
+                },
+                cleanup = {
+                  onComplete()
+                },
+                autoJoin = true
+              )
             }
-          )
-        }
+          }
+        )
       }
       if (appPlatform.isAndroid) {
         item {
