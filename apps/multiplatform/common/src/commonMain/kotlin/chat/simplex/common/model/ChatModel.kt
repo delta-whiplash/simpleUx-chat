@@ -149,10 +149,18 @@ object ChatModel {
   val unreadTags = mutableStateMapOf<Long, Int>()
 
   // SimpleUX Starred / Favorites State
-  // Chat stars are persisted locally via StarredChatsPrefs and seeded at startup;
-  // message stars stay in-memory for now.
-  val starredChatIds = mutableStateListOf<String>().also { it.addAll(StarredChatsPrefs.loadStarredChatIds()) }
+  // Chat stars are persisted locally via StarredChatsPrefs and loaded by
+  // loadPersistedStarredChats() once the platform app context exists — the
+  // settings store must NOT be touched during class init (it crashed cold
+  // start on Android: androidAppContext is only set in SimplexApp
+  // .initMultiplatform, after this class initializes). Message stars stay
+  // in-memory for now.
+  val starredChatIds = mutableStateListOf<String>()
   val starredMessageIds = mutableStateListOf<Long>()
+
+  fun loadPersistedStarredChats() {
+    starredChatIds.addAll(StarredChatsPrefs.loadStarredChatIds())
+  }
 
   fun toggleStarChat(chatId: String) {
     if (starredChatIds.contains(chatId)) {
