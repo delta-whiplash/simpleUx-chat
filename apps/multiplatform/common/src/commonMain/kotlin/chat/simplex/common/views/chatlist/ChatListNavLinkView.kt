@@ -76,7 +76,21 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
     }
   }
 
-  SwipeableChatCard(chat, onClick = defaultClickAction) {
+  // Swipe actions mirror the context menu affordances; star state is read from the model so
+  // the revealed action bar always reflects reality (issue #61).
+  val isStarred = chatModel.starredChatIds.contains(chat.id)
+  val toggleReadSupported = swipeToggleReadSupported(chat)
+  val toggleFavoriteSupported = swipeToggleFavoriteSupported(chat)
+
+  SwipeableChatCard(
+    chat,
+    isStarred = isStarred,
+    onClick = defaultClickAction,
+    onToggleRead = if (toggleReadSupported) ({ c ->
+      if (c.unreadTag || c.chatStats.unreadCount > 0) markChatRead(c) else markChatUnread(c, chatModel)
+    }) else null,
+    onToggleFavorite = if (toggleFavoriteSupported) ({ c -> chatModel.toggleStarChat(c.id) }) else null,
+  ) {
   when (chat.chatInfo) {
     is ChatInfo.Direct -> {
       val defaultClickAction = { if (chatModel.chatId.value != chat.id) scope.launch { directChatAction(chat.remoteHostId, chat.chatInfo.contact, chatModel) } }
@@ -652,6 +666,24 @@ private fun ArchiveAllReportsItemAction(showMenu: MutableState<Boolean>, archive
       showMenu.value = false
     }
   )
+}
+
+// Swipe actions are only offered where the chat context menu offers the same action
+// (no fake affordances): read/unread wherever the menu has it, favorite for contacts
+// and joined groups only.
+private fun swipeToggleReadSupported(chat: Chat): Boolean = when (val info = chat.chatInfo) {
+  is ChatInfo.Direct -> info.contact.activeConn != null
+  is ChatInfo.Group -> info.groupInfo.membership.memberStatus != GroupMemberStatus.MemInvited &&
+    info.groupInfo.membership.memberStatus != GroupMemberStatus.MemAccepted
+  is ChatInfo.Local -> true
+  else -> false
+}
+
+private fun swipeToggleFavoriteSupported(chat: Chat): Boolean = when (val info = chat.chatInfo) {
+  is ChatInfo.Direct -> info.contact.activeConn != null
+  is ChatInfo.Group -> info.groupInfo.membership.memberStatus != GroupMemberStatus.MemInvited &&
+    info.groupInfo.membership.memberStatus != GroupMemberStatus.MemAccepted
+  else -> false
 }
 
 fun markChatRead(c: Chat) {
