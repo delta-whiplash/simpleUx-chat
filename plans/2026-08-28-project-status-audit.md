@@ -82,7 +82,8 @@ Not backed by code: "swipe-to-reply" (×2, doesn't exist), `chat.simplex.ux.debu
 
 ### 6.1 White bar on Android chat list (light theme) — still open; the two "fix" commits missed
 - `2b8645516` removed a **desktop-only** divider (`ChatListNavLinkView.desktop.kt`); `dc2248961` removed a divider inside the **chat view** group-link card (`CIChatLinkHeader.kt:55`). Neither renders on the Android chat list.
-- Actual candidates, ranked:
+- **Leading suspect (2026-08-20 emulator forensics, fixed in `ecc329e28`, visual confirmation pending):** the captcha image sent by group admins in the pending-join flow rendered full-width inside chat-list rows (unbounded `CIImageView` smallView + unbounded `SmallContentPreview` in `ChatPreviewView.kt`); its white/cream stripes read as the bar, matching the then-reported symptom pattern (all themes, mid-screen, pending-group rows).
+- Residual candidates for light-theme reports **after** the captcha fix is visually confirmed:
   1. `SwipeableChatCard.kt:120` — row background flips to opaque `Color(0xFFFFFFFF)` in light theme as soon as `abs(offsetX) > 1f`; any diagonal scroll micro-drag triggers it (every row is wrapped, `ChatListNavLinkView.kt:79`).
   2. `ChatListNavLinkView.android.kt:32` — rows painted pure white on the Carrara background `0xFFF8FAFC` (`Theme.kt:691`); the removed border was dark translucent, never the white element.
   3. `values/themes.xml:7-9` — white `windowBackground` follows system (not app) theme; `androidSetNightModeIfSupported` is a no-op stub (`Platform.kt:24`) → white bands during transitions.
@@ -91,8 +92,9 @@ Not backed by code: "swipe-to-reply" (×2, doesn't exist), `chat.simplex.ux.debu
 ### 6.2 Desktop island bar never renders — root cause confirmed
 `UI.desktop.kt:18` hardcodes `getKeyboardState() = KeyboardState.Opened` (desktop has no IME); the bar renders only when `keyboardState == KeyboardState.Closed` (`ChatListView.kt:263`). Same broken predicate zeroes `bottomPadding` (`:245,255`).
 
-### 6.3 Theme stuck "mid-gray" — ThemeAnimation overlay leak
-`ThemeAnimation.kt`: `isAnimating.value = true` set before launch (`:44`), reset only after the 650 ms reveal (`:62`); all call sites pass screen-scoped scopes (`ChatListView.kt:1131`, `ChatView.kt:1184`) — any cancellation (back navigation) leaves the permanently-hosted overlay (`zIndex 9999f`, `ChatListView.kt:296`, `ChatView.kt:1163`) drawing a **frozen partial circle** over the app. The palette itself is applied mid-animation at `delay(180)` (`:54-60`), so a cancel between those points leaves overlay color ≠ actual theme. Secondary: double-trigger race (no `isAnimating` guard; stale `currentlyDark` captured from composition) and unsynced system uiMode reinforcing the flash.
+### 6.3 Theme stuck "mid-gray" — two distinct mechanisms
+- **Transient wedge — ThemeAnimation overlay leak.** `ThemeAnimation.kt`: `isAnimating.value = true` set before launch (`:44`), reset only after the 650 ms reveal (`:62`); call sites pass screen-scoped scopes (`ChatListView.kt:1131`, `ChatView.kt:1184`) — any cancellation (back navigation) leaves the permanently-hosted overlay (`zIndex 9999f`) drawing a **frozen partial circle** over the app. The palette is applied mid-animation at `delay(180)` (`:54-60`), so a cancel in between leaves overlay color ≠ actual theme. Secondary: double-trigger race (no `isAnimating` guard; stale `currentlyDark`).
+- **Persistent variant — NOT the overlay.** The 2026-08-20 emulator session measured the mid-gray surviving `am force-stop` + restart (mean pixel ~95-115 vs ~25-40 dark / ~230+ light) — impossible for runtime-only state. Primary suspect there: the glass-mode base layer (`isGlassModeActive() == isInDarkTheme()`, `Theme.kt:762`; `AmbientGlassBackground` draws its own base) or palette/splash mismatch. Both tracks are recorded on reopened #14.
 
 ### 6.4 Wave-3 (uncommitted) defects to fix BEFORE committing
 1. **Model-layer violation**: `SimpleXAPI.kt` flips `chatItemRoundness` 0.75→1 and `chatItemTail` true→false (defaults in `AppPreferences` + `AppSettings`) — the exact anti-pattern issue #5 closed.
