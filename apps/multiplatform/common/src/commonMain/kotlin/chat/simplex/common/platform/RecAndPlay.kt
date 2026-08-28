@@ -28,6 +28,10 @@ data class CurrentlyPlayingState(
 
 interface AudioPlayerInterface {
   val currentlyPlaying: MutableState<CurrentlyPlayingState?>
+  // Playback speed of the shared player session; 1.0 = normal. Applied immediately to
+  // whatever is currently playing and reused for subsequently played items (issue #13).
+  val playbackSpeed: MutableState<Float>
+  fun setPlaybackSpeed(speed: Float)
   fun play(
     fileSource: CryptoFile,
     audioPlaying: MutableState<Boolean>,

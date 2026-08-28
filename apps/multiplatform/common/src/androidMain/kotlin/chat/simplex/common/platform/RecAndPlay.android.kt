@@ -127,7 +127,22 @@ actual object AudioPlayer: AudioPlayerInterface {
         )
   }
   override val currentlyPlaying: MutableState<CurrentlyPlayingState?> = mutableStateOf(null)
+  override val playbackSpeed: MutableState<Float> = mutableStateOf(1f)
   private var progressJob: Job? = null
+
+  // Applies the session speed to the started (and running) player. Call right after player.start().
+  private fun applyPlaybackSpeed() {
+    if (playbackSpeed.value != 1f) {
+      runCatching { player.playbackParams = player.playbackParams.setSpeed(playbackSpeed.value) }
+    }
+  }
+
+  override fun setPlaybackSpeed(speed: Float) {
+    playbackSpeed.value = speed
+    // Setting PlaybackParams on a paused MediaPlayer would start playback, so only touch the
+    // player while it is playing. A paused player keeps its params across start()/pause().
+    runCatching { if (player.isPlaying) player.playbackParams = player.playbackParams.setSpeed(speed) }
+  }
 
   // Returns real duration of the track
   private fun start(fileSource: CryptoFile, smallView: Boolean, seek: Int? = null, onProgressUpdate: (position: Int?, state: TrackState) -> Unit): Int? {
@@ -163,6 +178,8 @@ actual object AudioPlayer: AudioPlayerInterface {
     }
     if (seek != null) player.seekTo(seek)
     player.start()
+    // player.reset() (for the previous track) cleared playbackParams, so re-apply the session speed
+    applyPlaybackSpeed()
     currentlyPlaying.value = CurrentlyPlayingState(fileSource, onProgressUpdate, smallView)
     progressJob = CoroutineScope(Dispatchers.Default).launch {
       onProgressUpdate(player.currentPosition, TrackState.PLAYING)

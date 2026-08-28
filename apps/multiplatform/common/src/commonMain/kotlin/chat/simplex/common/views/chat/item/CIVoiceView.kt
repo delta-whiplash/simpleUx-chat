@@ -99,6 +99,10 @@ fun CIVoiceView(
           isPlaying = audioPlaying.value,
           progress = progressRatio,
           durationFormatted = text.value,
+          // Speed lives in the shared player session so it survives this composable leaving
+          // composition and applies to the currently playing item (#13)
+          playbackSpeed = AudioPlayer.playbackSpeed.value,
+          onPlaybackSpeedChange = { AudioPlayer.setPlaybackSpeed(it) },
           onPlayPauseToggle = { if (audioPlaying.value) pause() else play() },
           onSeek = { ratio ->
             val targetMs = (ratio * duration.value).toInt()
