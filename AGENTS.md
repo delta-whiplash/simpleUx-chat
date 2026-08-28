@@ -153,6 +153,10 @@ code says.
 - **A bug stays open until the fix is confirmed on-device**, even when the
   commit looks right. Interim findings and candidate root causes go in
   issue comments, not closure claims.
+- **Three of these rules are CI-enforced** by the `truth-check` job in
+  `.github/workflows/simpleux.yml` (model layer frozen, migration gates
+  reachable, no new hardcoded French literals). If it goes red, the rule
+  won — fix the code, not the check.
 
 ## 7. Out of scope — do not improvise
 
@@ -185,4 +189,5 @@ regularly and answers in French. Asking is cheaper than a reverted feature.
 | Design system | `.agents/skills/simpleux-design-system/SKILL.md` |
 | Latest full audit | `plans/2026-08-28-project-status-audit.md` |
 | Build checks | `:common:compileKotlinDesktop` / `:common:compileDebugKotlinAndroid` (JDK 21, see §6) |
+| Rules CI | `simpleux.yml` → `truth-check` job (runs on every push + PR) |
 | Android identity | `chat.simplex.ux` · provider `chat.simplex.ux.provider` |

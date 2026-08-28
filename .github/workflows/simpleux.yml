@@ -9,6 +9,7 @@ on:
     branches:
       - claude/**
       - main
+      - stable
   pull_request:
     paths:
       - "apps/multiplatform/**"
@@ -114,6 +115,104 @@ jobs:
           if [ -n "$offenders" ]; then
             echo "$offenders"
             echo "::error::Default-parameter binding to the ChatModel singleton found outside the tracked baseline. Inject explicitly instead (see views/ux/README.md, issue #09)."
+            exit 1
+          fi
+          echo "OK"
+
+  # AGENTS.md (2026-08-28 rewrite) §3/§4 enforcement: the rules that can be
+  # checked mechanically are checked here, on every push and PR. Keep each
+  # check cheap and its failure message self-explanatory.
+  truth-check:
+    name: Truth checks (model layer frozen, migration gates reachable, no new French literals)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history — base-SHA diffs need it)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine base revision for diff checks
+        id: base
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+              BASE="$(git rev-parse HEAD~1 2>/dev/null || true)"
+            fi
+          fi
+          if [ -n "$BASE" ] && ! git cat-file -e "$BASE" 2>/dev/null; then
+            echo "::warning::Base revision $BASE not present locally; diff checks will skip."
+            BASE=""
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "Diffing against: ${BASE:-<none>}"
+
+      # AGENTS.md §1: the model layer is byte-frozen. Update FORK_BASE only
+      # when deliberately rebasing onto a new upstream base — never to make
+      # a failing check pass.
+      - name: Model layer is byte-frozen (SimpleXAPI.kt)
+        run: |
+          FORK_BASE=abd595467
+          API=apps/multiplatform/common/src/commonMain/kotlin/chat/simplex/common/model/SimpleXAPI.kt
+          if git diff --quiet $FORK_BASE HEAD -- "$API"; then
+            echo "SimpleXAPI.kt is byte-identical to the fork base ($FORK_BASE)."
+          else
+            git diff $FORK_BASE HEAD -- "$API"
+            echo "::error::SimpleXAPI.kt diverged from the fork base. The model layer is frozen (AGENTS.md §1): UI preference defaults change in the UI layer, not here. See issues #05 / #60."
+            exit 1
+          fi
+
+      # AGENTS.md §4: a migration gate `lastMigration < N` only runs for
+      # users whose stored version is below N. Adding such a gate while the
+      # version_code at the base is already >= N means every existing user
+      # skips it — the dead migration wave-3 nearly shipped (#60). Adding a
+      # gate in the release where version_code first reaches N is fine
+      # (upstream's own release pattern).
+      - name: Migration gates are reachable (no new gate under an already-shipped version_code)
+        run: |
+          BASE="${{ steps.base.outputs.base }}"
+          if [ -z "$BASE" ]; then echo "No base revision; skipping."; exit 0; fi
+          ADDED_N=$(git diff "$BASE" HEAD --unified=0 --diff-filter=AM -- apps/multiplatform/common/src \
+            | grep -E '^\+[^+]' | grep -oE 'lastMigration\.get\(\) *< *[0-9]+' \
+            | grep -oE '[0-9]+$' | sort -n | tail -1 || true)
+          if [ -z "$ADDED_N" ]; then
+            echo "No migration gates added; nothing to check."
+            exit 0
+          fi
+          BASE_VC=$(git show "$BASE":apps/multiplatform/gradle.properties | grep -oE '^android\.version_code=[0-9]+' | cut -d= -f2)
+          HEAD_VC=$(git show HEAD:apps/multiplatform/gradle.properties | grep -oE '^android\.version_code=[0-9]+' | cut -d= -f2)
+          echo "Added gate '< $ADDED_N' ; version_code $BASE_VC -> $HEAD_VC"
+          if [ -n "$BASE_VC" ] && [ "$BASE_VC" -ge "$ADDED_N" ]; then
+            echo "::error::Dead migration: gate '< $ADDED_N' added while version_code was already $BASE_VC at the base — existing users will never run it. Bump version_code and gate above the previously shipped value. See #60 and AGENTS.md §4."
+            exit 1
+          fi
+
+      # AGENTS.md §3/§5: user-visible strings go through MR.strings. Heuristic
+      # net over ADDED lines only (existing literals are tracked in #19 and
+      # must shrink): accented characters or known French UI words. Not
+      # exhaustive — the honest fix is MR.strings.
+      - name: No new hardcoded French literals in Kotlin
+        run: |
+          BASE="${{ steps.base.outputs.base }}"
+          if [ -z "$BASE" ]; then echo "No base revision; skipping."; exit 0; fi
+          git diff "$BASE" HEAD --unified=0 --diff-filter=AM -- apps/multiplatform/common/src/commonMain/kotlin > /tmp/added.diff || true
+          # strip diff headers, the leading '+', and comments (whole-line and trailing)
+          ADDED=$(grep -E '^\+[^+]' /tmp/added.diff | sed -e 's/^+//' -e 's|//.*$||' | grep -v '^[[:space:]]*$' || true)
+          if [ -z "$ADDED" ]; then
+            echo "No added Kotlin lines to check."
+            exit 0
+          fi
+          # 1) accented characters anywhere in added code lines
+          HITS=$(printf '%s\n' "$ADDED" | grep -E '[àâäçéèêëîïôöùûüÿœÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŒ]' || true)
+          # 2) unaccented French UI words inside string literals
+          if [ -z "$HITS" ]; then
+            HITS=$(printf '%s\n' "$ADDED" | grep -E '"[^"]*\b(Non lus|Brouillon|Nouveau profil|Annuaire|Groupe public|Bot officiel|X membres|Mode Clair|Mode Sombre)\b[^"]*"' || true)
+          fi
+          if [ -n "$HITS" ]; then
+            echo "$HITS"
+            echo "::error::Added lines look like hardcoded French literals. User-visible strings go through MR.strings (AGENTS.md §5, issue #19). If a hit is a false positive, rephrase it or move the string to MR."
             exit 1
           fi
           echo "OK"
