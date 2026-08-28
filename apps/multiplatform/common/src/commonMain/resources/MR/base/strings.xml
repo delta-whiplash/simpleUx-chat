@@ -803,6 +803,11 @@
   <string name="tap_to_scan">Tap to scan</string>
   <string name="camera_not_available">Camera not available</string>
 
+  <!-- QuickCameraSheet -->
+  <string name="quick_camera_open">Camera</string>
+  <string name="quick_camera_link_detected">SimpleX link detected</string>
+  <string name="quick_camera_connect">Connect</string>
+
   <!-- GetImageView -->
   <string name="toast_permission_denied">Permission Denied!</string>
   <string name="use_camera_button">Camera</string>
@@ -3217,11 +3222,11 @@
   <string name="e2ee_status_post_quantum">Post-quantum</string>
   <string name="e2ee_status_standard">Standard E2EE</string>
   <string name="e2ee_banner_title">End-to-end encryption active</string>
-  <string name="server_radar_title">SimpleX SMP Relay Status</string>
-  <string name="server_radar_desc">Your message queues (SMP Queues) are synchronized in real time. Zero metadata leakage or persistent identifiers.</string>
-  <string name="server_radar_net_proto">Network Protocol</string>
+  <string name="server_radar_title">Connection status</string>
+  <string name="server_radar_desc">These are protocol-level guarantees of SimpleX, not a live check of your specific servers.</string>
+  <string name="server_radar_net_proto">Protocol (network-wide)</string>
   <string name="server_radar_net_proto_val">SimpleX SMP v2</string>
-  <string name="server_radar_file_transfer">File Transfer</string>
+  <string name="server_radar_file_transfer">File transfer (network-wide)</string>
   <string name="server_radar_file_transfer_val">Encrypted XFTP</string>
   <string name="server_radar_file_isolation">Queue Isolation</string>
   <string name="server_radar_unidirectional">Fully Unidirectional</string>
