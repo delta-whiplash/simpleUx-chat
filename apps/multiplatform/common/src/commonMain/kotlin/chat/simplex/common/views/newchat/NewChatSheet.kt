@@ -65,8 +65,7 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
         navigationButton = if (ModalManager.start.hasModalsOpen()) { { NavigationButtonBack(onButtonClicked = close) } } else null,
         fixedTitleText = stringResource(MR.strings.chat_list_contacts),
         buttons = {},
-        onTop = true,
-        solidBackground = true,
+        onTop = true
       )
       NewChatSheetLayout(
         addContact = {
