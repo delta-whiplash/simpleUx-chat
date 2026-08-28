@@ -136,6 +136,9 @@ Decision recorded by maintainer 2026-08-28: finish audit/tracker/milestones firs
 | **M3 — Design system & i18n** | #15, #16, #17, #19 |
 | **M4 — Identity & platform QoL** | #23, #24, #46, #47 |
 | **M5 — Icebox (native/deferred)** | #48, #49, #50, #51 |
+| **M6 — UX simplification & flows** | #52, #53, #54, #56, #57, #63, #64, #65, #67 (the parallel-session UX batch) |
+
+Also cross-filed from the parallel batch: #68 → M1, #66 → M2, #55 → M3. Intentionally milestone-less: #29, #36, #37, #45 (reopened wishlist items awaiting a product call).
 
 **Sequencing rationale:** M1 unblocks every future upstream merge (8 behind stable, 64 behind master — each week this grows). M2 contains user-visible lies and wedges. M3 is what makes the "design system" claim in the README true. M4/M5 are deliberate, scheduled non-priorities.
 
