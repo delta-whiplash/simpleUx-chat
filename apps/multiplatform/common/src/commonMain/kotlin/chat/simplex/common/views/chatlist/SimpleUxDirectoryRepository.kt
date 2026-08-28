@@ -26,11 +26,28 @@ data class SimpleUxDirectoryGroup(
   val isDirectoryBot: Boolean = false
 )
 
+/**
+ * Language-neutral result of parsing one directory listing entry — pure data with no localized
+ * strings, so it can be unit-tested offline.
+ *
+ * @param description  cleaned listing text, or null when the directory provided no usable text
+ *   (the localized default description is substituted at render time).
+ * @param isChannel    true when the entry type is a channel (vs. the default group).
+ * @param membersCount positive member count, or null when absent/zero/negative/unparsable
+ *   (the localized "public group" string is substituted at render time).
+ */
+internal data class SimpleUxDirectoryEntry(
+  val name: String,
+  val link: String,
+  val description: String?,
+  val isChannel: Boolean,
+  val membersCount: Int?,
+  val imageUrl: String?
+)
+
 object SimpleUxDirectoryRepository {
-  private const val TAG = "DirectoryRepo"
   private const val DIRECTORY_LISTING_URL = "https://directory.simplex.chat/data/listing.json"
   private const val DIRECTORY_PROMOTED_URL = "https://directory.simplex.chat/data/promoted.json"
-  private const val DATA_BASE_URL = "https://directory.simplex.chat/data/"
 
   val directoryBot = SimpleUxDirectoryGroup(
     name = "SimpleX Directory Bot",
@@ -49,11 +66,6 @@ object SimpleUxDirectoryRepository {
 
   private var lastFetchTime = 0L
   private const val CACHE_TTL_MS = 10 * 60 * 1000L // 10 minutes cache
-
-  private val jsonParser = Json {
-    ignoreUnknownKeys = true
-    isLenient = true
-  }
 
   fun fetchDirectoryIfNeeded(scope: CoroutineScope, force: Boolean = false) {
     val now = System.currentTimeMillis()
@@ -106,84 +118,111 @@ object SimpleUxDirectoryRepository {
     }
   }
 
-  private fun parseDirectoryJson(rawJson: String): List<SimpleUxDirectoryGroup> {
-    val result = mutableListOf<SimpleUxDirectoryGroup>()
-    try {
-      val root = jsonParser.parseToJsonElement(rawJson).jsonObject
-      val entries = root["entries"]?.jsonArray ?: return emptyList()
+  private fun parseDirectoryJson(rawJson: String): List<SimpleUxDirectoryGroup> =
+    parseDirectoryEntries(rawJson).map { e ->
+      SimpleUxDirectoryGroup(
+        name = e.name,
+        description = e.description ?: generalGetString(MR.strings.directory_group_default_desc),
+        link = e.link,
+        category = if (e.isChannel) generalGetString(MR.strings.directory_category_channel) else generalGetString(MR.strings.directory_category_group),
+        members = if (e.membersCount != null) generalGetString(MR.strings.directory_members_count).format(e.membersCount) else generalGetString(MR.strings.directory_members_public_group),
+        imageUrl = e.imageUrl
+      )
+    }
+}
 
-      for (element in entries) {
-        val entry = element.jsonObject
-        val name = entry["displayName"]?.jsonPrimitive?.content ?: continue
+private const val TAG = "DirectoryRepo"
+private const val DATA_BASE_URL = "https://directory.simplex.chat/data/"
 
-        // Extract link
-        val groupLinkObj = entry["groupLink"]?.jsonObject
-        val shortLink = groupLinkObj?.get("connShortLink")?.jsonPrimitive?.content
-        val fullLink = groupLinkObj?.get("connFullLink")?.jsonPrimitive?.content
-        val link = shortLink ?: fullLink ?: continue
+private val directoryJsonParser = Json {
+  ignoreUnknownKeys = true
+  isLenient = true
+}
 
-        // Extract description
-        var desc = ""
-        val welcomeArray = entry["welcomeMessage"]?.jsonArray
-        if (welcomeArray != null && welcomeArray.isNotEmpty()) {
-          for (part in welcomeArray) {
+/**
+ * Pure structural parse of the directory listing JSON (extracted from [SimpleUxDirectoryRepository]
+ * so the grammar can be unit-tested without network or localized resources).
+ *
+ * Behaviour is unchanged from the previous inline implementation:
+ *  - entries without a displayName or without any link are skipped;
+ *  - description comes from welcomeMessage parts, falling back to shortDescr parts, with the first
+ *    non-blank line that is not a "Link to join" line kept (whole trimmed text when all lines filter out);
+ *  - one structurally corrupt entry aborts parsing and returns the entries accumulated so far.
+ */
+internal fun parseDirectoryEntries(rawJson: String): List<SimpleUxDirectoryEntry> {
+  val result = mutableListOf<SimpleUxDirectoryEntry>()
+  try {
+    val root = directoryJsonParser.parseToJsonElement(rawJson).jsonObject
+    val entries = root["entries"]?.jsonArray ?: return emptyList()
+
+    for (element in entries) {
+      val entry = element.jsonObject
+      val name = entry["displayName"]?.jsonPrimitive?.content ?: continue
+
+      // Extract link
+      val groupLinkObj = entry["groupLink"]?.jsonObject
+      val shortLink = groupLinkObj?.get("connShortLink")?.jsonPrimitive?.content
+      val fullLink = groupLinkObj?.get("connFullLink")?.jsonPrimitive?.content
+      val link = shortLink ?: fullLink ?: continue
+
+      // Extract description
+      var desc = ""
+      val welcomeArray = entry["welcomeMessage"]?.jsonArray
+      if (welcomeArray != null && welcomeArray.isNotEmpty()) {
+        for (part in welcomeArray) {
+          val textPart = part.jsonObject["text"]?.jsonPrimitive?.content
+          if (!textPart.isNullOrBlank()) {
+            desc += textPart
+          }
+        }
+      }
+      if (desc.isBlank()) {
+        val shortDescArray = entry["shortDescr"]?.jsonArray
+        if (shortDescArray != null) {
+          for (part in shortDescArray) {
             val textPart = part.jsonObject["text"]?.jsonPrimitive?.content
             if (!textPart.isNullOrBlank()) {
               desc += textPart
             }
           }
         }
-        if (desc.isBlank()) {
-          val shortDescArray = entry["shortDescr"]?.jsonArray
-          if (shortDescArray != null) {
-            for (part in shortDescArray) {
-              val textPart = part.jsonObject["text"]?.jsonPrimitive?.content
-              if (!textPart.isNullOrBlank()) {
-                desc += textPart
-              }
-            }
-          }
-        }
-        if (desc.isBlank()) {
-          desc = generalGetString(MR.strings.directory_group_default_desc)
-        } else {
-          // Clean up first line or rules for concise display
-          desc = desc.lines().firstOrNull { it.isNotBlank() && !it.startsWith("Link to join") } ?: desc.trim()
-        }
-
-        // Extract category / type
-        val entryTypeObj = entry["entryType"]?.jsonObject
-        val typeStr = entryTypeObj?.get("groupType")?.jsonPrimitive?.content
-          ?: entryTypeObj?.get("type")?.jsonPrimitive?.content
-          ?: "group"
-        val category = when (typeStr.lowercase()) {
-          "channel" -> generalGetString(MR.strings.directory_category_channel)
-          else -> generalGetString(MR.strings.directory_category_group)
-        }
-
-        // Extract members
-        val summaryObj = entryTypeObj?.get("summary")?.jsonObject
-        val membersCount = summaryObj?.get("currentMembers")?.jsonPrimitive?.content?.toIntOrNull()
-          ?: summaryObj?.get("members")?.jsonPrimitive?.content?.toIntOrNull()
-        val membersStr = if (membersCount != null && membersCount > 0) generalGetString(MR.strings.directory_members_count).format(membersCount) else generalGetString(MR.strings.directory_members_public_group)
-
-        val imgFile = entry["imageFile"]?.jsonPrimitive?.content
-        val imgUrl = if (!imgFile.isNullOrBlank()) "$DATA_BASE_URL$imgFile" else null
-
-        result.add(
-          SimpleUxDirectoryGroup(
-            name = name,
-            description = desc,
-            link = link,
-            category = category,
-            members = membersStr,
-            imageUrl = imgUrl
-          )
-        )
       }
-    } catch (e: Exception) {
-      Log.e(TAG, "Error parsing directory JSON: ${e.message}")
+      val description = if (desc.isBlank()) {
+        null // localized default description substituted at render time
+      } else {
+        // Clean up first line or rules for concise display
+        desc.lines().firstOrNull { it.isNotBlank() && !it.startsWith("Link to join") } ?: desc.trim()
+      }
+
+      // Extract category / type
+      val entryTypeObj = entry["entryType"]?.jsonObject
+      val typeStr = entryTypeObj?.get("groupType")?.jsonPrimitive?.content
+        ?: entryTypeObj?.get("type")?.jsonPrimitive?.content
+        ?: "group"
+      val isChannel = typeStr.lowercase() == "channel"
+
+      // Extract members
+      val summaryObj = entryTypeObj?.get("summary")?.jsonObject
+      val parsedMembersCount = summaryObj?.get("currentMembers")?.jsonPrimitive?.content?.toIntOrNull()
+        ?: summaryObj?.get("members")?.jsonPrimitive?.content?.toIntOrNull()
+      val membersCount = parsedMembersCount?.takeIf { it > 0 }
+
+      val imgFile = entry["imageFile"]?.jsonPrimitive?.content
+      val imgUrl = if (!imgFile.isNullOrBlank()) "$DATA_BASE_URL$imgFile" else null
+
+      result.add(
+        SimpleUxDirectoryEntry(
+          name = name,
+          link = link,
+          description = description,
+          isChannel = isChannel,
+          membersCount = membersCount,
+          imageUrl = imgUrl
+        )
+      )
     }
-    return result
+  } catch (e: Exception) {
+    Log.e(TAG, "Error parsing directory JSON: ${e.message}")
   }
+  return result
 }
