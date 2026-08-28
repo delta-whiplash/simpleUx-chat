@@ -1,171 +1,188 @@
-# AGENTS.md — Developer & AI Agent Guide for SimpleUX Chat
+# Instructions for AI agents (and humans) — SimpleUX Chat
 
-Welcome to **SimpleUX Chat**! This document provides essential context, architectural guidelines, coexistence rules, and development instructions for any developer or AI agent working on this codebase.
+Read this file in full before touching anything. It overrides your general
+intuitions about "good git hygiene", "how to close an issue", or "how to
+write idiomatic Compose" — these rules are specific to this project and its
+history. **Every rule cites the incident that created it. All of them have
+already been violated and paid for.** Full context:
+`plans/2026-08-28-project-status-audit.md`.
 
----
+## 0. What this project is
 
-## 1. Project Vision & Core Philosophy
+SimpleUX is a **frontend-only** fork of simplex-chat: same protocol, same
+Haskell core, same network behavior, radically better UX. "Uncompromising
+privacy meets world-class user experience." It must coexist side-by-side
+with the official SimpleX app on the same device. The Haskell core
+(`libsimplex`/`libapp`) and JNI/FFI bridge are the stable, authoritative
+backend layer — our playground is the frontend: Kotlin Multiplatform /
+Compose (`apps/multiplatform/`) today, iOS later.
 
-### 1.1 What is SimpleUX Chat?
-SimpleUX Chat is an interface-first fork of **SimpleX Chat** — the first messaging platform with no user identifiers of any kind (100% private and metadata-free by design).
+## 1. Non-negotiable invariants
 
-While the underlying SimpleX protocol and Haskell backend are cryptographic masterclasses, the user experience and UI have historically had a high learning curve and visual friction.
+- **Frontend-only. Never touch the backend.** No changes to Haskell code,
+  JNI/FFI signatures (`Core.kt`), wire formats, serialization, or crypto.
+  100% interoperability with official SimpleX clients is the reason this
+  fork may exist. An issue that seems to require native/Rust/C++/GHC-RTS
+  work (#48–#51) lives in milestone **M5 Icebox** — escalate, don't
+  implement.
+- **The model layer is byte-frozen.** `model/SimpleXAPI.kt` must remain
+  byte-identical to upstream. UI preference *defaults* are changed in the
+  UI layer, never by flipping `AppPreferences`/`AppSettings` defaults.
+  → Violated twice: issue #5 (oneHandUI flip, cost a full remediation),
+  then again 6 days later in wave-3 (chatItemRoundness/chatItemTail, #60).
+  If you find yourself editing SimpleXAPI.kt for cosmetics, the approach
+  is wrong.
+- **Coexistence identity is fixed:** applicationId `chat.simplex.ux`,
+  provider authority `chat.simplex.ux.provider`, `simplex-ux`/`simpleux`
+  schemes. Never reintroduce anything that collides with
+  `chat.simplex.app`.
 
-**The Mission of SimpleUX:**
-> **"Uncompromising privacy meets world-class user experience."**  
-> We completely overhaul and modernize the frontend user interface, navigation, micro-interactions, and visual design while keeping the backend core, encryption protocols, and network compatibility 100% intact.
+## 2. Before starting any task
 
-### 1.2 Non-Negotiable Core Tenets
+1. **Check the tracker first**
+   (`gh issue list -R delta-whiplash/simpleUx-chat`): is an issue already
+   covering what you're about to do? Is another session already on it?
+   Comment/assign before working. Two sessions worked this tracker
+   simultaneously on 2026-08-28 and one silently re-closed an issue the
+   other had reopened with evidence (#13).
+2. **One session = one checkout.** Run `git status` before and during
+   work. If the tree is dirty with a wave you didn't create, or another
+   agent is active on this clone, **stop and coordinate instead of
+   layering work**.
+3. **`gh` commands ALWAYS carry `-R delta-whiplash/simpleUx-chat`.**
+   Without it, gh resolves to **upstream** `simplex-chat/simplex-chat` —
+   on 2026-08-28 this posted a comment on an unrelated upstream issue
+   (deleted within the minute, but still). Repo-less `gh api` calls must
+   use full `repos/delta-whiplash/...` paths too.
+4. **Scope comes from milestones M1–M6** (on GitHub). Don't invent new
+   scope; file an issue and let the human triage it.
 
-1. **100% Protocol & Network Compatibility:**
-   - SimpleUX users MUST be able to seamlessly communicate with users on official SimpleX clients (Android, iOS, Desktop, CLI).
-   - All standard SimpleX features (1-to-1 chats, private groups, SMP servers, XFTP file transfers, audio/video calls, bots, hidden profiles) must remain fully interoperable.
-   - NEVER alter wire formats, serialization protocols, or cryptographic invariants.
+## 3. Truth rules (tracker, commits, docs)
 
-2. **Frontend-Only Scope:**
-   - The Haskell core engine (`libsimplex` / `libapp`) and JNI/FFI bindings are treated as the stable, authoritative backend layer.
-   - Our primary development playground is the **Frontend Layer**: Kotlin Multiplatform / Jetpack Compose Multiplatform (`apps/multiplatform/`) and Swift / SwiftUI (`apps/ios/`).
+This is the project's biggest failure class. The tracker must say what the
+code says.
 
-3. **Coexistence on the Same Device:**
-   - SimpleUX is explicitly engineered to **coexist** alongside the official SimpleX app on a user's phone or computer.
-   - Users should be able to run both apps simultaneously to test, migrate, or use different profiles without namespace, data, or package collisions.
+- **Close an issue only with the fixing commit hash + a one-line code
+  verification (file:line).** "Implemented" without a hash is a false
+  closure. On 2026-08-18, fourteen issues were closed without the matching
+  code existing anywhere (#6, #7, #8, #10, #12, #14, #15, #16, #17, #24,
+  #29, #36, #37, #45) — several had literally no code, ever.
+- **Re-closing an issue after an evidence-based reopen requires a commit
+  link.** A silent re-close gets reopened, with an escalating note (#13).
+- **README claims must be grep-able in code.** No feature, suffix, badge,
+  or benchmark documented that a search can't verify. The README advertised
+  "swipe-to-reply" (no such gesture exists), a `.debug` suffix (defaults
+  to `""`), and "Tests 100% Passing" (no fork CI existed) — #62.
+- **Commit messages are scope-honest.** `feat: complete i18n localization
+  across all languages` that touched 5 of ~40 locales is a lie in the git
+  log forever (e785d3ac9). State the exact scope: files, locales, screens.
+- **Never reference artifacts that don't exist.** No citing commits, CI
+  files, or plan docs you haven't verified. Issue #4 cited commit
+  `3ca7108` while that commit was unreachable from any remote — broken
+  work nearly counted as "done" because a comment said so.
 
----
+## 4. Git & session process
 
-## 2. Architecture Overview
+- **Working tree ends every session clean-ish.** Commit coherent work, or
+  stash with a descriptive message, or explicitly hand off in the session
+  summary. A "wave" of uncommitted edits that silently crosses days is how
+  trust incidents happen — wave-3 sat 8 days, including model-layer edits
+  (#60).
+- **All session work lands on `stable`, or on a branch merged within the
+  same session.** No branch holds unique work past the session that
+  created it. The `claude/code-ambitions-analysis-0opfll` branch diverged
+  for 6 days and its existence was only discovered by accident — unmerged
+  work is lost work.
+- **Push only when the human asks.** Local `stable` is the integration
+  line; origin is updated deliberately.
+- **Migration discipline:** any gate on `lastMigration < N` requires
+  bumping `android.versionCode` to a value **greater than N**. A migration
+  gated `< 366` while versionCode is already 366 never runs for exactly
+  the users it targets (#60). Also: no stray debug comments in committed
+  code (`// LALAL VERSION CODE` was about to ship in wave-3).
+- **One commit = one coherent topic.** No mixing a feature drop, a config
+  change, and three unrelated bugfixes in one commit (c13d3997a carries
+  six features).
 
-SimpleUX inherits SimpleX's multi-tier architecture, maintaining clear boundaries between UI, application state, FFI bridge, and Haskell core:
+## 5. Code rules
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                     SimpleUX Compose UI / SwiftUI                       │
-│  • Modernized Themes (Color, Shape, Typography, Glassmorphism)          │
-│  • Redesigned Views (ChatList, ChatView, MediaPreview, Settings, etc.)  │
-│  • Fluid Gestures, Micro-animations & Streamlined Onboarding            │
-└─────────────────────────────────────────────────────────────────────────┘
-                                   │  ▲
-             User Interactions     │  │  State Flows / Recomposition
-                                   ▼  │
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        Application Logic Layer                          │
-│  • ChatModel (State container, reactive StateFlows)                     │
-│  • ChatController (API dispatch, command queuing, event handlers)       │
-│  • AppPreferences, NotificationManager, ThemeManager                    │
-└─────────────────────────────────────────────────────────────────────────┘
-                                   │  ▲
-                   sendCmd()       │  │  recvMsg() / processReceivedMsg()
-                                   ▼  │
-┌─────────────────────────────────────────────────────────────────────────┐
-│                   JNI / C FFI Bridge (Core.kt / C)                      │
-│  • external fun chatSendCmdRetry()   external fun chatRecvMsgWait()     │
-└─────────────────────────────────────────────────────────────────────────┘
-                                   │  ▲
-                     C Foreign Function Interface (FFI)
-                                   ▼  │
-┌─────────────────────────────────────────────────────────────────────────┐
-│                     Haskell Core (libsimplex / libapp)                  │
-│  • Double-ratchet E2EE, SMP queues, XFTP transfers, SQLite DB           │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+- **`views/ux/` is the SimpleUX layer.** New composables live there:
+  parameterized, side-effect-free, actions via callbacks, **no
+  `= ChatModel` default parameters, no global mutable singletons** (#9).
+  Components must be constructible in isolation (preview/test).
+- **Extraction, not rewrite.** Upstream's high-churn files carry a diff
+  budget: `ChatListView.kt` target < ~120 lines vs upstream (it sat at
+  +1,163 across 25 hunks — every upstream touch becomes a conflict, #4).
+  Keep uncalled upstream composables in place as merge buffer instead of
+  deleting them opportunistically.
+- **One accent system. Tokens only.** No new raw `0xFF…` literals in view
+  code — use `ui/theme/Color.kt` tokens + `MaterialTheme`. The token file
+  existed with **zero usages** while views accumulated 470+ literals and 4
+  accent families (#16). Gold is `AmberGold`, not a new hex per file.
+- **No hardcoded user-visible strings.** Everything through `MR.strings`
+  (English base + French). French literals in code are bugs regardless of
+  how they look (#19). New MR keys must not desync existing locale files.
+- **No fake affordances.** Every visible control must be wired to real
+  behavior. Speed toggles that don't change playback (#13) or relay panels
+  that present fixed labels as live status (#22) are trust bugs, not UX
+  debt. If content is illustrative, it must say so on screen.
+- **Delete dead code; don't accumulate it.** No unreferenced copies kept
+  "for later" (#12: dead `ChatListSearchBar`, dead `VoiceLayout`, four
+  uncalled upstream composables). No unreferenced resource bytes — 14 MB
+  of dead fonts plus an `Inter` alias that actually loads PlusJakartaSans
+  shipped for weeks (#17).
+- **Design language is Luxury Mineral** — follow
+  `.agents/skills/simpleux-design-system/SKILL.md`. Don't invent a second
+  glass/surface system; consolidate into the existing one (#15).
 
-### 2.1 Key Codebase Locations
+## 6. Validation gates (before claiming anything works)
 
-| Directory / Path | Platform / Component | Purpose |
-|---|---|---|
-| `apps/multiplatform/` | Android + Desktop (KMP) | Kotlin Multiplatform app using Compose Multiplatform. |
-| `apps/multiplatform/common/` | Shared KMP Code | Shared UI (`views/`), state (`model/`), design system (`ui/theme/`), and platform bridge (`platform/`). |
-| `apps/multiplatform/android/` | Android App Container | Android application entry point, manifest, Android-specific services and activities. |
-| `apps/multiplatform/desktop/` | Desktop App Container | JVM desktop entry point, distribution packaging, native desktop windowing. |
-| `apps/ios/` | iOS Native App | Native iOS client in Swift / SwiftUI / UIKit. |
-| `src/Simplex/Chat/` | Haskell Core Engine | Core chat logic, database migrations, cryptographic double-ratchet, SMP/XFTP protocol handling. |
-| `apps/simplex-chat/` | CLI Terminal Client | Standalone console client for Linux, macOS, and Windows. |
-| `plans/` | Architectural Plans | Design documents and technical roadmaps. |
+- **Kotlin compile is the floor.**
+  `JAVA_HOME=/c/Users/Delta/jdk-21/jdk-21.0.5+11 ./gradlew :common:compileKotlinDesktop`
+  must be green before any commit. For `androidMain` changes:
+  `:common:compileDebugKotlinAndroid`. (cmake fails in Git Bash — don't
+  chase full APK builds from the CLI.)
+- **Fix the bug where it lives.** Before declaring a bug fixed, reproduce
+  it — or at minimum verify the fix touches the platform/file where it
+  reproduces. Two commits "fixed" the chat-list white bar by removing a
+  desktop-only divider and a chat-view card divider; the Android list
+  never rendered either (#58).
+- **UI work gets eyes on it.** The human runs an emulator live
+  (emulator-5554) — coordinate before capturing. No "fixed" claim without
+  either a reproduction match or his visual confirmation.
+- **A bug stays open until the fix is confirmed on-device**, even when the
+  commit looks right. Interim findings and candidate root causes go in
+  issue comments, not closure claims.
 
----
+## 7. Out of scope — do not improvise
 
-## 3. Coexistence Strategy & App Identity
+If a task seems to require one of these, stop and raise it instead:
 
-To allow SimpleUX to be installed side-by-side with official SimpleX on Android and iOS:
+- Native/runtime changes of any kind (Rust, C++, SIMD, GHC RTS, IPC
+  bridges) — M5 Icebox, explicitly deferred
+- Gamification wishlist items (streaks, animated wallpapers, scheduled
+  messages…) — they exist as issues; implementation needs a human go
+- iOS identity work (bundle id, app groups) — starts with M4 and requires
+  macOS/Xcode anyway
+- New themes, new glass systems, new accent palettes — #15/#16 exist to
+  *reduce* this surface, not grow it
 
-### 3.1 Android Identity
-- **Application ID:** `chat.simplex.ux` (or debug suffix `chat.simplex.ux.debug`)
-- **App Name:** `SimpleUX` / `SimpleUX Chat`
-- **Content Provider Authorities:** `chat.simplex.ux.provider` (must never collide with `chat.simplex.app.provider`)
-- **Database & Storage Paths:** Isolated sandbox directory created by Android OS under the unique package namespace.
-- **Deep Links & Schemes:** Custom URL scheme handlers configured to avoid hijacking official app intents while supporting direct links.
+## 8. When unsure
 
-### 3.2 iOS Identity
-- **Bundle Identifier:** `chat.simplex.ux`
-- **App Display Name:** `SimpleUX`
-- **App Group / Keychain Sharing:** Dedicated `group.chat.simplex.ux` app groups and isolated keychain access groups.
+Comment on the GitHub issue (English; always with `-R`!) rather than
+guessing and implementing a broad interpretation. The human reads comments
+regularly and answers in French. Asking is cheaper than a reverted feature.
 
----
+## Quick reference
 
-## 4. UI/UX Modernization Focus Areas
-
-When contributing to SimpleUX, prioritize the following user experience enhancements:
-
-### 4.1 Visual Hierarchy & Design System
-- **Modern Color Palettes & Contrast:** Rich dark modes (deep charcoal/slate with vibrant accents), accessible light modes, and dynamic Material You / expressive themes.
-- **Typography & Readability:** Clean, modern font pairings with clear hierarchy between message body, metadata timestamps, sender names, and status indicators.
-- **Fluid Micro-Interactions:** Smooth spring animations for message sends, swipe-to-reply, reaction pickers, and transition effects between screens.
-
-### 4.2 Chat List & Navigation
-- **Gesture-Driven Interactions:** Smooth swipe actions for pin, archive, mute, and mark-as-read.
-- **Visual Status Badges:** Unobtrusive, clear delivery receipts (sent, delivered, read) and active call indicators.
-- **Contextual Search & Filters:** Instant filtering by unread, groups, contacts, or media.
-
-### 4.3 Chat View & Media Experience
-- **Bubble Ergonomics:** Modern, rounded message bubbles with clear separation between incoming and outgoing messages.
-- **Rich Media & Audio Player:** Polished inline audio waveforms with scrubber for voice notes, full-bleed media galleries, and snappy image previews.
-- **Reply & Quote Context:** Clean, compact quote boxes that quickly jump to referenced messages.
-
-### 4.4 Approachable Onboarding
-- **Zero-Friction First Run:** Friendly, welcoming onboarding explaining zero-metadata privacy in simple, human terms without overwhelming cryptographic jargon.
-- **Instant Connection Sharing:** Quick QR code display, animated scan viewfinder, and single-tap copyable connection links.
-
----
-
-## 5. Development & Build Workflows
-
-### 5.1 Prerequisites
-- **Android / Desktop:** JDK 17+, Android SDK (API 35), NDK (23.1+), CMake.
-- **iOS:** macOS with Xcode 15+, CocoaPods / Swift Package Manager.
-- **Haskell (Core Development, optional):** GHC 9.4+, Cabal 3.8+.
-
-### 5.2 Common Build Commands
-
-```bash
-# Navigate to multiplatform module
-cd apps/multiplatform
-
-# Build Android Debug APK (FOSS flavor)
-./gradlew assembleFossDebug
-
-# Build Android Release APK
-./gradlew assembleFossRelease
-
-# Package Desktop distribution for current OS (Windows MSI/EXE, macOS DMG, Linux DEB)
-./gradlew :desktop:packageDistributionForCurrentOS
-
-# Run JVM / Desktop tests
-./gradlew desktopTest
-
-# Run all code formatting / resource validation
-./gradlew adjustFormatting
-```
-
----
-
-## 6. Guidelines for AI Agents
-
-1. **Check Existing Specs & Documentation:**
-   - Consult `apps/multiplatform/product/` and `apps/multiplatform/spec/` before implementing complex features.
-   - When modifying UI views, ensure state flows in `ChatModel.kt` and `ChatController.kt` are respected.
-2. **Preserve Native Core Integration:**
-   - Do NOT modify JNI signatures in `Core.kt` unless explicitly paired with corresponding Haskell FFI changes.
-   - Handle all asynchronous core events via existing coroutine streams (`chatRecvMsgWait` dispatcher).
-3. **Maintain Clean Code & Diffs:**
-   - Write idiomatic Kotlin and Compose code.
-   - Avoid massive reorganizations of unrelated legacy files to ensure smooth upstream merges and clean git history.
-   - Test UI responsiveness on both portrait mobile and multi-window desktop layouts.
+| Thing | Value |
+|---|---|
+| Repo / tracker | `delta-whiplash/simpleUx-chat` (fork of `simplex-chat/simplex-chat`) |
+| Integration branch | `stable` (commit directly; push on request) |
+| Main code | `apps/multiplatform/common/src/commonMain/kotlin/chat/simplex/common/` |
+| SimpleUX layer | `.../views/ux/` (see its `README.md` for layering rules) |
+| Roadmap | GitHub milestones M1–M6 |
+| Design system | `.agents/skills/simpleux-design-system/SKILL.md` |
+| Latest full audit | `plans/2026-08-28-project-status-audit.md` |
+| Build checks | `:common:compileKotlinDesktop` / `:common:compileDebugKotlinAndroid` (JDK 21, see §6) |
+| Android identity | `chat.simplex.ux` · provider `chat.simplex.ux.provider` |
