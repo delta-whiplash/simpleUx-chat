@@ -22,12 +22,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.Chat
-import chat.simplex.common.model.ChatModel
 import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.isInDarkTheme
-import chat.simplex.common.views.chatlist.markChatRead
-import chat.simplex.common.views.chatlist.markChatUnread
-import chat.simplex.common.views.chatlist.toggleChatFavorite
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -42,13 +38,15 @@ fun SwipeableChatCard(
     onClick: (() -> Unit)? = null,
     onToggleRead: ((Chat) -> Unit)? = null,
     onToggleFavorite: ((Chat) -> Unit)? = null,
+    isStarred: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val offsetX = remember { Animatable(0f) }
     val isDark = isInDarkTheme()
     val isUnread = chat.unreadTag || chat.chatStats.unreadCount > 0
-    val isFavorite = chat.chatInfo.chatSettings?.favorite == true
+    // Real starred state is passed in by the caller (ChatModel.starredChatIds), never local fake state
+    val isFavorite = isStarred
 
     val threshold = 90f
 
@@ -128,6 +126,7 @@ fun SwipeableChatCard(
                     }
                 }
                 .draggable(
+                    enabled = onToggleRead != null || onToggleFavorite != null,
                     orientation = Orientation.Horizontal,
                     state = rememberDraggableState { delta ->
                         coroutineScope.launch {

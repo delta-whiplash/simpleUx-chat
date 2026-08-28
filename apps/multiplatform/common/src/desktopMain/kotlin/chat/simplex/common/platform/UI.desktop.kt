@@ -15,7 +15,7 @@ actual fun LockToCurrentOrientationUntilDispose() {}
 actual fun LocalMultiplatformView(): Any? = null
 
 @Composable
-actual fun getKeyboardState(): State<KeyboardState> = remember { mutableStateOf(KeyboardState.Opened) }
+actual fun getKeyboardState(): State<KeyboardState> = remember { mutableStateOf(KeyboardState.Closed) }
 actual fun hideKeyboard(view: Any?, clearFocus: Boolean) {}
 
 actual fun androidIsFinishingMainActivity(): Boolean = false

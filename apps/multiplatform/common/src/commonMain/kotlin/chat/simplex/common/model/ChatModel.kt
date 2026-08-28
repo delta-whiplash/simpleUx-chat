@@ -149,7 +149,9 @@ object ChatModel {
   val unreadTags = mutableStateMapOf<Long, Int>()
 
   // SimpleUX Starred / Favorites State
-  val starredChatIds = mutableStateListOf<String>()
+  // Chat stars are persisted locally via StarredChatsPrefs and seeded at startup;
+  // message stars stay in-memory for now.
+  val starredChatIds = mutableStateListOf<String>().also { it.addAll(StarredChatsPrefs.loadStarredChatIds()) }
   val starredMessageIds = mutableStateListOf<Long>()
 
   fun toggleStarChat(chatId: String) {
@@ -158,6 +160,7 @@ object ChatModel {
     } else {
       starredChatIds.add(chatId)
     }
+    StarredChatsPrefs.saveStarredChatIds(starredChatIds)
   }
 
   fun toggleStarMessage(messageId: Long) {
