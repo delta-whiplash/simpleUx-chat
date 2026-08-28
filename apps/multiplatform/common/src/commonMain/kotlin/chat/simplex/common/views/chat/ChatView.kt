@@ -1530,7 +1530,10 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
           cInfo.displayName, cInfo.nameBadge, fontWeight = FontWeight.Bold,
           maxLines = 1, overflow = TextOverflow.Ellipsis
         )
-        val currentChat = remember(cInfo.id) { chatModel.chats.value.firstOrNull { it.chatInfo.id == cInfo.id } }
+        // Read the chats State directly in composition so the badge recomposes when the
+        // chats snapshot changes (verification, connection, members). Caching this lookup
+        // in remember keyed on the immutable chat id froze it on stale state (#10).
+        val currentChat = chatModel.chats.value.firstOrNull { it.chatInfo.id == cInfo.id }
         Spacer(Modifier.width(6.dp))
         SecurityBadge(chat = currentChat)
       }
