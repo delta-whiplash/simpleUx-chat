@@ -185,8 +185,6 @@ private fun ToolbarSegment(
   }
 }
 
-val LocalSimpleUxTab = compositionLocalOf<MutableState<SimpleUxTab>> { mutableStateOf(SimpleUxTab.CHATS) }
-
 // Spec: spec/client/chat-list.md#ChatListView
 @Composable
 fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<AnimatedViewState>, setPerformLA: (Boolean) -> Unit, stopped: Boolean) {
@@ -216,113 +214,23 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   val searchText = rememberSaveable(stateSaver = TextFieldValue.Saver) { mutableStateOf(TextFieldValue("")) }
   val searchVisible = rememberSaveable { mutableStateOf(false) }
   val listState = rememberLazyListState(lazyListState.first, lazyListState.second)
-  val keyboardState by getKeyboardState()
   DisposableEffect(Unit) {
     onDispose {
       lazyListState = listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset
     }
   }
-  val scope = rememberCoroutineScope()
-  val showProfileSwitcherPopup = remember { mutableStateOf(false) }
-  val quickCameraConnectFilter = remember { mutableStateOf(emptySet<String>()) }
-
-  CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
-    Box(Modifier.fillMaxSize()) {
-      AnimatedContent(
-        targetState = currentTab.value,
-        transitionSpec = {
-          fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing)) +
-            scaleIn(initialScale = 0.96f, animationSpec = tween(220, easing = FastOutSlowInEasing)) togetherWith
-            fadeOut(animationSpec = tween(180))
-        },
-        modifier = Modifier.fillMaxSize()
-      ) { tab ->
-        when (tab) {
-          SimpleUxTab.CHATS -> {
-            ChatListWithLoadingScreen(searchText, searchVisible, listState, userPickerState, setPerformLA, stopped)
-          }
-          SimpleUxTab.CONTACTS -> {
-            if (appPlatform.isAndroid) {
-              BackHandler { currentTab.value = SimpleUxTab.CHATS }
-            }
-            val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
-            Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
-              val modalData = remember { ModalData() }
-              modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
-            }
-          }
-          SimpleUxTab.SETTINGS -> {
-            if (appPlatform.isAndroid) {
-              BackHandler { currentTab.value = SimpleUxTab.CHATS }
-            }
-            val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
-            Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
-              SettingsView(chatModel, setPerformLA, close = { currentTab.value = SimpleUxTab.CHATS })
-            }
-          }
-        }
-      }
-
-    if (keyboardState == KeyboardState.Closed && searchText.value.text.isEmpty() && !searchVisible.value) {
-      TelegramBottomIslandBar(
-        currentTab = currentTab.value,
-        onSelectTab = { tab ->
-          ModalManager.start.closeModals()
-          currentTab.value = tab
-        },
-        onProfileLongClick = {
-          showProfileSwitcherPopup.value = true
-        },
-        userPickerState = userPickerState,
-        setPerformLA = setPerformLA,
-        onChatsClick = {
-          if (listState.firstVisibleItemIndex != 0) {
-            scope.launch { listState.animateScrollToItem(0) }
-          } else {
-            chatModel.activeChatTagFilter.value = null
-            searchText.value = TextFieldValue("")
-          }
-        },
-      onOpenCamera = if (appPlatform.isAndroid) {
-        {
-          openQuickCameraSheet(
-            onPhotoCaptured = { uri ->
-              // Reuses the same cross-chat hand-off as Android's system share-into-SimpleX
-              // flow: setting sharedContent swaps this screen for ShareListView (App.kt's
-              // StartPartOfScreen), which already knows how to pick a chat and attach media.
-              // (The camera button lives on the chat-LIST screen, not inside an open
-              // conversation -- ChatView slides over this screen on mobile -- so there is no
-              // "currently active chat" to silently attach to; picking one is the real flow.)
-              chatModel.sharedContent.value = SharedContent.Media(text = "", uris = listOf(uri))
-            },
-            onQrCode = { link ->
-              val target = strConnectTarget(link.trim())
-              if (target is ConnectTarget.Link) {
-                connect(target.text, quickCameraConnectFilter) {}
-                true
-              } else {
-                false
-              }
-            }
-          )
-        }
-      } else null
-    )
+  SimpleUxTabHost(
+    chatModel = chatModel,
+    currentTab = currentTab,
+    searchText = searchText,
+    searchVisible = searchVisible,
+    listState = listState,
+    userPickerState = userPickerState,
+    setPerformLA = setPerformLA,
+    chatsTab = {
+      ChatListWithLoadingScreen(searchText, searchVisible, listState, userPickerState, setPerformLA, stopped)
     }
-
-    ProfileSwitcherOverlay(
-      chatModel = chatModel,
-      show = showProfileSwitcherPopup.value,
-      onDismiss = { showProfileSwitcherPopup.value = false },
-      onNavigateToProfile = {
-        showProfileSwitcherPopup.value = false
-        currentTab.value = SimpleUxTab.SETTINGS
-      }
-    )
-
-    ThemeCircularRevealOverlay()
-    }
-  }
+  )
 
   if (searchText.value.text.isEmpty()) {
     if (appPlatform.isDesktop && !oneHandUI.value) {

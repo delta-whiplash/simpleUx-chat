@@ -2,6 +2,7 @@ package chat.simplex.common.views.ux
 
 import LocalCardScreen
 import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -51,6 +52,7 @@ import chat.simplex.common.views.onboarding.*
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServersView
 import chat.simplex.common.views.ux.components.*
+import chat.simplex.common.views.ux.camera.openQuickCameraSheet
 import chat.simplex.common.views.ux.modals.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
@@ -374,6 +376,127 @@ fun TelegramTopHeader(
 
 enum class SimpleUxTab {
   CHATS, CONTACTS, SETTINGS
+}
+
+val LocalSimpleUxTab = compositionLocalOf<MutableState<SimpleUxTab>> { mutableStateOf(SimpleUxTab.CHATS) }
+
+// Extracted verbatim from ChatListView.kt (issue #4): the tab-switch host of the chat-list screen.
+// The fork-owned state (current tab, search visibility, profile-switcher popup, quick-camera filter)
+// stays owned by the caller in ChatListView.kt and is passed in; only the CHATS tab content differs
+// per call site, so it arrives as the chatsTab slot.
+@Composable
+fun SimpleUxTabHost(
+  chatModel: ChatModel,
+  currentTab: MutableState<SimpleUxTab>,
+  searchText: MutableState<TextFieldValue>,
+  searchVisible: MutableState<Boolean>,
+  listState: LazyListState,
+  userPickerState: MutableStateFlow<AnimatedViewState>,
+  setPerformLA: (Boolean) -> Unit,
+  chatsTab: @Composable BoxScope.() -> Unit
+) {
+  val keyboardState by getKeyboardState()
+  val scope = rememberCoroutineScope()
+  val showProfileSwitcherPopup = remember { mutableStateOf(false) }
+  val quickCameraConnectFilter = remember { mutableStateOf(emptySet<String>()) }
+
+  CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
+    Box(Modifier.fillMaxSize()) {
+      AnimatedContent(
+        targetState = currentTab.value,
+        transitionSpec = {
+          fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing)) +
+            scaleIn(initialScale = 0.96f, animationSpec = tween(220, easing = FastOutSlowInEasing)) togetherWith
+            fadeOut(animationSpec = tween(180))
+        },
+        modifier = Modifier.fillMaxSize()
+      ) { tab ->
+        when (tab) {
+          SimpleUxTab.CHATS -> {
+            chatsTab()
+          }
+          SimpleUxTab.CONTACTS -> {
+            if (appPlatform.isAndroid) {
+              BackHandler { currentTab.value = SimpleUxTab.CHATS }
+            }
+            val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
+            Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
+              val modalData = remember { ModalData() }
+              modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
+            }
+          }
+          SimpleUxTab.SETTINGS -> {
+            if (appPlatform.isAndroid) {
+              BackHandler { currentTab.value = SimpleUxTab.CHATS }
+            }
+            val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
+            Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
+              SettingsView(chatModel, setPerformLA, close = { currentTab.value = SimpleUxTab.CHATS })
+            }
+          }
+        }
+      }
+
+      if (keyboardState == KeyboardState.Closed && searchText.value.text.isEmpty() && !searchVisible.value) {
+        TelegramBottomIslandBar(
+          currentTab = currentTab.value,
+          onSelectTab = { tab ->
+            ModalManager.start.closeModals()
+            currentTab.value = tab
+          },
+          onProfileLongClick = {
+            showProfileSwitcherPopup.value = true
+          },
+          userPickerState = userPickerState,
+          setPerformLA = setPerformLA,
+          onChatsClick = {
+            if (listState.firstVisibleItemIndex != 0) {
+              scope.launch { listState.animateScrollToItem(0) }
+            } else {
+              chatModel.activeChatTagFilter.value = null
+              searchText.value = TextFieldValue("")
+            }
+          },
+          onOpenCamera = if (appPlatform.isAndroid) {
+            {
+              openQuickCameraSheet(
+                onPhotoCaptured = { uri ->
+                  // Reuses the same cross-chat hand-off as Android's system share-into-SimpleX
+                  // flow: setting sharedContent swaps this screen for ShareListView (App.kt's
+                  // StartPartOfScreen), which already knows how to pick a chat and attach media.
+                  // (The camera button lives on the chat-LIST screen, not inside an open
+                  // conversation -- ChatView slides over this screen on mobile -- so there is no
+                  // "currently active chat" to silently attach to; picking one is the real flow.)
+                  chatModel.sharedContent.value = SharedContent.Media(text = "", uris = listOf(uri))
+                },
+                onQrCode = { link ->
+                  val target = strConnectTarget(link.trim())
+                  if (target is ConnectTarget.Link) {
+                    connect(target.text, quickCameraConnectFilter) {}
+                    true
+                  } else {
+                    false
+                  }
+                }
+              )
+            }
+          } else null
+        )
+      }
+
+      ProfileSwitcherOverlay(
+        chatModel = chatModel,
+        show = showProfileSwitcherPopup.value,
+        onDismiss = { showProfileSwitcherPopup.value = false },
+        onNavigateToProfile = {
+          showProfileSwitcherPopup.value = false
+          currentTab.value = SimpleUxTab.SETTINGS
+        }
+      )
+
+      ThemeCircularRevealOverlay()
+    }
+  }
 }
 
 @Composable
