@@ -40,7 +40,6 @@
     <string name="allow_to_send_disappearing">Salli katoavien viestien lähettäminen.</string>
     <string name="v5_1_self_destruct_passcode_descr">Kaikki tiedot poistetaan, kun se syötetään.</string>
     <string name="settings_section_title_icon">Sovelluksen kuvake</string>
-    <string name="full_backup">Sovelluksen tietojen varmuuskopiointi</string>
     <string name="settings_section_title_calls">Puhelut</string>
     <string name="icon_descr_video_asked_to_receive">Pyydettiin videon vastaanottamista</string>
     <string name="la_authenticate">Tunnistaudu</string>
@@ -50,7 +49,6 @@
     <string name="connection_timeout">Yhteyden aikakatkaisu</string>
     <string name="contact_preferences">Kontaktin asetukset</string>
     <string name="continue_to_next_step">Jatka</string>
-    <string name="create_address_and_let_people_connect">Luo osoite, jolla ihmiset voivat ottaa sinuun yhteyttä.</string>
     <string name="database_encryption_will_be_updated">Tietokannan salauksen tunnuslause päivitetään ja tallennetaan Keystoreen.</string>
     <string name="users_delete_profile_for">Poista keskusteluprofiili käyttäjälle</string>
     <string name="deleted_description">poistettu</string>
@@ -71,7 +69,6 @@
     <string name="notification_contact_connected">Yhdistetty</string>
     <string name="delete_member_message__question">Poista jäsenviesti\?</string>
     <string name="auth_device_authentication_is_not_enabled_you_can_turn_on_in_settings_once_enabled">Laitteen todennus ei ole käytössä. Voit ottaa SimpleX Lockin käyttöön asetuksista, kun olet ottanut laitteen todennuksen käyttöön.</string>
-    <string name="chat_with_developers">Keskustele kehittäjien kanssa</string>
     <string name="maximum_supported_file_size">Nykyinen tuettu enimmäistiedostokoko on %1$s.</string>
     <string name="delete_contact_question">Poista kontakti\?</string>
     <string name="cancel_verb">Peruuta</string>
@@ -96,7 +93,6 @@
     <string name="connect_via_contact_link">Yhdistetäänkö kontaktilinkin kautta\?</string>
     <string name="connect_via_group_link">Liitytäänkö ryhmään?</string>
     <string name="connect_via_invitation_link">Yhdistetäänkö kutsulinkin kautta\?</string>
-    <string name="connect_via_link_verb">Yhdistä</string>
     <string name="server_connecting">yhdistää</string>
     <string name="simplex_link_mode_description">Kuvaus</string>
     <string name="smp_server_test_connect">Yhdistä</string>
@@ -105,8 +101,6 @@
     <string name="copy_verb">Kopioi</string>
     <string name="image_decoding_exception_title">Dekoodauksen virhe</string>
     <string name="icon_descr_cancel_link_preview">peruuta linkin esikatselu</string>
-    <string name="about_simplex">Tietoja SimpleX:stä</string>
-    <string name="decentralized">Hajautettu</string>
     <string name="icon_descr_audio_off">Ääni pois päältä</string>
     <string name="change_role">Vaihda rooli</string>
     <string name="full_deletion">Poista kaikilta</string>
@@ -195,12 +189,10 @@
     <string name="conn_level_desc_direct">suora</string>
     <string name="disappearing_messages_are_prohibited">Katoavat viestit ovat kiellettyjä tässä ryhmässä.</string>
     <string name="server_connected">yhdistetty</string>
-    <string name="display_name_connecting">yhdistää…</string>
     <string name="display_name_connection_established">yhteys luotu</string>
     <string name="connection_local_display_name">yhteys %1$d</string>
     <string name="smp_server_test_compare_file">Vertaa tiedostoa</string>
     <string name="alert_title_contact_connection_pending">Kontaktia ei ole vielä yhdistetty!</string>
-    <string name="learn_more_about_address">Tietoja SimpleX osoitteesta</string>
     <string name="chat_console">Keskustelukonsoli</string>
     <string name="contribute">Osallistu</string>
     <string name="appearance_settings">Ulkonäkö</string>
@@ -215,13 +207,10 @@
     <string name="chat_is_stopped">Chat on pysähtynyt</string>
     <string name="confirm_new_passphrase">Vahvista uusi tunnuslause…</string>
     <string name="users_delete_question">Poista keskusteluprofiili\?</string>
-    <string name="available_in_v51">"
-\nSaatavilla v5.1:ssä"</string>
     <string name="direct_messages">Yksityisviestit</string>
     <string name="icon_descr_server_status_connected">Yhdistetty</string>
     <string name="confirm_verb">Vahvista</string>
     <string name="use_camera_button">Kamera</string>
-    <string name="create_group">Luo salainen ryhmä</string>
     <string name="accept_contact_incognito_button">Hyväksy tuntematon</string>
     <string name="clear_verb">Tyhjennä</string>
     <string name="clear_chat_button">Tyhjennä keskustelu</string>
@@ -260,10 +249,8 @@
     <string name="la_change_app_passcode">Vaihda pääsykoodi</string>
     <string name="la_current_app_passcode">Nykyinen pääsykoodi</string>
     <string name="icon_descr_cancel_file_preview">Peruuta tiedoston esikatselu</string>
-    <string name="delete_contact_all_messages_deleted_cannot_undo_warning">Kontakti ja kaikki viestit poistetaan - tätä ei voi perua!</string>
     <string name="icon_descr_server_status_disconnected">Katkaistu</string>
     <string name="back">Takaisin</string>
-    <string name="connect_via_link_or_qr">Yhdistä linkillä / QR-koodilla</string>
     <string name="clear_chat_menu_action">Tyhjennä</string>
     <string name="desktop_scan_QR_code_from_app_via_scan_QR_code"><![CDATA[💻 työpöytä: skannaa esitetty QR-koodi sovelluksesta käyttämällä <b>Skannaa QR-koodi</b>.]]></string>
     <string name="delete_pending_connection__question">Poistetaanko odottava yhteys\?</string>
@@ -272,7 +259,6 @@
     <string name="about_simplex_chat">Tietoja SimpleX Chatistä</string>
     <string name="database_passphrase_and_export">Tietokannan tunnuslause ja vienti</string>
     <string name="create_profile">Luo profiili</string>
-    <string name="create_profile_button">Luo</string>
     <string name="no_call_on_lock_screen">Poista käytöstä</string>
     <string name="icon_descr_audio_on">Ääni päällä</string>
     <string name="answer_call">Vastaa puheluun</string>
@@ -298,7 +284,6 @@
     <string name="network_enable_socks_info">Käytetäänkö palvelimia SOCKS-välityspalvelimen kautta portissa %d\? Välityspalvelin on käynnistettävä ennen tämän vaihtoehdon käyttöönottoa.</string>
     <string name="all_your_contacts_will_remain_connected">Kaikki kontaktisi pysyvät yhteydessä.</string>
     <string name="smp_servers_check_address">Tarkista palvelimen osoite ja yritä uudelleen.</string>
-    <string name="create_address">Luo osoite</string>
     <string name="delete_address__question">Poista osoite\?</string>
     <string name="callstatus_ended">puhelu päättyi %1$s</string>
     <string name="callstatus_in_progress">puhelu käynnissä</string>
@@ -346,11 +331,8 @@
     <string name="delete_after">Poista jälkeen</string>
     <string name="ttl_hour">%d tunti</string>
     <string name="custom_time_unit_days">päivää</string>
-    <string name="error_saving_xftp_servers">Virhe XFTP-palvelimien tallentamisessa</string>
     <string name="failed_to_create_user_duplicate_title">Päällekkäinen näyttönimi!</string>
     <string name="failed_to_create_user_title">Virhe profiilin luomisessa!</string>
-    <string name="error_loading_smp_servers">Virhe SMP-palvelimia ladattaessa</string>
-    <string name="error_loading_xftp_servers">Virhe XFTP-palvelimia ladattaessa</string>
     <string name="failed_to_active_user_title">Virhe profiilin vaihdossa!</string>
     <string name="error_joining_group">Virhe ryhmään liittymisessä</string>
     <string name="error_deleting_user">Virhe käyttäjäprofiilin poistamisessa</string>
@@ -377,7 +359,6 @@
     <string name="import_theme">Tuo teema</string>
     <string name="thousand_abbreviation">t</string>
     <string name="server_error">virhe</string>
-    <string name="error_saving_smp_servers">Virhe SMP-palvelimien tallentamisessa</string>
     <string name="simplex_link_mode_full">Koko linkki</string>
     <string name="error_setting_network_config">Virhe verkkoasetuksia päivitettäessä</string>
     <string name="failed_to_parse_chat_title">Keskustelun lataaminen epäonnistui</string>
@@ -386,8 +367,6 @@
     <string name="group_preview_join_as">liity nimellä %s</string>
     <string name="icon_descr_server_status_error">Virhe</string>
     <string name="how_to">Miten</string>
-    <string name="full_name__field">Koko nimi:</string>
-    <string name="how_to_use_markdown">Miten markdownia käytetään</string>
     <string name="incoming_audio_call">Saapuva äänipuhelu</string>
     <string name="incoming_video_call">Saapuva videopuhelu</string>
     <string name="ignore">Sivuuta</string>
@@ -406,7 +385,6 @@
     <string name="encrypted_database">Salattu tietokanta</string>
     <string name="enter_passphrase">Syötä tunnuslause…</string>
     <string name="button_add_members">Kutsu jäseniä</string>
-    <string name="icon_descr_expand_role">Laajenna roolivalinta</string>
     <string name="initial_member_role">Alkuperäinen rooli</string>
     <string name="enter_welcome_message">Kirjoita tervetuloviesti…</string>
     <string name="error_saving_group_profile">Virhe ryhmäprofiilin tallentamisessa</string>
@@ -449,7 +427,6 @@
     <string name="error_changing_role">Virhe roolin vaihdossa</string>
     <string name="ttl_w">%dw</string>
     <string name="v4_6_group_moderation">Ryhmän moderointi</string>
-    <string name="display_name__field">Profiilin nimi:</string>
     <string name="error_starting_chat">Virhe käynnistettäessä keskustelua</string>
     <string name="error_stopping_chat">Virhe keskustelun lopettamisessa</string>
     <string name="error_changing_message_deletion">Virhe asetuksen muuttamisessa</string>
@@ -485,7 +462,6 @@
     <string name="error_accepting_contact_request">Virhe kontaktipyynnön hyväksymisessä</string>
     <string name="error_deleting_contact">Virhe kontaktin poistamisessa</string>
     <string name="smp_server_test_download_file">Lataa tiedosto</string>
-    <string name="error_setting_address">Virhe osoitteen asettamisessa</string>
     <string name="if_you_received_simplex_invitation_link_you_can_open_in_browser">Jos sait SimpleX Chat -kutsulinkin, voit avata sen selaimessasi:</string>
     <string name="smp_servers_enter_manually">Syötä palvelin manuaalisesti</string>
     <string name="how_to_use_your_servers">Miten käytät palvelimiasi</string>
@@ -494,7 +470,6 @@
     <string name="invite_friends">Kutsu ystäviä</string>
     <string name="email_invite_body">Hei!
 \nOta minuun yhteyttä SimpleX Chatin kautta: %s</string>
-    <string name="dont_create_address">Älä luo osoitetta</string>
     <string name="edit_image">Muokkaa kuvaa</string>
     <string name="exit_without_saving">Poistu tallentamatta</string>
     <string name="error_saving_user_password">Virhe käyttäjän salasanan tallentamisessa</string>
@@ -536,7 +511,6 @@
     <string name="v4_6_reduced_battery_usage">Entisestä vähentynyt akun käyttö</string>
     <string name="v5_1_japanese_portuguese_interface">Japanin ja portugalin käyttöliittymä</string>
     <string name="error_saving_file">Virhe tiedoston tallentamisessa</string>
-    <string name="icon_descr_help">apua</string>
     <string name="incorrect_code">Väärä turvakoodi!</string>
     <string name="error_sending_message">Virhe viestin lähettämisessä</string>
     <string name="turn_off_battery_optimization"><![CDATA[Käyttääksesi sitä, <b> salli SimpleX:n toimia taustalla </b> seuraavassa ikkunassa. Muutoin ilmoitukset poistetaan käytöstä.]]></string>
@@ -571,9 +545,6 @@
     <string name="invalid_migration_confirmation">Virheellinen siirtovahvistus</string>
     <string name="dont_show_again">Älä näytä uudelleen</string>
     <string name="gallery_image_button">Kuva</string>
-    <string name="icon_descr_email">Sähköposti</string>
-    <string name="display_name_cannot_contain_whitespace">Näyttönimi ei saa sisältää välilyöntejä.</string>
-    <string name="immune_to_spam_and_abuse">Immuuni roskapostille ja väärinkäytöksille</string>
     <string name="error_exporting_chat_database">Virhe vietäessä keskustelujen tietokantaa</string>
     <string name="user_hide">Piilota</string>
     <string name="section_title_for_console">Konsoliin</string>
@@ -629,7 +600,6 @@
     <string name="set_passcode">Aseta pääsykoodi</string>
     <string name="simplex_link_mode">SimpleX-linkit</string>
     <string name="simplex_link_mode_browser_warning">Linkin avaaminen selaimessa voi heikentää yhteyden yksityisyyttä ja turvallisuutta. Epäluotetut SimpleX-linkit näkyvät punaisina.</string>
-    <string name="ensure_smp_server_address_are_correct_format_and_unique">Varmista, että SMP-palvelinosoitteet ovat oikeassa muodossa, rivieroteltuina ja että ne eivät ole päällekkäisiä.</string>
     <string name="sender_cancelled_file_transfer">Lähettäjä peruutti tiedoston siirron.</string>
     <string name="periodic_notifications">Säännölliset ilmoitukset</string>
     <string name="simplex_service_notification_text">Viestejä vastaanotetaan…</string>
@@ -697,7 +667,6 @@
     <string name="reveal_verb">Paljasta</string>
     <string name="sent_message">Lähetetty viesti</string>
     <string name="only_group_owners_can_enable_voice">Vain ryhmän omistajat voivat ottaa ääniviestit käyttöön.</string>
-    <string name="icon_descr_server_status_pending">Vireillä</string>
     <string name="icon_descr_record_voice_message">Tallenna ääniviesti</string>
     <string name="send_disappearing_message">Lähetä katoava viesti</string>
     <string name="send_live_message">Lähetä live-viesti</string>
@@ -741,7 +710,6 @@
     <string name="select_contacts">Valitse kontaktit</string>
     <string name="skip_inviting_button">Ohita jäsenten kutsuminen</string>
     <string name="info_row_local_name">Paikallinen nimi</string>
-    <string name="button_send_direct_message">Lähetä suora viesti</string>
     <string name="theme_light">Vaalea</string>
     <string name="only_you_can_delete_messages">Vain sinä voit poistaa viestejä peruuttamattomasti (kontaktisi voi merkitä ne poistettavaksi).</string>
     <string name="feature_offered_item">tarjottu %s</string>
@@ -759,7 +727,6 @@
     <string name="database_restore_error">Virhe tietokannan palauttamisessa</string>
     <string name="group_member_status_left">poistunut</string>
     <string name="group_member_role_member">jäsen</string>
-    <string name="markdown_help">Markdown-ohje</string>
     <string name="markdown_in_messages">Markdown viesteissä</string>
     <string name="send_us_an_email">Lähetä meille sähköpostia</string>
     <string name="star_on_github">Tähti GitHubissa</string>
@@ -845,7 +812,6 @@
     <string name="v5_0_polish_interface_descr">Kiitos käyttäjille – osallistu Weblaten kautta!</string>
     <string name="send_verb">Lähetä</string>
     <string name="toast_permission_denied">Lupa evätty!</string>
-    <string name="connect_via_link_or_qr_from_clipboard_or_in_person">(skannaa tai liitä leikepöydältä)</string>
     <string name="chat_help_tap_button">Napauta -painike</string>
     <string name="show_QR_code">Näytä QR-koodi</string>
     <string name="one_time_link">Kertakutsulinkki</string>
@@ -879,8 +845,6 @@
     <string name="v5_0_app_passcode_descr">Aseta se järjestelmän todennuksen sijaan.</string>
     <string name="v4_6_audio_video_calls_descr">Tukee bluetoothia ja muita parannuksia.</string>
     <string name="lock_not_enabled">SimpleX Lock ei ole käytössä!</string>
-    <string name="icon_descr_sent_msg_status_send_failed">lähetys epäonnistui</string>
-    <string name="icon_descr_sent_msg_status_sent">lähetetty</string>
     <string name="share_invitation_link">Jaa kertakäyttölinkki</string>
     <string name="scan_code_from_contacts_app">Skannaa turvakoodi kontaktisi sovelluksesta.</string>
     <string name="security_code">Turvakoodi</string>
@@ -888,7 +852,6 @@
     <string name="alert_text_msg_bad_hash">Edellisen viestin tarkiste on erilainen.</string>
     <string name="v4_4_live_messages">Live-viestit</string>
     <string name="v4_6_hidden_chat_profiles_descr">Suojaa keskusteluprofiilisi salasanalla!</string>
-    <string name="ensure_xftp_server_address_are_correct_format_and_unique">Varmista, että XFTP-palvelinosoitteet ovat oikeassa muodossa, rivieroteltuina ja että ne eivät ole päällekkäisiä.</string>
     <string name="ntf_channel_messages">SimpleX Chat -viestit</string>
     <string name="ntf_channel_calls">SimpleX Chat -puhelut</string>
     <string name="notification_preview_mode_message_desc">Näytä kontakti ja viesti</string>
@@ -947,7 +910,6 @@
     <string name="scan_code">Skannaa koodi</string>
     <string name="callstate_starting">alkaa…</string>
     <string name="privacy_redefined">Yksityisyys uudelleen määritettynä</string>
-    <string name="first_platform_without_user_ids">Ensimmäinen alusta ilman käyttäjätunnisteita – suunniteltu yksityiseksi.</string>
     <string name="opensource_protocol_and_code_anybody_can_run_servers">Avoimen lähdekoodin protokolla ja koodi - kuka tahansa voi käyttää palvelimia.</string>
     <string name="people_can_connect_only_via_links_you_share">Ihmiset voivat ottaa sinuun yhteyttä vain jakamiesi linkkien kautta.</string>
     <string name="make_private_connection">Luo yksityinen yhteys</string>
@@ -1040,7 +1002,6 @@
     <string name="simplex_link_connection">%1$s:n kautta</string>
     <string name="simplex_link_mode_browser">Selaimella</string>
     <string name="simplex_service_notification_title">SimpleX Chat palvelu</string>
-    <string name="icon_descr_sent_msg_status_unauthorized_send">luvaton lähetys</string>
     <string name="image_decoding_exception_desc">Kuvaa ei voida purkaa. Kokeile toista kuvaa tai ota yhteyttä kehittäjiin.</string>
     <string name="waiting_for_file">Odottaa tiedostoa</string>
     <string name="to_start_a_new_chat_help_header">Aloita uusi keskustelu</string>
@@ -1121,7 +1082,6 @@
     <string name="to_reveal_profile_enter_password">Voit paljastaa piilotetun profiilisi kirjoittamalla koko salasanan Keskusteluprofiilit-sivun hakukenttään.</string>
     <string name="we_do_not_store_contacts_or_messages_on_servers">Emme tallenna mitään kontaktejasi tai viestejäsi (kun ne on toimitettu) palvelimille.</string>
     <string name="to_protect_privacy_simplex_has_ids_for_queues">Yksityisyyden suojaamiseksi kaikkien muiden alustojen käyttämien käyttäjätunnusten sijaan SimpleX käyttää viestijonojen tunnisteita, jotka ovat kaikille kontakteille erillisiä.</string>
-    <string name="contact_wants_to_connect_via_call"> %1$s  haluaa olla yhteydessä sinuun kautta</string>
     <string name="webrtc_ice_servers">WebRTC ICE -palvelimet</string>
     <string name="your_chat_database">Keskustelut-tietokantasi</string>
     <string name="you_must_use_the_most_recent_version_of_database">Sinun tulee käyttää keskustelujen-tietokannan uusinta versiota AINOSTAAN yhdessä laitteessa, muuten saatat lakata vastaanottamasta viestejä joiltakin kontakteilta.</string>
@@ -1160,9 +1120,7 @@
     <string name="you_can_turn_on_lock">Voit ottaa SimpleX Lockin käyttöön Asetusten kautta.</string>
     <string name="this_text_is_available_in_settings">Tämä teksti on saatavilla asetuksista</string>
     <string name="welcome">Tervetuloa!</string>
-    <string name="icon_descr_received_msg_status_unread">lukematon</string>
     <string name="image_descr_simplex_logo">SimpleX Logo</string>
-    <string name="icon_descr_simplex_team">SimpleX Tiimi</string>
     <string name="this_link_is_not_a_valid_connection_link">Tämä linkki ei ole kelvollinen yhteyslinkki!</string>
     <string name="your_chat_profiles">Keskusteluprofiilisi</string>
     <string name="smp_server_test_upload_file">Lataa tiedosto</string>
@@ -1203,7 +1161,6 @@
     <string name="you_invited_a_contact">Kutsuit kontaktisi</string>
     <string name="call_connection_via_relay">releellä</string>
     <string name="database_downgrade_warning">Varoitus: saatat menettää joitain tietoja!</string>
-    <string name="icon_descr_address">SimpleX Osoite</string>
     <string name="callstate_waiting_for_answer">odottaa vastaamista…</string>
     <string name="next_generation_of_private_messaging">Seuraavan sukupolven yksityisviestit</string>
     <string name="callstate_waiting_for_confirmation">odottaa vahvistusta…</string>
@@ -1243,7 +1200,6 @@
     <string name="network_option_protocol_timeout_per_kb">Protokollan aikakatkaisu per KB</string>
     <string name="files_are_prohibited_in_group">Tiedostot ja media ovat tässä ryhmässä kiellettyjä.</string>
     <string name="group_members_can_send_files">Ryhmän jäsenet voivat lähettää tiedostoja ja mediaa.</string>
-    <string name="connect_via_link_incognito">Yhdistä Incognito</string>
     <string name="connect_use_current_profile">Käytä nykyistä profiilia</string>
     <string name="connect_use_new_incognito_profile">Käytä uutta incognito-profiilia</string>
     <string name="turn_off_battery_optimization_button">Salli</string>
@@ -1335,8 +1291,6 @@
     <string name="rcv_group_event_3_members_connected">%s, %s ja %s yhdistetty</string>
     <string name="dont_enable_receipts">Älä salli</string>
     <string name="error_enabling_delivery_receipts">Virhe toimituskuittauksien sallimisessa!</string>
-    <string name="connect_via_member_address_alert_title">Yhdistä suoraan\?</string>
-    <string name="connect_via_member_address_alert_desc">Yhteyspyyntö lähetetään tälle ryhmän jäsenelle.</string>
     <string name="delivery_receipts_title">Toimituskuittaukset!</string>
     <string name="enable_receipts_all">Salli</string>
     <string name="v5_2_favourites_filter_descr">Suodata lukemattomia- ja suosikkikeskusteluja.</string>
@@ -1377,7 +1331,6 @@
     <string name="migrate_from_device_verify_passphrase">Vahvista tunnuslause</string>
     <string name="connect_plan_you_are_already_in_group_vName"><![CDATA[Olet jo ryhmässä <b>%1$s</b>.]]></string>
     <string name="allow_to_send_simplex_links">Salli SimpleX-linkkien lähettäminen.</string>
-    <string name="add_contact_tab">Lisää kontakti</string>
     <string name="or_show_this_qr_code">Tai näytä tämä koodi</string>
     <string name="migrate_to_device_download_failed">Lataus epäonnistui</string>
     <string name="recent_history_is_not_sent_to_new_members">Historiaa ei lähetetä uusille jäsenille.</string>

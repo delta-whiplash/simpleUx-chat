@@ -25,6 +25,7 @@ import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.ProfileImage
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun QuickProfileSwitcher(
@@ -60,7 +61,7 @@ fun QuickProfileSwitcher(
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = "Profils & Identités",
+            text = stringResource(MR.strings.profile_switcher_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
@@ -112,14 +113,14 @@ fun QuickProfileSwitcher(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = userItem.user.profile?.displayName ?: "Utilisateur",
+                            text = userItem.user.profile?.displayName ?: stringResource(MR.strings.profile_default_name),
                             fontSize = 15.sp,
                             fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
                             color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
                         )
                         if (isActive) {
                             Text(
-                                text = "Profil Actif",
+                                text = stringResource(MR.strings.profile_switcher_active),
                                 fontSize = 12.sp,
                                 color = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
                             )
@@ -181,7 +182,7 @@ fun QuickProfileSwitcher(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "Lien Incognito",
+                        text = stringResource(MR.strings.profile_switcher_incognito_link),
                         color = Color.White,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold
@@ -214,7 +215,7 @@ fun QuickProfileSwitcher(
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
-                        text = "Nouveau profil",
+                        text = stringResource(MR.strings.profile_switcher_new_profile),
                         color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold

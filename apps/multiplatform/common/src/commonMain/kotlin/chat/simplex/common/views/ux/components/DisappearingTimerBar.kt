@@ -20,25 +20,37 @@ import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.DefaultDropdownMenu
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 
-data class DisappearingPreset(val seconds: Int?, val label: String)
+data class DisappearingPreset(val seconds: Int?)
 
 val DISAPPEARING_PRESETS = listOf(
-    DisappearingPreset(null, "Désactivé (Off)"),
-    DisappearingPreset(30, "30 secondes"),
-    DisappearingPreset(300, "5 minutes"),
-    DisappearingPreset(3600, "1 heure"),
-    DisappearingPreset(86400, "24 heures"),
-    DisappearingPreset(604800, "7 jours")
+    DisappearingPreset(null),
+    DisappearingPreset(30),
+    DisappearingPreset(300),
+    DisappearingPreset(3600),
+    DisappearingPreset(86400),
+    DisappearingPreset(604800)
 )
 
+@Composable
+private fun ttlPresetLabel(seconds: Int?): String = when (seconds) {
+    null -> stringResource(MR.strings.disappearing_preset_off)
+    30 -> stringResource(MR.strings.send_disappearing_message_30_seconds)
+    300 -> stringResource(MR.strings.send_disappearing_message_5_minutes)
+    3600 -> stringResource(MR.strings.disappearing_preset_1_hour)
+    86400 -> stringResource(MR.strings.disappearing_preset_24_hours)
+    else -> stringResource(MR.strings.disappearing_preset_7_days)
+}
+
+@Composable
 fun formatTTL(seconds: Int?): String {
     return when (seconds) {
-        null -> "Off"
-        in 1..59 -> "${seconds}s"
-        in 60..3599 -> "${seconds / 60}m"
-        in 3600..86399 -> "${seconds / 3600}h"
-        else -> "${seconds / 86400}j"
+        null -> stringResource(MR.strings.la_mode_off)
+        in 1..59 -> "${seconds}${stringResource(MR.strings.ttl_unit_second)}"
+        in 60..3599 -> "${seconds / 60}${stringResource(MR.strings.ttl_unit_minute)}"
+        in 3600..86399 -> "${seconds / 3600}${stringResource(MR.strings.ttl_unit_hour)}"
+        else -> "${seconds / 86400}${stringResource(MR.strings.ttl_unit_day)}"
     }
 }
 
@@ -83,12 +95,12 @@ fun DisappearingTimerBar(
             ) {
                 Icon(
                     painter = painterResource(if (isTimerActive) MR.images.ic_timer_filled else MR.images.ic_timer),
-                    contentDescription = "Messages éphémères",
+                    contentDescription = stringResource(MR.strings.timed_messages),
                     tint = activeColor,
                     modifier = Modifier.size(14.dp)
                 )
                 Text(
-                    text = if (isTimerActive) formatTTL(currentTTL) else "Éphémère",
+                    text = if (isTimerActive) formatTTL(currentTTL) else stringResource(MR.strings.disappearing_timer_label),
                     color = activeColor,
                     fontSize = 11.sp,
                     fontWeight = if (isTimerActive) FontWeight.Bold else FontWeight.Medium
@@ -109,13 +121,13 @@ fun DisappearingTimerBar(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painterResource(if (preset.seconds == currentTTL) MR.images.ic_check else MR.images.ic_timer),
-                            contentDescription = preset.label,
+                            contentDescription = ttlPresetLabel(preset.seconds),
                             tint = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A),
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            text = preset.label,
+                            text = ttlPresetLabel(preset.seconds),
                             color = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A),
                             fontSize = 14.sp,
                             fontWeight = if (preset.seconds == currentTTL) FontWeight.Bold else FontWeight.Medium

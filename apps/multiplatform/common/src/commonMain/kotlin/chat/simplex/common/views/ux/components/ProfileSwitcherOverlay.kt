@@ -295,7 +295,7 @@ fun ProfileSwitcherOverlay(
                           horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                           Text(
-                            text = user.displayName.ifEmpty { "Sans nom" },
+                            text = user.displayName.ifEmpty { stringResource(MR.strings.profile_no_name) },
                             style = TextStyle(
                               fontFamily = Inter,
                               fontSize = 14.sp,
@@ -310,7 +310,7 @@ fun ProfileSwitcherOverlay(
                         val subtitle = when {
                           user.fullName.isNotBlank() -> user.fullName
                           !user.shortDescr.isNullOrBlank() -> user.shortDescr ?: ""
-                          else -> "Profil local"
+                          else -> stringResource(MR.strings.profile_local)
                         }
 
                         Text(

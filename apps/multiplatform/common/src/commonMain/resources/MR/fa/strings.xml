@@ -4,19 +4,16 @@
     <string name="moderated_items_description">%1$d پیام توسط %2$s حذف شد</string>
     <string name="integrity_msg_skipped">%1$d پیام از قلم افتاده</string>
     <string name="group_info_section_title_num_members">%1$s عضو</string>
-    <string name="contact_wants_to_connect_via_call">%1$s می‌خواهد به شما متصل شود، به وسیله</string>
     <string name="chat_item_ttl_day">۱ روز</string>
     <string name="send_disappearing_message_1_minute">۱ دقیقه</string>
     <string name="abort_switch_receiving_address_confirm">لغو</string>
     <string name="abort_switch_receiving_address">لغو تغییر نشانی</string>
     <string name="abort_switch_receiving_address_question">تغییر نشانی را لغو می‌کنید؟</string>
-    <string name="about_simplex">درباره سیمپل‌اکس(SimpleX)</string>
     <string name="connect_via_contact_link">با نشانی مخاطب ارتباط برقرار شود؟</string>
     <string name="connect_via_invitation_link">با لینک یک بار مصرف ارتباط برقرار شود؟</string>
     <string name="connect_use_new_incognito_profile">استفاده از پروفایل ناشناس جدید</string>
     <string name="opening_database">در حال باز کردن پایگاه داده…</string>
     <string name="profile_will_be_sent_to_contact_sending_link">پروفایل شما به مخاطبی که این لینک را از او دریافت کردید، فرستاده خواهد شد.</string>
-    <string name="connect_via_link_incognito">اتصال ناشناس</string>
     <string name="non_content_uri_alert_text">شما یک مسیر نامعتبر فایل به اشتراک گذاشتید. موضوع را به توسعه‌دهندگان برنامه گزارش دهید.</string>
     <string name="receiving_files_not_yet_supported">هنوز از دریافت فایل پشتیبانی نمی‌شود</string>
     <string name="invalid_message_format">قالب پیام نامعتبر</string>
@@ -32,7 +29,6 @@
     <string name="connect_via_group_link">به گروه می‌پیوندید؟</string>
     <string name="connect_use_current_profile">استفاده از پروفایل کنونی</string>
     <string name="you_will_join_group">به تمام اعضای گروه متصل خواهید شد.</string>
-    <string name="connect_via_link_verb">متصل شدن</string>
     <string name="non_content_uri_alert_title">مسیر نامعتبر فایل</string>
     <string name="app_was_crashed">برنامه از کار افتاد</string>
     <string name="error_connecting_to_server_to_receive_messages">در حال تلاش برای اتصال به سرور مورد استفاده برای دریافت پیام‌ها از این مخاطب (خطا: %1$s).</string>
@@ -50,7 +46,6 @@
     <string name="error_showing_content">خطا در نمایش محتوا</string>
     <string name="decryption_error">خطا در رمزگشایی</string>
     <string name="send_disappearing_message_5_minutes">۵ دقیقه</string>
-    <string name="learn_more_about_address">درباره نشانی سیمپل‌اکس(SimpleX)</string>
     <string name="one_time_link_short">لینک یک بار مصرف</string>
     <string name="about_simplex_chat">درباره سیمپل‌اکس چت(SimpleX Chat)</string>
     <string name="alert_text_decryption_error_too_many_skipped">%1$d پیام از قلم افتاد.</string>
@@ -66,8 +61,6 @@
     <string name="simplex_link_mode_description">توصیف</string>
     <string name="simplex_link_mode_full">لینک کامل</string>
     <string name="simplex_link_mode">لینک‌های SimpleX</string>
-    <string name="error_saving_smp_servers">خطا در ذخیره کردن سرورهای SMP</string>
-    <string name="error_saving_xftp_servers">خطا در ذخیره کردن سرورهای XFTP</string>
     <string name="encryption_renegotiation_error">خطای تجدید مذاکره رمزنگاری</string>
     <string name="connection_local_display_name">اتصال %1$d</string>
     <string name="display_name_connection_established">اتصال برقرار شد</string>
@@ -80,9 +73,7 @@
     <string name="simplex_link_mode_browser">به وسیله مرورگر</string>
     <string name="simplex_link_contact">آدرس مخاطب SimpleX</string>
     <string name="simplex_link_invitation">دعوت یک بار مصرف SimpleX</string>
-    <string name="display_name_connecting">در حال اتصال…</string>
     <string name="simplex_link_mode_browser_warning">باز کردن لینک در مرورگر ممکن است حریم خصوصی و امنیت اتصال را کاهش دهد. لینک‌های SimpleX غیر قابل اعتماد به رنگ قرمز خواهند بود.</string>
-    <string name="error_loading_xftp_servers">خطا در بارگیری سرورهای XFTP</string>
     <string name="failed_to_create_user_title">خطا در ایجاد پروفایل!</string>
     <string name="failed_to_active_user_title">خطا در تعویض پروفایل!</string>
     <string name="connection_timeout">توقف اتصال</string>
@@ -94,7 +85,6 @@
     <string name="sender_cancelled_file_transfer">فرستنده انتقال فایل را لغو کرد.</string>
     <string name="you_are_already_connected_to_vName_via_this_link">شما از قبل به %1$s متصل هستید.</string>
     <string name="connection_error_auth">خطا در اتصال (تصدیق)</string>
-    <string name="error_loading_smp_servers">خطا در بارگیری سرورهای SMP</string>
     <string name="failed_to_parse_chats_title">عدم موفقیت در بارگیری چت‌ها</string>
     <string name="contact_developers">لطفا برنامه را به‌روزرسانی کنید و با توسعه‌دهندگان تماس بگیرید.</string>
     <string name="failed_to_create_user_duplicate_title">نام نمایشی همسان!</string>
@@ -106,13 +96,11 @@
     <string name="contact_already_exists">مخاطب از قبل وجود دارد</string>
     <string name="invalid_connection_link">لینک اتصال نامعتبر</string>
     <string name="please_check_correct_link_and_maybe_ask_for_a_new_one">لطفا بررسی کنید که از لینک صحیح استفاده کردید یا از مخاطبتان بخواهید لینک دیگری برایتان بفرستد.</string>
-    <string name="ensure_smp_server_address_are_correct_format_and_unique">مطمئن شوید قالب نشانی‌های سرور SMP صحیح است، در خط‌های جدا نوشته شده و تکرار نشده‌اند.</string>
     <string name="error_setting_network_config">خطا در به‌روزرسانی پیکربندی شبکه</string>
     <string name="failed_to_parse_chat_title">عدم موفقیت در بارگیری چت</string>
     <string name="failed_to_create_user_invalid_title">نام نمایشی نامعتبر!</string>
     <string name="failed_to_create_user_duplicate_desc">شما یک پروفایل چت با نام نمایشی یکسان دارید، لطفا نام دیگری انتخاب کنید.</string>
     <string name="error_creating_address">خطا در ایجاد نشانی</string>
-    <string name="ensure_xftp_server_address_are_correct_format_and_unique">مطمئن شوید قالب نشانی‌های سرور XFTP صحیح است، در خط‌های جدا نوشته شده و تکرار نشده‌اند.</string>
     <string name="error_accepting_contact_request">خطا در پذیرش درخواست مخاطب</string>
     <string name="sender_may_have_deleted_the_connection_request">فرستنده ممکن است درخواست اتصال را حذف کرده باشد.</string>
     <string name="error_deleting_note_folder">خطا در حذف یادداشت‌های خصوصی</string>
@@ -133,7 +121,6 @@
     <string name="error_deleting_contact_request">خطا در حذف درخواست مخاطب</string>
     <string name="error_deleting_pending_contact_connection">خطا در حذف اتصال معلق مخاطب</string>
     <string name="error_changing_address">خطا در تغییر نشانی</string>
-    <string name="error_setting_address">خطا در تنظیم نشانی</string>
     <string name="error_alert_title">خطا</string>
     <string name="smp_server_test_connect">اتصال</string>
     <string name="smp_server_test_disconnect">قطع اتصال</string>
@@ -203,7 +190,6 @@
     <string name="error_showing_desktop_notification">خطا در نمایش اعلان، با توسعه‌دهندگان تماس بگیرید.</string>
     <string name="lock_not_enabled">قفل SimpleX فعال نیست!</string>
     <string name="auth_device_authentication_is_disabled_turning_off">تصدیق دستگاه غیرفعال است. قفل SimpleX خاموش می‌شود.</string>
-    <string name="icon_descr_sent_msg_status_sent">ارسال شده</string>
     <string name="icon_descr_context">نماد زمینه</string>
     <string name="icon_descr_cancel_image_preview">لغو پیش‌نمایش تصویر</string>
     <string name="icon_descr_cancel_file_preview">لغو پیش‌نمایش فایل</string>
@@ -236,7 +222,6 @@
     <string name="verify_security_code">تایید کد امنیتی</string>
     <string name="send_disappearing_message">ارسال پیام ناپدید شونده</string>
     <string name="add_contact">لینک دعوت یک‌بارمصرف</string>
-    <string name="create_group">ایجاد گروه محرمانه</string>
     <string name="to_share_with_your_contact">(برای اشتراک‌گذاری با مخاطبتان)</string>
     <string name="if_you_received_simplex_invitation_link_you_can_open_in_browser">اگر لینک دعوت SimpleX Chat دریافت کردید، می‌توانید آن را در مرورگر خود باز کنید:</string>
     <string name="la_lock_mode_passcode">ورود کد عبور</string>
@@ -244,7 +229,6 @@
     <string name="la_current_app_passcode">کد عبور فعلی</string>
     <string name="copy_verb">کپی</string>
     <string name="delete_message_mark_deleted_warning">پیام به عنوان حذف شده علامت‌گذاری خواهد شد. گیرنده‌ها قادر خواهند بود این پیام را آشکار کنند.</string>
-    <string name="icon_descr_sent_msg_status_send_failed">ارسال غیرموفق</string>
     <string name="contact_tap_to_connect">برای اتصال ضربه بزنید</string>
     <string name="video_decoding_exception_desc">امکان کدبرداری ویدئو وجود ندارد. لطفا، ویدئوی دیگری را امتحان کنید یا با توسعه‌دهندگان تماس بگیرید.</string>
     <string name="image_descr">تصویر</string>
@@ -294,11 +278,8 @@
     <string name="forward_chat_item">فرستادن</string>
     <string name="download_file">بارگیری</string>
     <string name="icon_descr_edited">ویرایش شده</string>
-    <string name="icon_descr_sent_msg_status_unauthorized_send">ارسال غیرمجاز</string>
-    <string name="icon_descr_received_msg_status_unread">خوانده نشده</string>
     <string name="personal_welcome">خوش آمدید، %1$s!</string>
     <string name="this_text_is_available_in_settings">این متن در تنظیمات دردسترس است</string>
-    <string name="chat_with_developers">چت با توسعه‌دهندگان</string>
     <string name="no_filtered_chats">چت فیلتر شده‌ای نیست</string>
     <string name="connect_with_contact_name_question">به %1$s متصل شوید؟</string>
     <string name="no_selected_chat">چتی انتخاب نشده</string>
@@ -319,7 +300,6 @@
     <string name="file_will_be_received_when_contact_completes_uploading">فایل وقتی دریافت خواهد شد که مخاطبتان بارگذاری آن را تکمیل کند.</string>
     <string name="voice_message_with_duration">پیام صوتی (%1$s)</string>
     <string name="notifications">اعلان‌ها</string>
-    <string name="delete_contact_all_messages_deleted_cannot_undo_warning">مخاطب و تمام پیام‌ها حذف خواهند شد - این عمل قابل برگشت نیست!</string>
     <string name="allow_voice_messages_question">پیام‌های صوتی مجازند؟</string>
     <string name="voice_messages_prohibited">پیام‌های صوتی ممنوع هستند!</string>
     <string name="desktop_scan_QR_code_from_app_via_scan_QR_code"><![CDATA[💻 کامپیوتر: از برنامه کد QR نمایش داده شده را اسکن کنید، از طریق <b>اسکن کد QR</b>.]]></string>
@@ -334,7 +314,6 @@
     <string name="stop_snd_file__message">ارسال فایل متوقف خواهد شد.</string>
     <string name="stop_rcv_file__title">دریافت فایل متوقف شود؟</string>
     <string name="revoke_file__message">فایل از سرورها حذف خواهد شد.</string>
-    <string name="member_contact_send_direct_message">برای اتصال ارسال کنید</string>
     <string name="share_image">اشتراک‌گذاری رسانه…</string>
     <string name="images_limit_desc">فقط ۱۰ تصویر در هر زمان می‌توان ارسال کرد</string>
     <string name="call_service_notification_audio_call">تماس صوتی</string>
@@ -376,7 +355,6 @@
     <string name="voice_message_send_text">پیام صوتی…</string>
     <string name="text_field_set_contact_placeholder">تعیین نام مخاطب…</string>
     <string name="icon_descr_server_status_disconnected">قطع شد</string>
-    <string name="icon_descr_server_status_pending">در حال انتظار</string>
     <string name="switch_receiving_address_question">نشانی‌ دریافت تغییر کند؟</string>
     <string name="abort_switch_receiving_address_desc">تغییر نشانی‌ لغو خواهد شد. نشانی‌ دریافت پیشین استفاده خواهد شد.</string>
     <string name="sync_connection_force_confirm">مذاکره مجدد</string>
@@ -384,7 +362,6 @@
     <string name="confirm_verb">تایید</string>
     <string name="reset_verb">بازنشاندن</string>
     <string name="scan_QR_code">اسکن کد QR</string>
-    <string name="connect_via_link_or_qr_from_clipboard_or_in_person">(اسکن یا الصاق از کلیپ بورد)</string>
     <string name="only_stored_on_members_devices">(تنها ذخیره شده توسط اعضای گروه)</string>
     <string name="enable_camera_access">فعال کردن دسترسی دوربین</string>
     <string name="toast_permission_denied">اجازه داده نشد!</string>
@@ -403,7 +380,6 @@
     <string name="icon_descr_record_voice_message">ضبط پیام صوتی</string>
     <string name="icon_descr_send_message">ارسال پیام</string>
     <string name="no_details">بدون جزئیات</string>
-    <string name="connect_via_link_or_qr">اتصال به وسیله لینک / کد QR</string>
     <string name="camera_not_available">دوربین موجود نیست</string>
     <string name="gallery_image_button">تصویر</string>
     <string name="share_one_time_link">ایجاد لینک دعوت یک‌بارمصرف</string>
@@ -463,10 +439,8 @@
     <string name="unmute_chat">لغو بی‌صدا</string>
     <string name="mark_read">علامت‌گذاری به عنوان خوانده شده</string>
     <string name="unfavorite_chat">خلع برگزیده</string>
-    <string name="icon_descr_simplex_team">تیم SimpleX</string>
     <string name="new_chat">چت جدید</string>
     <string name="how_to_use_simplex_chat">روش استفاده</string>
-    <string name="markdown_help">راهنمای مارکداون</string>
     <string name="invalid_contact_link">لینک نامعتبر!</string>
     <string name="share_invitation_link">اشتراک‌گذاری لینک یک بار مصرف</string>
     <string name="or_scan_qr_code">یا کد QR را اسکن کنید</string>
@@ -497,9 +471,7 @@
     <string name="icon_descr_close_button">دکمه بستن</string>
     <string name="icon_descr_cancel_link_preview">لغو پیش‌نمایش لینک</string>
     <string name="icon_descr_settings">تنظیمات</string>
-    <string name="icon_descr_help">کمک</string>
     <string name="image_descr_simplex_logo">لوگوی SimpleX</string>
-    <string name="icon_descr_email">ایمیل</string>
     <string name="this_link_is_not_a_valid_connection_link">این لینک، یک لینک اتصال معتبر نیست!</string>
     <string name="connection_request_sent">درخواست اتصال ارسال شد!</string>
     <string name="you_will_be_connected_when_group_host_device_is_online">وقتی دستگاه میزبان گروه آنلاین شد، به گروه متصل خواهید شد، لطفا صبر کنید یا بعدا بررسی کنید!</string>
@@ -552,7 +524,6 @@
     <string name="connect_button">اتصال</string>
     <string name="paste_button">الصاق</string>
     <string name="you_can_also_connect_by_clicking_the_link"><![CDATA[شما همچنین می‌توانید با کلیک روی لینک متصل شوید. اگر در مرورگر باز شد، روی دکمه <b>باز کردن در برنامه موبایل</b> کلیک کنید.]]></string>
-    <string name="add_contact_tab">افزودن مخاطب</string>
     <string name="simplex_address">نشانی‌ SimpleX</string>
     <string name="clear_verification">پاک‌سازی تایید</string>
     <string name="smp_servers_preset_address">نشانی‌ سرور از پیش تنظیم شده</string>
@@ -565,7 +536,6 @@
     <string name="smp_servers_check_address">نشانی‌ سرور را بررسی و دوباره امتحان کنید.</string>
     <string name="alert_text_connection_pending_they_need_to_be_online_can_delete_and_retry">لازم است مخاطبتان آنلاین باشد تا اتصال کامل شود.
 \nمی‌توانید این اتصال را لغو و مخاطب را حذف کنید (و بعدا با یک لینک جدید امتحان کنید).</string>
-    <string name="icon_descr_address">نشانی‌ SimpleX</string>
     <string name="this_QR_code_is_not_a_link">این کد QR یک لینک نیست!</string>
     <string name="read_more_in_user_guide_with_link"><![CDATA[مطالعه بیشتر در <font color="#0088ff">راهنمای کاربر</font>.]]></string>
     <string name="this_string_is_not_a_connection_link">این رشته متن، یک لینک اتصال نیست!</string>
@@ -612,7 +582,6 @@
     <string name="core_version">نسخه هسته: v%s</string>
     <string name="core_simplexmq_version">simplexmq: v%s (%2s)</string>
     <string name="shutdown_alert_desc">اعلان‌ها از کار خواهند افتاد تا زمانی که برنامه را دوباره راه‌اندازی کنید</string>
-    <string name="create_address">ایجاد نشانی</string>
     <string name="delete_address__question">نشانی حذف شود؟</string>
     <string name="network_and_servers">شبکه و سرورها</string>
     <string name="network_socks_toggle_use_socks_proxy">استفاده از پروکسی SOCKS</string>
@@ -647,10 +616,8 @@
     <string name="delete_address">حذف نشانی</string>
     <string name="email_invite_body">سلام!
 \nبه وسیله SimpleX Chat به من متصل شوید: %s</string>
-    <string name="dont_create_address">نشانی ایجاد نشود</string>
     <string name="continue_to_next_step">ادامه</string>
     <string name="your_current_profile">پروفایل فعلی شما</string>
-    <string name="full_name__field">نام کامل:</string>
     <string name="save_and_notify_contacts">ذخیره کردن و اطلاع به مخاطبان</string>
     <string name="email_invite_subject">بیایید در SimpleX Chat چت کنیم</string>
     <string name="save_preferences_question">تنظیمات ذخیره شوند؟</string>
@@ -661,7 +628,6 @@
     <string name="stop_sharing">توقف اشتراک‌گذاری</string>
     <string name="you_can_create_it_later">می‌توانید بعدا آن را ایجاد کنید</string>
     <string name="you_can_make_address_visible_via_settings">می‌توانید آن را از طریق تنظیمات برای مخاطبان SimpleX خود قابل رویت کنید.</string>
-    <string name="display_name__field">نام پروفایل:</string>
     <string name="delete_image">حذف تصویر</string>
     <string name="save_and_notify_group_members">ذخیره کردن و اطلاع به اعضای گروه</string>
     <string name="save_and_notify_contact">ذخیره کردن و اطلاع به مخاطب</string>
@@ -672,7 +638,6 @@
     <string name="hidden_profile_password">کلمه عبور پروفایل پنهان</string>
     <string name="add_address_to_your_profile">به پروفایل خود نشانی اضافه کنید، تا مخاطبانتان بتوانند آن را با اشخاص دیگر به اشتراک بگذارند. به‌روزرسانی پروفایل به مخاطبانتان ارسال خواهد شد.</string>
     <string name="share_address_with_contacts_question">نشانی با مخاطبان به اشتراک گذاشته شود؟</string>
-    <string name="create_address_and_let_people_connect">یک نشانی ایجاد کنید تا اشخاص بتوانند به شما متصل شوند.</string>
     <string name="your_profile_is_stored_on_device_and_shared_only_with_contacts_simplex_cannot_see_it">پروفایل شما روی دستگاهتان ذخیره شده و فقط با مخاطبانتان به اشتراک گذاشته می‌شود. سرورهای SimpleX قادر به دیدن پروفایل شما نیستند.</string>
     <string name="error_saving_user_password">خطا در ذخیره کردن کلمه عبور کاربر</string>
     <string name="settings_audio_video_calls">تماس‌های صوتی و تصویری</string>
@@ -722,12 +687,9 @@
     <string name="export_database">اکسپورت پایگاه داده</string>
     <string name="delete_chat_profile_question">پروفایل چت حذف شود؟</string>
     <string name="display_name">نام خود را وارد کنید:</string>
-    <string name="create_profile_button">ایجاد</string>
-    <string name="how_to_use_markdown">روش استفاده از مارکداون</string>
     <string name="you_can_use_markdown_to_format_messages__prompt">می‌توانید از مارکداون برای آرایش پیام‌ها استفاده کنید:</string>
     <string name="callstatus_rejected">تماس رد شده</string>
     <string name="callstatus_accepted">تماس پذیرفته</string>
-    <string name="decentralized">نامتمرکز</string>
     <string name="create_your_profile">پروفایل خود را ایجاد کنید</string>
     <string name="read_more_in_github_with_link"><![CDATA[مطالعه بیشتر در <font color="#0088ff">مخزن GitHub</font> ما.]]></string>
     <string name="use_chat">استفاده از چت</string>
@@ -786,7 +748,6 @@
     <string name="new_database_archive">آرشیو پایگاه داده جدید</string>
     <string name="old_database_archive">آرشیو پایگاه داده قدیمی</string>
     <string name="error_starting_chat">خطا در شروع چت</string>
-    <string name="immune_to_spam_and_abuse">مصونیت در برابر هرزنامه</string>
     <string name="how_it_works">چگونه کار می‌کند</string>
     <string name="icon_descr_video_call">تماس تصویری</string>
     <string name="audio_device_earpiece">گوشی</string>
@@ -806,7 +767,6 @@
     <string name="you_control_your_chat">شما چت خود را کنترل می‌کنید!</string>
     <string name="your_profile_is_stored_on_your_device">پروفایل، مخاطبان و پیام‌های تحویل داده شده شما روی دستگاهتان ذخیره می‌شوند.</string>
     <string name="profile_is_only_shared_with_your_contacts">پروفایل فقط با مخاطبانتان به اشتراک گذاشته می‌شود.</string>
-    <string name="display_name_cannot_contain_whitespace">نام نمایشی نمی‌تواند شامل نویسه‌های فاصله باشد.</string>
     <string name="create_another_profile_button">ایجاد پروفایل</string>
     <string name="invalid_name">نام نامعتبر!</string>
     <string name="bold_text">برجسته</string>
@@ -834,7 +794,6 @@
     <string name="receipts_section_description_1">آن‌ها در تنظیمات مخاطب و گروه قابل جایگزینی هستند.</string>
     <string name="receipts_section_groups">گروه‌های کوچک (حداکثر ۲۰)</string>
     <string name="settings_section_title_settings">تنظیمات</string>
-    <string name="first_platform_without_user_ids">هیچ شناسه کاربری وجود ندارد</string>
     <string name="onboarding_notifications_mode_title">اعلان‌های خصوصی</string>
     <string name="you_can_change_it_later">عبارت عبور تصادفی در تنظیمات به صورت متن آشکار ذخیره می‌شود.
 \nمی‌توانید بعدا آن را تغییر دهید.</string>
@@ -847,7 +806,6 @@
     <string name="alert_text_fragment_encryption_out_of_sync_old_database">این اتفاق وقتی می‌افتد که شما یا اتصالتان از پشتیبان پایگاه داده قدیمی استفاده کرده باشید.</string>
     <string name="alert_text_encryption_renegotiation_failed">تجدید مذاکره رمزنگاری ناموفق بود.</string>
     <string name="encrypt_local_files">رمزنگاری فایل‌های محلی</string>
-    <string name="full_backup">پشتیبان‌گیری اطلاعات برنامه</string>
     <string name="lock_after">قفل بعد از</string>
     <string name="confirm_passcode">تایید کد عبور</string>
     <string name="passcode_not_changed">کد عبور تغییر نکرد!</string>
@@ -997,7 +955,6 @@
     <string name="conn_event_ratchet_sync_agreed">رمزنگاری مورد توافق قرار گرفت</string>
     <string name="group_member_role_observer">ناظر</string>
     <string name="past_member_vName">اعضا %1$s</string>
-    <string name="icon_descr_expand_role">بسط دادن انتخاب نقش</string>
     <string name="database_passphrase_will_be_updated">عبارت عبور رمزنگاری پایگاه داده به‌روز خواهد شد.</string>
     <string name="rcv_group_event_member_created_contact">درخواست اتصال کرد</string>
     <string name="rcv_group_event_1_member_connected">%s متصل شد</string>
@@ -1185,8 +1142,6 @@
     <string name="change_verb">تغییر</string>
     <string name="switch_verb">تعویض</string>
     <string name="change_member_role_question">نقش گروه تغییر داده شود؟</string>
-    <string name="connect_via_member_address_alert_title">اتصال مستقیم؟</string>
-    <string name="connect_via_member_address_alert_desc">درخواست اتصال به این عضو گروه ارسال خواهد شد.</string>
     <string name="save_welcome_message_question">پیام خوشامدگویی ذخیره شود؟</string>
     <string name="renegotiate_encryption">تجدید مذاکره رمزنگاری</string>
     <string name="save_group_profile">ذخیره پروفایل گروه</string>
@@ -1208,7 +1163,6 @@
     <string name="share_text_database_id">شناسه پایگاه داده: %d</string>
     <string name="share_text_updated_at">رکورد به‌روز شد در: %s</string>
     <string name="item_info_no_text">بدون متن</string>
-    <string name="button_send_direct_message">ارسال پیام مستقیم</string>
     <string name="user_hide">پنهان کردن</string>
     <string name="info_row_sent_at">ارسال شد در</string>
     <string name="theme_light">روشن</string>
@@ -1334,8 +1288,6 @@
     <string name="chat_preferences">تنظیمات گفت‌و‌گو</string>
     <string name="files_and_media">فایل‌ها و رسانه</string>
     <string name="audio_video_calls">تماس‌های صوتی/تصویری</string>
-    <string name="available_in_v51">"
-\nموجود در نسخه 5.1"</string>
     <string name="allow_your_contacts_to_send_voice_messages">به مخاطبان خود اجازه ارسال پیام‌های صوتی می‌دهید.</string>
     <string name="allow_irreversible_message_deletion_only_if">فقط زمانی اجازه حذف پیام‌ها به صورت غیرقابل برگشت را می‌دهید که مخاطب شما این اجازه را به شما بدهد. (۲۴ ساعت)</string>
     <string name="disappearing_messages_are_prohibited">پیام‌های ناپدید شونده ممنوع است.</string>
@@ -1792,7 +1744,6 @@
     <string name="message_queue_info_server_info">اطلاعات صف سرور: %1$s
 \n
 \nآخرین پیام دریافتی: %2$s</string>
-    <string name="chat_list_always_visible">نمایش فهرست چت در پنجره جدید</string>
     <string name="chat_theme_apply_to_dark_mode">حالت تاریک</string>
     <string name="theme_black">سیاه</string>
     <string name="color_mode">حالت رنگ</string>
@@ -1967,7 +1918,6 @@
     <string name="call_desktop_permission_denied_chrome">برای مجوز میکروفون، روی آیکون اطلاعات کنار نوار آدرس کلیک کنید</string>
     <string name="completed">تکمیل شد</string>
     <string name="confirm_delete_contact_question">تایید حذف مخاطب؟</string>
-    <string name="info_view_connect_button">اتصال</string>
     <string name="compose_view_connect">اتصال</string>
     <string name="servers_info_sessions_connected">متصل</string>
     <string name="v6_4_connect_faster">اتصال سریع تر! 🚀</string>
@@ -2126,7 +2076,6 @@
     <string name="settings_message_shape_tail">انتها</string>
     <string name="chat_banner_connect_to_chat">برای چت، روی \"اتصال\" ضربه بزنید.</string>
     <string name="chat_banner_send_request_to_connect">برای ارسال درخواست، روی \"اتصال\" ضربه بزنید.</string>
-    <string name="address_creation_instruction">برای ایجاد آدرس SimpleX در آینده، در منو روی \"ایجاد آدرس SimpleX\" ضربه بزنید.</string>
     <string name="chat_banner_join_group">روی \"پیوستن به گروه\" ضربه بزنید.</string>
     <string name="network_option_tcp_connection">اتصال TCP</string>
     <string name="network_option_tcp_connection_timeout_background">وقفه زمانی اتصال TCP در پس‌زمینه</string>
@@ -2155,7 +2104,6 @@
     <string name="onboarding_conditions_by_using_you_agree">با استفاده از SimpleX Chat شما موافقت می‌کنید که:\n- فقط محتوای قانونی را در گروه‌های عمومی ارسال کنید.\n- به سایر کاربران احترام بگذارید - از ارسال هرزنامه خودداری کنید.</string>
     <string name="info_view_call_button">تماس</string>
     <string name="one_time_link_can_be_used_with_one_contact_only"><![CDATA[لینک یک‌بار مصرف فقط می‌تواند <i> با یک مخاطب استفاده شود</i> - آن را به صورت حضوری یا از طریق هر پیام‌رسانی به اشتراک بگذارید.]]></string>
-    <string name="all_message_and_files_e2e_encrypted"><![CDATA[تمام پیام‌ها و فایل‌ها <b>به صورت رمزنگاری انتها به انتها</b>و با امنیت پساکوانتومی در پیام‌های مستقیم ارسال می‌شوند.]]></string>
     <string name="operator_conditions_will_be_accepted_for_some"><![CDATA[شرایط برای اپراتور(ها) پذیرفته خواهد شد: <b>%s</b>.]]></string>
     <string name="operators_conditions_will_be_accepted_for"><![CDATA[شرایط برای اپراتور(ها) پذیرفته خواهد شد: <b>%s</b>.]]></string>
     <string name="e2ee_info_e2ee"><![CDATA[پیام‌ها توسط <b>رمزنگاری انتها به انتها</b> محافظت می‌شوند.]]></string>
@@ -2197,7 +2145,6 @@
     <string name="v6_0_connection_servers_status">کنترل شبکه خود را در دست بگیرید</string>
     <string name="conversation_deleted">گفتگو حذف شد!</string>
     <string name="settings_message_shape_corner">گوشه</string>
-    <string name="create_address_button">ایجاد</string>
     <string name="create_1_time_link">ایجاد لینک یک‌بار مصرف</string>
     <string name="created">ایجاد شد</string>
     <string name="create_list">ایجاد لیست</string>
@@ -2302,7 +2249,6 @@
     <string name="network_smp_web_port_off">خاموش</string>
     <string name="only_chat_owners_can_change_prefs">فقط مالکین چت می‌توانند تنظیمات را تغییر دهند.</string>
     <string name="only_delete_conversation">فقط گفتگو حذف شود</string>
-    <string name="info_view_open_button">باز کردن</string>
     <string name="operator_open_changes">باز کردن تغییرات</string>
     <string name="v6_2_improved_chat_navigation_descr">- باز کردن چت برای اولین پیام خوانده نشده.\n- پرش به پیام‌های نقل‌قول شده.</string>
     <string name="operator_open_conditions">شرایط باز کردن</string>
@@ -2372,7 +2318,6 @@
     <string name="app_check_for_updates_installed_successfully_title">با موفقیت نصب شد</string>
     <string name="app_check_for_updates_button_install">نصب به‌روزرسانی</string>
     <string name="action_button_add_members">دعوت</string>
-    <string name="invite_friends_short">دعوت</string>
     <string name="invite_to_chat_button">دعوت به چت</string>
     <string name="v6_0_private_routing_descr">آدرس IP و اتصالات شما را محافظت می‌کند.</string>
     <string name="compose_view_join_group">پیوستن به گروه</string>
@@ -2380,7 +2325,6 @@
     <string name="button_leave_chat">ترک کردن چت</string>
     <string name="leave_chat_question">آیا می‌خواهید چت را ترک کنید؟</string>
     <string name="v6_4_message_delivery_descr">ترافیک کمتری در شبکه‌های موبایل</string>
-    <string name="list_menu">فهرست</string>
     <string name="list_name_field_placeholder">نام فهرست...</string>
     <string name="duplicated_list_error">نام فهرست و ایموجی باید برای تمام فهرست‌ها متفاوت باشد.</string>
     <string name="loading_profile">در حال فراخوانی پروفایل…</string>
@@ -2482,7 +2426,6 @@
     <string name="chat_main_profile_sent">پروفایل چت شما به اعضای چت ارسال خواهد شد.</string>
     <string name="switching_profile_error_message">اتصال شما به %s منتقل شد، اما هنگام تغییر پروفایل خطایی رخ داد.</string>
     <string name="chat_banner_your_contact">مخاطب شما</string>
-    <string name="contact_list_header_title">مخاطبان شما</string>
     <string name="network_proxy_auth_mode_username_password">اعتبارنامه‌های شما ممکن است به‌صورت رمزنگاری‌نشده ارسال شوند.</string>
     <string name="chat_banner_your_group">گروه شما</string>
     <string name="context_user_picker_your_profile">پروفایل شما</string>

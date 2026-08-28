@@ -4,7 +4,6 @@
     <string name="accept_contact_button">אשר</string>
     <string name="accept_connection_request__question">לאשר בקשת חיבור\?</string>
     <string name="about_simplex_chat">אודות SimpleX Chat</string>
-    <string name="about_simplex">אודות SimpleX</string>
     <string name="accept_call_on_lock_screen">ענה</string>
     <string name="chat_item_ttl_week">שבוע</string>
     <string name="accept_feature">קבל</string>
@@ -54,7 +53,6 @@
     <string name="notifications_mode_service">תמיד פעיל</string>
     <string name="keychain_is_storing_securely">ישנו שימוש ב־Android Keystore כדי לאחסן בבטחה את הסיסמה – דבר המאפשר לשירות ההתראות לעבוד.</string>
     <string name="keychain_allows_to_receive_ntfs">Android Keystore יאחסן בבטחה את הסיסמה לאחר הפעלה מחדש של האפליקציה או שינוי הסיסמה – דבר המאפשר קבלת התראות.</string>
-    <string name="full_backup">גיבוי נתוני האפליקציה</string>
     <string name="settings_section_title_icon">סמל האפליקציה</string>
     <string name="notifications_mode_off_desc">האפליקציה יכולה לקבל התראות רק כאשר היא מופעלת, לא יופעל שירות ברקע.</string>
     <string name="v5_0_app_passcode">קוד גישה לאפליקציה</string>
@@ -85,8 +83,6 @@
     <string name="alert_title_msg_bad_id">מזהה הודעה שגוי</string>
     <string name="auto_accept_images">קבל אוטומטית תמונות</string>
     <string name="impossible_to_recover_passphrase"><![CDATA[<b>שימו לב</b>: לא ניתן יהיה לשחזר או לשנות את הסיסמה אם תאבדו אותה.]]></string>
-    <string name="available_in_v51">"
-\nזמין מ־v5.1"</string>
     <string name="both_you_and_your_contact_can_send_voice">גם אתם וגם איש הקשר יכולים לשלוח הודעות קוליות.</string>
     <string name="both_you_and_your_contact_can_make_calls">גם אתם וגם איש הקשר יכולים לבצע שיחות.</string>
     <string name="v4_2_auto_accept_contact_requests">אשר אוטומטית בקשות ליצירת קשר.</string>
@@ -117,11 +113,9 @@
     <string name="callstatus_ended">השיחה הסתיימה %1$s</string>
     <string name="icon_descr_cancel_file_preview">בטל תצוגה מקדימה של קבצים</string>
     <string name="connect_via_contact_link">להתחבר באמצעות קישור ליצירת קשר?</string>
-    <string name="connect_via_link_verb">התחבר</string>
     <string name="connect_via_group_link">להצטרף לקבוצה?</string>
     <string name="server_connected">מחובר</string>
     <string name="server_connecting">מתחבר</string>
-    <string name="display_name_connecting">מתחבר…</string>
     <string name="connection_error">שגיאת חיבור</string>
     <string name="connection_timeout">תם זמן ניסיון החיבור</string>
     <string name="connection_error_auth">שגיאת חיבור (אימות)</string>
@@ -132,7 +126,6 @@
     <string name="notification_contact_connected">מחובר/ת</string>
     <string name="la_change_app_passcode">שנה קוד גישה</string>
     <string name="auth_confirm_credential">אימות אישורך</string>
-    <string name="chat_with_developers">צ׳אט עם המפתחים</string>
     <string name="contact_connection_pending">מתחבר…</string>
     <string name="group_connection_pending">מתחבר…</string>
     <string name="confirm_verb">אשר</string>
@@ -196,8 +189,6 @@
     <string name="connection_local_display_name">חיבור %1$d</string>
     <string name="connect_via_invitation_link">להתחבר דרך קישור חד-פעמי?</string>
     <string name="contact_already_exists">איש הקשר כבר קיים</string>
-    <string name="delete_contact_all_messages_deleted_cannot_undo_warning">איש הקשר וכל ההודעות יימחקו – לא ניתן לבטל זאת!</string>
-    <string name="connect_via_link_or_qr">התחברות באמצעות קישור / קוד QR</string>
     <string name="connect_via_link">התחברות באמצעות קישור</string>
     <string name="chat_preferences_contact_allows">איש הקשר מאפשר</string>
     <string name="notification_preview_somebody">איש קשר מוסתר:</string>
@@ -212,11 +203,8 @@
     <string name="icon_descr_context">סמל מידע נוסף</string>
     <string name="copied">הועתק ללוח</string>
     <string name="share_one_time_link">צור קישור הזמנה חד־פעמי</string>
-    <string name="create_group">צור קבוצה סודית</string>
     <string name="contribute">תרומה</string>
     <string name="core_version">גרסת ליבה: v%s</string>
-    <string name="create_address">צור כתובת</string>
-    <string name="create_profile_button">צור</string>
     <string name="create_profile">צור פרופיל</string>
     <string name="create_your_profile">יצירת הפרופיל שלך</string>
     <string name="create_group_link">צור קישור קבוצה</string>
@@ -246,8 +234,6 @@
     <string name="delete_contact_menu_action">מחק</string>
     <string name="delete_group_menu_action">מחק</string>
     <string name="smp_servers_delete_server">מחק שרת</string>
-    <string name="create_address_and_let_people_connect">צרו כתובת כדי לאפשר לאנשים להתחבר אליכם.</string>
-    <string name="decentralized">מבוזר</string>
     <string name="set_password_to_export_desc">מסד הנתונים מוצפן באמצעות סיסמה אקראית. אנא שנו אותה לפני הייצוא.</string>
     <string name="delete_chat_profile">מחק פרופיל צ׳אט</string>
     <string name="chat_preferences_default">ברירת מחדל (%s)</string>
@@ -290,7 +276,6 @@
     <string name="color_secondary">משני</string>
     <string name="color_secondary_variant">משני נוסף</string>
     <string name="color_background">רקע</string>
-    <string name="learn_more_about_address">אודות כתובת SimpleX</string>
     <string name="add_address_to_your_profile">הוסיפו את הכתובת לפרופיל שלכם, כך שאנשי קשר יוכלו לשתף אותה עם אנשים אחרים. עדכון הפרופיל יישלח לאנשי הקשר.</string>
     <string name="color_primary_variant">הדגשה נוספת</string>
     <string name="address_section_title">כתובת</string>
@@ -317,7 +302,6 @@
     <string name="auth_device_authentication_is_not_enabled_you_can_turn_on_in_settings_once_enabled">נעילת המכשיר אינה מופעלת. ניתן להפעיל את נעילת SimpleX, לאחר שתפעילו את נעילת המכשיר.</string>
     <string name="total_files_count_and_size">%d קבצים בגודל כולל של %s</string>
     <string name="server_error">שגיאה</string>
-    <string name="error_loading_smp_servers">שגיאה בטעינת שרתי SMP</string>
     <string name="failed_to_create_user_title">שגיאה ביצירת פרופיל!</string>
     <string name="failed_to_create_user_duplicate_title">שם תצוגה כבר קיים!</string>
     <string name="error_creating_address">שגיאה ביצירת כתובת</string>
@@ -327,7 +311,6 @@
     <string name="la_enter_app_passcode">הזינו קוד גישה</string>
     <string name="auth_enable_simplex_lock">הפעלת נעילת SimpleX</string>
     <string name="edit_verb">ערוך</string>
-    <string name="display_name__field">שם פרופיל:</string>
     <string name="edit_image">ערוך תמונה</string>
     <string name="enter_correct_passphrase">הזינו סיסמה נכונה.</string>
     <string name="mtr_error_different">העברת נתונים שונה באפליקציה/מסד נתונים: %s / %s</string>
@@ -353,7 +336,6 @@
     <string name="error_changing_address">שגיאה בשינוי כתובת</string>
     <string name="error_deleting_user">שגיאה במחיקת פרופיל משתמש</string>
     <string name="auth_disable_simplex_lock">השבתת נעילת SimpleX</string>
-    <string name="dont_create_address">לא ליצור כתובת</string>
     <string name="no_call_on_lock_screen">מושבת</string>
     <string name="integrity_msg_duplicate">הודעה כפולה</string>
     <string name="error_deleting_database">שגיאה במחיקת מסד הנתונים של הצ׳אט</string>
@@ -384,7 +366,6 @@
     <string name="conn_level_desc_direct">ישיר</string>
     <string name="direct_messages_are_prohibited_in_group">הודעות ישירות בין חברי קבוצה אסורות בקבוצה זו.</string>
     <string name="display_name">הזן את שמך:</string>
-    <string name="display_name_cannot_contain_whitespace">שם תצוגה אינו יכול להכיל רווחים.</string>
     <string name="ttl_months">%d חודשים</string>
     <string name="ttl_mth">%d ח׳</string>
     <string name="ttl_sec">%d שנייה</string>
@@ -392,14 +373,12 @@
     <string name="encrypted_video_call">שיחת וידאו מוצפנת מקצה־לקצה</string>
     <string name="icon_descr_edited">הודעה נערכה</string>
     <string name="encrypted_audio_call">שיחת שמע מוצפנת מקצה־לקצה</string>
-    <string name="icon_descr_email">אימייל</string>
     <string name="allow_accepting_calls_from_lock_screen">אפשרו שיחות ממסך הנעילה דרך ההגדרות.</string>
     <string name="enter_passphrase">הזינו סיסמה…</string>
     <string name="enter_welcome_message_optional">הזינו הודעת פתיחה (אופציונלי)</string>
     <string name="enter_welcome_message">הזינו הודעת פתיחה…</string>
     <string name="error_deleting_contact">שגיאה במחיקת איש קשר</string>
     <string name="error_deleting_pending_contact_connection">שגיאה במחיקת חיבור איש קשר ממתין</string>
-    <string name="error_loading_xftp_servers">שגיאה בטעינת שרתי XFTP</string>
     <string name="error_sending_message">שגיאה בשליחת הודעה</string>
     <string name="error_receiving_file">שגיאה בקבלת קובץ</string>
     <string name="error_saving_ICE_servers">שגיאה בשמירת שרתי ICE</string>
@@ -410,13 +389,10 @@
     <string name="error_saving_file">שגיאה בשמירת קובץ</string>
     <string name="exit_without_saving">יציאה ללא שמירה</string>
     <string name="error_stopping_chat">שגיאה בעצירת צ׳אט</string>
-    <string name="error_saving_smp_servers">שגיאה בשמירת שרתי SMP</string>
-    <string name="error_saving_xftp_servers">שגיאה בשמירת שרתי XFTP</string>
     <string name="failed_to_active_user_title">שגיאה בהחלפת פרופיל!</string>
     <string name="error_setting_network_config">שגיאה בעדכון תצורת הרשת</string>
     <string name="failed_to_parse_chat_title">טעינת הצ׳אט נכשלה</string>
     <string name="failed_to_parse_chats_title">טעינת הצ׳אטים נכשלה</string>
-    <string name="error_setting_address">שגיאה בהגדרת כתובת</string>
     <string name="error_updating_user_privacy">שגיאה בעדכון פרטיות משתמש</string>
     <string name="error_saving_user_password">שגיאה בשמירת סיסמת משתמש</string>
     <string name="settings_section_title_experimenta">ניסיוני</string>
@@ -424,9 +400,7 @@
     <string name="error_with_info">שגיאה: %s</string>
     <string name="error_updating_link_for_group">שגיאה בעדכון קישור קבוצה</string>
     <string name="export_theme">ייצא ערכת נושא</string>
-    <string name="icon_descr_expand_role">הרחב בחירת תפקיד</string>
     <string name="file_will_be_received_when_contact_is_online">הקובץ ייתקבל כאשר איש הקשר יהיה מקוון, אנא חכו או בידקו מאוחר יותר!</string>
-    <string name="full_name__field">שם מלא:</string>
     <string name="file_with_path">קובץ: %s</string>
     <string name="icon_descr_group_inactive">קבוצה לא פעילה</string>
     <string name="group_invitation_expired">פג תוקפה של ההזמנה לקבוצה</string>
@@ -452,7 +426,6 @@
     <string name="v4_6_reduced_battery_usage">הפחתה נוספת בשימוש בסוללה</string>
     <string name="revoke_file__message">הקובץ יימחק מהשרתים.</string>
     <string name="icon_descr_flip_camera">הפוך מצלמה</string>
-    <string name="icon_descr_help">עזרה</string>
     <string name="if_you_cannot_meet_in_person_show_QR_in_video_call_or_via_another_channel"><![CDATA[אם לא ניתן להיפגש פנים אל פנים, <b>הציגו את קוד ה־QR בשיחת וידאו</b>, או שתפו את הקישור.]]></string>
     <string name="how_to">איך</string>
     <string name="how_to_use_your_servers">איך להשתמש בשרתים שלך</string>
@@ -480,7 +453,6 @@
 \nאפשר להתחבר אליי דרך SimpleX Chat: %s</string>
     <string name="hidden_profile_password">סיסמת פרופיל מוסתרת</string>
     <string name="hide_profile">הסתר פרופיל</string>
-    <string name="how_to_use_markdown">איך להשתמש במרקדאון</string>
     <string name="how_it_works">איך זה עובד</string>
     <string name="icon_descr_hang_up">נתק</string>
     <string name="settings_section_title_help">עזרה</string>
@@ -504,7 +476,6 @@
     <string name="ignore">התעלם</string>
     <string name="la_immediately">מיד</string>
     <string name="import_database">ייבא מסד נתונים</string>
-    <string name="immune_to_spam_and_abuse">חסין מפני ספאם</string>
     <string name="import_database_question">לייבא מסד נתונים של צ׳אט\?</string>
     <string name="icon_descr_image_snd_complete">תמונה נשלחה</string>
     <string name="image_will_be_received_when_contact_completes_uploading">התמונה תתקבל כאשר איש הקשר יסיים להעלות אותה.</string>
@@ -576,11 +547,8 @@
     <string name="leave_group_button">עזוב</string>
     <string name="make_profile_private">הפוך את הפרופיל לפרטי!</string>
     <string name="live">הודעה חיה</string>
-    <string name="ensure_smp_server_address_are_correct_format_and_unique">ודאו שכתובות שרתי ה־SMP הן בפורמט הנכון, מופרדות בשורה ולא משוכפלות.</string>
-    <string name="ensure_xftp_server_address_are_correct_format_and_unique">ודאו שכתובות שרתי ה־XFTP הן בפורמט הנכון, מופרדות בשורה ולא משוכפלות.</string>
     <string name="auth_log_in_using_credential">התחבר באמצעות האישור שלך</string>
     <string name="learn_more">למדו עוד</string>
-    <string name="markdown_help">עזרה במרקדאון</string>
     <string name="email_invite_subject">בואו נדבר ב־Simplex Chat</string>
     <string name="keychain_error">שגיאת Keychain</string>
     <string name="join_group_incognito_button">הצטרף עם זהות נסתרת</string>
@@ -743,7 +711,6 @@
     <string name="error_smp_test_certificate">ייתכן שטביעת האצבע של התעודה בכתובת השרת שגויה</string>
     <string name="auth_open_chat_console">פתיחת מסוף צ׳אט</string>
     <string name="auth_open_chat_profiles">שנה פרופילי צ׳אט</string>
-    <string name="icon_descr_server_status_pending">ממתין</string>
     <string name="smp_servers_preset_address">כתובת שרת מוגדר מראש</string>
     <string name="password_to_show">סיסמה להצגה</string>
     <string name="onboarding_notifications_mode_title">התראות פרטיות</string>
@@ -852,8 +819,6 @@
     <string name="save_verb">שמור</string>
     <string name="reveal_verb">הצג</string>
     <string name="revoke_file__action">בטל קובץ</string>
-    <string name="icon_descr_sent_msg_status_send_failed">שליחה נכשלה</string>
-    <string name="connect_via_link_or_qr_from_clipboard_or_in_person">(סירקו או הדביקו מהלוח)</string>
     <string name="send_disappearing_message_send">שלח</string>
     <string name="scan_code_from_contacts_app">סירקו קוד אבטחה מהאפליקציה של איש הקשר שלך.</string>
     <string name="self_destruct">השמדה עצמית</string>
@@ -865,7 +830,6 @@
     <string name="save_settings_question">לשמור הגדרות\?</string>
     <string name="secret_text">סודי</string>
     <string name="restore_database_alert_confirm">שחזור</string>
-    <string name="button_send_direct_message">שלח הודעה ישירה</string>
     <string name="sender_cancelled_file_transfer">השולח ביטל את העברת הקובץ.</string>
     <string name="notifications_mode_off">פועל כאשר האפליקציה פתוחה</string>
     <string name="stop_snd_file__message">שליחת הקובץ תופסק.</string>
@@ -897,7 +861,6 @@
     <string name="accept_feature_set_1_day">הגדר יום אחד</string>
     <string name="v4_4_disappearing_messages_desc">הודעות שנשלחו יימחקו לאחר הזמן שנקבע.</string>
     <string name="sent_message">הודעה שנשלחה</string>
-    <string name="icon_descr_sent_msg_status_sent">נשלח</string>
     <string name="chat_with_the_founder">שלחו שאלות ורעיונות</string>
     <string name="smp_servers_test_failed">בדיקת השרתים נכשלה!</string>
     <string name="settings_section_title_socks">פרוקסי SOCKS</string>
@@ -1015,7 +978,6 @@
     <string name="theme_colors_section_title">צבעי ממשק</string>
     <string name="member_role_will_be_changed_with_invitation">התפקיד ישתנה ל־"%s". החבר יקבל הזמנה חדשה.</string>
     <string name="smp_servers_per_user">השרתים לחיבורים חדשים של פרופיל הצ׳אט הנוכחי שלך</string>
-    <string name="first_platform_without_user_ids">הפלטפורמה הראשונה ללא כל מזהי משתמש - פרטית בעיצובה.</string>
     <string name="next_generation_of_private_messaging">הדור הבא של תקשורת פרטית</string>
     <string name="alert_text_msg_bad_hash">הגיבוב של ההודעה הקודמת שונה.</string>
     <string name="enable_automatic_deletion_message">לא ניתן לבטל פעולה זו - ההודעות שנשלחו והתקבלו לפני הזמן שנבחר יימחקו. זה עשוי להימשך מספר דקות.</string>
@@ -1052,8 +1014,6 @@
     <string name="to_preserve_privacy_simplex_has_background_service_instead_of_push_notifications_it_uses_a_few_pc_battery"><![CDATA[כדי לשפר את הפרטיות <b>SimpleX  רץ ברקע</b> במקום להשתמש בpush notifications.]]></string>
     <string name="enter_passphrase_notification_desc">כדי לקבל התראות, יש להזין את סיסמת מסד הנתונים</string>
     <string name="auth_unlock">בטל נעילה</string>
-    <string name="icon_descr_sent_msg_status_unauthorized_send">שליחה לא מורשית</string>
-    <string name="icon_descr_received_msg_status_unread">לא נקרא</string>
     <string name="verify_security_code">אימות קוד אבטחה</string>
     <string name="to_share_with_your_contact">(כדי לשתף עם איש הקשר שלך)</string>
     <string name="to_start_a_new_chat_help_header">כדי להתחיל צ׳אט חדש</string>
@@ -1092,8 +1052,6 @@
     <string name="failed_to_create_user_duplicate_desc">כבר יש לך פרופיל צ׳אט עם אותו שם תצוגה. יש לבחור שם אחר.</string>
     <string name="voice_message_with_duration">הודעה קולית (%1$s)</string>
     <string name="contact_wants_to_connect_with_you">רוצה שתתחברו!</string>
-    <string name="icon_descr_address">כתובת SimpleX</string>
-    <string name="icon_descr_simplex_team">צוות SimpleX</string>
     <string name="video_call_no_encryption">שיחת וידאו (לא מוצפנת מקצה־לקצה)</string>
     <string name="your_calls">השיחות שלך</string>
     <string name="settings_section_title_you">אתם</string>
@@ -1157,7 +1115,6 @@
     <string name="you_control_your_chat">אתם שולטים בצ׳אט שלכם!</string>
     <string name="you_can_use_markdown_to_format_messages__prompt">באפשרותך להשתמש במרקדאון כדי לעצב הודעות:</string>
     <string name="onboarding_notifications_mode_off">כאשר האפליקציה פועלת</string>
-    <string name="contact_wants_to_connect_via_call">%1$s רוצה שתתחברו דרך</string>
     <string name="icon_descr_video_call">שיחת וידאו</string>
     <string name="call_connection_via_relay">דרך ממסר</string>
     <string name="icon_descr_video_off">וידאו כבוי</string>
@@ -1305,7 +1262,6 @@
     <string name="v5_2_disappear_one_message_descr">גם אם הוא מושבת בשיחה.</string>
     <string name="v5_2_fix_encryption">שימרו על הקשרים שלכם</string>
     <string name="choose_file_title">בחר קובץ</string>
-    <string name="connect_via_link_incognito">התחבר בזהות נסתרת</string>
     <string name="connect_use_current_profile">השתמש בפרופיל הנוכחי</string>
     <string name="connect_use_new_incognito_profile">השתמש בפרופיל זהות נסתרת חדש</string>
     <string name="disable_notifications_button">השבת התראות</string>
@@ -1342,8 +1298,6 @@
     <string name="receipts_section_groups">קבוצות קטנות (מקסימום 20)</string>
     <string name="system_restricted_background_warn"><![CDATA[כדי להפעיל התראות, בחר <b>שימוש בסוללה באפליקציה</b> / <b>ללא הגבלה</b> בהגדרות האפליקציה.]]></string>
     <string name="system_restricted_background_in_call_warn"><![CDATA[כדי לבצע שיחות ברקע, בחר <b>שימוש בסוללה באפליקציה</b> / <b>ללא הגבלה</b> בהגדרות האפליקציה.]]></string>
-    <string name="connect_via_member_address_alert_title">להתחבר ישירות\?</string>
-    <string name="connect_via_member_address_alert_desc">בקשת חיבור תישלח לחבר קבוצה זה.</string>
     <string name="database_will_be_encrypted_and_passphrase_stored_in_settings">מסד הנתונים יוצפן וביטוי הסיסמה יאוחסן בהגדרות.</string>
     <string name="rcv_group_event_open_chat">פתח</string>
     <string name="v5_3_encrypt_local_files">הצפנת קבצים ומדיה מאוחסנים</string>
@@ -1372,7 +1326,6 @@
 \n- קבלות משלוח (עד 20 חברים).
 \n- מהיר ויציב יותר.</string>
     <string name="settings_is_storing_in_clear_text">ביטוי הסיסמה מאוחסן בהגדרות כטקסט רגיל.</string>
-    <string name="member_contact_send_direct_message">שלח הודעה ישירה</string>
     <string name="rcv_group_event_member_created_contact">מחובר ישירות</string>
     <string name="terminal_always_visible">הצג קונסולה בחלון חדש</string>
     <string name="v5_5_private_notes">הערות פרטיות</string>
@@ -1513,7 +1466,6 @@
     <string name="tap_to_scan">לחץ לסריקה</string>
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>צור קבוצה</b>: כדי ליצור קבוצה חדשה.]]></string>
     <string name="clear_note_folder_question">למחוק הערות פרטיות?</string>
-    <string name="add_contact_tab">הוסף איש קשר</string>
     <string name="you_can_view_invitation_link_again">תוכל לראות את קישור ההזמנה שוב בפרטי החיבור.</string>
     <string name="keep_unused_invitation_question">האם לשמור הזמנה שלא נעשה בה שימוש?</string>
     <string name="the_text_you_pasted_is_not_a_link">הטקסט שהדבקת אינו קישור של SimpleX.</string>
@@ -1734,7 +1686,6 @@
     <string name="audio_device_earpiece">אוזניות</string>
     <string name="settings_section_title_user_theme">ערכת נושא לפרופיל</string>
     <string name="settings_section_title_chat_colors">צבעי הצא\'ט</string>
-    <string name="chat_list_always_visible">הצג רשימת שיחות בחלון חדש</string>
     <string name="info_row_file_status">מצב הקובץ</string>
     <string name="info_row_message_status">סטטוס הודעה</string>
     <string name="share_text_file_status">מצב הקובץ:%s</string>
@@ -1954,7 +1905,6 @@
     <string name="operators_conditions_will_also_apply"><![CDATA[ התנאי שימוש האלו יחולו גם על: <b>%s</b>.]]></string>
     <string name="xiaomi_ignore_battery_optimization"><![CDATA[<b>מכשירי שיואמי</b>: אנא תאפשר הפעלה אוטומטית בהגדרות הטלפון שלך כדי שההתראות על הודעות חדשות יפעלו.]]></string>
     <string name="forward_files_messages_deleted_after_selection_title">%1$s ההודעות לא הועברו.</string>
-    <string name="all_message_and_files_e2e_encrypted"><![CDATA[כל ההודעות והקבצים נשלחים <b>מוצפנים מקצה לקצה</b>, עם אבטחה פוסט-קוונטית בהודעות ישירות.]]></string>
     <string name="appearance_bars_blur_radius">טישטוש</string>
     <string name="chat_list_businesses">עסקי</string>
     <string name="operator_in_order_to_use_accept_conditions"><![CDATA[כדי להשתמש בשרתים של <b>%s</b>, קבל את תנאי השימוש.]]></string>
@@ -2036,13 +1986,11 @@
     <string name="snd_error_proxy">שרת ההעברות: %1$s\nשגיאה: %2$s</string>
     <string name="for_social_media">למדיה חברתית</string>
     <string name="v6_0_increase_font_size">הגדל את גודל הגופן.</string>
-    <string name="list_menu">רשימה</string>
     <string name="chat_list_favorites">מעודפים</string>
     <string name="chat_list_groups">קבוצות</string>
     <string name="list_name_field_placeholder">שם הרשימה..</string>
     <string name="duplicated_list_error">שם הרשימה והאמוג\'י צריכים להיות שונים משאר הרשימות.</string>
     <string name="keep_conversation">שמור שיחה</string>
-    <string name="invite_friends_short">הזמן</string>
     <string name="v5_7_new_interface_languages">ממשק בשפה הליטאית</string>
     <string name="file_error_blocked">הקובץ נחסם ע\"י מפעיל השרת:\n%1$s.</string>
     <string name="report_archive_for_me">בשבילי</string>

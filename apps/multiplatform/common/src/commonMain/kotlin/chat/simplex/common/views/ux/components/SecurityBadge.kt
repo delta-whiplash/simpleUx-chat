@@ -87,7 +87,7 @@ fun SecurityBadge(
                     else -> MR.images.ic_lock
                 }
             ),
-            contentDescription = "Chiffrement",
+            contentDescription = stringResource(MR.strings.icon_descr_encryption),
             tint = accentColor,
             modifier = Modifier.size(12.dp)
         )

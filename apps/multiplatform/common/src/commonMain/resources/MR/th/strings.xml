@@ -17,7 +17,6 @@
     <string name="accept_connection_request__question">รับการขอเชื่อมต่อหรือไม่\?</string>
     <string name="one_time_link_short">ลิงก์สำหรับใช้ 1 ครั้ง</string>
     <string name="send_disappearing_message_5_minutes">5 นาที</string>
-    <string name="about_simplex">เกี่ยวกับ SimpleX</string>
     <string name="network_enable_socks_info">เข้าถึงเซิร์ฟเวอร์ผ่านพร็อกซี SOCKS บนพอร์ต %d หรือไม่\? ต้องเริ่มพร็อกซีก่อนที่จะเปิดใช้งานตัวเลือกนี้</string>
     <string name="add_address_to_your_profile">เพิ่มที่อยู่ลงในโปรไฟล์ของคุณ เพื่อให้ผู้ติดต่อของคุณสามารถแชร์กับผู้อื่นได้ การอัปเดตโปรไฟล์จะถูกส่งไปยังผู้ติดต่อของคุณ</string>
     <string name="color_primary_variant">เน้นสีเพิ่มเติม</string>
@@ -26,7 +25,6 @@
     <string name="keychain_is_storing_securely">Android Keystore ใช้เพื่อจัดเก็บรหัสผ่านอย่างปลอดภัย - ซึ่งจะช่วยให้บริการแจ้งเตือนทำงานได้</string>
     <string name="keychain_allows_to_receive_ntfs">Android Keystore จะถูกใช้เพื่อจัดเก็บรหัสผ่านอย่างปลอดภัยหลังจากที่คุณรีสตาร์ทแอปหรือเปลี่ยนรหัสผ่าน - ซึ่งจะอนุญาตให้รับบริการแจ้งเตือนได้</string>
     <string name="app_version_code">รุ่นแอป: %s</string>
-    <string name="full_backup">การสํารองข้อมูลแอป</string>
     <string name="empty_chat_profile_is_created">โปรไฟล์แชทที่ว่างเปล่าพร้อมชื่อที่ให้ไว้ได้ถูกสร้างขึ้นและแอปจะเปิดตามปกติ</string>
     <string name="audio_call_no_encryption">การโทรด้วยเสียง (ไม่ได้ encrypt จากต้นจนจบ)</string>
     <string name="notifications_mode_off_desc">แอปสามารถรับการแจ้งเตือนได้เฉพาะเมื่อกำลังทำงานอยู่เท่านั้น โดยจะไม่มีการเริ่มบริการพื้นหลัง</string>
@@ -92,8 +90,6 @@
     <string name="allow_voice_messages_only_if">อนุญาตข้อความเสียงเฉพาะเมื่อผู้ติดต่อของคุณอนุญาตเท่านั้น</string>
     <string name="all_your_contacts_will_remain_connected_update_sent">ผู้ติดต่อทั้งหมดของคุณจะยังคงเชื่อมต่ออยู่. การอัปเดตโปรไฟล์จะถูกส่งไปยังผู้ติดต่อของคุณ.</string>
     <string name="chat_preferences_always">เสมอ</string>
-    <string name="available_in_v51">"
-\nพร้อมใช้งานใน v5.1"</string>
     <string name="back">กลับ</string>
     <string name="integrity_msg_bad_hash">แฮชข้อความไม่ดี</string>
     <string name="notifications_mode_service_desc">บริการพื้นหลังทำงานตลอดเวลา - การแจ้งเตือนจะแสดงทันทีที่มีข้อความ</string>
@@ -112,7 +108,6 @@
     <string name="both_you_and_your_contact_can_add_message_reactions">ทั้งคุณและผู้ติดต่อของคุณสามารถเพิ่มปฏิกิริยาต่อข้อความได้</string>
     <string name="both_you_and_your_contacts_can_delete">ทั้งคุณและผู้ติดต่อของคุณสามารถลบข้อความที่ส่งแล้วอย่างถาวรได้</string>
     <string name="use_camera_button">กล้อง</string>
-    <string name="learn_more_about_address">เกี่ยวกับที่อยู่ SimpleX</string>
     <string name="bold_text">ตัวหนา</string>
     <string name="callstatus_calling">กำลังโทร…</string>
     <string name="callstatus_in_progress">กําลังโทร</string>
@@ -159,16 +154,13 @@
     <string name="connection_error">การเชื่อมต่อผิดพลาด</string>
     <string name="connection_timeout">หมดเวลาการเชื่อมต่อ</string>
     <string name="connect_via_group_link">เชื่อมต่อผ่านลิงค์กลุ่ม\?</string>
-    <string name="delete_contact_all_messages_deleted_cannot_undo_warning">ผู้ติดต่อและข้อความทั้งหมดจะถูกลบ - ไม่สามารถยกเลิกได้!</string>
     <string name="maximum_supported_file_size">ขนาดไฟล์สูงสุดที่รองรับในปัจจุบันคือ %1$s</string>
     <string name="v5_1_custom_themes">ธีมที่กำหนดเอง</string>
     <string name="developer_options">ID ฐานข้อมูลและตัวเลือกการแยกการส่งผ่าน</string>
     <string name="info_row_database_id">ID ฐานข้อมูล</string>
-    <string name="connect_via_link_verb">เชื่อมต่อ</string>
     <string name="server_connecting">กำลังเชื่อมต่อ</string>
     <string name="connect_via_contact_link">เชื่อมต่อผ่านลิงค์ติดต่อ\?</string>
     <string name="connect_via_invitation_link">เชื่อมต่อผ่านลิงค์เชิญ\?</string>
-    <string name="display_name_connecting">กำลังเชื่อมต่อ…</string>
     <string name="display_name_connection_established">สร้างการเชื่อมต่อแล้ว</string>
     <string name="connection_local_display_name">การเชื่อมต่อ %1$d</string>
     <string name="contact_already_exists">ผู้ติดต่อรายนี้มีอยู่แล้ว</string>
@@ -184,16 +176,13 @@
     <string name="la_current_app_passcode">รหัสผ่านปัจจุบัน</string>
     <string name="auth_confirm_credential">ยืนยันข้อมูลประจำตัวของคุณ</string>
     <string name="copy_verb">คัดลอก</string>
-    <string name="chat_with_developers">แชทกับนักพัฒนาแอป</string>
     <string name="group_connection_pending">กำลังเชื่อมต่อ…</string>
     <string name="icon_descr_context">ไอคอนบริบท</string>
     <string name="icon_descr_server_status_connected">เชื่อมต่อสำเร็จ</string>
     <string name="send_disappearing_message_custom_time">เวลาที่กําหนดเอง</string>
     <string name="confirm_verb">ยืนยัน</string>
     <string name="copied">คัดลอกไปที่คลิปบอร์ดแล้ว</string>
-    <string name="connect_via_link_or_qr">เชื่อมต่อผ่านลิงค์ / คิวอาร์โค้ด</string>
     <string name="share_one_time_link">สร้างลิงก์เชิญแบบใช้ครั้งเดียว</string>
-    <string name="create_group">สร้างกลุ่มลับ</string>
     <string name="clear_verb">ล้าง</string>
     <string name="clear_chat_question">ล้างแชท\?</string>
     <string name="clear_chat_menu_action">ลบ</string>
@@ -210,11 +199,8 @@
     <string name="network_session_mode_entity">การเชื่อมต่อ</string>
     <string name="core_version">เวอร์ชันหลัก: v%s</string>
     <string name="customize_theme_title">ปรับแต่งธีม</string>
-    <string name="create_address">สร้างที่อยู่</string>
-    <string name="create_address_and_let_people_connect">สร้างที่อยู่เพื่อให้ผู้อื่นเชื่อมต่อกับคุณ</string>
     <string name="create_simplex_address">สร้างที่อยู่ SimpleX</string>
     <string name="continue_to_next_step">ดำเนินการต่อ</string>
-    <string name="create_profile_button">สร้าง</string>
     <string name="create_profile">สร้างโปรไฟล์</string>
     <string name="colored_text">มีสี</string>
     <string name="callstatus_connecting">กําลังเชื่อมต่อสาย…</string>
@@ -277,14 +263,10 @@
     <string name="delete_group_question">ลบกลุ่ม\?</string>
     <string name="auth_device_authentication_is_not_enabled_you_can_turn_on_in_settings_once_enabled">การตรวจสอบอุปกรณ์ไม่ได้ถูกเปิดใช้งาน คุณสามารถเปิด SimpleX Lock ผ่านการตั้งค่าได้ เมื่อคุณเปิดใช้งานการตรวจสอบอุปกรณ์แล้ว</string>
     <string name="enter_welcome_message_optional">ใส่ข้อความต้อนรับ… (ไม่บังคับ)</string>
-    <string name="error_loading_smp_servers">เกิดข้อผิดพลาดในการโหลดเซิร์ฟเวอร์ SMP</string>
-    <string name="error_loading_xftp_servers">เกิดข้อผิดพลาดในการโหลดเซิร์ฟเวอร์ XFTP</string>
     <string name="server_error">ข้อผิดพลาด</string>
     <string name="deleted_description">ลบแล้ว</string>
     <string name="simplex_link_mode_full">ลิงค์เต็ม</string>
     <string name="simplex_link_mode_description">คำอธิบาย</string>
-    <string name="error_saving_smp_servers">เกิดข้อผิดพลาดในการบันทึกเซิร์ฟเวอร์ SMP</string>
-    <string name="error_saving_xftp_servers">เกิดข้อผิดพลาดในการบันทึกเซิร์ฟเวอร์ XFTP</string>
     <string name="error_setting_network_config">เกิดข้อผิดพลาดในการอัปเดตการกำหนดค่าเครือข่าย</string>
     <string name="failed_to_create_user_duplicate_title">ชื่อที่แสดงซ้ำ!</string>
     <string name="failed_to_create_user_title">เกิดข้อผิดพลาดในการสร้างโปรไฟล์!</string>
@@ -302,7 +284,6 @@
     <string name="error_deleting_contact_request">เกิดข้อผิดพลาดในการลบคำขอติดต่อ</string>
     <string name="error_deleting_group">เกิดข้อผิดพลาดในการลบกลุ่ม</string>
     <string name="error_deleting_pending_contact_connection">เกิดข้อผิดพลาดในการลบการเชื่อมต่อผู้ติดต่อที่รอดำเนินการ</string>
-    <string name="error_setting_address">เกิดข้อผิดพลาดในการตั้งที่อยู่</string>
     <string name="smp_server_test_delete_queue">ลบคิว</string>
     <string name="smp_server_test_disconnect">ตัดการเชื่อมต่อ</string>
     <string name="smp_server_test_download_file">ดาวน์โหลดไฟล์</string>
@@ -346,8 +327,6 @@
     <string name="delete_contact_menu_action">ลบ</string>
     <string name="delete_group_menu_action">ลบ</string>
     <string name="delete_pending_connection__question">ลบการเชื่อมต่อที่รอดำเนินการหรือไม่\?</string>
-    <string name="icon_descr_help">ความช่วยเหลือ</string>
-    <string name="icon_descr_email">อีเมล</string>
     <string name="database_passphrase_and_export">รหัสผ่านฐานข้อมูล &amp; ส่งออก</string>
     <string name="how_to_use_simplex_chat">วิธีการใช้งาน</string>
     <string name="smp_servers_enter_manually">ใส่เซิร์ฟเวอร์ด้วยตนเอง</string>
@@ -362,9 +341,6 @@
     <string name="email_invite_body">สวัสดี!
 \nเชื่อมต่อกับฉันผ่าน SimpleX Chat: %s</string>
     <string name="delete_address">ลบที่อยู่</string>
-    <string name="dont_create_address">อย่าสร้างที่อยู่</string>
-    <string name="full_name__field">ชื่อเต็ม:</string>
-    <string name="display_name__field">ชื่อที่แสดง:</string>
     <string name="exit_without_saving">ออกโดยไม่บันทึก</string>
     <string name="delete_image">ลบภาพ</string>
     <string name="edit_image">แก้ไขภาพ</string>
@@ -372,11 +348,8 @@
     <string name="hide_profile">ซ่อนโปรไฟล์</string>
     <string name="error_saving_user_password">เกิดข้อผิดพลาดในการบันทึกรหัสผ่านผู้ใช้</string>
     <string name="display_name">ชื่อที่แสดง</string>
-    <string name="display_name_cannot_contain_whitespace">ชื่อที่แสดงต้องไม่มีช่องว่าง</string>
-    <string name="how_to_use_markdown">วิธีใช้มาร์กดาวน์</string>
     <string name="callstate_ended">สิ้นสุดลงแล้ว</string>
     <string name="how_it_works">มันทำงานอย่างไร</string>
-    <string name="decentralized">กระจายอำนาจแล้ว</string>
     <string name="encrypted_audio_call">การโทรเสียงแบบ encrypted จากต้นจนจบ</string>
     <string name="encrypted_video_call">การโทรวิดีแบบ encrypted จากต้นจนจบ</string>
     <string name="no_call_on_lock_screen">ปิดการใช้งาน</string>
@@ -433,7 +406,6 @@
     <string name="group_invitation_expired">คำเชิญเข้าร่วมกลุ่มหมดอายุแล้ว</string>
     <string name="snd_group_event_group_profile_updated">อัปเดตโปรไฟล์กลุ่มแล้ว</string>
     <string name="group_member_status_group_deleted">ลบกลุ่มแล้ว</string>
-    <string name="icon_descr_expand_role">ขยายการเลือกบทบาท</string>
     <string name="delete_group_for_all_members_cannot_undo_warning">กลุ่มจะถูกลบสำหรับสมาชิกทั้งหมด - ไม่สามารถยกเลิกได้!</string>
     <string name="num_contacts_selected">%d เลือกผู้ติดต่อแล้ว</string>
     <string name="button_delete_group">ลบกลุ่ม</string>
@@ -566,7 +538,6 @@
     <string name="invite_friends">เชิญเพื่อน ๆ</string>
     <string name="email_invite_subject">มาคุยกันใน SimpleX Chat</string>
     <string name="italic_text">ตัวเอียง</string>
-    <string name="immune_to_spam_and_abuse">มีภูมิคุ้มกันต่อสแปมและการละเมิด</string>
     <string name="make_private_connection">สร้างการเชื่อมต่อแบบส่วนตัว</string>
     <string name="onboarding_notifications_mode_subtitle">สามารถเปลี่ยนแปลงได้ในภายหลังผ่านการตั้งค่า</string>
     <string name="incoming_video_call">สายวิดีโอเข้ามา</string>
@@ -617,7 +588,6 @@
     <string name="opening_database">กำลังเปิดฐานข้อมูล…</string>
     <string name="marked_deleted_description">ทำเครื่องหมายว่าลบแล้ว</string>
     <string name="moderated_description">กลั่นกรองแล้ว</string>
-    <string name="ensure_xftp_server_address_are_correct_format_and_unique">ตรวจสอบให้แน่ใจว่าที่อยู่เซิร์ฟเวอร์ XFTP อยู่ในรูปแบบที่ถูกต้อง แยกบรรทัดและไม่ซ้ำกัน</string>
     <string name="periodic_notifications">การแจ้งเตือนเป็นระยะ</string>
     <string name="enter_passphrase_notification_title">จำเป็นต้องใช้รหัสผ่าน</string>
     <string name="periodic_notifications_disabled">การแจ้งเตือนเป็นระยะปิดอยู่!</string>
@@ -637,7 +607,6 @@
     <string name="videos_limit_desc">สามารถส่งวิดีโอได้ครั้งละ 10 วิดีโอเท่านั้น</string>
     <string name="observer_cant_send_message_desc">โปรดติดต่อผู้ดูแลกลุ่ม</string>
     <string name="notifications">การแจ้งเตือน</string>
-    <string name="icon_descr_server_status_pending">รอดำเนินการ</string>
     <string name="ask_your_contact_to_enable_voice">โปรดขอให้ผู้ติดต่อของคุณเปิดใช้งานการส่งข้อความเสียง</string>
     <string name="only_group_owners_can_enable_voice">เฉพาะเจ้าของกลุ่มเท่านั้นที่สามารถเปิดใช้งานข้อความเสียงได้</string>
     <string name="no_details">ไม่มีรายละเอียด</string>
@@ -652,7 +621,6 @@
     <string name="paste_button">แปะ</string>
     <string name="one_time_link">ลิงก์คําเชิญแบบใช้ครั้งเดียว</string>
     <string name="mark_code_verified">ทําเครื่องหมายว่ายืนยันแล้ว</string>
-    <string name="markdown_help">ช่วยมาร์คดาวน์</string>
     <string name="markdown_in_messages">Markdown ในข้อความ</string>
     <string name="ensure_ICE_server_address_are_correct_format_and_unique">ตรวจสอบให้แน่ใจว่าที่อยู่เซิร์ฟเวอร์ WebRTC ICE อยู่ในรูปแบบที่ถูกต้อง แยกบรรทัดและไม่ซ้ำกัน</string>
     <string name="network_and_servers">เครือข่ายและเซิร์ฟเวอร์</string>
@@ -744,7 +712,6 @@
     <string name="moderated_item_description">กลั่นกรองโดย %s</string>
     <string name="message_delivery_error_desc">เป็นไปได้มากว่าผู้ติดต่อนี้ได้ลบการเชื่อมต่อกับคุณ</string>
     <string name="message_delivery_error_title">ข้อผิดพลาดในการส่งข้อความ</string>
-    <string name="ensure_smp_server_address_are_correct_format_and_unique">ตรวจสอบให้แน่ใจว่าที่อยู่เซิร์ฟเวอร์ SMP อยู่ในรูปแบบที่ถูกต้อง แยกบรรทัดและไม่ซ้ำกัน</string>
     <string name="network_use_onion_hosts_prefer_desc">โฮสต์หัวหอมจะถูกใช้เมื่อมี</string>
     <string name="only_your_contact_can_send_voice">ผู้ติดต่อของคุณเท่านั้นที่สามารถส่งข้อความเสียงได้</string>
     <string name="simplex_link_mode_browser_warning">การเปิดลิงก์ในเบราว์เซอร์อาจลดความเป็นส่วนตัวและความปลอดภัยของการเชื่อมต่อ ลิงก์ SimpleX ที่ไม่น่าเชื่อถือจะเป็นสีแดง</string>
@@ -884,13 +851,10 @@
     <string name="share_verb">แชร์</string>
     <string name="sent_message">ข้อความที่ส่งแล้ว</string>
     <string name="stop_snd_file__message">การส่งไฟล์จะหยุดลง</string>
-    <string name="icon_descr_sent_msg_status_send_failed">ส่งล้มเหลว</string>
-    <string name="icon_descr_sent_msg_status_sent">ส่งแล้ว</string>
     <string name="share_image">แชร์สื่อ…</string>
     <string name="icon_descr_send_message">ส่งข้อความ</string>
     <string name="send_live_message">ส่งข้อความสด</string>
     <string name="send_verb">ส่ง</string>
-    <string name="connect_via_link_or_qr_from_clipboard_or_in_person">(สแกนหรือวางจากคลิปบอร์ด)</string>
     <string name="scan_QR_code">สแกนคิวอาร์โค้ด</string>
     <string name="set_contact_name">ตั้งชื่อผู้ติดต่อ</string>
     <string name="icon_descr_settings">การตั้งค่า</string>
@@ -917,7 +881,6 @@
     <string name="save_passphrase_in_keychain">บันทึกรหัสผ่านใน Keystore</string>
     <string name="select_contacts">เลือกผู้ติดต่อ</string>
     <string name="share_address">แชร์ที่อยู่</string>
-    <string name="button_send_direct_message">ส่งข้อความโดยตรง</string>
     <string name="save_welcome_message_question">บันทึกข้อความต้อนรับ\?</string>
     <string name="conn_stats_section_title_servers">เซิร์ฟเวอร์</string>
     <string name="save_group_profile">บันทึกโปรไฟล์กลุ่ม</string>
@@ -990,7 +953,6 @@
     <string name="smp_servers_test_some_failed">บางเซิร์ฟเวอร์ผ่านการทดสอบล้มเหลว:</string>
     <string name="network_socks_proxy_settings">การตั้งค่าพร็อกซี SOCKS</string>
     <string name="core_simplexmq_version">Simplexmq: v%s (%2s)</string>
-    <string name="first_platform_without_user_ids">แพลตฟอร์มแรกที่ไม่มีตัวระบุผู้ใช้ - ถูกออกแบบให้เป็นส่วนตัว</string>
     <string name="icon_descr_speaker_off">ปิดลำโพง</string>
     <string name="icon_descr_speaker_on">เปิดลำโพง</string>
     <string name="alert_title_skipped_messages">ข้อความที่ข้ามไป</string>
@@ -1027,7 +989,6 @@
     <string name="onboarding_notifications_mode_off">เมื่อแอพกำลังทำงาน</string>
     <string name="v4_4_verify_connection_security">ตรวจสอบความปลอดภัยในการเชื่อมต่อ</string>
     <string name="incognito_info_share">เมื่อคุณแชร์โปรไฟล์ที่ไม่ระบุตัวตนกับใครสักคน โปรไฟล์นี้จะใช้สำหรับกลุ่มที่พวกเขาเชิญคุณ</string>
-    <string name="contact_wants_to_connect_via_call">%1$s ต้องการเชื่อมต่อกับคุณผ่านทาง</string>
     <string name="alert_text_decryption_error_n_messages_failed_to_decrypt">การ decrypt %1$d ข้อความล้มเหลว</string>
     <string name="group_info_section_title_num_members">%1$s สมาชิก</string>
     <string name="you_can_connect_to_simplex_chat_founder"><![CDATA[คุณสามารถ <font color="#0088ff">เชื่อมต่อกับ SimpleX Chat นักพัฒนาแอปเพื่อถามคำถามและรับการอัปเดต</font>]]></string>
@@ -1070,8 +1031,6 @@
     <string name="you_can_turn_on_lock">คุณสามารถเปิด SimpleX Lock ผ่านการตั้งค่า</string>
     <string name="moderate_message_will_be_deleted_warning">ข้อความจะถูกลบสำหรับสมาชิกทั้งหมด</string>
     <string name="moderate_message_will_be_marked_warning">ข้อความจะถูกทำเครื่องหมายว่ากลั่นกรองสำหรับสมาชิกทุกคน</string>
-    <string name="icon_descr_received_msg_status_unread">ยังไม่ได้อ่าน</string>
-    <string name="icon_descr_sent_msg_status_unauthorized_send">ส่งโดยไม่ได้รับอนุญาต</string>
     <string name="welcome">ยินดีต้อนรับ!</string>
     <string name="personal_welcome">ยินดีต้อนรับ %1$s!</string>
     <string name="group_preview_you_are_invited">คุณได้รับเชิญให้เข้าร่วมกลุ่ม</string>
@@ -1106,9 +1065,7 @@
     <string name="contact_wants_to_connect_with_you">ต้องการเชื่อมต่อกับคุณ!</string>
     <string name="alert_text_connection_pending_they_need_to_be_online_can_delete_and_retry">ผู้ติดต่อของคุณจะต้องออนไลน์เพื่อให้การเชื่อมต่อเสร็จสมบูรณ์
 \nคุณสามารถยกเลิกการเชื่อมต่อนี้และลบผู้ติดต่อออก (และลองใหม่ในภายหลังด้วยลิงก์ใหม่)</string>
-    <string name="icon_descr_address">ที่อยู่ SimpleX</string>
     <string name="image_descr_simplex_logo">โลโก้ SimpleX</string>
-    <string name="icon_descr_simplex_team">SimpleX ทีม</string>
     <string name="you_will_be_connected_when_group_host_device_is_online">คุณจะเชื่อมต่อกับกลุ่มเมื่ออุปกรณ์โฮสต์ของกลุ่มออนไลน์อยู่ โปรดรอหรือตรวจสอบภายหลัง!</string>
     <string name="you_will_be_connected_when_your_connection_request_is_accepted">คุณจะเชื่อมต่อเมื่อคำขอเชื่อมต่อของคุณได้รับการยอมรับ โปรดรอหรือตรวจสอบในภายหลัง!</string>
     <string name="your_chat_profile_will_be_sent_to_your_contact">โปรไฟล์แชทของคุณจะถูกส่ง

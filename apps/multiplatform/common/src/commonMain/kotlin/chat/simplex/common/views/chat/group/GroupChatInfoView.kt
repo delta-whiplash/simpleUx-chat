@@ -943,7 +943,7 @@ fun ChatTTLOption(
   chatItemTTL: State<ChatItemTTL?>,
   setChatItemTTL: (ChatItemTTL?) -> Unit,
   deletingItems: State<Boolean>,
-  title: String = "Messages éphémères"
+  title: String? = null
 ) {
   Box {
     TtlOptions(
@@ -951,7 +951,7 @@ fun ChatTTLOption(
       enabled = remember { derivedStateOf { !deletingItems.value } },
       onSelected = setChatItemTTL,
       default = chatModel.chatItemTTL,
-      title = title
+      title = title ?: stringResource(MR.strings.timed_messages)
     )
     if (deletingItems.value) {
       Box(Modifier.matchParentSize()) {

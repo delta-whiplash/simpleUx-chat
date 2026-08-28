@@ -29,13 +29,23 @@ import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.bounceClick
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 
-enum class UxFilterCategory(val label: String) {
-    ALL("Tous"),
-    UNREAD("Non lus"),
-    DIRECT("Directs"),
-    GROUPS("Groupes"),
-    FAVORITES("Favoris")
+enum class UxFilterCategory {
+    ALL,
+    UNREAD,
+    DIRECT,
+    GROUPS,
+    FAVORITES
+}
+
+@Composable
+private fun UxFilterCategory.localizedLabel(): String = when (this) {
+    UxFilterCategory.ALL -> stringResource(MR.strings.chat_list_all)
+    UxFilterCategory.UNREAD -> stringResource(MR.strings.filter_pill_unread)
+    UxFilterCategory.DIRECT -> stringResource(MR.strings.filter_pill_direct)
+    UxFilterCategory.GROUPS -> stringResource(MR.strings.chat_list_groups)
+    UxFilterCategory.FAVORITES -> stringResource(MR.strings.chat_list_favorites)
 }
 
 @Composable
@@ -125,7 +135,7 @@ fun FilterPillsRow(
                     }
 
                     Text(
-                        text = category.label,
+                        text = category.localizedLabel(),
                         color = textColor.value,
                         fontSize = 13.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium

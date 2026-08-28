@@ -43,12 +43,8 @@
     <string name="stop_file__confirm">Bisekinîne</string>
     <string name="revoke_file__message">Dosya wê ji serveran bê jêbirin.</string>
     <string name="download_file">Daxe</string>
-    <string name="list_menu">Lîste</string>
     <string name="member_inactive_title">Endam ne aktîv e</string>
     <string name="icon_descr_edited">guhertî</string>
-    <string name="icon_descr_sent_msg_status_sent">şandî</string>
-    <string name="icon_descr_sent_msg_status_send_failed">şandin bi ser neket</string>
-    <string name="icon_descr_received_msg_status_unread">nexwendî</string>
     <string name="personal_welcome">Bi xêr hatî %1$s!</string>
     <string name="welcome">Bi xêr hatî!</string>
     <string name="this_text_is_available_in_settings">Ev nivîs di eyaran de heye</string>
@@ -123,11 +119,7 @@
     <string name="icon_descr_close_button">Pişkoka girtinê</string>
     <string name="icon_descr_settings">Eyar</string>
     <string name="image_descr_qr_code">Koda QRyê</string>
-    <string name="icon_descr_address">Adresa SimpleXê</string>
-    <string name="icon_descr_help">arîkarî</string>
-    <string name="icon_descr_simplex_team">Taximê SimpleXê</string>
     <string name="image_descr_simplex_logo">Logoya SimpleXê</string>
-    <string name="icon_descr_email">E-poste</string>
     <string name="icon_descr_more_button">Bêhtir</string>
     <string name="show_QR_code">Koda QRyê nîşan bide</string>
     <string name="share_1_time_link_with_a_friend">Lînka 1-carê bi hevalekî re parve bike</string>
@@ -159,7 +151,6 @@
     <string name="your_simplex_contact_address">Adresa te yî SimpleXê</string>
     <string name="about_simplex_chat">Li ser SimpleX Chat</string>
     <string name="how_to_use_simplex_chat">Çawa tê şuxulandin</string>
-    <string name="markdown_help">Arîkariya Markdownê</string>
     <string name="chat_with_the_founder">Pirsan û fikran bişîne</string>
     <string name="send_us_an_email">E-poste ji me re bişîne</string>
     <string name="smp_servers_use_server">Server bi kar bîne</string>
@@ -199,8 +190,6 @@
     <string name="exit_without_saving">Bê qeydkirinê derkeve</string>
     <string name="hide_profile">Profîlê veşêre</string>
     <string name="save_profile_password">Şîfra profîlê qeyd bike</string>
-    <string name="about_simplex">Li ser SimpleXê</string>
-    <string name="how_to_use_markdown">Markdown çawa tê şuxulandin</string>
     <string name="bold_text">qalin</string>
     <string name="italic_text">xwehr</string>
     <string name="a_plus_b">a + b</string>
@@ -345,7 +334,6 @@
     <string name="language_system">Sîstem</string>
     <string name="system_mode_toast">Moda sîstemê</string>
     <string name="settings_message_shape_tail">Terî/Dûvik</string>
-    <string name="address_creation_instruction">Pêl Adresa SimpleXê çêke di meniwê de ji bo ko tu dûvre çêkî.</string>
     <string name="chat_banner_join_group">Pêl Bikeve komê bike</string>
     <string name="join_group_button">Bikeviyê</string>
     <string name="compose_view_join_group">Bikeve komê</string>
@@ -370,7 +358,6 @@
     <string name="abort_switch_receiving_address_confirm">Betal bike</string>
     <string name="abort_switch_receiving_address">Guhertina adresê betal bike</string>
     <string name="abort_switch_receiving_address_question">Guhertina adresê betal bike?</string>
-    <string name="learn_more_about_address">Li ser adresa SimpleXê</string>
     <string name="onboarding_conditions_accept">Qebûl bike</string>
     <string name="accept_feature">Qebûl bike</string>
     <string name="accept_pending_member_button">Qebûl bike</string>
@@ -423,7 +410,6 @@
     <string name="snd_conn_event_switch_queue_phase_changing">adres tê guhertin…</string>
     <string name="snd_conn_event_switch_queue_phase_changing_for_member">adresa %s tê guhertin…</string>
     <string name="n_file_errors">%1$d xeletiyên dosyayan:\n%2$s</string>
-    <string name="contact_wants_to_connect_via_call">%1$s dixwaze bi te re bikeve danûstandinê bi riya</string>
     <string name="smp_servers_check_address">Adresa serverê kontrol bike û dîsa biceribîne.</string>
     <string name="migrate_from_device_check_connection_and_try_again">Girêdana xwe yî înternetê kontrol bike û dîsa biceribîne</string>
     <string name="clear_note_folder_question">Notên şexsî vala bike?</string>
@@ -448,7 +434,6 @@
     <string name="connect_plan_connect_to_yourself">Bi xwe re bikeve danûstandinê?</string>
     <string name="connect_via_link">Bi riya lînkê bikeve danûstandinê</string>
     <string name="connect_plan_connect_via_link">Bi riya lînkê bikeve danûstandinê?</string>
-    <string name="connect_via_link_or_qr">Bi riya lînkê / koda QRyê bikeve danûstandinê</string>
     <string name="connect_via_invitation_link">Bi riya lînka yek carê bikeve danûstandinê?</string>
     <string name="connect_with_contact_name_question">Bi %1$s re bikeve danûstandinê?</string>
     <string name="blocking_reason_content">Muhtewa ne li gora şertên şuxulandinê ye</string>
@@ -457,10 +442,6 @@
     <string name="contribute">Beşdar bibe</string>
     <string name="v6_0_connection_servers_status">Tora xwe kontrol bike</string>
     <string name="copy_error">Xeletiyê kopî bike</string>
-    <string name="create_profile_button">Çêke</string>
-    <string name="create_address_button">Çêke</string>
-    <string name="create_address">Adres çêke</string>
-    <string name="create_address_and_let_people_connect">Adresekê çêke ji bo ko xelk karibin bi te re bikevin danûstandinê.</string>
     <string name="created">Hat çêkirin</string>
     <string name="info_row_created_at">Wextê çêkirinê</string>
     <string name="share_text_created_at">Wextê çêkirinê: %s</string>
@@ -472,7 +453,6 @@
     <string name="create_profile">Profîl çêke</string>
     <string name="create_another_profile_button">Profîl çêke</string>
     <string name="smp_server_test_create_queue">Dor çêke</string>
-    <string name="create_group">Komeke veşartî çêke</string>
     <string name="create_secret_group_title">Komeke veşartî çêke</string>
     <string name="v6_4_1_short_address_create">Adresa xwe çêke</string>
     <string name="migrate_from_device_creating_archive_link">Lînka arşîvê tê çêkirin</string>
@@ -528,7 +508,6 @@
     <string name="ttl_month">%d heyv</string>
     <string name="ttl_months">%d heyv</string>
     <string name="ttl_mth">%d heyv</string>
-    <string name="dont_create_address">Adres çêneke</string>
     <string name="dont_show_again">Dîsa nîşan nede</string>
     <string name="forward_files_not_accepted_receive_files">Daxe</string>
     <string name="servers_info_downloaded">Daxistî</string>
@@ -610,8 +589,6 @@
     <string name="network_smp_web_port_off">Girtî</string>
     <string name="app_check_for_updates_installed_successfully_desc">Bi xêra xwe aplîkasyonê ji nû ve veke.</string>
     <string name="hide_dev_options">Veşêre:</string>
-    <string name="display_name__field">Navê profîlê:</string>
-    <string name="full_name__field">Navê timam:</string>
     <string name="save_and_notify_group_members">Qeyd bike û xeberê bide endamên komê</string>
     <string name="password_to_show">Şîfra nîşandanê</string>
     <string name="hidden_profile_password">Şîfra profîla veşartî</string>

@@ -1175,7 +1175,7 @@ private fun BoxScope.ChatList(
           contentAlignment = Alignment.Center
         ) {
           Text(
-            text = "Aucune discussion locale trouvée pour « ${searchText.value.text} »",
+            text = stringResource(MR.strings.chat_list_no_local_results, searchText.value.text),
             style = TextStyle(
               fontFamily = Inter,
               fontSize = 13.sp,
@@ -1240,7 +1240,7 @@ private fun BoxScope.ChatList(
               )
             }
             Text(
-              text = "Aucune conversation pour le moment",
+              text = stringResource(MR.strings.chat_list_empty_title),
               style = TextStyle(
                 fontFamily = Inter,
                 fontSize = 15.sp,
@@ -1250,7 +1250,7 @@ private fun BoxScope.ChatList(
               textAlign = TextAlign.Center
             )
             Text(
-              text = "Créez un lien ou scannez un QR code pour commencer à échanger en toute confidentialité.",
+              text = stringResource(MR.strings.chat_list_empty_subtitle),
               style = TextStyle(
                 fontFamily = Inter,
                 fontSize = 13.sp,
@@ -1418,13 +1418,13 @@ internal fun ConnectByNameRow(name: String, searchText: MutableState<TextFieldVa
       Spacer(Modifier.width(12.dp))
       Column(Modifier.weight(1f)) {
         Text(
-          text = if (isGroup) "Rejoindre le groupe public $name" else "Se connecter à $name",
+          text = if (isGroup) stringResource(MR.strings.connect_by_name_group, name) else stringResource(MR.strings.connect_by_name_contact, name),
           color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
           fontWeight = FontWeight.SemiBold,
           fontSize = 14.5.sp
         )
         Text(
-          text = "Rechercher et se connecter via le répertoire décentralisé",
+          text = stringResource(MR.strings.directory_search_hint),
           color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
           fontSize = 11.5.sp
         )
@@ -1900,12 +1900,19 @@ fun PublicDirectorySearchResultsSection(
 
   val allDirectoryGroups by SimpleUxDirectoryRepository.groups.collectAsState()
 
-  val matchingGroups = remember(query, allDirectoryGroups) {
+  // The directory bot entry carries no display strings (the repository is not localized); the UI
+  // localizes them here, both for rendering and for search matching.
+  val botDescription = stringResource(MR.strings.directory_bot_description)
+  val botCategory = stringResource(MR.strings.directory_category)
+
+  val matchingGroups = remember(query, allDirectoryGroups, botDescription, botCategory) {
     if (trimmed.isEmpty()) emptyList()
     else allDirectoryGroups.filter {
+      val description = if (it.isDirectoryBot) botDescription else it.description
+      val category = if (it.isDirectoryBot) botCategory else it.category
       it.name.lowercase().contains(trimmed) ||
-      it.description.lowercase().contains(trimmed) ||
-      it.category.lowercase().contains(trimmed) ||
+      description.lowercase().contains(trimmed) ||
+      category.lowercase().contains(trimmed) ||
       it.link.lowercase().contains(trimmed)
     }
   }
@@ -1930,7 +1937,7 @@ fun PublicDirectorySearchResultsSection(
         modifier = Modifier.size(16.dp)
       )
       Text(
-        text = "Annuaire SimpleX (Groupes publics)",
+        text = stringResource(MR.strings.directory_section_header),
         style = TextStyle(
           fontFamily = Inter,
           fontSize = 12.sp,
@@ -2007,7 +2014,7 @@ fun PublicDirectorySearchResultsSection(
                     .padding(horizontal = 5.dp, vertical = 1.dp)
                 ) {
                   Text(
-                    text = group.category,
+                    text = if (group.isDirectoryBot) botCategory else group.category,
                     style = TextStyle(
                       fontFamily = Inter,
                       fontSize = 9.sp,
@@ -2018,7 +2025,7 @@ fun PublicDirectorySearchResultsSection(
                 }
               }
               Text(
-                text = group.description,
+                text = if (group.isDirectoryBot) botDescription else group.description,
                 style = TextStyle(
                   fontFamily = Inter,
                   fontSize = 11.sp,
@@ -2058,7 +2065,7 @@ fun PublicDirectorySearchResultsSection(
               )
             } else {
               Text(
-                text = if (group.link.contains("/a#")) "Ouvrir" else "Rejoindre",
+                text = if (group.link.contains("/a#")) stringResource(MR.strings.open_verb) else stringResource(MR.strings.join_group_button),
                 style = TextStyle(
                   fontFamily = Inter,
                   fontSize = 12.sp,

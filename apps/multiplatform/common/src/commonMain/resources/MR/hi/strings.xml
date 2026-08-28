@@ -26,7 +26,6 @@
     <string name="v4_2_group_links_desc">व्यवस्थापक समूहों में शामिल होने के लिए लिंक बना सकते हैं।</string>
     <string name="chat_item_ttl_day">1 दिन</string>
     <string name="chat_item_ttl_week">1 सप्ताह</string>
-    <string name="about_simplex">सिंपलएक्स के बारे में</string>
     <string name="about_simplex_chat">बारे में सिंप्लेक्स चैट</string>
     <string name="accept_call_on_lock_screen">स्वीकार करना</string>
     <string name="accept">स्वीकार करना</string>
@@ -51,7 +50,6 @@
     <string name="colored_text">रंगीन</string>
     <string name="callstate_connected">जुड़े हुए</string>
     <string name="smp_server_test_connect">जुडिये</string>
-    <string name="connect_via_link_verb">जुडिये</string>
     <string name="server_connected">जुड़े हुए</string>
     <string name="group_member_role_owner">स्वामी</string>
     <string name="group_member_status_connected">जुड़े हुए</string>
@@ -164,7 +162,6 @@
     <string name="delete_contact_menu_action">मिटाना</string>
     <string name="create_your_profile">अपना प्रोफ़ाइल बनाए</string>
     <string name="set_contact_name">संपर्क नाम सेट करें</string>
-    <string name="icon_descr_email">ईमेल</string>
     <string name="callstate_received_answer">जवाब मिला…</string>
     <string name="use_chat">चैट का प्रयोग करें</string>
     <string name="error_with_info">गलती: %s</string>
@@ -196,14 +193,12 @@
     <string name="icon_descr_asked_to_receive">प्रतिमा प्राप्त करने को कहा</string>
     <string name="back">वापस</string>
     <string name="icon_descr_close_button">बंद करें बटन</string>
-    <string name="create_address">पता बनाना</string>
     <string name="invite_prohibited">संपर्क आमंत्रित नहीं कर सकते!</string>
     <string name="icon_descr_contact_checked">संपर्क जांचा गया</string>
     <string name="contact_preferences">संपर्क वरीयताएँ</string>
     <string name="rcv_group_event_changed_your_role">आपकी भूमिका को %s में बदल दिया</string>
     <string name="clear_contacts_selection_button">साफ़</string>
     <string name="timed_messages">गायब होने वाले संदेश</string>
-    <string name="display_name__field">प्रदर्शित होने वाला नाम:</string>
     <string name="theme_dark">अँधेरा</string>
     <string name="allow_your_contacts_to_send_voice_messages">अपने संपर्कों को ध्वनि संदेश भेजने की अनुमति दें।</string>
     <string name="ttl_day">%d दिन</string>
@@ -212,7 +207,6 @@
     <string name="simplex_link_mode_description">विवरण</string>
     <string name="notifications_mode_off_desc">ऐप केवल तभी सूचनाएं प्राप्त कर सकता है जब वह चल रहा हो, कोई पृष्ठभूमि सेवा प्रारंभ नहीं की जाएगी</string>
     <string name="edit_verb">संपादन करना</string>
-    <string name="decentralized">विकेन्द्रीकृत</string>
     <string name="icon_descr_call_ended">कॉल समाप्त</string>
     <string name="icon_descr_call_progress">कॉल चल रहा है</string>
     <string name="auto_accept_images">छवियों को स्वत: स्वीकार करें</string>
@@ -222,12 +216,10 @@
     <string name="group_member_status_complete">पूर्ण</string>
     <string name="disappearing_prohibited_in_this_chat">इस चैट में गायब होने वाले संदेश प्रतिबंधित हैं।</string>
     <string name="disappearing_messages_are_prohibited">इस चैट में गायब होने वाले संदेश प्रतिबंधित हैं।</string>
-    <string name="chat_with_developers">डेवलपर्स के साथ चैट करें</string>
     <string name="alert_title_contact_connection_pending">संपर्क अभी तक जुड़ा नहीं है!</string>
     <string name="chat_console">चैट कंसोल</string>
     <string name="all_your_contacts_will_remain_connected">आपके सभी संपर्क जुड़े रहेंगे।</string>
     <string name="network_session_mode_user">चैट प्रोफ़ाइल</string>
-    <string name="create_profile_button">बनाएं</string>
     <string name="callstatus_error">कॉल त्रुटि</string>
     <string name="callstatus_in_progress">कॉल चल रहा है</string>
     <string name="always_use_relay">हमेशा रिले का प्रयोग करें</string>
@@ -269,7 +261,6 @@
     <string name="v4_6_audio_video_calls">ऑडियो और वीडियो कॉल</string>
     <string name="v4_6_reduced_battery_usage_descr">अधिक सुधार जल्द ही आ रहे हैं!</string>
     <string name="icon_descr_video_asked_to_receive">वीडियो प्राप्त करने के लिए कहा</string>
-    <string name="delete_contact_all_messages_deleted_cannot_undo_warning">संपर्क और सभी संदेशों को हटा दिया जाएगा - इसे पूर्ववत नहीं किया जा सकता!</string>
     <string name="ok">ठीक है</string>
     <string name="save_servers_button">बचाना</string>
     <string name="language_system">प्रणाली</string>
@@ -293,7 +284,6 @@
     <string name="connect_use_incognito_profile">गुप्त प्रोफ़ाइल का उपयोग करें</string>
     <string name="profile_will_be_sent_to_contact_sending_link">आपकी प्रोफ़ाइल उस संपर्क को भेजी जाएगी जिससे आपको यह लिंक प्राप्त हुआ है।</string>
     <string name="you_will_join_group">आप सभी ग्रुप मेंबर्स से कनेक्ट होंगे।</string>
-    <string name="connect_via_link_incognito">इनकॉग्निटो कनेक्ट करें</string>
     <string name="connect_plan_open_chat">चैट खोलें</string>
     <string name="connect_plan_open_new_group">नया ग्रुप खोलें</string>
     <string name="error_parsing_uri_title">यह लिंक मान्य नहीं है</string>

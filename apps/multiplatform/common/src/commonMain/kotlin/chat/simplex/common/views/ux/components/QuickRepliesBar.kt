@@ -24,14 +24,17 @@ import chat.simplex.common.platform.SimpleUXHapticType
 import chat.simplex.common.platform.performHapticFeedback
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.bounceClick
+import chat.simplex.res.MR
+import dev.icerock.moko.resources.compose.stringResource
 
-val DEFAULT_QUICK_REPLIES = listOf(
-    "👍 D'accord",
-    "🙏 Merci !",
-    "👌 Parfait",
-    "🚀 En route !",
-    "👋 À plus tard",
-    "⏳ Je regarde ça"
+@Composable
+fun defaultQuickReplies(): List<String> = listOf(
+    stringResource(MR.strings.quick_reply_agree),
+    stringResource(MR.strings.quick_reply_thanks),
+    stringResource(MR.strings.quick_reply_perfect),
+    stringResource(MR.strings.quick_reply_on_my_way),
+    stringResource(MR.strings.quick_reply_talk_later),
+    stringResource(MR.strings.quick_reply_looking_into_it)
 )
 
 @Composable
@@ -39,10 +42,11 @@ fun QuickRepliesBar(
     isVisible: Boolean,
     onQuickReplySelected: (String) -> Unit,
     modifier: Modifier = Modifier,
-    replies: List<String> = DEFAULT_QUICK_REPLIES
+    replies: List<String> = emptyList()
 ) {
     val isDark = isInDarkTheme()
     val scrollState = rememberScrollState()
+    val resolvedReplies = replies.ifEmpty { defaultQuickReplies() }
 
     AnimatedVisibility(
         visible = isVisible,
@@ -57,7 +61,7 @@ fun QuickRepliesBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            replies.forEach { reply ->
+            resolvedReplies.forEach { reply ->
                 val pillShape = RoundedCornerShape(16.dp)
                 Box(
                     modifier = Modifier

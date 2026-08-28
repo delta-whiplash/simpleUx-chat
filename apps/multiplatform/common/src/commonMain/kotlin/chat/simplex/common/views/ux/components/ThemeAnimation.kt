@@ -26,6 +26,7 @@ import chat.simplex.common.ui.theme.DefaultTheme
 import chat.simplex.common.ui.theme.ThemeManager
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -90,14 +91,14 @@ fun AnimatedThemeIcon(
         if (isDark) {
             Icon(
                 painter = painterResource(MR.images.ic_light_mode),
-                contentDescription = "Mode Clair",
+                contentDescription = stringResource(MR.strings.theme_mode_light_descr),
                 tint = Color(0xFFE2B755),
                 modifier = Modifier.size(24.dp)
             )
         } else {
             Icon(
                 painter = painterResource(MR.images.ic_bedtime_moon),
-                contentDescription = "Mode Sombre",
+                contentDescription = stringResource(MR.strings.theme_mode_dark_descr),
                 tint = Color(0xFFD97706),
                 modifier = Modifier.size(24.dp)
             )

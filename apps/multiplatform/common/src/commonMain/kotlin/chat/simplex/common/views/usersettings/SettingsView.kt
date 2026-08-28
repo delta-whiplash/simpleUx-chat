@@ -123,7 +123,7 @@ fun SettingsLayout(
     Spacer(Modifier.height(6.dp))
 
     // Groupe 1 : Compte & Données
-    SectionView("Compte & Données") {
+    SectionView(stringResource(MR.strings.settings_section_account)) {
       DatabaseItem(encrypted, passphraseSaved, showSettingsModal { DatabaseView() }, stopped)
       SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, badgeColor = Color(0xFF1E293B), disabled = stopped)
       SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
@@ -131,7 +131,7 @@ fun SettingsLayout(
     SectionDividerSpaced()
 
     // Groupe 2 : Préférences
-    SectionView("Préférences") {
+    SectionView(stringResource(MR.strings.settings_section_preferences)) {
       SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF1E293B))
       if (appPlatform == AppPlatform.ANDROID) {
         SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
@@ -141,14 +141,14 @@ fun SettingsLayout(
     SectionDividerSpaced()
 
     // Groupe 3 : Sécurité & Support
-    SectionView("Sécurité & Support") {
+    SectionView(stringResource(MR.strings.settings_section_security)) {
       SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, badgeColor = Color(0xFF43A047), disabled = stopped)
       SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Color(0xFF1E293B))
     }
     SectionDividerSpaced()
 
     // Groupe 4 : Zone Système
-    SectionView("Système") {
+    SectionView(stringResource(MR.strings.settings_section_system)) {
       AppShutdownItem()
     }
 
@@ -223,7 +223,7 @@ private fun UserProfileHeaderCard(
       Spacer(Modifier.width(14.dp))
       Column(modifier = Modifier.weight(1f)) {
         Text(
-          text = profile.displayName.ifEmpty { "Mon Profil" },
+          text = profile.displayName.ifEmpty { stringResource(MR.strings.settings_my_profile) },
           fontSize = 17.sp,
           fontWeight = FontWeight.Bold,
           color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
@@ -252,7 +252,7 @@ private fun UserProfileHeaderCard(
         Spacer(Modifier.height(4.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
           Text(
-            text = "Modifier le profil",
+            text = stringResource(MR.strings.settings_edit_profile),
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
@@ -279,7 +279,7 @@ private fun UserProfileHeaderCard(
         ) {
           Icon(
             painter = painterResource(MR.images.ic_qr_code),
-            contentDescription = "Mon QR Code",
+            contentDescription = stringResource(MR.strings.icon_descr_my_qr_code),
             tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
             modifier = Modifier.size(18.dp)
           )

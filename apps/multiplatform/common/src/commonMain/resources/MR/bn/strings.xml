@@ -5,8 +5,6 @@
     <string name="send_disappearing_message_1_minute">১ মিনিট</string>
     <string name="one_time_link_short">এককালীন সংযোগ-সূত্র</string>
     <string name="send_disappearing_message_30_seconds">৩০ সেকেন্ড</string>
-    <string name="about_simplex">SimpleX সম্পর্কে</string>
-    <string name="learn_more_about_address">SimpleX ঠিকানা সম্পর্কে জানুন</string>
     <string name="abort_switch_receiving_address_confirm">থামুন</string>
     <string name="abort_switch_receiving_address_question">ঠিকানা পরিবর্তন বাতিল করতে চান\?</string>
     <string name="send_disappearing_message_5_minutes">৫ মিনিট</string>

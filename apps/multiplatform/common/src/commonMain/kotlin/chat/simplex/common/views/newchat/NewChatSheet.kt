@@ -63,7 +63,7 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
     ) {
       DefaultAppBar(
         navigationButton = if (ModalManager.start.hasModalsOpen()) { { NavigationButtonBack(onButtonClicked = close) } } else null,
-        fixedTitleText = "Contacts",
+        fixedTitleText = stringResource(MR.strings.chat_list_contacts),
         buttons = {},
         onTop = true,
       )
@@ -191,7 +191,7 @@ private fun ModalData.NewChatSheetLayout(
   val actionButtonsOriginal = listOf(
     Triple(
       painterResource(MR.images.ic_person_add_filled),
-      "Inviter / Se connecter",
+      stringResource(MR.strings.new_chat_invite_or_connect),
       addContact,
     ),
     Triple(
@@ -329,7 +329,7 @@ private fun ModalData.NewChatSheetLayout(
         if (filteredContactChats.isNotEmpty() && searchText.value.text.isEmpty()) {
           SectionDividerSpaced(maxTopPadding = false, maxBottomPadding = false)
           val count = filteredContactChats.size
-          SectionView("Vos contacts ($count)", headerBottomPadding = DEFAULT_PADDING_HALF) {}
+          SectionView(stringResource(MR.strings.new_chat_your_contacts, count), headerBottomPadding = DEFAULT_PADDING_HALF) {}
           Spacer(Modifier.height(DEFAULT_PADDING_HALF))
         }
       }
@@ -388,7 +388,7 @@ private fun ModalData.NewChatSheetLayout(
         if (filteredContactChats.isNotEmpty() && searchText.value.text.isEmpty()) {
           SectionDividerSpaced()
           val count = filteredContactChats.size
-          SectionView("Vos contacts ($count)", headerBottomPadding = DEFAULT_PADDING_HALF) {}
+          SectionView(stringResource(MR.strings.new_chat_your_contacts, count), headerBottomPadding = DEFAULT_PADDING_HALF) {}
         }
       }
       item {
@@ -535,7 +535,7 @@ private fun ContactsSearchBar(
         }) {
           Icon(
             painterResource(MR.images.ic_qr_code),
-            contentDescription = "Scanner",
+            contentDescription = stringResource(MR.strings.icon_descr_scan),
             tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
             modifier = Modifier.size(22.dp)
           )

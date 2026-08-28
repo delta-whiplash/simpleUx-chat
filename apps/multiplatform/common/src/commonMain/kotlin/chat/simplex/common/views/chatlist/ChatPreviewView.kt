@@ -242,7 +242,7 @@ fun ChatPreviewView(
     val ci = chat.chatItems.lastOrNull()
     if (chatModelDraftChatId == chat.id && chatModelDraft != null) {
       val isDark = isInDarkTheme()
-      val draftText = chatModelDraft.message.text.ifBlank { "Brouillon..." }
+      val draftText = chatModelDraft.message.text.ifBlank { stringResource(MR.strings.draft_preview_text) }
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -256,7 +256,7 @@ fun ChatPreviewView(
             .padding(horizontal = 5.dp, vertical = 1.dp)
         ) {
           Text(
-            text = "Brouillon",
+            text = stringResource(MR.strings.draft_badge),
             color = if (isDark) Color(0xFFE2B755) else Color(0xFFB45309),
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold

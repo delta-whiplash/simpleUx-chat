@@ -192,7 +192,7 @@ fun TelegramTopHeader(
         IconButton(onClick = { searchVisible.value = true }) {
           Icon(
             painterResource(MR.images.ic_search),
-            contentDescription = "Recherche",
+            contentDescription = stringResource(MR.strings.search_verb),
             tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
             modifier = Modifier.size(22.dp)
           )
@@ -204,7 +204,7 @@ fun TelegramTopHeader(
           IconButton(onClick = { showMenu.value = true }) {
             Icon(
               painterResource(MR.images.ic_more_vert),
-              contentDescription = "Options",
+              contentDescription = stringResource(MR.strings.icon_descr_options),
               tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
               modifier = Modifier.size(22.dp)
             )
@@ -232,7 +232,7 @@ fun TelegramTopHeader(
             ) {
               AnimatedThemeIcon(isDark = isDark)
               Text(
-                text = if (isDark) "Mode Clair" else "Mode Sombre",
+                text = if (isDark) stringResource(MR.strings.theme_mode_light_descr) else stringResource(MR.strings.theme_mode_dark_descr),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
@@ -262,7 +262,7 @@ fun TelegramTopHeader(
                 modifier = Modifier.size(20.dp)
               )
               Text(
-                text = "Profils & Identités",
+                text = stringResource(MR.strings.profile_switcher_title),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
@@ -289,7 +289,7 @@ fun TelegramTopHeader(
                 modifier = Modifier.size(20.dp)
               )
               Text(
-                text = "Nouveau contact",
+                text = stringResource(MR.strings.chat_list_new_contact),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
@@ -316,7 +316,7 @@ fun TelegramTopHeader(
                 modifier = Modifier.size(20.dp)
               )
               Text(
-                text = "Paramètres",
+                text = stringResource(MR.strings.toolbar_settings),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
                 color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)

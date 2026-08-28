@@ -246,7 +246,7 @@ fun UserProfileLayout(
                 ) {
                   Icon(
                     painter = painterResource(MR.images.ic_photo_camera),
-                    contentDescription = "Changer la photo",
+                    contentDescription = stringResource(MR.strings.icon_descr_change_photo),
                     tint = if (isDark) Color(0xFF0F172A) else Color.White,
                     modifier = Modifier.size(16.dp)
                   )
@@ -257,8 +257,8 @@ fun UserProfileLayout(
             // Profile Text Box 1: Display Name
             ProfileTextBox(
               value = displayName,
-              label = "Nom de profil",
-              placeholder = "Entrez votre nom de profil",
+              label = stringResource(MR.strings.profile_name_label),
+              placeholder = stringResource(MR.strings.profile_name_placeholder),
               focusRequester = focusRequester,
               isValid = { isValidNewProfileName(it, profile) },
               trailingIcon = if (!isValidNewProfileName(displayName.value, profile)) {
@@ -274,8 +274,8 @@ fun UserProfileLayout(
               Spacer(Modifier.height(14.dp))
               ProfileTextBox(
                 value = fullName,
-                label = "Nom complet",
-                placeholder = "Nom complet"
+                label = stringResource(MR.strings.profile_full_name_label),
+                placeholder = stringResource(MR.strings.profile_full_name_label)
               )
             }
 
@@ -284,8 +284,8 @@ fun UserProfileLayout(
             // Profile Text Box 2: Bio / Short Description
             ProfileTextBox(
               value = shortDescr,
-              label = "Bio / Statut",
-              placeholder = "Statut ou bio courte (ex: Dispo pour discuter)",
+              label = stringResource(MR.strings.profile_bio_label),
+              placeholder = stringResource(MR.strings.profile_bio_placeholder),
               isValid = { bioFitsLimit(it) },
               trailingIcon = if (!bioFitsLimit(shortDescr.value)) {
                 {
@@ -313,7 +313,7 @@ fun UserProfileLayout(
             ) {
               Column {
                 Text(
-                  text = "Description détaillée",
+                  text = stringResource(MR.strings.profile_detailed_description),
                   style = TextStyle(
                     fontFamily = Inter,
                     fontSize = 13.sp,
@@ -323,7 +323,7 @@ fun UserProfileLayout(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                  text = if (description.value.isBlank()) "Ajouter une description complète (optionnel)..." else description.value,
+                  text = if (description.value.isBlank()) stringResource(MR.strings.profile_detailed_description_hint) else description.value,
                   style = TextStyle(
                     fontFamily = Inter,
                     fontSize = 14.sp,
@@ -356,7 +356,7 @@ fun UserProfileLayout(
               elevation = ButtonDefaults.elevation(defaultElevation = if (enabled) 4.dp else 0.dp)
             ) {
               Text(
-                text = if (enabled) "Enregistrer les modifications" else "Aucune modification",
+                text = if (enabled) stringResource(MR.strings.profile_save_changes) else stringResource(MR.strings.profile_no_changes),
                 style = TextStyle(
                   fontFamily = Inter,
                   fontSize = 15.sp,
@@ -369,7 +369,7 @@ fun UserProfileLayout(
 
             // Connection Sharing Actions (Moved from Contacts to Profile)
             Text(
-              text = "Connexions & Liens",
+              text = stringResource(MR.strings.profile_connections_links),
               style = TextStyle(
                 fontFamily = Inter,
                 fontSize = 14.sp,
@@ -409,7 +409,7 @@ fun UserProfileLayout(
                   )
                   Spacer(Modifier.height(8.dp))
                   Text(
-                    text = "Créer un lien unique",
+                    text = stringResource(MR.strings.profile_create_one_time_link),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                       fontFamily = Inter,
@@ -447,7 +447,7 @@ fun UserProfileLayout(
                   )
                   Spacer(Modifier.height(8.dp))
                   Text(
-                    text = "Scanner / Coller un lien",
+                    text = stringResource(MR.strings.profile_scan_paste_link),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
                       fontFamily = Inter,

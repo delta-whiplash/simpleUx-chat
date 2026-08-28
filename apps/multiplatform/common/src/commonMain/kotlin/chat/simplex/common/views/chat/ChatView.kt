@@ -1220,7 +1220,7 @@ fun BoxScope.ChatInfoToolbar(
     ) {
       AnimatedThemeIcon(isDark = isDark)
       Text(
-        text = if (isDark) "Mode Clair" else "Mode Sombre",
+        text = if (isDark) stringResource(MR.strings.theme_mode_light_descr) else stringResource(MR.strings.theme_mode_dark_descr),
         fontSize = 15.sp,
         fontWeight = FontWeight.Medium,
         color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)

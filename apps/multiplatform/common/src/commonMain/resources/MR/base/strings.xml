@@ -12,8 +12,6 @@
   <string name="connect_use_incognito_profile">Use incognito profile</string>
   <string name="profile_will_be_sent_to_contact_sending_link">Your profile will be sent to the contact that you received this link from.</string>
   <string name="you_will_join_group">You will connect to all group members.</string>
-  <string name="connect_via_link_verb">Connect</string>
-  <string name="connect_via_link_incognito">Connect incognito</string>
   <string name="connect_plan_open_chat">Open chat</string>
   <string name="connect_plan_join_name">Join channel %s</string>
   <string name="connect_plan_connect_to_name">Connect to %s</string>
@@ -91,7 +89,6 @@
   <string name="display_name_invited_to_connect">invited to connect</string>
   <string name="display_name_requested_to_connect">requested to connect</string>
   <string name="display_name_accepted_invitation">accepted invitation</string>
-  <string name="display_name_connecting">connecting…</string>
   <string name="description_you_shared_one_time_link">you shared one-time link</string>
   <string name="description_you_shared_one_time_link_incognito">you shared one-time link incognito</string>
   <string name="description_via_group_link">via group link</string>
@@ -122,12 +119,6 @@
   <string name="report_reason_other">Another reason</string>
 
   <!-- SimpleXAPI.kt -->
-  <string name="error_saving_smp_servers">Error saving SMP servers</string>
-  <string name="error_saving_xftp_servers">Error saving XFTP servers</string>
-  <string name="ensure_smp_server_address_are_correct_format_and_unique">Make sure SMP server addresses are in correct format, line separated and are not duplicated.</string>
-  <string name="ensure_xftp_server_address_are_correct_format_and_unique">Make sure XFTP server addresses are in correct format, line separated and are not duplicated.</string>
-  <string name="error_loading_smp_servers">Error loading SMP servers</string>
-  <string name="error_loading_xftp_servers">Error loading XFTP servers</string>
   <string name="error_setting_network_config">Error updating network configuration</string>
   <string name="failed_to_parse_chat_title">Failed to load chat</string>
   <string name="failed_to_parse_chats_title">Failed to load chats</string>
@@ -199,8 +190,6 @@
   <string name="link_requires_newer_app_version_please_upgrade">This link requires a newer app version. Please upgrade the app or ask your contact to send a compatible link.</string>
   <string name="unsupported_channel_name">Unsupported channel name</string>
   <string name="unsupported_contact_name">Unsupported contact name</string>
-  <string name="channel_name_requires_newer_app_version">Connecting via channel name requires a newer app version.</string>
-  <string name="contact_name_requires_newer_app_version">Connecting via contact name requires a newer app version.</string>
   <string name="please_upgrade_the_app">Please upgrade the app.</string>
   <string name="simplex_name_error">SimpleX name error</string>
   <string name="simplex_name_no_servers_desc">None of your servers are set to resolve SimpleX names. Configure servers, or use a connection link.</string>
@@ -238,7 +227,6 @@
   <string name="error_smp_test_server_auth">Server requires authorization to create queues, check password.</string>
   <string name="error_xftp_test_server_auth">Server requires authorization to upload, check password.</string>
   <string name="error_smp_test_certificate">Fingerprint in server address does not match certificate.</string>
-  <string name="error_setting_address">Error setting address</string>
   <string name="error_alert_title">Error</string>
   <string name="smp_server_test_connect">Connect</string>
   <string name="smp_server_test_disconnect">Disconnect</string>
@@ -413,7 +401,6 @@
   <string name="content_filter_files">Files</string>
   <string name="content_filter_links">Links</string>
   <string name="content_filter_all_messages">All messages</string>
-  <string name="content_filter_menu_item">Filter</string>
   <string name="archive_verb">Archive</string>
   <string name="archive_report">Archive report</string>
   <string name="archive_reports">Archive reports</string>
@@ -465,7 +452,6 @@
   <string name="revoke_file__confirm">Revoke</string>
   <string name="forward_chat_item">Forward</string>
   <string name="download_file">Download</string>
-  <string name="list_menu">List</string>
 
   <string name="message_forwarded_title">Message forwarded</string>
   <string name="message_forwarded_desc">No direct connection yet, message is forwarded by admin.</string>
@@ -474,10 +460,6 @@
 
   <!-- CIMetaView.kt -->
   <string name="icon_descr_edited">edited</string>
-  <string name="icon_descr_sent_msg_status_sent">sent</string>
-  <string name="icon_descr_sent_msg_status_unauthorized_send">unauthorized send</string>
-  <string name="icon_descr_sent_msg_status_send_failed">send failed</string>
-  <string name="icon_descr_received_msg_status_unread">unread</string>
 
   <!-- ChatListView.kt -->
   <string name="personal_welcome">Welcome %1$s!</string>
@@ -486,14 +468,12 @@
   <string name="your_chats">Chats</string>
   <string name="toolbar_settings">Settings</string>
   <string name="contact_connection_pending">connecting…</string>
-  <string name="member_contact_send_direct_message">send to connect</string>
   <string name="group_preview_open_to_join">Open to join</string>
   <string name="group_preview_you_are_invited">You are invited to group</string>
   <string name="group_preview_join_as">Join as %s</string>
   <string name="group_preview_rejected">rejected</string>
   <string name="group_connection_pending">connecting…</string>
   <string name="tap_to_start_new_chat">Tap to start a new chat</string>
-  <string name="chat_with_developers">Chat with the developers</string>
   <string name="you_have_no_chats">You have no chats</string>
   <string name="talk_to_someone">Talk to someone</string>
   <string name="let_someone_connect_to_you">Let someone connect to you</string>
@@ -517,7 +497,6 @@
   <string name="contact_should_accept">contact should accept…</string>
   <string name="connect_with_contact_name_question">Connect with %1$s?</string>
   <string name="search_or_paste_simplex_link">Search or paste SimpleX link</string>
-  <string name="address_creation_instruction">Tap Create SimpleX address in the menu to create it later.</string>
 
   <!-- ChatView.kt -->
   <string name="no_selected_chat">No selected chat</string>
@@ -704,14 +683,11 @@
   <string name="chat_ttl_options_footer">Delete chat messages from your device.</string>
 
   <!-- Chat Info Actions - ChatInfoView.kt -->
-  <string name="info_view_connect_button">connect</string>
-  <string name="info_view_open_button">open</string>
   <string name="info_view_message_button">message</string>
   <string name="info_view_call_button">call</string>
   <string name="info_view_search_button">search</string>
   <string name="info_view_video_button">video</string>
   <string name="delete_contact_question">Delete contact?</string>
-  <string name="delete_contact_all_messages_deleted_cannot_undo_warning">Contact and all messages will be deleted - this cannot be undone!</string>
   <string name="delete_contact_cannot_undo_warning">Contact will be deleted - this cannot be undone!</string>
   <string name="keep_conversation">Keep conversation</string>
   <string name="only_delete_conversation">Only delete conversation</string>
@@ -728,7 +704,6 @@
   <string name="icon_descr_server_status_connected">Connected</string>
   <string name="icon_descr_server_status_disconnected">Disconnected</string>
   <string name="icon_descr_server_status_error">Error</string>
-  <string name="icon_descr_server_status_pending">Pending</string>
   <string name="switch_receiving_address_question">Change receiving address?</string>
   <string name="switch_receiving_address_desc">Receiving address will be changed to a different server. Address change will complete after sender comes online.</string>
   <string name="abort_switch_receiving_address_question">Abort changing address?</string>
@@ -791,11 +766,8 @@
   <!-- NewChatSheet -->
   <string name="add_contact_or_create_group">Start new chat</string>
   <string name="share_one_time_link">Create one-time invitation link</string>
-  <string name="connect_via_link_or_qr">Connect via link / QR code</string>
   <string name="scan_QR_code">Scan QR code</string>
-  <string name="create_group">Create secret group</string>
   <string name="to_share_with_your_contact">(to share with your contact)</string>
-  <string name="connect_via_link_or_qr_from_clipboard_or_in_person">(scan or paste from clipboard)</string>
   <string name="only_stored_on_members_devices">(only stored by group members)</string>
 
   <!-- QRCodeScanner -->
@@ -902,11 +874,7 @@
   <string name="icon_descr_cancel_link_preview">cancel link preview</string>
   <string name="icon_descr_settings">Settings</string>
   <string name="image_descr_qr_code">QR Code</string>
-  <string name="icon_descr_address">SimpleX Address</string>
-  <string name="icon_descr_help">help</string>
-  <string name="icon_descr_simplex_team">SimpleX Team</string>
   <string name="image_descr_simplex_logo">SimpleX Logo</string>
-  <string name="icon_descr_email">Email</string>
   <string name="icon_descr_more_button">More</string>
 
   <!-- Connection info - ContactConnectionInfoView.kt -->
@@ -927,7 +895,6 @@
   <string name="share_invitation_link">Share 1-time link</string>
   <string name="paste_the_link_you_received_to_connect_with_your_contact">Paste the link you received to connect with your contact…</string>
   <string name="learn_more">Learn more</string>
-  <string name="learn_more_about_address">About SimpleX address</string>
 
   <string name="connect__a_new_random_profile_will_be_shared">A new random profile will be shared.</string>
   <string name="connect__your_profile_will_be_shared">Your profile %1$s will be shared.</string>
@@ -961,7 +928,6 @@
   <!-- NewChatView.kt -->
   <string name="new_chat">New chat</string>
   <string name="new_message">New message</string>
-  <string name="add_contact_tab">Add contact</string>
   <string name="scan_paste_link">Paste link / Scan</string>
   <string name="paste_link">Paste link</string>
   <string name="one_time_link">One-time invitation link</string>
@@ -1002,7 +968,6 @@
 
   <string name="deleted_chats">Archived contacts</string>
   <string name="no_filtered_contacts">No filtered contacts</string>
-  <string name="contact_list_header_title">Your contacts</string>
 
   <!--  ComposeContextProfilePickerView.kt -->
   <string name="context_user_picker_your_profile">Your profile</string>
@@ -1031,7 +996,6 @@
   <string name="database_passphrase_and_export">Database passphrase &amp; export</string>
   <string name="about_simplex_chat">About SimpleX Chat</string>
   <string name="how_to_use_simplex_chat">How to use it</string>
-  <string name="markdown_help">Markdown help</string>
   <string name="markdown_in_messages">Markdown in messages</string>
   <string name="chat_with_the_founder">Send questions and ideas</string>
   <string name="send_us_an_email">Send us email</string>
@@ -1196,14 +1160,12 @@
   <string name="prefs_error_saving_settings">Error saving settings</string>
 
   <!-- Address Items - UserAddressView.kt -->
-  <string name="create_address">Create address</string>
   <string name="delete_address__question">Delete address?</string>
   <string name="your_contacts_will_remain_connected">Your contacts will remain connected.</string>
   <string name="all_your_contacts_will_remain_connected">All your contacts will remain connected.</string>
   <string name="all_your_contacts_will_remain_connected_update_sent">All your contacts will remain connected. Profile update will be sent to your contacts.</string>
   <string name="share_link">Share link</string>
   <string name="add_address_to_your_profile">Add address to your profile, so that your SimpleX contacts can share it with other people. Profile update will be sent to your SimpleX contacts.</string>
-  <string name="create_address_and_let_people_connect">Create an address to let people connect with you.</string>
   <string name="create_simplex_address">Create SimpleX address</string>
   <string name="share_with_contacts">Share with SimpleX contacts</string>
   <string name="share_address_with_contacts_question">Share address with SimpleX contacts?</string>
@@ -1244,19 +1206,13 @@
 
   <!-- CreateSimpleXAddress.kt -->
   <string name="continue_to_next_step">Continue</string>
-  <string name="dont_create_address">Don\'t create address</string>
   <string name="you_can_create_it_later">You can create it later</string>
   <string name="you_can_make_address_visible_via_settings">You can make it visible to your SimpleX contacts via Settings.</string>
-  <string name="invite_friends_short">Invite</string>
 
   <!-- User profile details - UserProfileView.kt -->
-  <string name="display_name__field">Profile name:</string>
-  <string name="full_name__field">Full name:</string>
   <string name="short_descr__field">Bio:</string>
   <string name="bio_too_large">Bio too large</string>
   <string name="profile_description__field">Description</string>
-  <string name="add_description">Add description</string>
-  <string name="edit_description">Edit description</string>
   <string name="enter_description_optional">Enter description (optional)</string>
   <string name="your_current_profile">Your current profile</string>
   <string name="your_profile_is_stored_on_device_and_shared_only_with_contacts_simplex_cannot_see_it">Your profile is stored on your device and shared only with your contacts. SimpleX servers cannot see your profile.</string>
@@ -1286,18 +1242,13 @@
   <string name="create_profile">Create profile</string>
   <string name="your_profile_is_stored_on_your_device">Your profile, contacts and delivered messages are stored on your device.</string>
   <string name="profile_is_only_shared_with_your_contacts">The profile is only shared with your contacts.</string>
-  <string name="display_name_cannot_contain_whitespace">Display name cannot contain whitespace.</string>
   <string name="display_name">Enter your name:</string>
   <string name="short_descr">Your bio:</string>
-  <string name="create_profile_button">Create</string>
   <string name="create_another_profile_button">Create profile</string>
-  <string name="create_address_button">Create</string>
   <string name="invalid_name">Invalid name!</string>
   <string name="correct_name_to">Correct name to %s?</string>
-  <string name="about_simplex">About SimpleX</string>
 
   <!-- markdown demo - MarkdownHelpView.kt -->
-  <string name="how_to_use_markdown">How to use markdown</string>
   <string name="you_can_use_markdown_to_format_messages__prompt">You can use markdown to format messages:</string>
   <string name="bold_text">bold</string>
   <string name="italic_text">italic</string>
@@ -1347,10 +1298,7 @@
   <!-- SimpleXInfo -->
   <string name="next_generation_of_private_messaging">The future of messaging</string>
   <string name="privacy_redefined">Privacy redefined</string>
-  <string name="first_platform_without_user_ids">No user identifiers.</string>
-  <string name="immune_to_spam_and_abuse">Immune to spam</string>
   <string name="people_can_connect_only_via_links_you_share">You decide who can connect.</string>
-  <string name="decentralized">Decentralized</string>
   <string name="opensource_protocol_and_code_anybody_can_run_servers">Anybody can host servers.</string>
   <string name="create_your_profile">Create your profile</string>
   <string name="make_private_connection">Make a private connection</string>
@@ -1379,7 +1327,6 @@
   <string name="why_built_tagline">Be free in your network.</string>
   <string name="to_protect_privacy_simplex_has_ids_for_queues">To protect your privacy, SimpleX uses separate IDs for each of your contacts.</string>
   <string name="only_client_devices_store_contacts_groups_e2e_encrypted_messages">Only client devices store user profiles, contacts, groups, and messages.</string>
-  <string name="all_message_and_files_e2e_encrypted"><![CDATA[All messages and files are sent <b>end-to-end encrypted</b>, with post-quantum security in direct messages.]]></string>
   <string name="read_more_in_github_with_link"><![CDATA[Read more in our <font color="#0088ff">GitHub repository</font>.]]></string>
 
   <!-- SetNotificationsMode.kt -->
@@ -1435,7 +1382,6 @@
   <!-- Call -->
   <string name="incoming_video_call">Incoming video call</string>
   <string name="incoming_audio_call">Incoming audio call</string>
-  <string name="contact_wants_to_connect_via_call">%1$s wants to connect with you via</string>
   <string name="video_call_no_encryption">video call (not e2e encrypted)</string>
   <string name="encrypted_video_call">e2e encrypted video call</string>
   <string name="audio_call_no_encryption">audio call (not e2e encrypted)</string>
@@ -1529,7 +1475,6 @@
   <string name="sanitize_links_toggle">Remove link tracking</string>
   <string name="privacy_show_last_messages">Show last messages</string>
   <string name="privacy_message_draft">Message draft</string>
-  <string name="full_backup">App data backup</string>
   <string name="enable_lock">Enable lock</string>
   <string name="lock_mode">Lock mode</string>
   <string name="lock_after">Lock after</string>
@@ -1614,7 +1559,6 @@
   <string name="chat_data">Chat data</string>
   <string name="help_and_support">Help &amp; support</string>
   <string name="more_privacy">More privacy</string>
-  <string name="advanced_settings">Advanced settings</string>
   <string name="settings_restart_app">Restart</string>
   <string name="settings_shutdown">Shutdown</string>
   <string name="settings_developer_tools">Developer tools</string>
@@ -1776,7 +1720,6 @@
   <string name="one_hand_ui_top_bar">Top bar</string>
   <string name="one_hand_ui_change_instruction">You can change it in Appearance settings.</string>
   <string name="terminal_always_visible">Show console in new window</string>
-  <string name="chat_list_always_visible">Show chat list in new window</string>
   <string name="invalid_migration_confirmation">Invalid migration confirmation</string>
   <string name="upgrade_and_open_chat">Upgrade and open chat</string>
   <string name="downgrade_and_open_chat">Downgrade and open chat</string>
@@ -1940,7 +1883,6 @@
   <string name="no_contacts_to_add">No contacts to add</string>
   <string name="new_member_role">New member role</string>
   <string name="initial_member_role">Initial role</string>
-  <string name="icon_descr_expand_role">Expand role selection</string>
   <string name="invite_to_group_button">Invite to group</string>
   <string name="invite_to_chat_button">Invite to chat</string>
   <string name="skip_inviting_button">Skip inviting members</string>
@@ -2019,7 +1961,6 @@
   <string name="action_button_add_members">Invite</string>
   <string name="action_button_channel_link">Link</string>
   <string name="button_support_chat">Chat with admins</string>
-  <string name="button_channel_members">Channel members</string>
   <string name="button_channel_relays">Chat relays</string>
 
   <!-- Chat / Chat item info -->
@@ -2063,7 +2004,6 @@
   <string name="button_remove_member">Remove member</string>
   <string name="button_delete_member_messages">Delete member messages</string>
   <string name="button_support_chat_member">Chat with member</string>
-  <string name="button_send_direct_message">Send direct message</string>
   <string name="member_will_be_removed_from_group_cannot_be_undone">Member will be removed from group - this cannot be undone!</string>
   <string name="subscriber_will_be_removed_from_channel_cannot_be_undone">Subscriber will be removed from channel - this cannot be undone!</string>
   <string name="members_will_be_removed_from_group_cannot_be_undone">Members will be removed from group - this cannot be undone!</string>
@@ -2105,8 +2045,6 @@
   <string name="member_role_will_be_changed_with_notification_chat">The role will be changed to "%s". Everyone in the chat will be notified.</string>
   <string name="member_role_will_be_changed_with_notification_channel">The role will be changed to "%s". Everyone in the channel will be notified.</string>
   <string name="member_role_will_be_changed_with_invitation">The role will be changed to "%s". The member will receive a new invitation.</string>
-  <string name="connect_via_member_address_alert_title">Connect directly?</string>
-  <string name="connect_via_member_address_alert_desc">Сonnection request will be sent to this group member.</string>
   <string name="error_removing_member">Error removing member</string>
   <string name="error_changing_role">Error changing role</string>
   <string name="error_blocking_member_for_all">Error blocking member for all</string>
@@ -2367,7 +2305,6 @@
   <string name="simplex_links">SimpleX links</string>
   <string name="recent_history">Visible history</string>
   <string name="audio_video_calls">Audio/video calls</string>
-  <string name="available_in_v51">\nAvailable in v5.1</string>
   <string name="feature_enabled">enabled</string>
   <string name="feature_enabled_for_you">enabled for you</string>
   <string name="feature_enabled_for_contact">enabled for contact</string>
@@ -3155,7 +3092,6 @@
   <string name="your_profile_shared_with_channel_relays">Your profile %1$s will be shared with channel relays and subscribers.\nRelays can access channel messages.</string>
   <string name="configure_relays">Configure relays</string>
   <string name="relay_status_failed">failed</string>
-  <string name="add_button">Add</string>
   <string name="add_relay_button">Add relay</string>
   <string name="add_relays_title">Add relays</string>
   <string name="no_available_relays">No available relays</string>
@@ -3176,7 +3112,6 @@
   <string name="connect_plan_open_new_channel">Open new channel</string>
   <string name="connect_plan_this_is_your_link_for_channel">Your channel</string>
   <string name="connect_plan_this_is_your_link_for_channel_vName"><![CDATA[This is your link for channel <b>%1$s</b>!]]></string>
-  <string name="error_opening_channel">Error opening channel</string>
 
   <!-- ChatListNavLinkView.kt channel-related -->
   <string name="unblock_subscriber_for_all_question">Unblock subscriber for all?</string>
@@ -3249,4 +3184,107 @@
   <string name="onboarding_feature_3_sub">Fluid swipe gestures, audio waveforms, instant multi-profiles and disappearing chats in 1 tap.</string>
   <string name="onboarding_get_started">Get Started</string>
   <string name="modal_close">Close</string>
+
+  <!-- SimpleUX i18n: chat list / public directory -->
+  <string name="chat_list_empty_title">No conversations yet</string>
+  <string name="chat_list_empty_subtitle">Create a link or scan a QR code to start chatting privately.</string>
+  <string name="chat_list_no_local_results">No local chats found for “%1$s”</string>
+  <string name="connect_by_name_group">Join public group %1$s</string>
+  <string name="connect_by_name_contact">Connect to %1$s</string>
+  <string name="directory_section_header">SimpleX Directory (Public groups)</string>
+  <string name="directory_search_hint">Search and connect via the decentralized directory</string>
+  <string name="directory_bot_description">Official SimpleX directory bot: search for any public group live.</string>
+  <string name="directory_category">Directory</string>
+  <string name="directory_category_channel">Channel</string>
+  <string name="directory_category_group">Group</string>
+  <string name="directory_group_default_desc">SimpleX public group</string>
+  <string name="directory_members_count">%1$d members</string>
+  <string name="directory_members_public_group">Public group</string>
+
+  <!-- SimpleUX i18n: drafts -->
+  <string name="draft_badge">Draft</string>
+  <string name="draft_preview_text">Draft...</string>
+
+  <!-- SimpleUX i18n: new chat sheet -->
+  <string name="new_chat_invite_or_connect">Invite / Connect</string>
+  <string name="new_chat_your_contacts">Your contacts (%1$d)</string>
+  <string name="icon_descr_scan">Scan</string>
+
+  <!-- SimpleUX i18n: chat list filter pills -->
+  <string name="filter_pill_unread">Unread</string>
+  <string name="filter_pill_direct">Direct</string>
+
+  <!-- SimpleUX i18n: quick replies -->
+  <string name="quick_reply_agree">👍 Got it</string>
+  <string name="quick_reply_thanks">🙏 Thanks!</string>
+  <string name="quick_reply_perfect">👌 Perfect</string>
+  <string name="quick_reply_on_my_way">🚀 On my way!</string>
+  <string name="quick_reply_talk_later">👋 Talk later</string>
+  <string name="quick_reply_looking_into_it">⏳ Looking into it</string>
+
+  <!-- SimpleUX i18n: theme switcher -->
+  <string name="theme_mode_light_descr">Light mode</string>
+  <string name="theme_mode_dark_descr">Dark mode</string>
+
+  <!-- SimpleUX i18n: profile switcher -->
+  <string name="profile_default_name">User</string>
+  <string name="profile_switcher_incognito_link">Incognito link</string>
+  <string name="profile_switcher_new_profile">New profile</string>
+
+  <!-- SimpleUX i18n: chat list shell menu -->
+  <string name="icon_descr_options">Options</string>
+  <string name="chat_list_new_contact">New contact</string>
+
+  <!-- SimpleUX i18n: disappearing messages timer -->
+  <string name="disappearing_timer_label">Ephemeral</string>
+  <string name="disappearing_preset_off">Off</string>
+  <string name="disappearing_preset_1_hour">1 hour</string>
+  <string name="disappearing_preset_24_hours">24 hours</string>
+  <string name="disappearing_preset_7_days">7 days</string>
+  <string name="ttl_unit_second">s</string>
+  <string name="ttl_unit_minute">m</string>
+  <string name="ttl_unit_hour">h</string>
+  <string name="ttl_unit_day">d</string>
+
+  <!-- SimpleUX i18n: contact preview statuses -->
+  <string name="contact_preview_deleting">Deleting...</string>
+  <string name="contact_preview_request_received">Contact request received</string>
+  <string name="contact_preview_request_pending">Request pending</string>
+  <string name="contact_preview_card">Contact card</string>
+  <string name="contact_preview_archived">Archived chat</string>
+  <string name="contact_preview_not_connected">Not connected</string>
+  <string name="contact_preview_connecting">Connecting...</string>
+  <string name="contact_preview_connected">Connected</string>
+  <string name="contact_preview_connected_pq">Connected • Post-quantum</string>
+  <string name="contact_preview_connected_e2ee">Connected • E2EE</string>
+
+  <!-- SimpleUX i18n: settings -->
+  <string name="settings_section_account">Account &amp; Data</string>
+  <string name="settings_section_preferences">Preferences</string>
+  <string name="settings_section_security">Security &amp; Support</string>
+  <string name="settings_section_system">System</string>
+  <string name="settings_my_profile">My Profile</string>
+  <string name="settings_edit_profile">Edit profile</string>
+  <string name="icon_descr_my_qr_code">My QR code</string>
+
+  <!-- SimpleUX i18n: user profile -->
+  <string name="icon_descr_change_photo">Change photo</string>
+  <string name="profile_name_label">Profile name</string>
+  <string name="profile_name_placeholder">Enter your profile name</string>
+  <string name="profile_full_name_label">Full name</string>
+  <string name="profile_bio_label">Bio / Status</string>
+  <string name="profile_bio_placeholder">Short status or bio (e.g. Available to chat)</string>
+  <string name="profile_detailed_description">Detailed description</string>
+  <string name="profile_detailed_description_hint">Add a full description (optional)...</string>
+  <string name="profile_save_changes">Save changes</string>
+  <string name="profile_no_changes">No changes</string>
+  <string name="profile_connections_links">Connections &amp; Links</string>
+  <string name="profile_create_one_time_link">Create one-time link</string>
+  <string name="profile_scan_paste_link">Scan / Paste a link</string>
+  <string name="profile_no_name">No name</string>
+  <string name="profile_local">Local profile</string>
+
+  <!-- SimpleUX i18n: misc -->
+  <string name="join_bar_join_as">Join as</string>
+  <string name="icon_descr_encryption">Encryption</string>
 </resources>

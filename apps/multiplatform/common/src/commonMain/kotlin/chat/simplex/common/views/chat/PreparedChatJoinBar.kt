@@ -223,7 +223,7 @@ fun PreparedChatJoinBar(
 
         Column(modifier = Modifier.weight(1f)) {
           Text(
-            text = "Rejoindre en tant que",
+            text = stringResource(MR.strings.join_bar_join_as),
             style = TextStyle(
               fontFamily = Inter,
               fontSize = 10.sp,

@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import chat.simplex.common.views.helpers.*
@@ -90,21 +91,21 @@ fun ContactPreviewView(
             chatPreviewTitle()
             Spacer(Modifier.height(2.dp))
             val subtitle = when {
-                deleting -> "Suppression..."
-                contactType == ContactType.REQUEST -> "Demande de contact reçue"
-                contactType == ContactType.CONTACT_WITH_REQUEST -> "Demande en attente"
-                contactType == ContactType.CARD -> "Carte de contact"
-                cInfo.chatDeleted -> "Discussion archivée"
+                deleting -> stringResource(MR.strings.contact_preview_deleting)
+                contactType == ContactType.REQUEST -> stringResource(MR.strings.contact_preview_request_received)
+                contactType == ContactType.CONTACT_WITH_REQUEST -> stringResource(MR.strings.contact_preview_request_pending)
+                contactType == ContactType.CARD -> stringResource(MR.strings.contact_preview_card)
+                cInfo.chatDeleted -> stringResource(MR.strings.contact_preview_archived)
                 cInfo is ChatInfo.Direct -> {
                     val contact = cInfo.contact
                     when {
-                        !contact.active -> "Non connecté"
-                        !contact.ready -> "Connexion en cours..."
-                        contact.activeConn?.connPQEnabled == true -> "Connecté • Post-quantique"
-                        else -> "Connecté • E2EE"
+                        !contact.active -> stringResource(MR.strings.contact_preview_not_connected)
+                        !contact.ready -> stringResource(MR.strings.contact_preview_connecting)
+                        contact.activeConn?.connPQEnabled == true -> stringResource(MR.strings.contact_preview_connected_pq)
+                        else -> stringResource(MR.strings.contact_preview_connected_e2ee)
                     }
                 }
-                else -> "Connecté"
+                else -> stringResource(MR.strings.contact_preview_connected)
             }
             Text(
                 text = subtitle,

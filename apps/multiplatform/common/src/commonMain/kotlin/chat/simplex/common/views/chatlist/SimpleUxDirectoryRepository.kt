@@ -11,6 +11,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.net.HttpURLConnection
 import java.net.URL
 import chat.simplex.common.platform.Log
+import chat.simplex.common.views.helpers.generalGetString
+import chat.simplex.res.MR
 
 data class SimpleUxDirectoryGroup(
   val name: String,
@@ -18,7 +20,10 @@ data class SimpleUxDirectoryGroup(
   val link: String,
   val category: String,
   val members: String,
-  val imageUrl: String? = null
+  val imageUrl: String? = null,
+  // Marks the synthetic directory-bot entry: its display strings live in the UI layer (localized at
+  // render time) because this repository is not a Composable and must not hard-code user-visible text.
+  val isDirectoryBot: Boolean = false
 )
 
 object SimpleUxDirectoryRepository {
@@ -29,10 +34,11 @@ object SimpleUxDirectoryRepository {
 
   val directoryBot = SimpleUxDirectoryGroup(
     name = "SimpleX Directory Bot",
-    description = "Bot officiel d'annuaire SimpleX : recherchez n'importe quel groupe public en direct.",
+    description = "",
     link = "https://smp4.simplex.im/a#lXUjJW5vHYQzoLYgmi8GbxkGP41_kjefFvBrdwg-0Ok",
-    category = "Annuaire",
-    members = "Bot Officiel"
+    category = "",
+    members = "",
+    isDirectoryBot = true
   )
 
   private val _groups = MutableStateFlow<List<SimpleUxDirectoryGroup>>(listOf(directoryBot))
@@ -139,7 +145,7 @@ object SimpleUxDirectoryRepository {
           }
         }
         if (desc.isBlank()) {
-          desc = "Groupe public SimpleX"
+          desc = generalGetString(MR.strings.directory_group_default_desc)
         } else {
           // Clean up first line or rules for concise display
           desc = desc.lines().firstOrNull { it.isNotBlank() && !it.startsWith("Link to join") } ?: desc.trim()
@@ -151,15 +157,15 @@ object SimpleUxDirectoryRepository {
           ?: entryTypeObj?.get("type")?.jsonPrimitive?.content
           ?: "group"
         val category = when (typeStr.lowercase()) {
-          "channel" -> "Canal"
-          else -> "Groupe"
+          "channel" -> generalGetString(MR.strings.directory_category_channel)
+          else -> generalGetString(MR.strings.directory_category_group)
         }
 
         // Extract members
         val summaryObj = entryTypeObj?.get("summary")?.jsonObject
         val membersCount = summaryObj?.get("currentMembers")?.jsonPrimitive?.content?.toIntOrNull()
           ?: summaryObj?.get("members")?.jsonPrimitive?.content?.toIntOrNull()
-        val membersStr = if (membersCount != null && membersCount > 0) "$membersCount membres" else "Groupe public"
+        val membersStr = if (membersCount != null && membersCount > 0) generalGetString(MR.strings.directory_members_count).format(membersCount) else generalGetString(MR.strings.directory_members_public_group)
 
         val imgFile = entry["imageFile"]?.jsonPrimitive?.content
         val imgUrl = if (!imgFile.isNullOrBlank()) "$DATA_BASE_URL$imgFile" else null
