@@ -93,7 +93,24 @@ actual object AudioPlayer: AudioPlayerInterface {
   private val player by lazy { AudioPlayerComponent(vlcFactory).mediaPlayer() }
 
   override val currentlyPlaying: MutableState<CurrentlyPlayingState?> = mutableStateOf(null)
+  override val playbackSpeed: MutableState<Float> = mutableStateOf(1f)
   private var progressJob: Job? = null
+
+  // Applies the session speed to the started player. Call right after player.start().
+  private fun applyPlaybackSpeed() {
+    if (playbackSpeed.value != 1f) {
+      runCatching { player.controls().setRate(playbackSpeed.value) }
+    }
+  }
+
+  override fun setPlaybackSpeed(speed: Float) {
+    playbackSpeed.value = speed
+    // vlcj accepts rate changes while playing and while paused; avoid lazily creating
+    // the VLC player just to set a rate when nothing was played yet.
+    if (currentlyPlaying.value != null) {
+      runCatching { player.controls().setRate(speed) }
+    }
+  }
 
   // Returns real duration of the track
   private fun start(fileSource: CryptoFile, smallView: Boolean, seek: Int? = null, onProgressUpdate: (position: Int?, state: TrackState) -> Unit): Int? {
@@ -126,6 +143,8 @@ actual object AudioPlayer: AudioPlayerInterface {
     }
     if (seek != null) player.seekTo(seek)
     player.start()
+    // Re-apply the session speed to the newly prepared media
+    applyPlaybackSpeed()
     currentlyPlaying.value = CurrentlyPlayingState(fileSource, onProgressUpdate, smallView)
     progressJob = CoroutineScope(Dispatchers.Default).launch {
       onProgressUpdate(player.currentPosition, TrackState.PLAYING)

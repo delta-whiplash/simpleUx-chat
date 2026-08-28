@@ -24,6 +24,16 @@ import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import kotlin.math.roundToInt
 
+/**
+ * Playback speed cycle for voice notes: 1.0x -> 1.5x -> 2.0x -> 1.0x.
+ * Any unexpected value restarts the cycle at normal speed (issue #13).
+ */
+fun nextPlaybackSpeed(current: Float): Float = when (current) {
+    1.0f -> 1.5f
+    1.5f -> 2.0f
+    else -> 1.0f
+}
+
 @Composable
 fun VoiceWaveformPlayer(
     isPlaying: Boolean,
@@ -31,13 +41,16 @@ fun VoiceWaveformPlayer(
     durationFormatted: String,
     onPlayPauseToggle: () -> Unit,
     onSeek: (Float) -> Unit,
+    // Hoisted: the speed belongs to the shared player session, not to this composable's
+    // local state, so it survives scrolling the item out of composition (issue #13).
+    playbackSpeed: Float,
+    onPlaybackSpeedChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
     waveformData: List<Float> = remember {
         listOf(0.3f, 0.5f, 0.8f, 0.4f, 0.9f, 0.6f, 0.7f, 0.3f, 0.85f, 0.5f, 0.75f, 0.4f, 0.6f, 0.95f, 0.7f, 0.45f, 0.8f, 0.35f, 0.65f, 0.5f)
     }
 ) {
     val isDark = isInDarkTheme()
-    var playbackSpeed by remember { mutableStateOf(1.0f) }
 
     Row(
         modifier = modifier
@@ -131,11 +144,7 @@ fun VoiceWaveformPlayer(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    playbackSpeed = when (playbackSpeed) {
-                        1.0f -> 1.5f
-                        1.5f -> 2.0f
-                        else -> 1.0f
-                    }
+                    onPlaybackSpeedChange(nextPlaybackSpeed(playbackSpeed))
                 }
                 .padding(horizontal = 7.dp, vertical = 3.dp),
             contentAlignment = Alignment.Center

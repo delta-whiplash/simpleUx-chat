@@ -17,7 +17,9 @@ import androidx.compose.ui.draw.*
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.layer.GraphicsLayer
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.*
 import dev.icerock.moko.resources.compose.painterResource
@@ -1203,16 +1205,16 @@ fun BoxScope.ChatInfoToolbar(
   val isDark = isInDarkTheme()
 
   menuItems.add {
+    val themeItemOrigin = remember { mutableStateOf<Offset?>(null) }
     Row(
       modifier = Modifier
         .fillMaxWidth()
+        .onGloballyPositioned { coords -> themeItemOrigin.value = coords.boundsInWindow().center }
         .clickable {
           showMenu.value = false
-          ThemeAnimationController.trigger(
-            originOffset = Offset(1000f, 145f),
-            currentlyDark = isDark,
-            scope = scope
-          )
+          // Reveal starts from the tapped item; darkness and scope are derived/owned by
+          // the controller so a stale composition capture can't leak or cancel it (#14)
+          ThemeAnimationController.trigger(originOffset = themeItemOrigin.value)
         }
         .padding(horizontal = 16.dp, vertical = 12.dp),
       verticalAlignment = Alignment.CenterVertically,
@@ -1530,7 +1532,10 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
           cInfo.displayName, cInfo.nameBadge, fontWeight = FontWeight.Bold,
           maxLines = 1, overflow = TextOverflow.Ellipsis
         )
-        val currentChat = remember(cInfo.id) { chatModel.chats.value.firstOrNull { it.chatInfo.id == cInfo.id } }
+        // Read the chats State directly in composition so the badge recomposes when the
+        // chats snapshot changes (verification, connection, members). Caching this lookup
+        // in remember keyed on the immutable chat id froze it on stale state (#10).
+        val currentChat = chatModel.chats.value.firstOrNull { it.chatInfo.id == cInfo.id }
         Spacer(Modifier.width(6.dp))
         SecurityBadge(chat = currentChat)
       }

@@ -27,40 +27,94 @@ import chat.simplex.common.ui.theme.ThemeManager
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
+import chat.simplex.common.ui.theme.CurrentColors
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.hypot
 
+/** Fallback reveal origin (approx. app bar area) used when the call site has no real control bounds. */
+val DEFAULT_REVEAL_ORIGIN = Offset(1000f, 150f)
+
+/**
+ * Toggle decision for the theme reveal: the darkness AFTER the toggle, or null when a reveal
+ * is already running and the new trigger must be ignored.
+ *
+ * Re-entry policy (issue #14): while a reveal is running, new triggers are IGNORED rather
+ * than cancel-and-restarted. The running reveal applies the theme at its 180 ms mark;
+ * restarting would race that and could flip the theme twice or leave [ThemeAnimationController.targetIsDark]
+ * inconsistent with the actually applied theme. Ignoring cannot leave stale state either,
+ * because the running reveal always resets [ThemeAnimationController.isAnimating] in its finally block.
+ */
+fun nextRevealTarget(isAnimating: Boolean, currentIsDark: Boolean): Boolean? =
+    if (isAnimating) null else !currentIsDark
+
+/** [originOffset] when provided, the documented fallback otherwise. */
+fun resolveRevealOrigin(originOffset: Offset?): Offset =
+    originOffset ?: DEFAULT_REVEAL_ORIGIN
+
 object ThemeAnimationController {
     val isAnimating = mutableStateOf(false)
-    val origin = mutableStateOf(Offset(1000f, 150f))
+    val origin = mutableStateOf(DEFAULT_REVEAL_ORIGIN)
     val targetIsDark = mutableStateOf(false)
     val animProgress = Animatable(0f)
 
-    fun trigger(originOffset: Offset, currentlyDark: Boolean, scope: CoroutineScope) {
-        val newIsDark = !currentlyDark
-        origin.value = originOffset
+    // Own scope so trigger() can be called without a caller-provided scope; the reveal then
+    // also survives the calling screen being disposed, so the theme still applies.
+    private val controllerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    /**
+     * Start the circular theme reveal expanding from [originOffset] (window coordinates of
+     * the tapped control; null = [DEFAULT_REVEAL_ORIGIN]).
+     *
+     * @param currentlyDark darkness BEFORE the toggle; null = derived from the live theme
+     *   ([CurrentColors]) instead of a value captured at composition time.
+     * @param scope scope running the reveal; null = controller-owned scope. A screen-scoped
+     *   scope is safe: cancellation resets [isAnimating] via finally.
+     *
+     * Triggers while a reveal is already running are ignored — see [nextRevealTarget].
+     */
+    fun trigger(
+        originOffset: Offset? = null,
+        currentlyDark: Boolean? = null,
+        scope: CoroutineScope? = null
+    ) {
+        val currentIsDark = currentlyDark ?: !CurrentColors.value.colors.isLight
+        val newIsDark = nextRevealTarget(isAnimating.value, currentIsDark) ?: return
+        val revealScope = scope ?: controllerScope
+        // A dead scope would never run the coroutine body, so it could also never run the
+        // finally that resets isAnimating — never arm the overlay in that case.
+        if (!revealScope.isActive) return
+        origin.value = resolveRevealOrigin(originOffset)
         targetIsDark.value = newIsDark
         isAnimating.value = true
 
-        scope.launch {
-            animProgress.snapTo(0f)
-            val job = launch {
-                animProgress.animateTo(
-                    targetValue = 1f,
-                    animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
-                )
+        revealScope.launch {
+            try {
+                animProgress.snapTo(0f)
+                val job = launch {
+                    animProgress.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
+                    )
+                }
+                delay(180)
+                val targetTheme: String = if (newIsDark) {
+                    ChatController.appPrefs.systemDarkTheme.get() ?: DefaultTheme.DARK.themeName
+                } else {
+                    DefaultTheme.LIGHT.themeName
+                }
+                ThemeManager.applyTheme(targetTheme)
+                job.join()
+            } finally {
+                // ALWAYS reset — also when a screen-scoped scope cancels this coroutine
+                // (e.g. back navigation mid-reveal) — otherwise the hosted overlay
+                // (zIndex 9999) keeps drawing a frozen partial circle over the app.
+                isAnimating.value = false
             }
-            delay(180)
-            val targetTheme: String = if (newIsDark) {
-                ChatController.appPrefs.systemDarkTheme.get() ?: DefaultTheme.DARK.themeName
-            } else {
-                DefaultTheme.LIGHT.themeName
-            }
-            ThemeManager.applyTheme(targetTheme)
-            job.join()
-            isAnimating.value = false
         }
     }
 }
