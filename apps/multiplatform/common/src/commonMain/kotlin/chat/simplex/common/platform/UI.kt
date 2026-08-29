@@ -35,3 +35,13 @@ enum class SimpleUXHapticType {
 
 expect fun performHapticFeedback(type: SimpleUXHapticType = SimpleUXHapticType.LIGHT)
 
+// SimpleUX haptics toggle (UI-layer preference, persisted outside the frozen model layer)
+private const val SIMPLEUX_HAPTICS_ENABLED = "SimpleUXHapticsEnabled"
+val simpleUXHapticsEnabled: MutableState<Boolean> by lazy {
+  mutableStateOf(settings.getBoolean(SIMPLEUX_HAPTICS_ENABLED, true))
+}
+fun setSimpleUXHapticsEnabled(enabled: Boolean) {
+  settings.putBoolean(SIMPLEUX_HAPTICS_ENABLED, enabled)
+  simpleUXHapticsEnabled.value = enabled
+}
+

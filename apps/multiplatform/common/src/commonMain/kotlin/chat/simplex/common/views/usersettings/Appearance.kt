@@ -59,6 +59,17 @@ expect fun AppearanceView(m: ChatModel)
 
 object AppearanceScope {
   @Composable
+  fun HapticsSection() {
+    SectionView {
+      PreferenceToggle(
+        text = stringResource(MR.strings.haptic_feedback),
+        checked = simpleUXHapticsEnabled.value,
+        onChange = { setSimpleUXHapticsEnabled(it) }
+      )
+    }
+  }
+
+  @Composable
   fun ProfileImageSection() {
     SectionView(stringResource(MR.strings.settings_section_title_profile_images), contentPadding = PaddingValues(horizontal = CARD_PADDING)) {
       val image = remember { chatModel.currentUser }.value?.image

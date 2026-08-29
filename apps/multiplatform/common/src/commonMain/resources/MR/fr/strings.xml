@@ -2535,4 +2535,5 @@
     <string name="icon_descr_encryption">Chiffrement</string>
   <string name="quick_camera_open">Caméra</string>
   <string name="island_scan">Scan</string>
+  <string name="haptic_feedback">Retour haptique</string>
 </resources>

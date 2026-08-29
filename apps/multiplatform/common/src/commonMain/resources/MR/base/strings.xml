@@ -3288,4 +3288,5 @@
   <!-- SimpleUX i18n: misc -->
   <string name="join_bar_join_as">Join as</string>
   <string name="icon_descr_encryption">Encryption</string>
+  <string name="haptic_feedback">Haptic feedback</string>
 </resources>
