@@ -2332,4 +2332,8 @@
     <string name="accept_pending_member_alert_title">Aceitar membro</string>
     <string name="member_criteria_all">todos</string>
     <string name="member_support">Conversas com membros</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galeria</string>
+  <string name="quick_camera_torch">Flash</string>
 </resources>

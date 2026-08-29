@@ -810,4 +810,8 @@
     <string name="restart_chat_button">Siḧbetê ji nû ve veke</string>
     <string name="migrate_from_device_stopping_chat">Siḧbet tê sekinandin</string>
     <string name="migrate_from_device_start_chat">Siḧbetê bide destpêkirin</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">گەلەری</string>
+  <string name="quick_camera_torch">فلاش</string>
 </resources>

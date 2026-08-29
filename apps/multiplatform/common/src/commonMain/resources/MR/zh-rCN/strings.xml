@@ -2851,4 +2851,8 @@
     <string name="v7_0_simplex_names">SimpleX 公开名称 (测试)</string>
     <string name="info_row_file_servers">文件服务器</string>
     <string name="share_text_file_servers">文件服务器：%s</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">相册</string>
+  <string name="quick_camera_torch">闪光灯</string>
 </resources>

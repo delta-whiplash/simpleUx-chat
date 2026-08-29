@@ -2472,4 +2472,8 @@
     <string name="smp_proxy_error_unknown_ca">اثر انگشت در نشانی سرور انتقال با گواهی مطابقت ندارد: ‎%1$s.</string>
     <string name="network_error_unknown_ca">اثر انگشت در نشانی سرور با گواهی مطابقت ندارد: ‎%1$s.</string>
     <string name="button_delete_member_messages">پاک کردن پیام کاربر</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">گالری</string>
+  <string name="quick_camera_torch">فلاش</string>
 </resources>

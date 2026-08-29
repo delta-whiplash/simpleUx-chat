@@ -2535,4 +2535,8 @@
     <string name="icon_descr_encryption">Chiffrement</string>
   <string name="quick_camera_open">Caméra</string>
   <string name="island_scan">Scan</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galerie</string>
+  <string name="quick_camera_torch">Flash</string>
 </resources>

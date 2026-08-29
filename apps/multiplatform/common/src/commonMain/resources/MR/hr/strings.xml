@@ -1438,4 +1438,8 @@
     <string name="migrate_from_another_device">Migriraj sa drugog uređaja</string>
     <string name="only_you_can_send_voice">Samo vi možete slati glasovne poruke</string>
     <string name="only_your_contact_can_add_message_reactions">Samo vi možete stavljati reakcije na poruke.</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galerija</string>
+  <string name="quick_camera_torch">Bljeskalica</string>
 </resources>

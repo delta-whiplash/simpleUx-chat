@@ -2504,4 +2504,8 @@
     <string name="why_built_p6">Najstarsza ludzka wolność - możliwość rozmowy z inną osobą bez bycia obserwowanym - opiera się na infrastrukturze, która nie może jej zdradzić.</string>
     <string name="why_built_p7">Ponieważ zniszczyliśmy moc pozwalającą poznać, kim jesteś. Więc twoja moc nigdy nie będzie Ci odebrana.</string>
     <string name="why_built_tagline">Ciesz się swobodą w swojej sieci.</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galeria</string>
+  <string name="quick_camera_torch">Flesz</string>
 </resources>

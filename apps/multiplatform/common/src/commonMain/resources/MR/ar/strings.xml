@@ -2840,4 +2840,8 @@
     <string name="v7_0_simplex_names_descr">أسماء لقناتك أو لشركتك.</string>
     <string name="info_row_file_servers">خوادم الملفات</string>
     <string name="share_text_file_servers">خوادم الملفات: %s</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">المعرض</string>
+  <string name="quick_camera_torch">الفلاش</string>
 </resources>

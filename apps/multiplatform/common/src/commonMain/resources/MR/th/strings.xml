@@ -1283,4 +1283,8 @@
     <string name="in_reply_to">ในการตอบกลับถึง</string>
     <string name="no_history">ไม่มีประวัติ</string>
     <string name="conn_event_ratchet_sync_ok">encryptionใช้ได้</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">แกลเลอรี</string>
+  <string name="quick_camera_torch">แฟลช</string>
 </resources>

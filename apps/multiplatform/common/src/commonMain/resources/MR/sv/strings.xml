@@ -1,3 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galleri</string>
+  <string name="quick_camera_torch">Blink</string>
 </resources>

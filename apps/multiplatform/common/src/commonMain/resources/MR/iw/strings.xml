@@ -2096,4 +2096,8 @@
     <string name="both_you_and_your_contact_can_send_files">אתה והאיש קשר שלך יכולים לשלוח קבצים ומדיה</string>
     <string name="chat_banner_business_connection">צ\'אט עסקי</string>
     <string name="context_user_picker_cant_change_profile_alert_title">אי אפשר לשנות תמונת פרופיל</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">גלריה</string>
+  <string name="quick_camera_torch">פלאש</string>
 </resources>

@@ -2898,4 +2898,8 @@
     <string name="onboarding_feature_3_sub">Gestos deslizantes fluidos, notas de voz con onda de audio, perfiles múltiples instantáneos y mensajes temporales en 1 toque.</string>
     <string name="onboarding_get_started">Comenzar</string>
     <string name="modal_close">Cerrar</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galería</string>
+  <string name="quick_camera_torch">Flash</string>
 </resources>

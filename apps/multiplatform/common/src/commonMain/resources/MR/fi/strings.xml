@@ -1452,4 +1452,8 @@
     <string name="desktop_incompatible_version">Yhteensopimaton versio</string>
     <string name="new_mobile_device">Uusi mobiililaite</string>
     <string name="this_device">Tämä laite</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galleria</string>
+  <string name="quick_camera_torch">Salama</string>
 </resources>

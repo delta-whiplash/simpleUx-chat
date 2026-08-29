@@ -2834,4 +2834,8 @@
     <string name="v7_0_simplex_names">Nyilvános SimpleX-nevek (béta)</string>
     <string name="info_row_file_servers">Fájlkiszolgálók</string>
     <string name="share_text_file_servers">Fájlkiszolgálók: %s</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galéria</string>
+  <string name="quick_camera_torch">Vaku</string>
 </resources>

@@ -2441,4 +2441,8 @@
     <string name="server_address">Servera adrese</string>
     <string name="open_server_settings_button">Atvērt servera iestatījumus</string>
     <string name="max_group_mentions_per_message_reached">Sasniegts maksimālais grupas pieminējumu skaits ziņā.</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galerija</string>
+  <string name="quick_camera_torch">Zibspuldze</string>
 </resources>

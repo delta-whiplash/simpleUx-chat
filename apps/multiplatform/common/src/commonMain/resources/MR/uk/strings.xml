@@ -2630,4 +2630,8 @@
     <string name="leave_channel_question">Залишити канал?</string>
     <string name="let_someone_connect_to_you">Дозволити іншим зв’язуватися з вами</string>
     <string name="action_button_channel_link">Посилання</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Галерея</string>
+  <string name="quick_camera_torch">Спалах</string>
 </resources>

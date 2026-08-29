@@ -212,4 +212,8 @@
     <string name="both_you_and_your_contact_can_send_files">Både du og kontakten din kan sende filer og medier.</string>
     <string name="both_you_and_your_contact_can_send_voice">Både du og kontakten din kan sende talemeldinger.</string>
     <string name="business_address">Firmaadresse</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galleri</string>
+  <string name="quick_camera_torch">Blits</string>
 </resources>

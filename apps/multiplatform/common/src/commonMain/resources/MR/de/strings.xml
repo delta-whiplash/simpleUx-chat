@@ -2970,4 +2970,8 @@
     <string name="onboarding_feature_3_sub">Flüssige Wischgesten, Sprachwellenformen, sofortige Multi-Profile und selbstlöschende Chats mit einem Fingertipp.</string>
     <string name="onboarding_get_started">Loslegen</string>
     <string name="modal_close">Schließen</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galerie</string>
+  <string name="quick_camera_torch">Blitz</string>
 </resources>

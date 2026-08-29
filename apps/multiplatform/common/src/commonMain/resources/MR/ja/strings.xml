@@ -2776,4 +2776,8 @@
     <string name="badge_unverified_desc">このバッジは検証できず、本物ではない可能性があります。</string>
     <string name="badge_unknown_key_title">バッジを検証できません</string>
     <string name="badge_unknown_key_desc">このバッジは、このバージョンのアプリが認識しない鍵で署名されています。このバッジを検証するにはアプリを更新してください。</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">ギャラリー</string>
+  <string name="quick_camera_torch">フラッシュ</string>
 </resources>

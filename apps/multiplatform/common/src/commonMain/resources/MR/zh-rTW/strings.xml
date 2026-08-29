@@ -2800,4 +2800,8 @@
     <string name="badge_unverified_desc">無法驗證此徽章，可能並非真實。</string>
     <string name="badge_unknown_key_title">無法驗證徽章</string>
     <string name="badge_unknown_key_desc">此徽章使用此版本應用程式無法識別的金鑰簽署。請更新應用程式以驗證此徽章。</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">相簿</string>
+  <string name="quick_camera_torch">閃光燈</string>
 </resources>
