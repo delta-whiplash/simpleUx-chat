@@ -1,0 +1,334 @@
+name: simpleux-release
+
+# Release pipeline (issue #78): builds a signed FOSS release APK on top of
+# upstream's precompiled native libs (same borrow-the-core trick as
+# android-quick-apk.yml — this fork never touches the Haskell core) and
+# publishes it to GitHub Releases.
+#
+# Two channels (decided 2026-08-29):
+#   - rolling: every push to `stable` replaces the `rolling` pre-release.
+#     Zero-friction dogfood loop: fix -> push -> install.
+#   - stable:  pushing a tag `v7.0.366-ux.N` (or a manual dispatch with
+#     channel=stable) publishes a versioned release with notes generated
+#     from the commits since the previous v* tag.
+#
+# Versioning (#72): versionName = `<fork.version_base>-ux.<n>`; the rolling
+# counter n is this workflow's run number, a tag carries its own n. versionCode
+# is a monotonic function of the run number (36600000 + run_number*100), so it
+# strictly increases across every build of either channel. The committed
+# `android.version_code` in gradle.properties is NOT touched in git — it stays
+# the local-IDE default and the migration-floor anchor that the truth-check job
+# gates on (AGENTS.md §4); this workflow overrides it in the working copy only.
+#
+# Signing: a dedicated release keystore is injected through the four
+# ANDROID_RELEASE_KEY* repo secrets and handed to Gradle via the
+# `android.injected.signing.*` properties, which upstream's compressApk task
+# forwards to scripts/android/compress-and-sign-apk.sh (deterministic zip ->
+# zipalign -> apksigner). `compression.level=1` is what arms that task — it is
+# read from local.properties, not from a -P flag. The v1 signature is final:
+# a different key would force uninstall + data loss on every device.
+
+on:
+  push:
+    branches:
+      - stable
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "rolling replaces the rolling pre-release; stable publishes a versioned release (tag v<version> is created at the current commit)"
+        required: true
+        default: "rolling"
+        type: choice
+        options:
+          - rolling
+          - stable
+      upstream_tag:
+        description: "Upstream simplex-chat release tag to borrow native libs from (e.g. v6.5.4). Empty = latest upstream release."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: simpleux-release-${{ github.ref }}
+  # Rolling builds supersede each other; a tagged stable build must never be cancelled.
+  cancel-in-progress: ${{ github.ref == 'refs/heads/stable' }}
+
+jobs:
+  release-apk:
+    name: Signed FOSS release APK -> GitHub Releases
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout (full history + submodules — notes need tags, build needs nanohttpd)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      # Same cache family as simpleux.yml (gradle-<os> restore-keys): the release
+      # build can reuse dependencies already warmed up by the compile CI.
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('apps/multiplatform/**/*.gradle.kts', 'apps/multiplatform/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      - name: Install NDK, CMake, platform, build-tools
+        run: |
+          set -e
+          yes | sdkmanager --licenses > /dev/null || true
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "ndk;23.1.7779620" "cmake;3.22.1"
+
+      - name: Check release signing secrets are configured
+        env:
+          KS_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE }}
+          KS_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+        run: |
+          set -e
+          missing=0
+          for v in KS_B64 KS_PASS KEY_ALIAS KEY_PASS; do
+            if [ -z "${!v}" ]; then
+              echo "::error::Secret ${v#KS_} is not set. Configure ANDROID_RELEASE_KEYSTORE / _PASSWORD / _KEY_ALIAS / _KEY_PASSWORD (issue #78)."
+              missing=1
+            fi
+          done
+          exit $missing
+
+      - name: Resolve channel, fork version, version code
+        id: version
+        run: |
+          set -e
+          FORK_BASE=$(grep -oE '^fork\.version_base=.*' apps/multiplatform/gradle.properties | cut -d= -f2)
+          if [ -z "$FORK_BASE" ]; then
+            echo "::error::fork.version_base missing from apps/multiplatform/gradle.properties"
+            exit 1
+          fi
+          N=${{ github.run_number }}
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            CHANNEL=stable
+            VERSION_NAME="${GITHUB_REF_NAME#v}"
+            if [[ "$VERSION_NAME" != "$FORK_BASE"-ux.* ]]; then
+              echo "::error::Tag v$VERSION_NAME does not follow the <fork.version_base>-ux.<n> scheme (fork.version_base=$FORK_BASE, issue #72)."
+              exit 1
+            fi
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.channel }}" = "stable" ]; then
+            CHANNEL=stable
+            VERSION_NAME="${FORK_BASE}-ux.${N}"
+          else
+            CHANNEL=rolling
+            VERSION_NAME="${FORK_BASE}-ux.${N}"
+          fi
+          VERSION_CODE=$((36600000 + N * 100))
+          echo "channel=$CHANNEL"       >> "$GITHUB_OUTPUT"
+          echo "version_name=$VERSION_NAME" >> "$GITHUB_OUTPUT"
+          echo "version_code=$VERSION_CODE" >> "$GITHUB_OUTPUT"
+          echo "Releasing $VERSION_NAME (code $VERSION_CODE) on the $CHANNEL channel"
+
+      - name: Resolve upstream release (native libs source)
+        id: upstream
+        env:
+          UPSTREAM_TAG_INPUT: ${{ inputs.upstream_tag }}
+        run: |
+          set -e
+          if [ -n "$UPSTREAM_TAG_INPUT" ]; then
+            url="https://api.github.com/repos/simplex-chat/simplex-chat/releases/tags/$UPSTREAM_TAG_INPUT"
+          else
+            url="https://api.github.com/repos/simplex-chat/simplex-chat/releases/latest"
+          fi
+          curl -sS -H "Accept: application/vnd.github+json" "$url" -o /tmp/release.json
+          tag=$(jq -r '.tag_name' /tmp/release.json)
+          apk_url=$(jq -r '[.assets[] | select(.name | test("\\.apk$"; "i"))] |
+            (map(select(.name | test("arm64|aarch64"; "i"))) + .) | .[0].browser_download_url // empty' /tmp/release.json)
+          if [ -z "$apk_url" ] || [ "$apk_url" = "null" ]; then
+            echo "::error::No .apk asset found on upstream release $tag."
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "apk_url=$apk_url" >> "$GITHUB_OUTPUT"
+          echo "Borrowing native libs from upstream $tag"
+
+      - name: Download upstream APK and extract native libs
+        run: |
+          set -e
+          curl -sS -L "${{ steps.upstream.outputs.apk_url }}" -o /tmp/upstream.apk
+          libs_root="apps/multiplatform/common/src/commonMain/cpp/android/libs"
+          found_any=false
+          for abi in arm64-v8a armeabi-v7a; do
+            mkdir -p "$libs_root/$abi"
+            if unzip -o /tmp/upstream.apk "lib/$abi/libsimplex.so" "lib/$abi/libsupport.so" -d /tmp/extract-$abi 2>/dev/null; then
+              cp "/tmp/extract-$abi/lib/$abi/libsimplex.so" "$libs_root/$abi/libsimplex.so"
+              cp "/tmp/extract-$abi/lib/$abi/libsupport.so" "$libs_root/$abi/libsupport.so"
+              echo "Extracted native libs for $abi"
+              found_any=true
+            else
+              echo "No $abi libs in upstream APK (skipping that split)"
+            fi
+          done
+          if [ "$found_any" != "true" ]; then
+            echo "::error::Could not extract libsimplex.so/libsupport.so for any ABI. Inspect with 'unzip -l /tmp/upstream.apk'."
+            exit 1
+          fi
+
+      - name: Stamp fork version into the working copy (git keeps the floor values)
+        run: |
+          set -e
+          sed -i "s/^android\.version_name=.*/android.version_name=${{ steps.version.outputs.version_name }}/" apps/multiplatform/gradle.properties
+          sed -i "s/^android\.version_code=.*/android.version_code=${{ steps.version.outputs.version_code }}/" apps/multiplatform/gradle.properties
+          echo "Stamped:"; grep -E '^android\.version_(name|code)=' apps/multiplatform/gradle.properties
+          git diff --stat
+
+      - name: Decode release keystore
+        env:
+          KS_B64: ${{ secrets.ANDROID_RELEASE_KEYSTORE }}
+          KS_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+        run: |
+          set -e
+          echo "$KS_B64" | base64 -d > /tmp/simpleux-release.jks
+          KEYTOOL="$JAVA_HOME/bin/keytool"
+          "$KEYTOOL" -list -keystore /tmp/simpleux-release.jks -storepass "$KS_PASS" > /dev/null
+          echo "Keystore decoded and readable"
+
+      - name: Write local.properties (sdk.dir + arm the compress-and-sign task)
+        run: |
+          set -e
+          {
+            echo "sdk.dir=$ANDROID_HOME"
+            echo "compression.level=1"
+          } > apps/multiplatform/local.properties
+          cat apps/multiplatform/local.properties
+
+      - name: Assemble signed FOSS release APK(s)
+        env:
+          KS_PASS: ${{ secrets.ANDROID_RELEASE_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_RELEASE_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_RELEASE_KEY_PASSWORD }}
+        working-directory: apps/multiplatform
+        run: |
+          set -e
+          ./gradlew :android:assembleFossRelease \
+            -Pandroid.injected.signing.store.file=/tmp/simpleux-release.jks \
+            -Pandroid.injected.signing.store.password="$KS_PASS" \
+            -Pandroid.injected.signing.key.alias="$KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$KEY_PASS" \
+            --stacktrace
+
+      - name: Collect, rename, checksum APKs
+        run: |
+          set -e
+          OUT=apps/multiplatform/android/build/outputs/apk/foss/release
+          VERSION_NAME="${{ steps.version.outputs.version_name }}"
+          mkdir -p dist
+          ls -la "$OUT"
+          for apk in "$OUT"/*.apk; do
+            name=$(basename "$apk")
+            case "$name" in
+              *arm64*|simplex.apk)        suffix="arm64-v8a" ;;
+              *armeabi*|*armv7*)          suffix="armeabi-v7a" ;;
+              *universal*)                suffix="universal" ;;
+              *)                          suffix="unknown-$(basename "$apk" .apk)" ;;
+            esac
+            cp "$apk" "dist/simplex-ux-${VERSION_NAME}-${suffix}.apk"
+          done
+          cd dist
+          sha256sum *.apk > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          echo "DIST_DIR=$(pwd)" >> "$GITHUB_ENV"
+
+      - name: Build release notes
+        id: notes
+        run: |
+          set -e
+          CHANNEL="${{ steps.version.outputs.channel }}"
+          VERSION_NAME="${{ steps.version.outputs.version_name }}"
+          UPSTREAM_TAG="${{ steps.upstream.outputs.tag }}"
+          SHORT_SHA="${GITHUB_SHA::7}"
+          {
+            if [ "$CHANNEL" = "rolling" ]; then
+              echo "# Rolling build $VERSION_NAME"
+              echo ""
+              echo "Rebuilt automatically on every push to \`stable\` — pre-release quality, expect rough edges."
+            else
+              echo "# SimpleUX $VERSION_NAME"
+              echo ""
+            fi
+            echo "**Fork commit:** \`$GITHUB_SHA\` · **Native libs:** borrowed from upstream \`simplex-chat\` release \`$UPSTREAM_TAG\` (the fork makes zero changes to the native/protocol layer)."
+            echo ""
+            if [ "$CHANNEL" = "stable" ]; then
+              PREV_TAG=$(git tag -l 'v*' --sort=-creatordate | grep -vx "v$VERSION_NAME" | head -1 || true)
+              echo "## Changes"
+              echo ""
+              if [ -n "$PREV_TAG" ] && git rev-parse -q --verify "$PREV_TAG" > /dev/null; then
+                git log --first-parent --format='- %s (%h)' "$PREV_TAG..HEAD"
+              else
+                git log --first-parent --format='- %s (%h)' -20
+              fi
+              echo ""
+            fi
+            echo "## Install"
+            echo ""
+            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` for any modern phone (\`-universal\` covers other ABIs). SHA-256 sums in \`SHA256SUMS.txt\`."
+          } > notes.md
+          cat notes.md
+
+      - name: Publish rolling pre-release (replaces the previous one)
+        if: steps.version.outputs.channel == 'rolling'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          gh release delete rolling -R "$GITHUB_REPOSITORY" --cleanup-tag --yes 2>/dev/null || true
+          gh release create rolling \
+            -R "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --title "Rolling build ${{ steps.version.outputs.version_name }} (${GITHUB_SHA::7})" \
+            --notes-file notes.md \
+            "$DIST_DIR"/*
+
+      - name: Publish stable release
+        if: steps.version.outputs.channel == 'stable'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          TAG="v${{ steps.version.outputs.version_name }}"
+          gh release create "$TAG" \
+            -R "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "SimpleUX ${{ steps.version.outputs.version_name }}" \
+            --notes-file notes.md \
+            "$DIST_DIR"/*
+
+      - name: Job summary
+        run: |
+          {
+            echo "### SimpleUX release (${{ steps.version.outputs.channel }})"
+            echo ""
+            echo "- Version: \`${{ steps.version.outputs.version_name }}\` (versionCode \`${{ steps.version.outputs.version_code }}\`)"
+            echo "- Fork commit: \`${GITHUB_SHA}\`"
+            echo "- Native libs borrowed from upstream release: \`${{ steps.upstream.outputs.tag }}\`"
+            echo "- Signed with the \`simpleux-release\` keystore (repo secrets)."
+            echo ""
+            echo '```'
+            cat "$DIST_DIR/SHA256SUMS.txt"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
