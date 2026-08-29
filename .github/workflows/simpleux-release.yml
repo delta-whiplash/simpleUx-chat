@@ -285,7 +285,7 @@ jobs:
             fi
             echo "## Install"
             echo ""
-            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` for any modern phone (\`-universal\` covers other ABIs). SHA-256 sums in \`SHA256SUMS.txt\`."
+            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` (arm64-v8a — any modern phone). SHA-256 sums in \`SHA256SUMS.txt\`."
           } > notes.md
           cat notes.md
 

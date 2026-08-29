@@ -133,7 +133,12 @@ android {
                 isEnable = true
                 reset()
                 if (isRelease) {
-                    include("arm64-v8a", "armeabi-v7a")
+                    // Release APKs are arm64-v8a only (#78): the release pipeline borrows
+                    // precompiled upstream native libs that ship no armeabi-v7a slice, and
+                    // the fork has no 32-bit target. Re-add an ABI here together with the
+                    // matching libs/<abi> extraction in simpleux-release.yml.
+                    include("arm64-v8a")
+                    isUniversalApk = false
                 } else {
                     include("arm64-v8a", "armeabi-v7a")
                     isUniversalApk = false
