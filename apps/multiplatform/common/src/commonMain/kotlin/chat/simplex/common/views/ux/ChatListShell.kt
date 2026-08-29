@@ -402,10 +402,11 @@ fun SimpleUxTabHost(
 
   CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
     Box(Modifier.fillMaxSize()) {
-      // NO AnimatedContent here (issue #58): its retained layer rasterized a
-      // background-colored hole across the middle of the viewport that ate list rows
-      // (reproduced on emulator-5554 with both hardware and software rendering, light and
-      // dark themes). Tab switches are instant, which matches the Telegram benchmark anyway.
+      // No animated tab transitions here (issue #58): the transition's retained layer
+      // rasterized a background-colored hole across the middle of the viewport that ate
+      // list rows (reproduced on emulator-5554 with both hardware and software rendering,
+      // light and dark themes). Tab switches are instant, which matches the Telegram
+      // benchmark anyway. The CI lint guard enforces this.
       Box(Modifier.fillMaxSize()) {
         when (val tab = currentTab.value) {
           SimpleUxTab.CHATS -> {

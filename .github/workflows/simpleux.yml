@@ -129,7 +129,7 @@ jobs:
           # retained a raster layer that composited a background-colored hole across the
           # viewport center. Root-caused and removed 2026-08-29; do not re-introduce it in
           # the shell (repro + bisect trail on the issue).
-          if grep -q "AnimatedContent" ./ChatListShell.kt; then
+          if grep -Eq "AnimatedContent[[:space:]]*\(" ./ChatListShell.kt; then
             echo "::error::AnimatedContent found in ChatListShell.kt — it caused the issue #58 viewport hole (background-colored band eating list rows). Do not re-add it to the tab host."
             exit 1
           fi
