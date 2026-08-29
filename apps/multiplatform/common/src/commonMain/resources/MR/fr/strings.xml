@@ -2547,6 +2547,7 @@
   <string name="quick_camera_link_detected">Lien SimpleX détecté</string>
   <string name="quick_camera_connect">Se connecter</string>
 
+
   <!-- SimpleUX haptics (#75 Axis A) -->
   <string name="haptic_feedback">Retour haptique</string>
 </resources>
