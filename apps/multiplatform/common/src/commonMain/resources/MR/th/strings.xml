@@ -1287,4 +1287,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">แกลเลอรี</string>
   <string name="quick_camera_torch">แฟลช</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">ตรวจพบคิวอาร์โค้ด</string>
+  <string name="quick_camera_open_in_browser">เปิดในเบราว์เซอร์</string>
 </resources>

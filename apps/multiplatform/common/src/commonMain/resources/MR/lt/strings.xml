@@ -1727,4 +1727,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galerija</string>
   <string name="quick_camera_torch">Blykstė</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Aptiktas QR kodas</string>
+  <string name="quick_camera_open_in_browser">Atidaryti naršyklėje</string>
 </resources>

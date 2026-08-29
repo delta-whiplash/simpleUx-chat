@@ -2476,4 +2476,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">گالری</string>
   <string name="quick_camera_torch">فلاش</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">کد QR شناسایی شد</string>
+  <string name="quick_camera_open_in_browser">باز کردن در مرورگر</string>
 </resources>

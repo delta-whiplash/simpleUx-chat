@@ -2842,4 +2842,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galeri</string>
   <string name="quick_camera_torch">Flaş</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR kodu algılandı</string>
+  <string name="quick_camera_open_in_browser">Tarayıcıda aç</string>
 </resources>

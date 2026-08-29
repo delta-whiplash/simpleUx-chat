@@ -2100,4 +2100,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">גלריה</string>
   <string name="quick_camera_torch">פלאש</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">זוהה קוד QR</string>
+  <string name="quick_camera_open_in_browser">פתיחה בדפדפן</string>
 </resources>

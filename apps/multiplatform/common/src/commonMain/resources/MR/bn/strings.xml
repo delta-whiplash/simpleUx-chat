@@ -45,4 +45,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">গ্যালারি</string>
   <string name="quick_camera_torch">ফ্ল্যাশ</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR কোড শনাক্ত হয়েছে</string>
+  <string name="quick_camera_open_in_browser">ব্রাউজারে খুলুন</string>
 </resources>

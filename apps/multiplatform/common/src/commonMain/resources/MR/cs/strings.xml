@@ -2717,4 +2717,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galerie</string>
   <string name="quick_camera_torch">Blesk</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Rozpoznán QR kód</string>
+  <string name="quick_camera_open_in_browser">Otevřít v prohlížeči</string>
 </resources>

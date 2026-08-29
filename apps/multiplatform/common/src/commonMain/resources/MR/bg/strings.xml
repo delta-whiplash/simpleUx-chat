@@ -2468,4 +2468,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Галерия</string>
   <string name="quick_camera_torch">Светкавица</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Открит е QR код</string>
+  <string name="quick_camera_open_in_browser">Отваряне в браузъра</string>
 </resources>

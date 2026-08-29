@@ -474,6 +474,12 @@ fun SimpleUxTabHost(
                   } else {
                     false
                   }
+                },
+                onTextShared = { text ->
+                  // Same proven share hand-off as the photo path above:
+                  // ShareListView routes SharedContent.Text (it pre-fills the
+                  // composer of the chat the user picks).
+                  chatModel.sharedContent.value = SharedContent.Text(text)
                 }
               )
             }

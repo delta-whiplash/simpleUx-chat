@@ -2453,4 +2453,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galeria</string>
   <string name="quick_camera_torch">Flaix</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">S'ha detectat un codi QR</string>
+  <string name="quick_camera_open_in_browser">Obre al navegador</string>
 </resources>

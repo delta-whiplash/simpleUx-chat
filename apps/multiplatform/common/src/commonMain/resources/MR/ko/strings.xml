@@ -1475,4 +1475,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">갤러리</string>
   <string name="quick_camera_torch">플래시</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR 코드가 인식되었습니다</string>
+  <string name="quick_camera_open_in_browser">브라우저에서 열기</string>
 </resources>

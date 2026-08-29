@@ -2902,4 +2902,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galería</string>
   <string name="quick_camera_torch">Flash</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Código QR detectado</string>
+  <string name="quick_camera_open_in_browser">Abrir en el navegador</string>
 </resources>

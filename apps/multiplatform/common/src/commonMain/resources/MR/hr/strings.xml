@@ -1442,4 +1442,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galerija</string>
   <string name="quick_camera_torch">Bljeskalica</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Prepoznat je QR kod</string>
+  <string name="quick_camera_open_in_browser">Otvori u pregledniku</string>
 </resources>

@@ -296,4 +296,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">गैलरी</string>
   <string name="quick_camera_torch">फ़्लैश</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR कोड पहचाना गया</string>
+  <string name="quick_camera_open_in_browser">ब्राउज़र में खोलें</string>
 </resources>

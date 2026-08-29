@@ -2670,4 +2670,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galeri</string>
   <string name="quick_camera_torch">Lampu kilat</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Kode QR terdeteksi</string>
+  <string name="quick_camera_open_in_browser">Buka di browser</string>
 </resources>

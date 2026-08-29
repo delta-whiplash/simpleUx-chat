@@ -2855,4 +2855,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">相册</string>
   <string name="quick_camera_torch">闪光灯</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">已识别二维码</string>
+  <string name="quick_camera_open_in_browser">在浏览器中打开</string>
 </resources>

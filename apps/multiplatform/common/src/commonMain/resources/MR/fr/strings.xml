@@ -2539,4 +2539,11 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galerie</string>
   <string name="quick_camera_torch">Flash</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Code QR détecté</string>
+  <string name="quick_camera_open_in_browser">Ouvrir dans le navigateur</string>
+
+  <string name="quick_camera_link_detected">Lien SimpleX détecté</string>
+  <string name="quick_camera_connect">Se connecter</string>
 </resources>

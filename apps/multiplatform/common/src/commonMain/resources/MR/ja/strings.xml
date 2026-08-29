@@ -2780,4 +2780,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">ギャラリー</string>
   <string name="quick_camera_torch">フラッシュ</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QRコードを検出しました</string>
+  <string name="quick_camera_open_in_browser">ブラウザで開く</string>
 </resources>

@@ -1456,4 +1456,8 @@
   <!-- SimpleUX quick camera -->
   <string name="quick_camera_gallery">Galleria</string>
   <string name="quick_camera_torch">Salama</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR-koodi tunnistettu</string>
+  <string name="quick_camera_open_in_browser">Avaa selaimessa</string>
 </resources>
