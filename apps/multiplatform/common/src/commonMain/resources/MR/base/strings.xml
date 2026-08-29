@@ -777,6 +777,7 @@
 
   <!-- QuickCameraSheet -->
   <string name="quick_camera_open">Camera</string>
+  <string name="island_scan">Scan</string>
   <string name="quick_camera_link_detected">SimpleX link detected</string>
   <string name="quick_camera_connect">Connect</string>
 
@@ -1308,7 +1309,7 @@
   <string name="onboarding_private_and_secure">Private and secure messaging.</string>
   <string name="onboarding_first_network">The first network where you own\nyour contacts and groups.</string>
   <string name="get_started">Get started</string>
-  <string name="why_simplex_is_built">Why SimpleX is built.</string>
+  <string name="why_simplex_is_built">Why SimpleUX is built.</string>
   <string name="onboarding_your_profile">Your profile</string>
   <string name="onboarding_on_your_phone">On your phone, not on servers.</string>
   <string name="onboarding_no_account">No account. No phone. No email. No ID.\nThe most secure encryption.</string>

@@ -570,19 +570,17 @@ fun BoxScope.TelegramBottomIslandBar(
           Spacer(Modifier.width(10.dp))
 
           // Central quick-access camera button (see views/ux/camera/QuickCameraSheet.kt,
-          // Android-only for now). It is an action, not a tab, so it wears the same
-          // monochrome treatment as the inactive tabs — no accent color of its own
-          // (consistency feedback from Delta, 2026-08-29). v1 visual treatment only; a
-          // raised disc overlapping the capsule's top edge (the Instagram/WeChat look)
-          // is a follow-up polish pass once this can be screenshotted on a real device.
-          IconButton(onClick = onOpenCamera) {
-            Icon(
-              painterResource(MR.images.ic_photo_camera),
-              contentDescription = stringResource(MR.strings.quick_camera_open),
-              tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
-              modifier = Modifier.size(22.dp)
-            )
-          }
+          // Android-only for now). It is an action, not a tab, but it wears the exact same
+          // labeled-item layout as the tabs — same icon size, same 11sp sub-label ("Scan"),
+          // same monochrome inactive tint — so the island reads as one uniform family
+          // (consistency feedback from Delta, 2026-08-29). A raised central disc variant
+          // is a possible follow-up polish once screenable on a real device.
+          IslandTabItem(
+            label = stringResource(MR.strings.island_scan),
+            icon = MR.images.ic_photo_camera,
+            isActive = false,
+            onClick = onOpenCamera
+          )
         }
 
         Spacer(Modifier.width(10.dp))
