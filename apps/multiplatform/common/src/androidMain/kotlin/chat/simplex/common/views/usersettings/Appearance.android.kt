@@ -121,6 +121,9 @@ fun AppearanceScope.AppearanceLayout(
     ProfileImageSection()
 
     SectionDividerSpaced()
+    HapticsSection()
+
+    SectionDividerSpaced()
 
     SectionView(stringResource(MR.strings.settings_section_title_icon), contentPadding = PaddingValues(horizontal = DEFAULT_PADDING_HALF, vertical = DEFAULT_PADDING_HALF)) {
       LazyRow {

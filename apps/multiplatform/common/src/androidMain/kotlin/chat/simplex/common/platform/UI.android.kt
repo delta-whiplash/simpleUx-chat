@@ -55,8 +55,6 @@ actual fun getKeyboardState(): State<KeyboardState> {
 }
 
 actual fun hideKeyboard(view: Any?, clearFocus: Boolean) {
-  // LALAL
-  //  LocalSoftwareKeyboardController.current?.hide()
   if (view is View) {
     if (clearFocus) {
       view.clearFocus()
@@ -117,6 +115,7 @@ actual class GlobalExceptionsHandler: Thread.UncaughtExceptionHandler {
 
 actual fun performHapticFeedback(type: SimpleUXHapticType) {
   try {
+    if (!simpleUXHapticsEnabled.value) return
     val activity = mainActivity.get()
     val view = activity?.window?.decorView
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && view != null) {
@@ -127,7 +126,8 @@ actual fun performHapticFeedback(type: SimpleUXHapticType) {
         SimpleUXHapticType.SUCCESS -> HapticFeedbackConstants.CONFIRM
         SimpleUXHapticType.CLICK -> HapticFeedbackConstants.KEYBOARD_TAP
       }
-      view.performHapticFeedback(feedbackConstant, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING)
+      // No FLAG_IGNORE_GLOBAL_SETTING: honor the user's system-wide haptic feedback setting
+      view.performHapticFeedback(feedbackConstant)
     } else if (view != null) {
       val feedbackConstant = when (type) {
         SimpleUXHapticType.HEAVY -> HapticFeedbackConstants.LONG_PRESS
@@ -135,6 +135,14 @@ actual fun performHapticFeedback(type: SimpleUXHapticType) {
       }
       view.performHapticFeedback(feedbackConstant)
     } else {
+      // Direct vibrator path bypasses View.performHapticFeedback, so honor the system setting explicitly
+      val systemHapticsEnabled = try {
+        android.provider.Settings.System.getInt(
+          androidAppContext.contentResolver,
+          android.provider.Settings.System.HAPTIC_FEEDBACK_ENABLED, 1
+        ) == 1
+      } catch (_: Throwable) { true }
+      if (!systemHapticsEnabled) return
       val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         val vibratorManager = androidAppContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? VibratorManager
         vibratorManager?.defaultVibrator
