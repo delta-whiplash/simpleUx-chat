@@ -19,6 +19,10 @@ import kotlin.test.assertTrue
  * repository mapping substitutes the localized default description at render time.
  * `membersCount == null` means "no positive member count" — the mapping falls back to the
  * localized "public group" string.
+ *
+ * Robustness contract (#74): one structurally corrupt entry is skipped and parsing continues with
+ * the rest of the listing; an explicit JSON null in any optional field reads as absent (never as
+ * the literal string "null").
  */
 class SimpleUxDirectoryRepositoryTest {
 
@@ -349,20 +353,156 @@ class SimpleUxDirectoryRepositoryTest {
     assertEquals(0, parseDirectoryEntries("""{ "entries": [1, "two"] }""").size)
   }
 
+  // --- corrupt-entry isolation (#74): a broken entry is skipped, parsing continues ---
+
   @Test
-  fun corruptEntryStopsParsingAndReturnsEntriesSoFar() {
-    // CURRENT CONTRACT: one structurally corrupt entry aborts the whole loop (the outer catch
-    // returns what was accumulated up to that point) — entries after the corrupt one are lost.
-    // If this test starts failing because the parser became per-entry resilient, update it.
+  fun corruptFirstEntryDoesNotDropLaterEntries() {
     val json = """
       { "entries": [
-          { "displayName": "Good", "groupLink": { "connShortLink": "https://smp.simplex.im/good" } },
           { "displayName": "Corrupt", "groupLink": { "connShortLink": "https://smp.simplex.im/c" }, "welcomeMessage": [ "not-an-object" ] },
-          { "displayName": "Lost", "groupLink": { "connShortLink": "https://smp.simplex.im/lost" } }
+          { "displayName": "Good1", "groupLink": { "connShortLink": "https://smp.simplex.im/g1" } },
+          { "displayName": "Good2", "groupLink": { "connShortLink": "https://smp.simplex.im/g2" } }
+      ] }
+    """.trimIndent()
+
+    assertEquals(listOf("Good1", "Good2"), parseDirectoryEntries(json).map { it.name })
+  }
+
+  @Test
+  fun corruptMiddleEntryIsSkippedAndParsingContinues() {
+    val json = """
+      { "entries": [
+          { "displayName": "A", "groupLink": { "connShortLink": "https://smp.simplex.im/a" } },
+          { "displayName": "Corrupt", "groupLink": { "connShortLink": "https://smp.simplex.im/c" }, "welcomeMessage": [ "not-an-object" ] },
+          { "displayName": "B", "groupLink": { "connShortLink": "https://smp.simplex.im/b" } }
+      ] }
+    """.trimIndent()
+
+    assertEquals(listOf("A", "B"), parseDirectoryEntries(json).map { it.name })
+  }
+
+  @Test
+  fun allEntriesCorruptYieldEmptyListWithoutThrowing() {
+    // Corrupt in three different ways: broken welcomeMessage array part, non-object groupLink,
+    // element that is not an object at all.
+    val json = """
+      { "entries": [
+          { "displayName": "C1", "groupLink": { "connShortLink": "https://smp.simplex.im/c1" }, "welcomeMessage": [ "not-an-object" ] },
+          { "displayName": "C2", "groupLink": "not-an-object" },
+          "not-an-object"
+      ] }
+    """.trimIndent()
+
+    assertEquals(0, parseDirectoryEntries(json).size)
+  }
+
+  // --- explicit JSON nulls (#74): JsonNull must read as absent, never as the string "null" ---
+
+  @Test
+  fun nullDisplayNameSkipsEntry() {
+    // Fallback decision: name is required — an entry with no usable name (absent, null or blank
+    // displayName) cannot be listed and is skipped, never rendered named "null".
+    val json = """
+      { "entries": [
+          { "displayName": null, "groupLink": { "connShortLink": "https://smp.simplex.im/null-name" } },
+          { "displayName": "Good", "groupLink": { "connShortLink": "https://smp.simplex.im/good" } }
+      ] }
+    """.trimIndent()
+
+    val entries = parseDirectoryEntries(json)
+    assertEquals(1, entries.size)
+    assertEquals("Good", entries[0].name)
+  }
+
+  @Test
+  fun blankDisplayNameIsSkippedToo() {
+    val json = """
+      { "entries": [
+          { "displayName": "   ", "groupLink": { "connShortLink": "https://smp.simplex.im/blank" } },
+          { "displayName": "Good", "groupLink": { "connShortLink": "https://smp.simplex.im/good" } }
       ] }
     """.trimIndent()
 
     assertEquals(listOf("Good"), parseDirectoryEntries(json).map { it.name })
+  }
+
+  @Test
+  fun nullShortLinkFallsBackToFullLink() {
+    // Fallback decision: short link preferred, full link is the fallback — a null short link must
+    // count as absent, not produce a broken ".../null" link.
+    val json = """
+      { "entries": [ {
+          "displayName": "NullShort",
+          "groupLink": { "connShortLink": null, "connFullLink": "https://smp.simplex.im/full" }
+      } ] }
+    """.trimIndent()
+
+    val entries = parseDirectoryEntries(json)
+    assertEquals(1, entries.size)
+    assertEquals("https://smp.simplex.im/full", entries[0].link)
+  }
+
+  @Test
+  fun nullShortAndFullLinkSkipEntry() {
+    val json = """
+      { "entries": [ {
+          "displayName": "NullLinks",
+          "groupLink": { "connShortLink": null, "connFullLink": null }
+      } ] }
+    """.trimIndent()
+
+    assertEquals(0, parseDirectoryEntries(json).size)
+  }
+
+  @Test
+  fun explicitNullsInEveryOptionalFieldParseCleanly() {
+    val json = """
+      { "entries": [ {
+          "displayName": "Nulls",
+          "groupLink": { "connShortLink": null, "connFullLink": "https://smp.simplex.im/full" },
+          "welcomeMessage": null,
+          "shortDescr": null,
+          "entryType": { "groupType": null, "type": null, "summary": { "currentMembers": null, "members": null } },
+          "imageFile": null
+      } ] }
+    """.trimIndent()
+
+    val entries = parseDirectoryEntries(json)
+    assertEquals(1, entries.size)
+    val e = entries[0]
+    assertEquals("Nulls", e.name)
+    assertEquals("https://smp.simplex.im/full", e.link) // no broken ".../null" link
+    assertNull(e.description) // null welcome/shortDescr read as absent -> null description
+    assertTrue(!e.isChannel) // null groupType/type reads as plain group, not the string "null"
+    assertNull(e.membersCount)
+    assertNull(e.imageUrl) // no ".../data/null" image URL
+  }
+
+  @Test
+  fun nullGroupTypeFallsThroughToTypeField() {
+    val json = """
+      { "entries": [ {
+          "displayName": "NullGroupType",
+          "groupLink": { "connShortLink": "https://smp.simplex.im/n" },
+          "entryType": { "groupType": null, "type": "channel" }
+      } ] }
+    """.trimIndent()
+
+    assertTrue(parseDirectoryEntries(json)[0].isChannel)
+  }
+
+  @Test
+  fun nullTextPartsAreSkippedAndDescriptionFallsBack() {
+    val json = """
+      { "entries": [ {
+          "displayName": "NullText",
+          "groupLink": { "connShortLink": "https://smp.simplex.im/nt" },
+          "welcomeMessage": [ { "text": null }, { "text": "  " } ],
+          "shortDescr": [ { "text": "Fallback" } ]
+      } ] }
+    """.trimIndent()
+
+    assertEquals("Fallback", parseDirectoryEntries(json)[0].description)
   }
 
   @Test
