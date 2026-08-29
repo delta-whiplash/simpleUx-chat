@@ -95,7 +95,13 @@ fun QuickCameraSheet(
   }
 
   val galleryLauncher = rememberGetContentLauncher { uri ->
-    if (uri != null) onPhotoCaptured(uri)
+    if (uri != null) {
+      onPhotoCaptured(uri)
+      // ShareListView renders behind this full-screen modal, so the sheet must
+      // step aside or the hand-off looks like a no-op (shutter had the same
+      // issue — found on emulator, 2026-08-29).
+      onClose()
+    }
   }
 
   val cameraProviderFuture by produceState<ListenableFuture<ProcessCameraProvider>?>(initialValue = null) {
@@ -157,6 +163,8 @@ fun QuickCameraSheet(
         override fun onImageSaved(output: ImageCapture.OutputFileResults) {
           val uri = FileProvider.getUriForFile(androidAppContext, "$APPLICATION_ID.provider", file)
           onPhotoCaptured(uri)
+          // Same as the gallery path: close so the share list surfaces.
+          onClose()
         }
         override fun onError(exc: ImageCaptureException) {
           Log.e(TAG, "QuickCameraSheet: photo capture failed: ${exc.localizedMessage}")
