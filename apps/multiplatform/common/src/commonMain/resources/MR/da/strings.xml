@@ -850,4 +850,12 @@
     <string name="another_instance_title">Appen kører allerede</string>
     <string name="app_update_required">App\'en skal opdateres</string>
     <string name="chat_link_business_address">Virksomhedsadresse</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galleri</string>
+  <string name="quick_camera_torch">Blitz</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR-kode fundet</string>
+  <string name="quick_camera_open_in_browser">Åbn i browser</string>
 </resources>

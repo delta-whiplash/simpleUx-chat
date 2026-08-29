@@ -2973,4 +2973,12 @@
     <string name="onboarding_feature_3_sub">Быстрые жесты свайпа, звуковые волны, мгновенные мульти-профили и исчезающие чаты в 1 клик.</string>
     <string name="onboarding_get_started">Начать</string>
     <string name="modal_close">Закрыть</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Галерея</string>
+  <string name="quick_camera_torch">Вспышка</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR-код распознан</string>
+  <string name="quick_camera_open_in_browser">Открыть в браузере</string>
 </resources>

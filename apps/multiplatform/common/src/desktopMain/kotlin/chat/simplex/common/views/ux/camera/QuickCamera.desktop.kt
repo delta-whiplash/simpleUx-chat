@@ -8,6 +8,7 @@ import java.net.URI
 // contract for :common:compileKotlinDesktop.
 actual fun openQuickCameraSheet(
   onPhotoCaptured: (URI) -> Unit,
-  onQrCode: suspend (String) -> Boolean
+  onQrCode: suspend (String) -> Boolean,
+  onTextShared: (String) -> Unit
 ) {
 }

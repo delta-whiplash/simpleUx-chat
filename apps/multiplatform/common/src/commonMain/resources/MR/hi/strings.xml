@@ -292,4 +292,12 @@
     <string name="database_migration_in_progress">डेटाबेस माइग्रेशन जारी है।\nइसमें कुछ मिनट लग सकते हैं।</string>
     <string name="non_content_uri_alert_title">अमान्य फ़ाइल पथ</string>
     <string name="non_content_uri_alert_text">आपने एक अमान्य फ़ाइल पथ साझा किया है। कृपया इस समस्या की सूचना ऐप डेवलपर्स को दें।</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">गैलरी</string>
+  <string name="quick_camera_torch">फ़्लैश</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR कोड पहचाना गया</string>
+  <string name="quick_camera_open_in_browser">ब्राउज़र में खोलें</string>
 </resources>

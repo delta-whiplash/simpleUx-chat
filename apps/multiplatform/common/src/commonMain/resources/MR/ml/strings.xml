@@ -392,4 +392,12 @@
     <string name="feature_offered_item">%s വാഗ്ദാനം ചെയ്തു</string>
     <string name="search_verb">തിരയുക</string>
     <string name="la_mode_off">ഓഫാണ്</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">ഗാലറി</string>
+  <string name="quick_camera_torch">ഫ്ലാഷ്</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR കോഡ് കണ്ടെത്തി</string>
+  <string name="quick_camera_open_in_browser">ബ്രൗസറിൽ തുറക്കുക</string>
 </resources>

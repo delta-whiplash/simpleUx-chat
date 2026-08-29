@@ -1723,4 +1723,12 @@
     <string name="forward_files_in_progress_desc">%1$d failas (-ai, -ų) vis dar atsisiunčiamas (-i, -a).</string>
     <string name="forward_files_failed_to_receive_desc">Nepavyko atsisiųsti %1$d failo (-ų).</string>
     <string name="selected_chat_items_selected_n">%d pasirinkta</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galerija</string>
+  <string name="quick_camera_torch">Blykstė</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Aptiktas QR kodas</string>
+  <string name="quick_camera_open_in_browser">Atidaryti naršyklėje</string>
 </resources>

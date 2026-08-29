@@ -2382,4 +2382,12 @@
     <string name="server_no_sub">geen abonnement</string>
     <string name="not_connected_to_server_to_receive_messages_no_sub">U bent niet verbonden met de server die u gebruikt om berichten van deze verbinding te ontvangen (geen abonnement).</string>
     <string name="e2ee_info_e2ee"><![CDATA[Berichten worden beschermd door <b>end-to-end-encryptie</b>.]]></string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galerij</string>
+  <string name="quick_camera_torch">Flits</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR-code gedetecteerd</string>
+  <string name="quick_camera_open_in_browser">Openen in browser</string>
 </resources>

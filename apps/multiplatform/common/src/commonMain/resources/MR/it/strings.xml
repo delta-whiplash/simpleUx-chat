@@ -2868,4 +2868,12 @@
     <string name="v7_0_channels_contributors">Aggiungi collaboratori.</string>
     <string name="info_row_file_servers">Server di file</string>
     <string name="share_text_file_servers">Server di file: %s</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galleria</string>
+  <string name="quick_camera_torch">Flash</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Codice QR rilevato</string>
+  <string name="quick_camera_open_in_browser">Apri nel browser</string>
 </resources>

@@ -2449,4 +2449,12 @@
     <string name="delete_member_messages_confirmation">Suprimir missatges</string>
     <string name="member_messages_will_be_deleted_cannot_be_undone">Els missatges de membre s\'eliminaran; això no es pot desfer!</string>
     <string name="remove_member_delete_messages_confirmation">Eliminar membre i els seus missatges</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galeria</string>
+  <string name="quick_camera_torch">Flaix</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">S'ha detectat un codi QR</string>
+  <string name="quick_camera_open_in_browser">Obre al navegador</string>
 </resources>

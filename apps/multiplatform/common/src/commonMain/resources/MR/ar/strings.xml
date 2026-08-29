@@ -2840,4 +2840,12 @@
     <string name="v7_0_simplex_names_descr">أسماء لقناتك أو لشركتك.</string>
     <string name="info_row_file_servers">خوادم الملفات</string>
     <string name="share_text_file_servers">خوادم الملفات: %s</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">المعرض</string>
+  <string name="quick_camera_torch">الفلاش</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">تم التعرف على رمز QR</string>
+  <string name="quick_camera_open_in_browser">فتح في المتصفح</string>
 </resources>

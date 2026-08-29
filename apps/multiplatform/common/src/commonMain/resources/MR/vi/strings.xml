@@ -2463,4 +2463,12 @@
     <string name="channel_no_active_relays_try_later">Kênh hiện không có máy chủ chuyển tiếp nào đang hoạt động. Vui lòng thử tham gia lại sau.</string>
     <string name="member_info_section_title_subscriber">Người theo dõi</string>
     <string name="group_member_role_observer_channel">người theo dõi</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Thư viện</string>
+  <string name="quick_camera_torch">Đèn flash</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Đã phát hiện mã QR</string>
+  <string name="quick_camera_open_in_browser">Mở trong trình duyệt</string>
 </resources>

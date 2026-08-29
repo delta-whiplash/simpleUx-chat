@@ -57,6 +57,24 @@ val SurfaceContainerDark = Color(0xFF161C2A)
 val SurfaceContainerHighDark = Color(0xFF1E2536)
 val SurfaceContainerHighestDark = Color(0xFF283144)
 
+// Quick-camera chrome tokens (views/ux/camera): the camera renders over a live
+// preview, so its chrome is always dark mineral regardless of the app theme.
+// Values follow the design system's Obsidian surfaces and specular rim recipes;
+// accents stay on the AmberGold token.
+val CameraChromeCanvas = Color(0xFF0B0F17)
+val CameraChromeIsland = Color(0xEE121A26)
+val CameraChromeCardTop = Color(0xFF1E2533)
+val CameraChromeCardBottom = Color(0xFF131720)
+val CameraChromeTopScrim = Color(0x8C0B0F17)
+val CameraChromeRimHighlight = Color(0x38FFFFFF)
+val CameraChromeRimLowlight = Color(0x0EFFFFFF)
+val CameraChromeTextPrimary = Color(0xFFF8FAFC)
+val CameraChromeTextSecondary = Color(0xFFCBD5E1)
+val CameraChromeTextMuted = Color(0xFF94A3B8)
+val CameraChromeOnGold = Color(0xFF131720)
+val AmberGoldWash = Color(0x29E2B755)
+val AmberGoldRim = Color(0x4DE2B755)
+
 // Surface Container Tokens (Light Mode)
 val SurfaceContainerLowestLight = Color(0xFFFFFFFF)
 val SurfaceContainerLowLight = Color(0xFFF7F9FC)

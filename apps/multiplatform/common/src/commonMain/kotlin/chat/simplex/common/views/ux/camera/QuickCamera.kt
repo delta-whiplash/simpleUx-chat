@@ -7,5 +7,6 @@ import java.net.URI
 // directly from a plain callback (e.g. the central bottom-bar button's onClick).
 expect fun openQuickCameraSheet(
   onPhotoCaptured: (URI) -> Unit,
-  onQrCode: suspend (String) -> Boolean
+  onQrCode: suspend (String) -> Boolean,
+  onTextShared: (String) -> Unit = {}
 )

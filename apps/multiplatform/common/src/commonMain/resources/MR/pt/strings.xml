@@ -947,4 +947,12 @@
     <string name="forward_files_in_progress_desc">Ainda a descarregar %1$d ficheiros(s).</string>
     <string name="forward_files_missing_desc">%1$d ficheiros(s) eliminado(s).</string>
     <string name="forward_files_not_accepted_desc">Não foi possível descarregar %1$d ficheiro(s).</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galeria</string>
+  <string name="quick_camera_torch">Flash</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">Código QR detetado</string>
+  <string name="quick_camera_open_in_browser">Abrir no navegador</string>
 </resources>

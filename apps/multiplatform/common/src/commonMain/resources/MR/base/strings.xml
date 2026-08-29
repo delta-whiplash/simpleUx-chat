@@ -3288,4 +3288,12 @@
   <!-- SimpleUX i18n: misc -->
   <string name="join_bar_join_as">Join as</string>
   <string name="icon_descr_encryption">Encryption</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Gallery</string>
+  <string name="quick_camera_torch">Flash</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR code detected</string>
+  <string name="quick_camera_open_in_browser">Open in browser</string>
 </resources>

@@ -2838,4 +2838,12 @@
     <string name="content_filter_videos">Videolar</string>
     <string name="cancel_channel_alert_msg">Yeni kanalınız %1$s, %3$d aktarıcının %2$d\'sine bağlandı.\nİptal ederseniz, kanal silinir - yeniden oluşturabilirsiniz.</string>
     <string name="your_profile_shared_with_channel_relays">Profiliniz %1$s kanal aktarıcıları ve aboneleri ile paylaşılacaktır.\nAktarıcılar kanal mesajlarına erişebilir.</string>
+
+  <!-- SimpleUX quick camera -->
+  <string name="quick_camera_gallery">Galeri</string>
+  <string name="quick_camera_torch">Flaş</string>
+
+  <!-- SimpleUX quick camera: universal QR routing -->
+  <string name="quick_camera_qr_detected">QR kodu algılandı</string>
+  <string name="quick_camera_open_in_browser">Tarayıcıda aç</string>
 </resources>
