@@ -1378,8 +1378,9 @@ fun BoxScope.ChatInfoToolbar(
     }
   }
 
-  // Single unified action button in Top Bar
-  if (menuItems.isNotEmpty()) {
+  // Single unified action button in Top Bar — not in Saved Messages, where the
+  // header tap is the filter entry point (#57) and a kebab would duplicate it
+  if (menuItems.isNotEmpty() && chatInfo !is ChatInfo.Local) {
     barButtons.add {
       IconButton({ showMenu.value = true }) {
         Box(
@@ -1415,7 +1416,10 @@ fun BoxScope.ChatInfoToolbar(
   DefaultAppBar(
     navigationButton = { if (appPlatform.isAndroid || showSearch.value) { NavigationButtonBack(onBackClicked) }  },
     title = { ChatInfoToolbarTitle(chatInfo) },
-    onTitleClick = if (chatInfo is ChatInfo.Local) null else info,
+    // #57: in Saved Messages the header tap opens the content-type filter
+    // (Telegram shared-media style) instead of navigating nowhere; other chat
+    // types keep opening the info screen.
+    onTitleClick = if (chatInfo is ChatInfo.Local) ({ showMenu.value = true }) else info,
     showSearch = showSearch.value,
     searchAlwaysVisible = contentFilter.value != null,
     onTop = true,
