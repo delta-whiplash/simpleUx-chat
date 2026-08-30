@@ -9,6 +9,7 @@ import android.net.Uri
 import android.provider.Settings
 import android.util.Log
 import android.view.ViewGroup
+import androidx.activity.compose.BackHandler
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -203,11 +204,13 @@ fun QuickCameraSheet(
   }
 
   Box(Modifier.fillMaxSize().background(CameraChromeCanvas)) {
-    // The close button sits OUTSIDE the permission branches: a denied state
-    // must never strand the user in the sheet (FB-10).
-    CameraTopBar(onClose)
+    // FB-16: system back closes the sheet instead of leaving the app.
+    BackHandler { onClose() }
 
     if (!hasCameraPermission) {
+      // The close button sits OUTSIDE the permission branches: a denied state
+      // must never strand the user in the sheet (FB-10).
+      CameraTopBar(onClose)
       Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CameraPermissionCard(
           onOpenSettings = openAppSettings,
@@ -363,6 +366,11 @@ fun QuickCameraSheet(
           )
         }
       }
+
+      // FB-16: composed LAST so the close button draws above the fullscreen
+      // camera preview — the PreviewView used to cover it entirely, leaving
+      // the granted path with no visible way out.
+      CameraTopBar(onClose)
     }
   }
 }
