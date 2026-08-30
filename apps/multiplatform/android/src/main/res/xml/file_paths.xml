@@ -1,4 +1,6 @@
 <paths>
     <files-path name="my_files" path="/"/>
     <files-path name="app_temp" path="../app_temp"/>
+    <!-- In-app updater (#79): downloaded release APKs handed to the system installer -->
+    <cache-path name="apk_updates" path="updates/"/>
 </paths>

@@ -1,0 +1,243 @@
+package chat.simplex.common.views.ux.update
+
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import java.net.HttpURLConnection
+import java.net.URL
+import chat.simplex.common.platform.Log
+
+/** HARD-PINNED to the fork repo — never upstream simplex-chat (pinned by AppUpdaterTest). */
+const val RELEASES_API_URL = "https://api.github.com/repos/delta-whiplash/simpleUx-chat/releases?per_page=5"
+
+/** Project home, opened when the user taps the version row in VersionInfoView. */
+const val FORK_PROJECT_URL = "https://github.com/delta-whiplash/simpleUx-chat"
+
+private const val TAG = "AppUpdater"
+
+private val releasesJsonParser = Json {
+  ignoreUnknownKeys = true
+  isLenient = true
+}
+
+private val APK_ASSET_REGEX = Regex("simplex-ux-.*-arm64-v8a\\.apk")
+
+enum class AppUpdateVersionComparison { NEWER, SAME_OR_OLDER, NOT_A_VERSION }
+
+/**
+ * A parsed fork version: upstream base ("7.0.366" in "7.0.366-ux.5") plus the fork counter (5).
+ * Comparison is element-wise on the base tuple (zero-padded) first, then on the fork counter.
+ */
+internal data class AppUpdateVersion(val base: List<Int>, val forkCounter: Int) : Comparable<AppUpdateVersion> {
+  override fun compareTo(other: AppUpdateVersion): Int {
+    for (i in 0 until maxOf(base.size, other.base.size)) {
+      val compared = base.getOrElse(i) { 0 }.compareTo(other.base.getOrElse(i) { 0 })
+      if (compared != 0) return compared
+    }
+    return forkCounter.compareTo(other.forkCounter)
+  }
+}
+
+/**
+ * Parses "7.0.366-ux.5" / "v7.0.366-ux.5". Anything else — the floating "rolling" tag,
+ * versions without the "-ux." counter, malformed numbers — yields null so the candidate
+ * is never proposed as an update.
+ */
+internal fun parseAppUpdateVersion(raw: String): AppUpdateVersion? {
+  val stripped = raw.trim().removePrefix("v").removePrefix("V")
+  val separator = stripped.indexOf("-ux.")
+  if (separator < 0) return null
+  val baseParts = stripped.substring(0, separator).split(".")
+  if (baseParts.isEmpty() || baseParts.any { it.isEmpty() || it.any { c -> !c.isDigit() } }) return null
+  val counter = stripped.substring(separator + 4)
+  if (counter.isEmpty() || counter.any { !it.isDigit() }) return null
+  return AppUpdateVersion(baseParts.map { it.toInt() }, counter.toInt())
+}
+
+/**
+ * Language-neutral version comparison for the updater: NEWER only when [candidate] is a
+ * parseable fork version strictly greater than [current]; NOT_A_VERSION means "never
+ * propose an update from this tag".
+ */
+fun compareAppUpdateVersions(current: String, candidate: String): AppUpdateVersionComparison {
+  val currentVersion = parseAppUpdateVersion(current) ?: return AppUpdateVersionComparison.NOT_A_VERSION
+  val candidateVersion = parseAppUpdateVersion(candidate) ?: return AppUpdateVersionComparison.NOT_A_VERSION
+  return if (candidateVersion > currentVersion) AppUpdateVersionComparison.NEWER else AppUpdateVersionComparison.SAME_OR_OLDER
+}
+
+data class AppUpdateCandidate(
+  val tagName: String,
+  val apkName: String,
+  val downloadUrl: String,
+  val sizeBytes: Long? = null,
+)
+
+/**
+ * Pure structural selection from the GitHub releases JSON (unit-tested offline).
+ *
+ * @param includePrerelease manual check: the first entry wins (the user dogfoods on rolling).
+ *   Auto check (reserved for later): the first entry with `"prerelease": false`.
+ * Returns null when no release matches the rules or no entry carries a
+ * `simplex-ux-...-arm64-v8a.apk` asset.
+ */
+internal fun selectAppUpdateRelease(rawJson: String, includePrerelease: Boolean): AppUpdateCandidate? {
+  return try {
+    val releases = releasesJsonParser.parseToJsonElement(rawJson).jsonArray
+    val release = releases.asSequence()
+      .map { it.jsonObject }
+      .firstOrNull { includePrerelease || it["prerelease"]?.jsonPrimitive?.content == "false" }
+    release ?: return null
+    val tagName = release["tag_name"]?.jsonPrimitive?.content ?: return null
+    val assets = release["assets"]?.jsonArray ?: return null
+    val asset = assets.asSequence()
+      .map { it.jsonObject }
+      .firstOrNull { APK_ASSET_REGEX.matches(it["name"]?.jsonPrimitive?.content ?: "") }
+      ?: return null
+    AppUpdateCandidate(
+      tagName = tagName,
+      apkName = asset["name"]?.jsonPrimitive?.content ?: return null,
+      downloadUrl = asset["browser_download_url"]?.jsonPrimitive?.content ?: return null,
+      sizeBytes = asset["size"]?.jsonPrimitive?.content?.toLongOrNull()
+    )
+  } catch (e: Exception) {
+    Log.w(TAG, "Failed to parse releases JSON: ${e.message}")
+    null
+  }
+}
+
+sealed interface AppUpdateState {
+  data object Idle : AppUpdateState
+  data object Checking : AppUpdateState
+  data class UpToDate(val version: String) : AppUpdateState
+  data class UpdateAvailable(val candidate: AppUpdateCandidate) : AppUpdateState
+  data class Downloading(val receivedBytes: Long, val totalBytes: Long?) : AppUpdateState
+  data class ReadyToInstall(val filePath: String, val candidate: AppUpdateCandidate) : AppUpdateState
+  data class InstallPermissionNeeded(val filePath: String, val candidate: AppUpdateCandidate) : AppUpdateState
+  data object Failed : AppUpdateState
+}
+
+/**
+ * Platform bridge for the parts of the updater that cannot live in commonMain:
+ * APK download target, install-permission check, and firing the system installer.
+ */
+interface AppUpdateInstaller {
+  /** Downloads [candidate], reporting (receivedBytes, totalBytes) progress; returns the file path. */
+  suspend fun downloadApk(
+    candidate: AppUpdateCandidate,
+    onProgress: (receivedBytes: Long, totalBytes: Long?) -> Unit,
+  ): String
+
+  /** Whether this app may install packages (Android setting). */
+  fun canInstallPackages(): Boolean
+
+  /** Hands a downloaded APK to the system installer. */
+  fun installApk(filePath: String)
+
+  /** Opens the system screen that grants the install permission for this app. */
+  fun openInstallPermissionSettings()
+}
+
+expect fun provideAppUpdateInstaller(): AppUpdateInstaller
+
+/**
+ * Orchestrates the manual check → download → install flow for issue #79.
+ * Everything is injected (scope, installer, running version) so the class is
+ * constructible in isolation; the auto-check flow is intentionally not wired yet.
+ */
+class AppUpdater(
+  private val scope: CoroutineScope,
+  private val installer: AppUpdateInstaller,
+  private val currentVersion: String,
+) {
+  private val _state = MutableStateFlow<AppUpdateState>(AppUpdateState.Idle)
+  val state: StateFlow<AppUpdateState> = _state.asStateFlow()
+
+  fun checkForUpdates() {
+    when (_state.value) {
+      is AppUpdateState.Checking, is AppUpdateState.Downloading -> return
+      else -> {}
+    }
+    _state.value = AppUpdateState.Checking
+    scope.launch(Dispatchers.IO) {
+      try {
+        val rawJson = fetchReleasesJson()
+        val candidate = rawJson?.let { selectAppUpdateRelease(it, includePrerelease = true) }
+        _state.value = when {
+          rawJson == null || candidate == null -> AppUpdateState.Failed
+          compareAppUpdateVersions(currentVersion, candidate.tagName) == AppUpdateVersionComparison.NEWER ->
+            AppUpdateState.UpdateAvailable(candidate)
+          else -> AppUpdateState.UpToDate(currentVersion)
+        }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        Log.e(TAG, "Update check failed: ${e.stackTraceToString()}")
+        _state.value = AppUpdateState.Failed
+      }
+    }
+  }
+
+  fun downloadUpdate() {
+    val candidate = (_state.value as? AppUpdateState.UpdateAvailable)?.candidate ?: return
+    _state.value = AppUpdateState.Downloading(0, candidate.sizeBytes)
+    scope.launch {
+      try {
+        val filePath = installer.downloadApk(candidate) { received, total ->
+          _state.value = AppUpdateState.Downloading(received, total)
+        }
+        _state.value = if (installer.canInstallPackages())
+          AppUpdateState.ReadyToInstall(filePath, candidate)
+        else
+          AppUpdateState.InstallPermissionNeeded(filePath, candidate)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        Log.e(TAG, "APK download failed: ${e.stackTraceToString()}")
+        _state.value = AppUpdateState.Failed
+      }
+    }
+  }
+
+  /** Install button: (re-)checks the install permission, offering the system settings when missing. */
+  fun installUpdate() {
+    when (val s = _state.value) {
+      is AppUpdateState.ReadyToInstall -> installer.installApk(s.filePath)
+      is AppUpdateState.InstallPermissionNeeded ->
+        if (installer.canInstallPackages()) {
+          _state.value = AppUpdateState.ReadyToInstall(s.filePath, s.candidate)
+          installer.installApk(s.filePath)
+        } else {
+          installer.openInstallPermissionSettings()
+        }
+      else -> {}
+    }
+  }
+
+  private fun fetchReleasesJson(): String? {
+    return try {
+      val conn = URL(RELEASES_API_URL).openConnection() as HttpURLConnection
+      conn.connectTimeout = 8000
+      conn.readTimeout = 10_000
+      conn.requestMethod = "GET"
+      conn.setRequestProperty("Accept", "application/vnd.github+json")
+      conn.setRequestProperty("User-Agent", "SimpleUX-Chat/1.0")
+      if (conn.responseCode == HttpURLConnection.HTTP_OK) {
+        conn.inputStream.bufferedReader().use { it.readText() }
+      } else {
+        Log.w(TAG, "HTTP ${conn.responseCode} fetching releases")
+        null
+      }
+    } catch (e: Exception) {
+      Log.w(TAG, "Failed to fetch releases: ${e.message}")
+      null
+    }
+  }
+}

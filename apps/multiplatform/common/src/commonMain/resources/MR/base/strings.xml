@@ -3300,4 +3300,14 @@
 
   <!-- SimpleUX haptics (#75 Axis A) -->
   <string name="haptic_feedback">Haptic feedback</string>
+
+  <!-- SimpleUX in-app updater (#79) -->
+  <string name="updater_check">Check for updates</string>
+  <string name="updater_up_to_date">You are on the latest version</string>
+  <string name="updater_new_version_found">New version available: %1$s</string>
+  <string name="updater_download">Download update</string>
+  <string name="updater_downloading">Downloading… %1$s</string>
+  <string name="updater_install">Install update</string>
+  <string name="updater_install_permission_hint">To install updates, allow installing unknown apps for SimpleX Chat in system settings, then tap Install.</string>
+  <string name="updater_failed">Update failed. Check your connection and try again.</string>
 </resources>
