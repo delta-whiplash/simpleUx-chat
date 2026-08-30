@@ -165,7 +165,10 @@ class SimplexService: Service() {
   private fun createNotificationChannel(): NotificationManager? {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-      val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW).let {
+      // #46: MIN hides the persistent service notification from the status bar
+      // and parks it at the very bottom of the shade — present for the OS, not
+      // in the user's face.
+      val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_MIN).let {
         it.setShowBadge(false) // no long-press badge
         it
       }
@@ -190,14 +193,10 @@ class SimplexService: Service() {
       .setShowWhen(false) // no date/time
       .setOngoing(true) // Starting SDK 33 / Android 13, foreground notifications can be swiped away
 
-    // Shows a button which opens notification channel settings
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-      val setupIntent = Intent(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS)
-      setupIntent.putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
-      setupIntent.putExtra(Settings.EXTRA_CHANNEL_ID, NOTIFICATION_CHANNEL_ID)
-      val setup = PendingIntent.getActivity(this, 0, setupIntent, flags)
-      builder.addAction(0, generalGetString(MR.strings.hide_notification), setup)
+    // #46: on Android 12+ defer the FGS notification so short-lived service runs
+    // never surface anything at all.
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      builder.setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
     }
 
     return builder.build()
@@ -306,7 +305,10 @@ class SimplexService: Service() {
 
   companion object {
     const val TAG = "SIMPLEX_SERVICE"
-    const val NOTIFICATION_CHANNEL_ID = "chat.simplex.app.SIMPLEX_SERVICE_NOTIFICATION"
+    // #46: new channel id — Android caches importance per channel, so the
+    // promotion from IMPORTANCE_LOW to IMPORTANCE_MIN needs a fresh id to
+    // apply for existing installs.
+    const val NOTIFICATION_CHANNEL_ID = "chat.simplex.app.SIMPLEX_SERVICE_NOTIFICATION_V2"
     const val NOTIFICATION_CHANNEL_NAME = "SimpleX Chat service"
     const val SIMPLEX_SERVICE_ID = 6789
     const val SERVICE_START_WORKER_VERSION = BuildConfig.VERSION_CODE
