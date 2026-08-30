@@ -4,11 +4,13 @@ import SectionBottomSpacer
 import SectionDividerSpaced
 import SectionView
 import itemHPadding
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import dev.icerock.moko.resources.compose.stringResource
 import chat.simplex.common.BuildConfigCommon
 import chat.simplex.common.model.ChatModel
@@ -18,6 +20,9 @@ import chat.simplex.common.platform.appPlatform
 import chat.simplex.common.platform.chatModel
 import chat.simplex.common.ui.theme.DEFAULT_PADDING_HALF
 import chat.simplex.common.views.helpers.AppBarTitle
+import chat.simplex.common.views.helpers.openUriCatching
+import chat.simplex.common.views.ux.update.AppUpdateSection
+import chat.simplex.common.views.ux.update.FORK_PROJECT_URL
 import chat.simplex.res.MR
 
 @Composable
@@ -29,10 +34,15 @@ fun VersionInfoView(
   LaunchedEffect(Unit) {
     versionInfo.value = chatModel.controller.apiGetVersion()
   }
+  val uriHandler = LocalUriHandler.current
   ColumnWithScrollBar {
     AppBarTitle(stringResource(MR.strings.app_version_title))
     SectionView {
-      Column(Modifier.padding(horizontal = itemHPadding, vertical = DEFAULT_PADDING_HALF)) {
+      Column(
+        Modifier
+          .padding(horizontal = itemHPadding, vertical = DEFAULT_PADDING_HALF)
+          .clickable { uriHandler.openUriCatching(FORK_PROJECT_URL) }
+      ) {
         if (appPlatform.isAndroid) {
           Text(String.format(stringResource(MR.strings.app_version_name), BuildConfigCommon.ANDROID_VERSION_NAME))
           Text(String.format(stringResource(MR.strings.app_version_code), BuildConfigCommon.ANDROID_VERSION_CODE))
@@ -48,6 +58,12 @@ fun VersionInfoView(
       }
     }
     SectionDividerSpaced()
+
+    // In-app updater (#79): Android only; desktop renders nothing here.
+    if (appPlatform.isAndroid) {
+      AppUpdateSection()
+      SectionDividerSpaced()
+    }
 
     AdvancedSettingsAppSection(showSettingsModal, withAuth)
     SectionBottomSpacer()
