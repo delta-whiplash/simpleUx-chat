@@ -246,12 +246,20 @@ fun TelegramTopHeader(
             val tabState = LocalSimpleUxTab.current
 
             // Profiles & Identities
+            val openProfileSwitcher = LocalOpenProfileSwitcher.current
             Row(
               modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
                   showMenu.value = false
-                  userPickerState.value = AnimatedViewState.VISIBLE
+                  // FB-5: the desktop-only UserPicker is not composed on Android, so flipping
+                  // userPickerState here was dead wiring. Open the real switcher overlay when
+                  // the shell provides it; fall back to the UserPicker on desktop call sites.
+                  if (openProfileSwitcher != null) {
+                    openProfileSwitcher()
+                  } else {
+                    userPickerState.value = AnimatedViewState.VISIBLE
+                  }
                 }
                 .padding(horizontal = 16.dp, vertical = 12.dp),
               verticalAlignment = Alignment.CenterVertically,
@@ -380,6 +388,13 @@ enum class SimpleUxTab {
 
 val LocalSimpleUxTab = compositionLocalOf<MutableState<SimpleUxTab>> { mutableStateOf(SimpleUxTab.CHATS) }
 
+/**
+ * Opened by the header kebab's "Profiles & Identities" entry (FB-5): shows the
+ * [ProfileSwitcherOverlay] hosted by [SimpleUxTabHost]. Null outside the host
+ * (call sites then fall back to the desktop-only UserPicker).
+ */
+val LocalOpenProfileSwitcher = compositionLocalOf<(() -> Unit)?> { null }
+
 // Extracted verbatim from ChatListView.kt (issue #4): the tab-switch host of the chat-list screen.
 // The fork-owned state (current tab, search visibility, profile-switcher popup, quick-camera filter)
 // stays owned by the caller in ChatListView.kt and is passed in; only the CHATS tab content differs
@@ -400,7 +415,10 @@ fun SimpleUxTabHost(
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
   val quickCameraConnectFilter = remember { mutableStateOf(emptySet<String>()) }
 
-  CompositionLocalProvider(LocalSimpleUxTab provides currentTab) {
+  CompositionLocalProvider(
+    LocalSimpleUxTab provides currentTab,
+    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true }
+  ) {
     Box(Modifier.fillMaxSize()) {
       // No animated tab transitions here (issue #58): the transition's retained layer
       // rasterized a background-colored hole across the middle of the viewport that ate

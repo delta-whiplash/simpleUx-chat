@@ -1,18 +1,15 @@
 package chat.simplex.common.views.chat.group
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.*
@@ -65,9 +62,6 @@ fun MemberSupportChatAppBar(
   onSearchValueChanged: (String) -> Unit
 ) {
   val showSearch = rememberSaveable { mutableStateOf(false) }
-  val showMenu = rememberSaveable { mutableStateOf(false) }
-  val scope = rememberCoroutineScope()
-  val isDark = isInDarkTheme()
 
   val onBackClicked = {
     if (!showSearch.value) {
@@ -118,42 +112,13 @@ fun MemberSupportChatAppBar(
       IconButton({ showSearch.value = true }) {
         Icon(painterResource(MR.images.ic_search), stringResource(MR.strings.search_verb), tint = MaterialTheme.colors.primary)
       }
-      IconButton({ showMenu.value = true }) {
-        Icon(painterResource(MR.images.ic_more_vert), stringResource(MR.strings.icon_descr_settings), tint = MaterialTheme.colors.primary)
-      }
     }
   )
 
-  Box(Modifier.fillMaxWidth().wrapContentSize(Alignment.TopEnd)) {
-    DefaultDropdownMenu(
-      showMenu,
-      offset = DpOffset(0.dp, AppBarHeight)
-    ) {
-      Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .clickable {
-            showMenu.value = false
-            ThemeAnimationController.trigger(
-              originOffset = androidx.compose.ui.geometry.Offset(1000f, 145f),
-              currentlyDark = isDark,
-              scope = scope
-            )
-          }
-          .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp)
-      ) {
-        AnimatedThemeIcon(isDark = isDark)
-        Text(
-          text = if (isDark) stringResource(MR.strings.theme_mode_light_descr) else stringResource(MR.strings.theme_mode_dark_descr),
-          fontSize = 15.sp,
-          fontWeight = FontWeight.Medium,
-          color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
-        )
-      }
-    }
-  }
+  // FB-4: the kebab menu (and its trigger button) was removed with its only entry, the
+  // "Dark mode" toggle — the same misplaced, crash-on-tap theme item as the main chat
+  // conversation menu (theme switching lives in the chat-list header and Appearance).
+
   ItemsReload(chatsCtx)
 }
 

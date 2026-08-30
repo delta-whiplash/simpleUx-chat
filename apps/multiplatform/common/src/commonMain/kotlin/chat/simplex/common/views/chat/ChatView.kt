@@ -2,7 +2,6 @@ package chat.simplex.common.views.chat
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.*
@@ -1202,34 +1201,11 @@ fun BoxScope.ChatInfoToolbar(
   val barButtons = arrayListOf<@Composable RowScope.() -> Unit>()
   val menuItems = arrayListOf<@Composable () -> Unit>()
   val activeCall by remember { chatModel.activeCall }
-  val isDark = isInDarkTheme()
 
-  menuItems.add {
-    val themeItemOrigin = remember { mutableStateOf<Offset?>(null) }
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .onGloballyPositioned { coords -> themeItemOrigin.value = coords.boundsInWindow().center }
-        .clickable {
-          showMenu.value = false
-          // Reveal starts from the tapped item; darkness and scope are derived/owned by
-          // the controller so a stale composition capture can't leak or cancel it (#14)
-          ThemeAnimationController.trigger(originOffset = themeItemOrigin.value)
-        }
-        .padding(horizontal = 16.dp, vertical = 12.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-      AnimatedThemeIcon(isDark = isDark)
-      Text(
-        text = if (isDark) stringResource(MR.strings.theme_mode_light_descr) else stringResource(MR.strings.theme_mode_dark_descr),
-        fontSize = 15.sp,
-        fontWeight = FontWeight.Medium,
-        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
-      )
-    }
-  }
-  menuItems.add { Divider(color = if (isDark) Color(0x22FFFFFF) else Color(0x15000000), thickness = 0.5.dp) }
+  // FB-4: the "Dark mode" toggle was removed from this menu. Theme switching lives in the
+  // chat-list header and Appearance; from this surface the toggle's reveal chain
+  // (ThemeAnimationController.trigger -> ThemeManager.applyTheme -> UiModeManager.setApplicationNightMode)
+  // crashed the app on device, and its items drowned out the media/search actions.
 
   val showContentFilterButton = availableContent.value.isNotEmpty()
   val canStartCall = chatInfo is ChatInfo.Direct &&

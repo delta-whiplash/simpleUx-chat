@@ -19,63 +19,144 @@ import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.themedBackground
 import chat.simplex.common.views.chat.topPaddingToContent
 import chat.simplex.common.views.newchat.ActiveProfilePicker
+import chat.simplex.common.views.ux.share.ShareMediaScreen
+import chat.simplex.common.views.ux.share.ShareTarget
 import chat.simplex.res.MR
+import kotlinx.coroutines.launch
 
+/**
+ * FB-2: the share-into-SimpleX surface now renders ShareMediaScreen (views/ux/share) —
+ * proper header, incoming-content preview, and the chat picker as mineral cards. This file
+ * stays the thin adapter: it computes per-chat enablement from the shared-content flags and
+ * performs the business actions on selection. The legacy ShareList / ShareListToolbar /
+ * EmptyList composables below are kept uncalled as an upstream merge buffer.
+ */
 @Composable
 fun ShareListView(chatModel: ChatModel, stopped: Boolean) {
-  var searchInList by rememberSaveable { mutableStateOf("") }
-  val oneHandUI = remember { appPrefs.oneHandUI.state }
-  Box(Modifier.fillMaxSize().themedBackground(bgLayerSize = LocalAppBarHandler.current?.backgroundGraphicsLayerSize, bgLayer = LocalAppBarHandler.current?.backgroundGraphicsLayer)) {
-    val sharedContent = chatModel.sharedContent.value
-    var isMediaOrFileAttachment = false
-    var isVoice = false
-    var hasSimplexLink = false
-    when (sharedContent) {
-      is SharedContent.Text ->
-        hasSimplexLink = hasSimplexLink(sharedContent.text)
-      is SharedContent.Media -> {
-        isMediaOrFileAttachment = true
-        hasSimplexLink = hasSimplexLink(sharedContent.text)
-      }
-      is SharedContent.File -> {
-        isMediaOrFileAttachment = true
-        hasSimplexLink = hasSimplexLink(sharedContent.text)
-      }
-      is SharedContent.Forward -> {
-        sharedContent.chatItems.forEach { ci ->
-          val mc = ci.content.msgContent
-          if (mc != null) {
-            isMediaOrFileAttachment = isMediaOrFileAttachment || mc.isMediaOrFileAttachment
-            isVoice = isVoice || mc.isVoice
-            hasSimplexLink = hasSimplexLink || hasSimplexLink(mc.text)
-          }
+  val sharedContent = chatModel.sharedContent.value
+  var isMediaOrFileAttachment = false
+  var isVoice = false
+  var hasSimplexLink = false
+  when (sharedContent) {
+    is SharedContent.Text ->
+      hasSimplexLink = hasSimplexLink(sharedContent.text)
+    is SharedContent.Media -> {
+      isMediaOrFileAttachment = true
+      hasSimplexLink = hasSimplexLink(sharedContent.text)
+    }
+    is SharedContent.File -> {
+      isMediaOrFileAttachment = true
+      hasSimplexLink = hasSimplexLink(sharedContent.text)
+    }
+    is SharedContent.Forward -> {
+      sharedContent.chatItems.forEach { ci ->
+        val mc = ci.content.msgContent
+        if (mc != null) {
+          isMediaOrFileAttachment = isMediaOrFileAttachment || mc.isMediaOrFileAttachment
+          isVoice = isVoice || mc.isVoice
+          hasSimplexLink = hasSimplexLink || hasSimplexLink(mc.text)
         }
       }
-      is SharedContent.ChatLink, is SharedContent.MyAddress -> {
-        hasSimplexLink = true
-      }
-      null -> {}
     }
-    if (chatModel.chats.value.isNotEmpty()) {
-      ShareList(
-        chatModel,
-        search = searchInList,
-        isMediaOrFileAttachment = isMediaOrFileAttachment,
-        isVoice = isVoice,
-        hasSimplexLink = hasSimplexLink,
-      )
-    } else {
-      EmptyList()
+    is SharedContent.ChatLink, is SharedContent.MyAddress -> {
+      hasSimplexLink = true
     }
-    if (oneHandUI.value) {
-      StatusBarBackground()
-    } else {
-      NavigationBarBackground(oneHandUI.value, true)
-    }
-    Box(Modifier.align(if (oneHandUI.value) Alignment.BottomStart else Alignment.TopStart)) {
-      ShareListToolbar(chatModel, stopped) { searchInList = it.trim() }
+    null -> {}
+  }
+
+  val scope = rememberCoroutineScope()
+  val targets by remember(sharedContent, isMediaOrFileAttachment, isVoice, hasSimplexLink) {
+    derivedStateOf {
+      chatModel.chats.value.toList()
+        .filter {
+          it.chatInfo.ready && it.chatInfo.sendMsgEnabled &&
+            !((sharedContent is SharedContent.ChatLink || sharedContent is SharedContent.MyAddress) && it.chatInfo is ChatInfo.Local)
+        }
+        .sortedByDescending { it.chatInfo is ChatInfo.Local }
+        .map { chat -> ShareTarget(chat, shareTargetEnabled(chat, isMediaOrFileAttachment, isVoice, hasSimplexLink)) }
     }
   }
+
+  Box(Modifier.fillMaxSize().themedBackground(bgLayerSize = LocalAppBarHandler.current?.backgroundGraphicsLayerSize, bgLayer = LocalAppBarHandler.current?.backgroundGraphicsLayer)) {
+    ShareMediaScreen(
+      sharedContent = sharedContent,
+      targets = targets,
+      stopped = stopped,
+      onTargetSelected = { chat ->
+        scope.launch {
+          if (chatModel.chatRunning.value == false) {
+            AlertManager.shared.showAlertMsg(
+              generalGetString(MR.strings.chat_is_stopped_indication),
+              generalGetString(MR.strings.you_can_start_chat_via_setting_or_by_restarting_the_app)
+            )
+          } else {
+            selectShareTarget(chatModel, chat, isMediaOrFileAttachment, isVoice, hasSimplexLink)
+          }
+        }
+      },
+      onDismiss = {
+        // Drop shared content
+        chatModel.sharedContent.value = null
+        if (sharedContent is SharedContent.Forward) {
+          chatModel.chatId.value = sharedContent.fromChatInfo.id
+        } else if (sharedContent is SharedContent.ChatLink) {
+          chatModel.chatId.value = sharedContent.groupInfo.id
+        }
+      }
+    )
+  }
+}
+
+/** Same restriction checks the legacy share rows applied per chat type. */
+private fun shareTargetEnabled(chat: Chat, isMediaOrFileAttachment: Boolean, isVoice: Boolean, hasSimplexLink: Boolean): Boolean =
+  when (val info = chat.chatInfo) {
+    is ChatInfo.Direct ->
+      !(isVoice && !info.featureEnabled(ChatFeature.Voice))
+    is ChatInfo.Group ->
+      !(isMediaOrFileAttachment && !chat.groupFeatureEnabled(GroupFeature.Files)) &&
+        !(isVoice && !info.featureEnabled(ChatFeature.Voice)) &&
+        !(hasSimplexLink && !chat.groupFeatureEnabled(GroupFeature.SimplexLinks))
+    is ChatInfo.Local -> true
+    else -> false
+  }
+
+/** Same open actions as the legacy share rows, including the disabled-tap alert. */
+private suspend fun selectShareTarget(
+  chatModel: ChatModel,
+  chat: Chat,
+  isMediaOrFileAttachment: Boolean,
+  isVoice: Boolean,
+  hasSimplexLink: Boolean
+) {
+  when (val info = chat.chatInfo) {
+    is ChatInfo.Direct -> {
+      val voiceProhibited = isVoice && !info.featureEnabled(ChatFeature.Voice)
+      if (voiceProhibited) {
+        showShareProhibitedByPrefAlert()
+      } else {
+        directChatAction(chat.remoteHostId, info.contact, chatModel)
+      }
+    }
+    is ChatInfo.Group -> {
+      val simplexLinkProhibited = hasSimplexLink && !chat.groupFeatureEnabled(GroupFeature.SimplexLinks)
+      val fileProhibited = isMediaOrFileAttachment && !chat.groupFeatureEnabled(GroupFeature.Files)
+      val voiceProhibited = isVoice && !info.featureEnabled(ChatFeature.Voice)
+      if (simplexLinkProhibited || fileProhibited || voiceProhibited) {
+        showShareProhibitedByPrefAlert()
+      } else {
+        groupChatAction(chat.remoteHostId, info.groupInfo, chatModel)
+      }
+    }
+    is ChatInfo.Local -> noteFolderChatAction(chat.remoteHostId, info.noteFolder)
+    else -> {}
+  }
+}
+
+private fun showShareProhibitedByPrefAlert() {
+  AlertManager.shared.showAlertMsg(
+    title = generalGetString(MR.strings.cannot_share_message_alert_title),
+    text = generalGetString(MR.strings.cannot_share_message_alert_text),
+  )
 }
 
 private fun hasSimplexLink(msg: String): Boolean {
