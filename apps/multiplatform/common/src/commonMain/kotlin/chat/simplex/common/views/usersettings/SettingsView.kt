@@ -176,7 +176,11 @@ fun SettingsLayout(
         text = "SimpleUX ${appVersionInfo.first}${if (appVersionInfo.second != null) " (${appVersionInfo.second})" else ""}",
         style = MaterialTheme.typography.caption,
         color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        // Issue #73: the settings version row is the entry point to VersionInfoView
+        // (app updates, project links). AppVersionItem's clickable variant is orphaned
+        // in this redesigned layout — wire this footer instead of composing it.
+        modifier = Modifier.clickable { showVersion() }
       )
     }
     SectionBottomSpacer()
