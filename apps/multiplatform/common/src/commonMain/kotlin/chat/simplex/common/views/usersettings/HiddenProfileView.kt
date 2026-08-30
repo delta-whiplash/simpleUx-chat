@@ -41,10 +41,7 @@ fun HiddenProfileView(
           m.updateUser(u)
           close()
         } catch (e: Exception) {
-          AlertManager.shared.showAlertMsg(
-            title = generalGetString(MR.strings.error_saving_user_password),
-            text = e.stackTraceToString()
-          )
+          showActionError(generalGetString(MR.strings.error_saving_user_password), e)
         }
       }
     }

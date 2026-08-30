@@ -2458,4 +2458,5 @@
   <string name="haptic_feedback">Retour haptique</string>
 	<string name="updater_auto_check">Rechercher automatiquement les mises à jour stables</string>
 	<string name="updater_auto_available">Installez-la depuis Réglages → Mises à jour de l\'app. Vous pouvez désactiver la vérification automatique à cet endroit.</string>
+	<string name="error_something_went_wrong">Une erreur est survenue. Veuillez réessayer.</string>
 </resources>

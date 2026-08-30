@@ -453,14 +453,13 @@ private fun MutableState<MigrationFromState>.stopChat() {
         state = if (appPreferences.initialRandomDBPassphrase.get()) MigrationFromState.PassphraseNotSet else MigrationFromState.PassphraseConfirmation
         platform.androidChatStopped()
       } catch (e: Exception) {
-        AlertManager.shared.showAlertMsg(
-          title = generalGetString(MR.strings.migrate_from_device_error_saving_settings),
-          text = e.stackTraceToString()
-        )
+        showActionError(generalGetString(MR.strings.migrate_from_device_error_saving_settings), e)
         state = MigrationFromState.ChatStopFailed(reason = generalGetString(MR.strings.migrate_from_device_error_saving_settings))
       }
     } catch (e: Exception) {
-      state = MigrationFromState.ChatStopFailed(reason = e.stackTraceToString().take(10))
+      // #66: the raw stack belongs in the log; the state only needs a short reason
+      Log.e(TAG, e.stackTraceToString())
+      state = MigrationFromState.ChatStopFailed(reason = e.message?.take(120) ?: generalGetString(MR.strings.error_something_went_wrong))
     }
   }
 }
@@ -493,10 +492,7 @@ private fun MutableState<MigrationFromState>.exportArchive() {
         state = MigrationFromState.UploadConfirmation
       }
     } catch (e: Exception) {
-      AlertManager.shared.showAlertMsg(
-        title = generalGetString(MR.strings.migrate_from_device_error_exporting_archive),
-        text = e.stackTraceToString()
-      )
+      showActionError(generalGetString(MR.strings.migrate_from_device_error_exporting_archive), e)
       state = MigrationFromState.UploadConfirmation
     }
   }
@@ -640,13 +636,11 @@ private fun MutableState<MigrationFromState>.deleteChatAndDismiss() {
         chatModel.chatDbChanged.value = false
         ModalManager.fullscreen.closeModals()
       } catch (e: Exception) {
-        throw Exception(generalGetString(MR.strings.error_starting_chat) + "\n" + e.stackTraceToString())
+        Log.e(TAG, "${generalGetString(MR.strings.error_starting_chat)}: ${e.stackTraceToString()}")
+        throw Exception(generalGetString(MR.strings.error_starting_chat))
       }
     } catch (e: Exception) {
-      AlertManager.shared.showAlertMsg(
-        title = generalGetString(MR.strings.migrate_from_device_error_deleting_database),
-        text = e.stackTraceToString()
-      )
+      showActionError(generalGetString(MR.strings.migrate_from_device_error_deleting_database), e)
     }
   }
 }
@@ -662,10 +656,7 @@ private suspend fun startChatAndDismiss(dismiss: Boolean = true) {
     }
     platform.androidChatStartedAfterBeingOff()
   } catch (e: Exception) {
-    AlertManager.shared.showAlertMsg(
-      title = generalGetString(MR.strings.error_starting_chat),
-      text = e.stackTraceToString()
-    )
+    showActionError(generalGetString(MR.strings.error_starting_chat), e)
   }
   // Hide settings anyway if chatDbStatus is not ok, probably passphrase needs to be entered
   if (dismiss || chatModel.chatDbStatus.value != DBMigrationResult.OK) {
@@ -724,7 +715,7 @@ private class MigrationFromChatReceiver(
           Log.e(TAG, "MigrationChatReceiver recvMsg/processReceivedMsg exception: " + e.stackTraceToString())
         } catch (e: Exception) {
           Log.e(TAG, "MigrationChatReceiver recvMsg/processReceivedMsg throwable: " + e.stackTraceToString())
-          AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error), e.stackTraceToString())
+          showActionError(generalGetString(MR.strings.error), e)
         }
       }
     }

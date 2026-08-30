@@ -1488,7 +1488,7 @@ private fun setChatTTL(
     } catch (e: Exception) {
       chatTTL.value = previousChatTTL
       afterSetChatTTL(chatsCtx, rhId, chatInfo, progressIndicator)
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_changing_message_deletion), e.stackTraceToString())
+      showActionError(generalGetString(MR.strings.error_changing_message_deletion), e)
     }
   }
 }

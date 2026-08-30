@@ -183,7 +183,7 @@ fun saveImage(image: ImageBitmap): CryptoFile? {
         CryptoFile(destFileName, args)
       } catch (e: Exception) {
         Log.e(TAG, "Unable to write crypto file: " + e.stackTraceToString())
-        AlertManager.shared.showAlertMsg(title = generalGetString(MR.strings.error), text = e.stackTraceToString())
+        showActionError(generalGetString(MR.strings.error), e)
         null
       }
     } else {
@@ -236,7 +236,7 @@ fun saveAnimImage(uri: URI): CryptoFile? {
         CryptoFile(destFileName, args)
       } catch (e: Exception) {
         Log.e(TAG, "Unable to read crypto file: " + e.stackTraceToString())
-        AlertManager.shared.showAlertMsg(title = generalGetString(MR.strings.error), text = e.stackTraceToString())
+        showActionError(generalGetString(MR.strings.error), e)
         null
       }
     } else {
@@ -281,7 +281,7 @@ fun saveFileFromUri(
             CryptoFile(destFileName, args)
           } catch (e: Exception) {
             Log.e(TAG, "Unable to encrypt plain file: " + e.stackTraceToString())
-            AlertManager.shared.showAlertMsg(title = generalGetString(MR.strings.error), text = e.stackTraceToString())
+            showActionError(generalGetString(MR.strings.error), e)
             null
           }
         }
@@ -341,7 +341,7 @@ fun saveWallpaperFile(uri: URI): String? {
     Files.copy(inputStream!!, destFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
   } catch (e: Exception) {
     Log.e(TAG, "Error saving wallpaper file: ${e.stackTraceToString()}")
-    AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error), e.stackTraceToString())
+    showActionError(generalGetString(MR.strings.error), e)
     return null
   }
   return destFile.name

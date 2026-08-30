@@ -370,7 +370,7 @@ private suspend fun doRemoveUser(m: ChatModel, user: User, users: List<User>, de
     m.removeUser(user)
     ntfManager.cancelNotificationsForUser(user.userId)
   } catch (e: Exception) {
-    AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_deleting_user), e.stackTraceToString())
+    showActionError(generalGetString(MR.strings.error_deleting_user), e)
   }
 }
 
@@ -379,10 +379,7 @@ private suspend fun setUserPrivacy(m: ChatModel, onSuccess: (() -> Unit)? = null
     m.updateUser(api())
     onSuccess?.invoke()
   } catch (e: Exception) {
-    AlertManager.shared.showAlertMsg(
-      title = generalGetString(MR.strings.error_updating_user_privacy),
-      text = e.stackTraceToString()
-    )
+    showActionError(generalGetString(MR.strings.error_updating_user_privacy), e)
   }
 }
 

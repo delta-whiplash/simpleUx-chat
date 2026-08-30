@@ -653,11 +653,11 @@ private fun MutableState<MigrationToState?>.importArchive(archivePath: String, n
         MigrationToDeviceState.save(MigrationToDeviceState.Passphrase(netCfg, networkProxy))
       } catch (e: Exception) {
         state = MigrationToState.ArchiveImportFailed(archivePath, netCfg, networkProxy)
-        AlertManager.shared.showAlertMsg (generalGetString(MR.strings.error_importing_database), e.stackTraceToString())
+        showActionError(generalGetString(MR.strings.error_importing_database), e)
       }
     } catch (e: Exception) {
       state = MigrationToState.ArchiveImportFailed(archivePath, netCfg, networkProxy)
-      AlertManager.shared.showAlertMsg (generalGetString(MR.strings.error_deleting_database), e.stackTraceToString())
+      showActionError(generalGetString(MR.strings.error_deleting_database), e)
     }
   }
 }
@@ -684,7 +684,7 @@ private fun startChat(passphrase: String, confirmation: MigrationConfirmation, u
       finishMigration(appSettings, close)
     } catch (e: Exception) {
       hideView(close)
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_starting_chat), e.stackTraceToString())
+      showActionError(generalGetString(MR.strings.error_starting_chat), e)
     }
   }
 }
@@ -701,7 +701,7 @@ private suspend fun finishMigration(appSettings: AppSettings, close: () -> Unit)
     hideView(close)
     AlertManager.shared.showAlertMsg(generalGetString(MR.strings.migrate_to_device_chat_migrated), generalGetString(MR.strings.migrate_to_device_finalize_migration))
   } catch (e: Exception) {
-    AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_starting_chat), e.stackTraceToString())
+    showActionError(generalGetString(MR.strings.error_starting_chat), e)
   }
   MigrationToDeviceState.save(null)
 }
@@ -775,7 +775,7 @@ private class MigrationToChatReceiver(
           Log.e(TAG, "MigrationChatReceiver recvMsg/processReceivedMsg exception: " + e.stackTraceToString())
         } catch (e: Exception) {
           Log.e(TAG, "MigrationChatReceiver recvMsg/processReceivedMsg throwable: " + e.stackTraceToString())
-          AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error), e.stackTraceToString())
+          showActionError(generalGetString(MR.strings.error), e)
         }
       }
     }

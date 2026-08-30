@@ -896,7 +896,7 @@ fun ComposeView(
                   encryptCryptoFile(tmpFile.absolutePath, actualFile.absolutePath)
                 } catch (e: Exception) {
                   Log.e(TAG, "Unable to encrypt plain file: " + e.stackTraceToString())
-                  AlertManager.shared.showAlertMsg(title = generalGetString(MR.strings.error), text = e.stackTraceToString())
+                  showActionError(generalGetString(MR.strings.error), e)
                   return@withContext null
                 } finally {
                   tmpFile.delete()

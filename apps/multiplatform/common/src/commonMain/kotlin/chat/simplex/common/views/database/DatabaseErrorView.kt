@@ -274,7 +274,7 @@ private fun restoreDb(restoreDbFromBackup: MutableState<Boolean>, prefs: AppPref
     restoreDbFromBackup.value = false
     prefs.encryptionStartedAt.set(null)
   } catch (e: Exception) {
-    AlertManager.shared.showAlertMsg(generalGetString(MR.strings.database_restore_error), e.stackTraceToString())
+    showActionError(generalGetString(MR.strings.database_restore_error), e)
   }
 }
 

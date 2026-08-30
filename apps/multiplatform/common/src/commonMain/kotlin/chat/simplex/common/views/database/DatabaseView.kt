@@ -434,7 +434,7 @@ fun startChat(
       platform.androidChatStartedAfterBeingOff()
     } catch (e: Throwable) {
       m.chatRunning.value = false
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_starting_chat), e.toString())
+      showActionError(generalGetString(MR.strings.error_starting_chat), e)
     } finally {
       progressIndicator?.value = false
     }
@@ -500,7 +500,7 @@ private fun stopChat(m: ChatModel, progressIndicator: MutableState<Boolean>? = n
       onStop?.invoke()
     } catch (e: Error) {
       m.chatRunning.value = true
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_stopping_chat), e.toString())
+      showActionError(generalGetString(MR.strings.error_stopping_chat), e)
     } finally {
       progressIndicator?.value = false
     }
@@ -616,7 +616,7 @@ private suspend fun exportArchive(
     }
     progressIndicator.value = false
   } catch (e: Throwable) {
-    AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_exporting_chat_database), e.toString())
+    showActionError(generalGetString(MR.strings.error_exporting_chat_database), e)
     progressIndicator.value = false
   }
   return false
@@ -731,12 +731,12 @@ suspend fun importArchive(
         }
       } catch (e: Error) {
         operationEnded(m, progressIndicator) {
-          AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_importing_database), e.toString())
+          showActionError(generalGetString(MR.strings.error_importing_database), e)
         }
       }
     } catch (e: Error) {
       operationEnded(m, progressIndicator) {
-        AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_deleting_database), e.toString())
+        showActionError(generalGetString(MR.strings.error_deleting_database), e)
       }
     } finally {
       File(archivePath).delete()
@@ -761,7 +761,7 @@ private fun saveArchiveFromURI(importedArchiveURI: URI): String? {
       null
     }
   } catch (e: Exception) {
-    AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_saving_database), e.stackTraceToString())
+    showActionError(generalGetString(MR.strings.error_saving_database), e)
     Log.e(TAG, "saveArchiveFromURI error: ${e.stackTraceToString()}")
     null
   }
@@ -789,7 +789,7 @@ private suspend fun deleteChat(m: ChatModel, progressIndicator: MutableState<Boo
     }
   } catch (e: Throwable) {
     operationEnded(m, progressIndicator) {
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_deleting_database), e.toString())
+      showActionError(generalGetString(MR.strings.error_deleting_database), e)
     }
   }
 }
@@ -813,7 +813,7 @@ private fun setCiTTL(
       // Rollback to model's value
       chatItemTTL.value = m.chatItemTTL.value
       afterSetCiTTL(m, progressIndicator, appFilesCountAndSize)
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_changing_message_deletion), e.stackTraceToString())
+      showActionError(generalGetString(MR.strings.error_changing_message_deletion), e)
     }
   }
 }

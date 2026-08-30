@@ -38,11 +38,7 @@ fun SetDeliveryReceiptsView(m: ChatModel) {
               Log.e(TAG, "listUsers error: ${e.stackTraceToString()}")
             }
           } catch (e: Exception) {
-            AlertManager.shared.showAlertDialog(
-              title = generalGetString(MR.strings.error_enabling_delivery_receipts),
-              text = e.stackTraceToString()
-            )
-            Log.e(TAG, "${generalGetString(MR.strings.error_enabling_delivery_receipts)}: ${e.stackTraceToString()}")
+            showActionError(generalGetString(MR.strings.error_enabling_delivery_receipts), e)
             m.setDeliveryReceipts.value = false
           }
         }

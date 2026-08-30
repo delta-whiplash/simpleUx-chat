@@ -473,7 +473,7 @@ suspend fun encryptDatabase(
     }
   } catch (e: Exception) {
     operationEnded(m, progressIndicator) {
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.error_encrypting_database), e.stackTraceToString())
+      showActionError(generalGetString(MR.strings.error_encrypting_database), e)
     }
     false
   }
