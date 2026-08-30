@@ -37,6 +37,7 @@ import chat.simplex.common.views.onboarding.GetStakeView
 import chat.simplex.common.views.onboarding.SimpleXInfo
 import chat.simplex.common.views.onboarding.WhatsNewView
 import chat.simplex.common.views.onboarding.crowdfundingAvailable
+import chat.simplex.common.views.ux.InvitationLinksSection
 import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServersView
 import chat.simplex.res.MR
 
@@ -162,6 +163,9 @@ fun SettingsLayout(
         )
       }
     }
+
+    // FB-12/13: generated one-time invitations are managed here instead of polluting the chat list
+    InvitationLinksSection()
 
     Spacer(Modifier.height(24.dp))
 

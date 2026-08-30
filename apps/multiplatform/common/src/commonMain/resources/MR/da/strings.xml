@@ -62,7 +62,6 @@
     <string name="color_secondary_variant">Yderligere sekundær</string>
     <string name="chat_list_add_list">Tilføj liste</string>
     <string name="compose_view_add_message">Tilføj besked</string>
-    <string name="smp_servers_preset_add">Tilføj forudindstillede servere</string>
     <string name="users_add">Tilføj profil</string>
     <string name="address_section_title">Adresse</string>
     <string name="abort_switch_receiving_address_desc">Adresseændringen bliver annulleret. Den gamle modtageradresse bliver brugt.</string>
@@ -150,8 +149,6 @@
     <string name="connect__a_new_random_profile_will_be_shared">En ny tilfældig profil deles.</string>
     <string name="report_reason_other">En anden grund</string>
     <string name="answer_call">Svaropkald</string>
-    <string name="opensource_protocol_and_code_anybody_can_run_servers">Alle kan være vært for servere.</string>
-    <string name="settings_section_title_app">App</string>
     <string name="onboarding_notifications_mode_service_desc_short">App løber altid i baggrunden</string>
     <string name="app_version_code">App Build: %s</string>
     <string name="notifications_mode_off_desc">App kan kun modtage meddelelser, når den kører, ingen baggrundstjeneste startes</string>
@@ -185,8 +182,6 @@
     <string name="blocked_by_admin_item_description">blokeret af administrator</string>
     <string name="blocked_items_description">%d beskeder blokeret</string>
     <string name="blocked_by_admin_items_description">%d beskeder blokeret af administrator</string>
-    <string name="sending_files_not_yet_supported">afsendelse af filer understøttes endnu ikke</string>
-    <string name="receiving_files_not_yet_supported">Modtagelse af filer understøttes endnu ikke</string>
     <string name="sender_you_pronoun">du</string>
     <string name="unknown_message_format">ukendt beskedformat</string>
     <string name="invalid_message_format">ugyldigt beskedformat</string>
@@ -228,7 +223,6 @@
     <string name="simplex_link_mode_description">Beskrivelse</string>
     <string name="simplex_link_mode_full">Fuldt link</string>
     <string name="simplex_link_mode_browser">Via browseren</string>
-    <string name="simplex_link_mode_browser_warning">Åbning af linket i browseren kan reducere forbindelsens privatliv og sikkerhed. Upålidelige SimpleX-links vil være røde.</string>
     <string name="report_reason_spam">Spam</string>
     <string name="report_reason_illegal">Upassende indhold</string>
     <string name="report_reason_community">Overtrædelse af retningslinjer for fællesskabet</string>
@@ -269,7 +263,6 @@
     <string name="proxy_destination_error_failed_to_connect">Videresendelsesserveren %1$s kunne ikke oprette forbindelse til destinationsserveren %2$s. Prøv senere.</string>
     <string name="proxy_destination_error_broker_host">Destinationsserveradressen for %1$s er ikke kompatibel med indstillingerne for videresendelsesserveren %2$s.</string>
     <string name="proxy_destination_error_broker_version">Destinationsserverversionen af %1$s er inkompatibel med videresendelsesserveren %2$s.</string>
-    <string name="please_try_later">Prøv senere.</string>
     <string name="error_sending_message">Fejl ved afsendelse af besked</string>
     <string name="error_forwarding_messages">Fejl ved videresendelse af beskeder</string>
     <string name="error_creating_message">Fejl ved oprettelse af besked</string>
@@ -423,7 +416,6 @@
     <string name="report_archive_alert_title">Arkivér rapport?</string>
     <string name="report_archive_alert_title_nth">Arkivér %d rapporter?</string>
     <string name="report_archive_alert_title_all">Arkivér alle rapporter?</string>
-    <string name="report_archive_alert_desc">Rapporten vil blive arkiveret for dig.</string>
     <string name="report_archive_for_me">For mig</string>
     <string name="report_archive_for_all_moderators">Til alle moderatorer</string>
     <string name="ci_status_other_error">Fejl: %1$s</string>
@@ -502,7 +494,6 @@
     <string name="icon_descr_edited">redigeret</string>
     <string name="personal_welcome">Velkommen %1$s!</string>
     <string name="welcome">Velkomst!</string>
-    <string name="this_text_is_available_in_settings">Denne tekst er tilgængelig i indstillinger</string>
     <string name="your_chats">Chats</string>
     <string name="toolbar_settings">Indstillinger</string>
     <string name="contact_connection_pending">forbinder…</string>
@@ -511,7 +502,6 @@
     <string name="group_preview_join_as">Deltag som %s</string>
     <string name="group_preview_rejected">afvist</string>
     <string name="group_connection_pending">forbinder…</string>
-    <string name="tap_to_start_new_chat">Tryk for at starte en ny chat</string>
     <string name="you_have_no_chats">Du har ingen chats</string>
     <string name="loading_chats">Indlæser chats…</string>
     <string name="no_filtered_chats">Ingen filtrerede chats</string>
@@ -611,7 +601,6 @@
     <string name="cant_send_message_mem_removed">fjernet fra gruppen</string>
     <string name="cant_send_message_you_left">du forlod</string>
     <string name="cant_send_message_generic">kan ikke sende beskeder</string>
-    <string name="you_are_observer">du er observatør</string>
     <string name="reviewed_by_admins">gennemgået af administratorer</string>
     <string name="cant_send_message_member_has_old_version">medlemmet har en gammel version</string>
     <string name="image_descr">Billede</string>
@@ -710,7 +699,6 @@
     <string name="v6_0_your_contacts_descr">Arkivkontakter for at chatte senere.</string>
     <string name="deleted_chats">Arkiverede kontakter</string>
     <string name="migrate_from_device_archiving_database">Arkiveringsdatabase</string>
-    <string name="privacy_chat_list_open_links_ask">Spørge</string>
     <string name="attempts_label">forsøg</string>
     <string name="v4_6_audio_video_calls">Lyd- og videoopkald</string>
     <string name="icon_descr_audio_call">lydopkald</string>
@@ -741,7 +729,6 @@
     <string name="v6_3_better_privacy_and_security">Bedre privatlivets fred og sikkerhed</string>
     <string name="v6_1_better_security">Bedre sikkerhed ✅</string>
     <string name="v6_1_better_user_experience">Bedre brugeroplevelse</string>
-    <string name="short_descr__field">Bio:</string>
     <string name="bio_too_large">Bio for stor</string>
     <string name="theme_black">Sort</string>
     <string name="block_member_confirmation">Blok</string>

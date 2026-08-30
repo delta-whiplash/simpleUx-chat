@@ -29,6 +29,7 @@ import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.planAndConnect
 import chat.simplex.common.views.ux.TelegramTopHeader
+import chat.simplex.common.views.ux.isCreatedInvitationChat
 import chat.simplex.common.views.ux.components.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -95,11 +96,14 @@ internal fun BoxScope.ChatListContent(
   // other chats (there are no sort headers on this screen). The sort is stable,
   // so the existing ordering within each group is untouched, and it reads the
   // snapshot-backed pinnedChatIds so toggling re-sorts immediately.
+  // FB-12/13: created one-time invitations are managed in Settings (InvitationLinksSection),
+  // not as chats — hidden here so each preserved link stops polluting the list.
   val chats = (if (activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES)) {
     rawChats.filter { chatModel.starredChatIds.contains(it.id) }
   } else {
     rawChats
-  }).sortedByDescending { chatModel.pinnedChatIds.contains(it.id) }
+  }).filterNot { isCreatedInvitationChat(it) }
+    .sortedByDescending { chatModel.pinnedChatIds.contains(it.id) }
 
   val isSearching = searchText.value.text.isNotEmpty() || searchVisible.value
   val bottomPadding = if (isSearching) 16.dp else 96.dp

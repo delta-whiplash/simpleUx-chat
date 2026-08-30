@@ -44,7 +44,6 @@
     <string name="button_add_friends">Legg til venner</string>
     <string name="chat_list_add_list">Legg til en liste</string>
     <string name="compose_view_add_message">Legg til en melding</string>
-    <string name="smp_servers_preset_add">Legg til forhåndsvalgte servere</string>
     <string name="users_add">Legg til en profil</string>
     <string name="address_section_title">Adresse</string>
     <string name="abort_switch_receiving_address_desc">Adresseendringen vil bli avbrutt. Den gamle mottakeradressen vil bli brukt.</string>
@@ -120,8 +119,6 @@
     <string name="connect__a_new_random_profile_will_be_shared">En ny tilfeldig profil vil bli delt.</string>
     <string name="report_reason_other">En annen grunn</string>
     <string name="answer_call">Svar anrop</string>
-    <string name="opensource_protocol_and_code_anybody_can_run_servers">Hvem som helst kan være vert for servere.</string>
-    <string name="settings_section_title_app">App</string>
     <string name="onboarding_notifications_mode_service_desc_short">Appen kjører alltid i bakgrunnen</string>
     <string name="app_version_code">App build: %s</string>
     <string name="notifications_mode_off_desc">Appen kan bare motta varsler når den er åpen, ingen bakgrunnstjeneste vil bli startet.</string>
@@ -153,7 +150,6 @@
     <string name="report_archive_alert_title">Arkiver rapport?</string>
     <string name="archive_reports">Arkiver rapporter</string>
     <string name="migrate_from_device_archiving_database">Arkiverer database</string>
-    <string name="privacy_chat_list_open_links_ask">Spør</string>
     <string name="icon_descr_asked_to_receive">Bedt om å motta bildet</string>
     <string name="icon_descr_video_asked_to_receive">Bedt om å motta videoen</string>
     <string name="attach">Legg ved</string>
@@ -187,7 +183,6 @@
     <string name="v6_3_better_privacy_and_security">Bedre personvern og sikkerhet</string>
     <string name="v6_1_better_security">Bedre sikkerhet ✅</string>
     <string name="v6_1_better_user_experience">Bedre brukeropplevelse</string>
-    <string name="short_descr__field">Bio:</string>
     <string name="bio_too_large">Bio er for stor</string>
     <string name="theme_black">Svart</string>
     <string name="block_member_confirmation">Blokker</string>
