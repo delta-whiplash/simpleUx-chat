@@ -3310,4 +3310,8 @@
   <string name="updater_install">Install update</string>
   <string name="updater_install_permission_hint">To install updates, allow installing unknown apps for SimpleUX in system settings, then tap Install.</string>
   <string name="updater_failed">Update failed. Check your connection and try again.</string>
+
+  <!-- FB-G: quick camera permission-denied state (FB-10) -->
+  <string name="quick_camera_permission_denied_text">SimpleUX needs camera access to scan QR codes and take photos. You can grant it at any time in system settings.</string>
+  <string name="quick_camera_open_settings">Open settings</string>
 </resources>
