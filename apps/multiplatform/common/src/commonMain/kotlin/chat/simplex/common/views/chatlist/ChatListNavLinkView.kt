@@ -388,6 +388,8 @@ fun NoteFolderMenuItems(chat: Chat, showMenu: MutableState<Boolean>, showMarkRea
   } else {
     MarkUnreadChatAction(chat, chatModel, showMenu)
   }
+  // FB-14: saved notes chats are pinnable like contacts and groups
+  PinChatAction(chat, chatModel, chatModel.pinnedChatIds.contains(chat.id), showMenu)
   ClearNoteFolderAction(chat, showMenu)
 }
 

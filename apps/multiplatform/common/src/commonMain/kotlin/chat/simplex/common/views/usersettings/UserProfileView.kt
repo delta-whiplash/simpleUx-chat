@@ -184,7 +184,7 @@ fun UserProfileLayout(
       Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
         DefaultAppBar(
           navigationButton = { NavigationButtonBack(onButtonClicked = { onClose(close) }) },
-          fixedTitleText = "Votre profil",
+          fixedTitleText = stringResource(MR.strings.context_user_picker_your_profile),
           onTop = true
         )
         ColumnWithScrollBarNoAppBar(
