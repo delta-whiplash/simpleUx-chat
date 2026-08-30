@@ -162,6 +162,8 @@ class AppUpdaterTest {
     val candidate = selectAppUpdateRelease(releasesFixture, includePrerelease = true)
     assertNotNull(candidate)
     assertEquals("rolling", candidate.tagName)
+    // The rolling tag is not versionable — the version comes from the asset name.
+    assertEquals("7.0.367-ux.2", candidate.version)
     assertEquals("simplex-ux-7.0.367-ux.2-arm64-v8a.apk", candidate.apkName)
     assertEquals(
       "https://github.com/delta-whiplash/simpleUx-chat/releases/download/rolling/simplex-ux-7.0.367-ux.2-arm64-v8a.apk",
@@ -175,6 +177,7 @@ class AppUpdaterTest {
     val candidate = selectAppUpdateRelease(releasesFixture, includePrerelease = false)
     assertNotNull(candidate)
     assertEquals("v7.0.366-ux.5", candidate.tagName)
+    assertEquals("7.0.366-ux.5", candidate.version)
     assertEquals("simplex-ux-7.0.366-ux.5-arm64-v8a.apk", candidate.apkName)
   }
 

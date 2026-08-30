@@ -65,7 +65,7 @@ fun AppUpdateSection() {
         is AppUpdateState.Idle, is AppUpdateState.Checking -> {}
         is AppUpdateState.UpToDate -> StatusText(stringResource(MR.strings.updater_up_to_date))
         is AppUpdateState.UpdateAvailable -> {
-          StatusText(String.format(stringResource(MR.strings.updater_new_version_found), s.candidate.tagName))
+          StatusText(String.format(stringResource(MR.strings.updater_new_version_found), s.candidate.version))
           SectionItemView(click = updater::downloadUpdate) {
             Text(
               generalGetString(MR.strings.updater_download),

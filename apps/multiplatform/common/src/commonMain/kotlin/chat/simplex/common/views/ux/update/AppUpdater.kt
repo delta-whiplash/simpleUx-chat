@@ -29,6 +29,9 @@ private val releasesJsonParser = Json {
 }
 
 private val APK_ASSET_REGEX = Regex("simplex-ux-.*-arm64-v8a\\.apk")
+// Extracts the fork version from an asset name — rolling releases carry a floating
+// "rolling" tag, so the version only lives in the asset name ("7.0.366-ux.5" below).
+private val APK_VERSION_REGEX = Regex("simplex-ux-(.+)-arm64-v8a\\.apk")
 
 enum class AppUpdateVersionComparison { NEWER, SAME_OR_OLDER, NOT_A_VERSION }
 
@@ -85,6 +88,9 @@ private fun parseVersionBase(raw: String): List<Int>? {
 
 data class AppUpdateCandidate(
   val tagName: String,
+  // Comparable fork version: the tag when it parses ("v7.0.366-ux.2"), otherwise derived
+  // from the asset name (rolling releases). Unparseable either way => selection returns null.
+  val version: String,
   val apkName: String,
   val downloadUrl: String,
   val sizeBytes: Long? = null,
@@ -111,9 +117,13 @@ internal fun selectAppUpdateRelease(rawJson: String, includePrerelease: Boolean)
       .map { it.jsonObject }
       .firstOrNull { APK_ASSET_REGEX.matches(it["name"]?.jsonPrimitive?.content ?: "") }
       ?: return null
+    val apkName = asset["name"]?.jsonPrimitive?.content ?: return null
+    val version = if (parseAppUpdateVersion(tagName) != null) tagName.removePrefix("v")
+      else APK_VERSION_REGEX.find(apkName)?.groupValues?.get(1) ?: return null
     AppUpdateCandidate(
       tagName = tagName,
-      apkName = asset["name"]?.jsonPrimitive?.content ?: return null,
+      version = version,
+      apkName = apkName,
       downloadUrl = asset["browser_download_url"]?.jsonPrimitive?.content ?: return null,
       sizeBytes = asset["size"]?.jsonPrimitive?.content?.toLongOrNull()
     )
@@ -182,7 +192,7 @@ class AppUpdater(
         val candidate = rawJson?.let { selectAppUpdateRelease(it, includePrerelease = true) }
         _state.value = when {
           rawJson == null || candidate == null -> AppUpdateState.Failed
-          compareAppUpdateVersions(currentVersion, candidate.tagName) == AppUpdateVersionComparison.NEWER ->
+          compareAppUpdateVersions(currentVersion, candidate.version) == AppUpdateVersionComparison.NEWER ->
             AppUpdateState.UpdateAvailable(candidate)
           else -> AppUpdateState.UpToDate(currentVersion)
         }
