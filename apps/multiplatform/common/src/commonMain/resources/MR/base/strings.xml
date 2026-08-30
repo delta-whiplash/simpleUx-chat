@@ -3316,4 +3316,8 @@
   <string name="share_screen_items_count">%1$s items</string>
   <string name="share_screen_preview_unavailable">Preview not available</string>
   <string name="share_screen_stopped_notice">SimpleX is stopped. Start it in Settings to send.</string>
+
+  <!-- FB-G: quick camera permission-denied state (FB-10) -->
+  <string name="quick_camera_permission_denied_text">SimpleUX needs camera access to scan QR codes and take photos. You can grant it at any time in system settings.</string>
+  <string name="quick_camera_open_settings">Open settings</string>
 </resources>

@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import android.view.ViewGroup
 import androidx.camera.core.*
@@ -37,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import boofcv.abst.fiducial.QrCodeDetector
 import boofcv.alg.color.ColorFormat
 import boofcv.android.ConvertCameraImage
@@ -138,8 +141,34 @@ fun QuickCameraSheet(
     }
   }
 
+  val openAppSettings: () -> Unit = {
+    try {
+      // Deep-link to this app's page in system settings, where camera access
+      // is granted — the only reliable path after a permanent ("don't ask
+      // again") denial stops Android from re-showing the runtime dialog.
+      context.startActivity(
+        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
+      )
+    } catch (e: ActivityNotFoundException) {
+      Log.e(TAG, "QuickCameraSheet: no handler for app settings")
+    }
+  }
+
   DisposableEffect(lifecycleOwner) {
-    onDispose { cameraProviderFuture?.get()?.unbindAll() }
+    // Re-check on resume: the user grants the permission in system settings
+    // while this sheet is backgrounded, so the result never arrives through
+    // the launcher callback — the camera must come alive when they return.
+    val observer = LifecycleEventObserver { _, event ->
+      if (event == Lifecycle.Event.ON_RESUME) {
+        hasCameraPermission =
+          ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+      }
+    }
+    lifecycleOwner.lifecycle.addObserver(observer)
+    onDispose {
+      lifecycleOwner.lifecycle.removeObserver(observer)
+      cameraProviderFuture?.get()?.unbindAll()
+    }
   }
 
   LaunchedEffect(detectedRaw.value) {
@@ -174,11 +203,16 @@ fun QuickCameraSheet(
   }
 
   Box(Modifier.fillMaxSize().background(CameraChromeCanvas)) {
+    // The close button sits OUTSIDE the permission branches: a denied state
+    // must never strand the user in the sheet (FB-10).
+    CameraTopBar(onClose)
+
     if (!hasCameraPermission) {
       Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        CameraPermissionCard {
-          permissionLauncher.launch(Manifest.permission.CAMERA)
-        }
+        CameraPermissionCard(
+          onOpenSettings = openAppSettings,
+          onClose = onClose
+        )
       }
     } else {
       AndroidView(
@@ -240,8 +274,6 @@ fun QuickCameraSheet(
           }
         }, ContextCompat.getMainExecutor(context))
       }
-
-      CameraTopBar(onClose)
 
       CameraReticule(
         pulse = reticulePulse.value,

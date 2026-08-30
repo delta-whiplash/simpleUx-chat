@@ -105,9 +105,13 @@ fun CameraShutterButton(enabled: Boolean, onClick: () -> Unit) {
 }
 
 // Permission-denied state: branded dark mineral card instead of the default
-// Material look.
+// Material look. Shown once the system permission dialog has been answered
+// with a denial (soft or permanent). Two actions, both real: "Open settings"
+// deep-links to the app's system settings page (the only reliable path once
+// Android stopped re-showing the dialog), and "Close" dismisses the sheet —
+// the user always has a way out (FB-10).
 @Composable
-fun CameraPermissionCard(onEnable: () -> Unit) {
+fun CameraPermissionCard(onOpenSettings: () -> Unit, onClose: () -> Unit) {
   val shape = RoundedCornerShape(18.dp)
   Box(
     Modifier
@@ -136,12 +140,27 @@ fun CameraPermissionCard(onEnable: () -> Unit) {
         fontWeight = FontWeight.SemiBold,
         textAlign = TextAlign.Center
       )
+      Spacer(Modifier.height(8.dp))
+      Text(
+        stringResource(MR.strings.quick_camera_permission_denied_text),
+        color = CameraChromeTextSecondary,
+        fontSize = 13.sp,
+        textAlign = TextAlign.Center
+      )
       Spacer(Modifier.height(18.dp))
       Button(
-        onClick = onEnable,
+        onClick = onOpenSettings,
         colors = ButtonDefaults.buttonColors(backgroundColor = AmberGold, contentColor = CameraChromeOnGold)
       ) {
-        Text(stringResource(MR.strings.enable_camera_access), fontWeight = FontWeight.SemiBold)
+        Text(stringResource(MR.strings.quick_camera_open_settings), fontWeight = FontWeight.SemiBold)
+      }
+      Spacer(Modifier.height(6.dp))
+      TextButton(onClick = onClose) {
+        Text(
+          stringResource(MR.strings.modal_close),
+          color = CameraChromeTextMuted,
+          fontWeight = FontWeight.Medium
+        )
       }
     }
   }
