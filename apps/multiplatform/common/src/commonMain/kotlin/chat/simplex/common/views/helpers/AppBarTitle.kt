@@ -69,6 +69,10 @@ fun AppBarTitle(
         HostDeviceTitle(hostDevice)
       }
     }
+    // FB-7/8/9: with an app bar handler the title is drawn in the app bar itself, but the
+    // breathing room below it must still be emitted, otherwise the first content element
+    // sits flush against the header (text-first settings sub-screens).
+    Spacer(Modifier.height(bottomPadding))
   }
 }
 

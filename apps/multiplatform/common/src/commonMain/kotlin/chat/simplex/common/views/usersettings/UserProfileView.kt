@@ -70,8 +70,10 @@ fun UserProfileView(
           if (updated != null) {
             val (newProfile, _) = updated
             chatModel.updateCurrentUser(user.remoteHostId, newProfile)
+            // FB-6: stay on the profile page after a successful save (local state already
+            // reflects the saved values, so the save button disables and back navigation
+            // won't prompt about unsaved changes).
             profile = newProfile
-            close()
           }
         }
       }
