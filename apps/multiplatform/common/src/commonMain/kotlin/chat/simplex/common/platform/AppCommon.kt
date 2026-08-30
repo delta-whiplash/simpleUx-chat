@@ -42,7 +42,6 @@ class FifoQueue<E>(private var capacity: Int) : LinkedList<E>() {
   }
 }
 
-// LALAL VERSION CODE
 fun runMigrations() {
   val lastMigration = ChatController.appPrefs.lastMigratedVersionCode
   if (lastMigration.get() < BuildConfigCommon.ANDROID_VERSION_CODE) {

@@ -29,6 +29,7 @@ fun main() {
     //System.setProperty("skiko.renderApi", "SOFTWARE")
     initHaskell()
     runMigrations()
+    runSimpleUxMigrations()
     setupUpdateChecker()
     initApp()
     tmpDir.deleteRecursively()

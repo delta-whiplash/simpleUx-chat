@@ -72,6 +72,7 @@ class SimplexApp: Application(), LifecycleEventObserver {
     initMultiplatform()
     reconfigureBroadcastReceivers()
     runMigrations()
+    runSimpleUxMigrations()
     tmpDir.deleteRecursively()
     tmpDir.mkdir()
     deleteOldChatArchive()
