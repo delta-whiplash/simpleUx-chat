@@ -3308,6 +3308,6 @@
   <string name="updater_download">Download update</string>
   <string name="updater_downloading">Downloading… %1$s</string>
   <string name="updater_install">Install update</string>
-  <string name="updater_install_permission_hint">To install updates, allow installing unknown apps for SimpleX Chat in system settings, then tap Install.</string>
+  <string name="updater_install_permission_hint">To install updates, allow installing unknown apps for SimpleUX in system settings, then tap Install.</string>
   <string name="updater_failed">Update failed. Check your connection and try again.</string>
 </resources>

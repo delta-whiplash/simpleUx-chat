@@ -111,6 +111,28 @@ class AppUpdaterTest {
     )
   }
 
+  @Test
+  fun unstampedCurrentVersionCanBeUpdated() {
+    // Local builds and pre-#72 installs have no "-ux." counter — the upstream base still
+    // decides, with the fork counter treated as 0.
+    assertEquals(
+      AppUpdateVersionComparison.NEWER,
+      compareAppUpdateVersions("7.0.1", "7.0.366-ux.5")
+    )
+    assertEquals(
+      AppUpdateVersionComparison.NEWER,
+      compareAppUpdateVersions("7.0.366", "7.0.366-ux.1")
+    )
+  }
+
+  @Test
+  fun newerUnstampedCurrentIsNotProposedAnUpdate() {
+    assertEquals(
+      AppUpdateVersionComparison.SAME_OR_OLDER,
+      compareAppUpdateVersions("9.0.0", "7.0.366-ux.5")
+    )
+  }
+
   // --- releases JSON selection ---
 
   private val releasesFixture = """

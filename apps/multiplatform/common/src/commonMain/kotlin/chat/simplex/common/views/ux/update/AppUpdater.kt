@@ -65,12 +65,22 @@ internal fun parseAppUpdateVersion(raw: String): AppUpdateVersion? {
 /**
  * Language-neutral version comparison for the updater: NEWER only when [candidate] is a
  * parseable fork version strictly greater than [current]; NOT_A_VERSION means "never
- * propose an update from this tag".
+ * propose an update from this tag". A [current] version without the "-ux." counter
+ * (local builds and pre-#72 installs) still has a meaningful upstream base — its fork
+ * counter is treated as 0 so it can be updated.
  */
 fun compareAppUpdateVersions(current: String, candidate: String): AppUpdateVersionComparison {
-  val currentVersion = parseAppUpdateVersion(current) ?: return AppUpdateVersionComparison.NOT_A_VERSION
   val candidateVersion = parseAppUpdateVersion(candidate) ?: return AppUpdateVersionComparison.NOT_A_VERSION
+  val currentVersion = parseAppUpdateVersion(current)
+    ?: parseVersionBase(current)?.let { AppUpdateVersion(it, 0) }
+    ?: return AppUpdateVersionComparison.NOT_A_VERSION
   return if (candidateVersion > currentVersion) AppUpdateVersionComparison.NEWER else AppUpdateVersionComparison.SAME_OR_OLDER
+}
+
+private fun parseVersionBase(raw: String): List<Int>? {
+  val parts = raw.trim().removePrefix("v").removePrefix("V").split(".")
+  if (parts.isEmpty() || parts.any { it.isEmpty() || it.any { c -> !c.isDigit() } }) return null
+  return parts.map { it.toInt() }
 }
 
 data class AppUpdateCandidate(
