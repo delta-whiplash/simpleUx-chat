@@ -31,6 +31,7 @@ import chat.simplex.common.views.helpers.DatabaseUtils.ksSelfDestructPassword
 import chat.simplex.common.views.isValidDisplayName
 import chat.simplex.common.views.localauth.SetAppPasscodeView
 import chat.simplex.common.views.onboarding.ReadableText
+import chat.simplex.common.views.ux.sanitizeLinksEffective
 import chat.simplex.common.model.ChatModel
 import chat.simplex.common.platform.*
 import kotlinx.coroutines.*
@@ -69,10 +70,11 @@ fun PrivacySettingsView(
         chatModel.controller.appPrefs.privacyLinkPreviews,
         onChange = { _ -> chatModel.controller.appPrefs.privacyLinkPreviewsShowAlert.set(false) } // to avoid showing alert to current users, show alert in v6.5
       )
-      SettingsPreferenceItem(
-        painterResource(MR.images.ic_link),
-        stringResource(MR.strings.sanitize_links_toggle),
-        chatModel.controller.appPrefs.privacySanitizeLinks
+      PreferenceToggleWithIcon(
+        icon = painterResource(MR.images.ic_link),
+        text = stringResource(MR.strings.sanitize_links_toggle),
+        checked = sanitizeLinksEffective(chatModel.controller.appPrefs.privacySanitizeLinks.state.value),
+        onChange = { chatModel.controller.appPrefs.privacySanitizeLinks.set(it) }
       )
     }
     SectionDividerSpaced()
