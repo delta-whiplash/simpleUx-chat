@@ -93,7 +93,6 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
   ) {
   when (chat.chatInfo) {
     is ChatInfo.Direct -> {
-      val defaultClickAction = { if (chatModel.chatId.value != chat.id) scope.launch { directChatAction(chat.remoteHostId, chat.chatInfo.contact, chatModel) } }
       ChatListNavLinkLayout(
         chatLinkPreview = {
           tryOrShowError("${chat.id}ChatListNavLink", error = { ErrorChatListItem() }) {
@@ -113,7 +112,6 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
       )
     }
     is ChatInfo.Group -> {
-      val defaultClickAction = { if (!inProgress.value && chatModel.chatId.value != chat.id) scope.launch { groupChatAction(chat.remoteHostId, chat.chatInfo.groupInfo, chatModel, inProgress) } }
       ChatListNavLinkLayout(
         chatLinkPreview = {
           tryOrShowError("${chat.id}ChatListNavLink", error = { ErrorChatListItem() }) {
@@ -133,7 +131,6 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
       )
     }
     is ChatInfo.Local -> {
-      val defaultClickAction = { if (chatModel.chatId.value != chat.id) scope.launch { noteFolderChatAction(chat.remoteHostId, chat.chatInfo.noteFolder) } }
       ChatListNavLinkLayout(
         chatLinkPreview = {
           tryOrShowError("${chat.id}ChatListNavLink", error = { ErrorChatListItem() }) {
