@@ -38,6 +38,7 @@ import chat.simplex.common.views.chat.group.relayConnStatus
 import chat.simplex.common.views.chat.item.*
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.ux.components.*
+import chat.simplex.common.views.ux.sanitizeLinksEffective
 import chat.simplex.common.views.newchat.RelayProgressIndicator
 import chat.simplex.common.views.newchat.RelayStatusIndicator
 import chat.simplex.common.views.newchat.relayDisplayName
@@ -1041,7 +1042,7 @@ fun ComposeView(
 
   fun onMessageChange(s: ComposeMessage) {
     var parsedMessage = parseToMarkdown(s.text)
-    if (chatModel.controller.appPrefs.privacySanitizeLinks.get() && parsedMessage != null) {
+    if (sanitizeLinksEffective(chatModel.controller.appPrefs.privacySanitizeLinks.get()) && parsedMessage != null) {
       val (updatedMsg, updatedParsedMsg, sanitizedPos) = sanitizeMessage(parsedMessage)
       if (sanitizedPos == null) {
         composeState.value = composeState.value.copy(message = s, parsedMessage = parsedMessage)

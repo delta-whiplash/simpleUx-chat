@@ -40,7 +40,10 @@ compose {
       }
       mainClass = "chat.simplex.desktop.MainKt"
       nativeDistributions {
-        copyright = "(c) 2020-2026 SimpleX Chat"
+        // SimpleUX (frontend-only fork of SimpleX Chat): packaging identity must not
+        // collide with the official SimpleX desktop app — distinct product name,
+        // macOS bundle id and Windows upgrade code (coexistence invariant, AGENTS.md §1).
+        copyright = "(c) 2026 SimpleUX contributors, based on SimpleX Chat (c) 2020-2026 SimpleX Chat"
         // For debugging via VisualVM
         if (debugJava) {
           modules("jdk.zipfs", "jdk.unsupported", "jdk.management.agent")
@@ -68,23 +71,23 @@ compose {
           appCategory = "Messenger"
         }
         windows {
-          packageName = "SimpleX"
+          packageName = "SimpleUX"
           iconFile.set(project.file("src/jvmMain/resources/distribute/simplex.ico"))
           console = false
           perUserInstall = false
           dirChooser = true
           shortcut = true
-          upgradeUuid = "CC9EFBC8-AFFF-40D8-BB69-FCD7CE99EFB9"
+          upgradeUuid = "7753CF9A-3E6E-46DF-AAC4-AA316F1C739C"
         }
         macOS {
-          packageName = "SimpleX"
+          packageName = "SimpleUX"
           iconFile.set(project.file("src/jvmMain/resources/distribute/simplex.icns"))
           appCategory = "public.app-category.social-networking"
-          bundleID = "chat.simplex.app"
+          bundleID = "chat.simplex.ux"
           infoPlist {
             extraKeysRawXml = """
               <key>NSMicrophoneUsageDescription</key>
-              <string>SimpleX needs microphone access to record voice messages</string>
+              <string>SimpleUX needs microphone access to record voice messages</string>
             """
           }
           val identity = rootProject.extra["desktop.mac.signing.identity"] as String?
@@ -106,9 +109,9 @@ compose {
           }
         }
         if (os.contains("mac") || os.contains("win")) {
-          packageName = "SimpleX"
+          packageName = "SimpleUX"
         } else {
-          packageName = "simplex"
+          packageName = "simpleux"
         }
         // Packaging requires to have version like MAJOR.MINOR.PATCH
         var adjustedVersion = rootProject.extra["desktop.version_name"] as String

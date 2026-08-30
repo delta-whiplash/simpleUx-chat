@@ -16,7 +16,7 @@
 
 ![SimpleUX Interaction Demo](./docs/images/simpleux_demo.gif)
 
-*Fluid 3-tab navigation, instant contact routing, swipe-to-reply with gold accent context bar, and real-time post-quantum indicators.*
+*Fluid 3-tab navigation, instant contact routing, and real-time post-quantum indicators.*
 
 </div>
 
@@ -31,7 +31,7 @@ However, great privacy shouldn't come with visual friction or complex ergonomics
 **SimpleUX Chat** is an interface-first fork designed around a single guiding principle:
 > **"Uncompromising privacy meets world-class user experience."**
 
-We completely modernize and polish the frontend experience — fluid spring animations, tactile micro-interactions, swipe ergonomics, and refined typography — while keeping the authoritative Haskell core engine (`libsimplex` / `libapp`) and JNI/FFI cryptographic bindings **100% untouched and fully interoperable**.
+We completely modernize and polish the frontend experience — fluid spring animations, tactile micro-interactions, and refined typography — while keeping the authoritative Haskell core engine (`libsimplex` / `libapp`) and JNI/FFI cryptographic bindings **100% untouched and fully interoperable**.
 
 ---
 
@@ -39,10 +39,10 @@ We completely modernize and polish the frontend experience — fluid spring anim
 
 <div align="center">
 
-| 🪐 **Chats & Filter Pills** | 💬 **Conversation & Swipe-to-Reply** |
+| 🪐 **Chats & Filter Pills** | 💬 **Conversation & Security Badge** |
 |:---:|:---:|
 | <img src="./docs/images/screenshot_chatlist.png" width="380" alt="SimpleUX Chat List" /> | <img src="./docs/images/screenshot_chatview.png" width="380" alt="SimpleUX Chat View" /> |
-| *Filter pills (All, Unread, Direct, Groups, Favorites), circular monogram discs with specular rims, and floating island bar.* | *Real Post-Quantum SecurityBadge, full-row swipe-to-reply with champagne gold accent bar, and attachment sheet.* |
+| *Filter pills (All, Unread, Direct, Groups, Favorites), circular monogram discs with specular rims, and floating island bar.* | *Real Post-Quantum SecurityBadge, composer with draft persistence, and attachment sheet.* |
 
 | 🛡️ **Contact Profile & Verification** | ⚡ **Reactions & Quick Actions** |
 |:---:|:---:|
@@ -73,7 +73,7 @@ SimpleUX introduces an elevated visual aesthetic crafted for discretion, clarity
 
 | Pillar | Description |
 |---|---|
-| 🎨 **Elevated UI/UX** | Refined modern design system, fluid micro-interactions, swipe-to-reply, emoji reaction picker, and ergonomic message bubbles. |
+| 🎨 **Elevated UI/UX** | Refined modern design system, fluid micro-interactions, emoji reaction picker, and ergonomic message bubbles. |
 | 🤝 **100% SimpleX Interoperability** | Fully interoperable with official SimpleX clients (Android, iOS, Desktop, CLI). Communicate seamlessly with zero wire-format divergence! |
 | 📱 **Side-by-Side Coexistence** | Engineered with unique application IDs (`chat.simplex.ux`) and isolated sandboxes to install alongside the official app on the same phone. |
 | 🔒 **Untouched Zero-Metadata Core** | Preserves all cryptographic guarantees: double-ratchet E2EE, Kyber/ML-KEM PQ key exchanges, unidirectional SMP queues, XFTP file transfers, and SQLite DB encryption. |
@@ -85,7 +85,7 @@ SimpleUX introduces an elevated visual aesthetic crafted for discretion, clarity
 
 SimpleUX is built from the ground up to **coexist** peacefully with the official SimpleX app on any device:
 
-- **Unique Application ID:** Configured as `chat.simplex.ux` (or `chat.simplex.ux.debug`).
+- **Unique Application ID:** Configured as `chat.simplex.ux`; an optional debug id can be enabled via the `application_id.suffix` Gradle property (empty by default).
 - **Isolated Sandboxes:** Separate local SQLite databases, keychain groups, and media cache folders.
 - **Dedicated Content Providers:** Uses `chat.simplex.ux.provider` to prevent any authority collisions.
 - **Independent Sync Services:** Background message notifications run autonomously without interfering with standard SimpleX apps.
@@ -101,7 +101,7 @@ SimpleUX preserves the multi-tier architecture of SimpleX, isolating UI/UX advan
 │                     SimpleUX UI Layer (Compose & SwiftUI)               │
 │  • Luxury Mineral Tokens (Color, Shape, Typography, Specular Rims)      │
 │  • Redesigned Views (ChatList, ChatView, ChatInfo, Settings, Contacts)  │
-│  • Fluid Gestures (Swipe-to-reply, Reaction picker, Draft persistence)  │
+│  • Message Actions (Reaction picker, Draft persistence)                 │
 └─────────────────────────────────────────────────────────────────────────┘
                                    │  ▲
              User Interactions     │  │  StateFlows / Recomposition
