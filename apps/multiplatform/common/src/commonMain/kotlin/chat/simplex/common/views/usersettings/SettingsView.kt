@@ -55,7 +55,8 @@ fun SettingsView(chatModel: ChatModel, setPerformLA: (Boolean) -> Unit, close: (
       navigationButton = if (ModalManager.start.hasModalsOpen()) { { NavigationButtonBack(onButtonClicked = close) } } else null,
       fixedTitleText = generalGetString(MR.strings.your_settings),
       buttons = {},
-      onTop = true
+      onTop = true,
+      solidBackground = true
     )
     SettingsLayout(
       stopped,

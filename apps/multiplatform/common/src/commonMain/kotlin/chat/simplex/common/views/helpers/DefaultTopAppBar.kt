@@ -36,6 +36,7 @@ fun DefaultAppBar(
   onSearchValueChanged: (String) -> Unit = {},
   searchTrailingContent: @Composable (() -> Unit)? = null,
   buttons: @Composable RowScope.() -> Unit = {},
+  solidBackground: Boolean = false,
 ) {
   val modifier = if (showSearch) {
     if (!onTop) Modifier.imePadding() else Modifier
@@ -67,7 +68,9 @@ fun DefaultAppBar(
     modifier
       .clip(topBarShape)
       .background(
-        if (title != null || fixedTitleText != null || connection == null || !onTop) {
+        if (solidBackground) {
+          if (isDark) Color(0xFF141B28) else Color(0xFFF8FAFC)
+        } else if (title != null || fixedTitleText != null || connection == null || !onTop) {
           if (isDark) Color(0xF2141B28) else Color(0xF2F8FAFC)
         } else {
           themeBackgroundMix.copy(topTitleAlpha(false, connection))
@@ -81,10 +84,12 @@ fun DefaultAppBar(
   ) {
     val density = LocalDensity.current
     val blurRadius = remember { appPrefs.appearanceBarsBlurRadius.state }
-    Box(Modifier
-      .matchParentSize()
-      .blurredBackgroundModifier(keyboardInset, handler, blurRadius, prefAlpha, handler?.keyboardCoversBar == true, onTop, density)
-    )
+    if (!solidBackground) {
+      Box(Modifier
+        .matchParentSize()
+        .blurredBackgroundModifier(keyboardInset, handler, blurRadius, prefAlpha, handler?.keyboardCoversBar == true, onTop, density)
+      )
+    }
     Box(
       Modifier.fillMaxWidth()
     ) {

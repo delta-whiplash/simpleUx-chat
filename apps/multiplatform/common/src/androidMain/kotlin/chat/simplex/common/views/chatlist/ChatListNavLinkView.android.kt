@@ -38,11 +38,6 @@ actual fun ChatListNavLinkLayout(
       .padding(horizontal = 8.dp, vertical = 4.dp)
       .clip(RoundedCornerShape(16.dp))
       .background(rowBg)
-      .border(
-        width = 1.dp,
-        color = if (isDark) Color(0x1FFFFFFF) else Color(0x0D000000),
-        shape = RoundedCornerShape(16.dp)
-      )
       .then(
         if (!disabled) {
           Modifier

@@ -108,19 +108,38 @@ fun SimpleXInfoLayout(
   val topBar = onboardingStage == null && !appPrefs.oneHandUI.state.value
   val modifier = Modifier.fillMaxSize().systemBarsPadding().padding(horizontal = DEFAULT_ONBOARDING_HORIZONTAL_PADDING)
   Column(if (topBar) modifier.padding(top = AppBarHeight * fontSizeSqrtMultiplier) else modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-    Box(Modifier.padding(top = DEFAULT_PADDING * 2).widthIn(max = if (appPlatform.isAndroid) 185.dp else 160.dp), contentAlignment = Alignment.Center) {
-      SimpleXLogo()
+    Box(Modifier.padding(top = DEFAULT_PADDING * 2).widthIn(max = if (appPlatform.isAndroid) 220.dp else 220.dp), contentAlignment = Alignment.Center) {
+      SimpleUxWordmark()
     }
     OnboardingShrinkingLayout(
       modifier = Modifier.fillMaxSize(),
       image = {
-        Column(Modifier.padding(vertical = DEFAULT_PADDING_HALF), horizontalAlignment = Alignment.CenterHorizontally) {
-          OnboardingImage(
-            MR.images.intro, MR.images.intro_light, MR.images.ic_forum,
-            modifier = if (appPlatform.isAndroid) Modifier.fillMaxWidth() else Modifier.heightIn(max = 280.dp)
-          )
-      }
-    },
+        Column(Modifier.padding(vertical = DEFAULT_PADDING_HALF, horizontal = 8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+          val isDarkTheme = isInDarkTheme()
+          val cardBrush = if (isDarkTheme) {
+            Brush.verticalGradient(listOf(Color(0xFF1E2533), Color(0xFF131720)))
+          } else {
+            Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+          }
+          val specularRimBrush = if (isDarkTheme) {
+            Brush.verticalGradient(listOf(Color(0x38FFFFFF), Color(0x0EFFFFFF)))
+          } else {
+            Brush.verticalGradient(listOf(Color(0x250F172A), Color(0x0C0F172A)))
+          }
+          Box(
+            Modifier
+              .clip(RoundedCornerShape(18.dp))
+              .background(cardBrush)
+              .border(1.dp, specularRimBrush, RoundedCornerShape(18.dp))
+              .padding(4.dp)
+          ) {
+            OnboardingImage(
+              MR.images.intro, MR.images.intro_light, MR.images.ic_forum,
+              modifier = if (appPlatform.isAndroid) Modifier.fillMaxWidth().clip(RoundedCornerShape(14.dp)) else Modifier.heightIn(max = 280.dp).clip(RoundedCornerShape(14.dp))
+            )
+          }
+        }
+      },
     content = {
       Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
@@ -184,6 +203,29 @@ fun SimpleXLogo() {
 }
 
 @Composable
+fun SimpleUxWordmark() {
+  val gold = if (isInDarkTheme()) Color(0xFFE2B755) else Color(0xFFD97706)
+  Row(verticalAlignment = Alignment.Bottom) {
+    Text(
+      "Simple",
+      color = gold,
+      fontFamily = PlusJakartaSans,
+      fontSize = 28.sp,
+      fontWeight = FontWeight.Bold,
+      letterSpacing = 0.5.sp
+    )
+    Text(
+      "UX",
+      color = MaterialTheme.colors.onBackground,
+      fontFamily = PlusJakartaSans,
+      fontSize = 28.sp,
+      fontWeight = FontWeight.Black,
+      letterSpacing = 0.5.sp
+    )
+  }
+}
+
+@Composable
 expect fun OnboardingActionButton(user: User?, onboardingStage: SharedPreference<OnboardingStage>, onclick: (() -> Unit)? = null)
 
 @Composable
@@ -201,9 +243,9 @@ fun OnboardingActionButton(
 
   val bgBrush = if (enabled) {
     if (isDark) {
-      Brush.verticalGradient(listOf(Color(0xFF0284C7), Color(0xFF0369A1)))
+      Brush.verticalGradient(listOf(Color(0xFFE2B755), Color(0xFFB88A2E)))
     } else {
-      Brush.verticalGradient(listOf(Color(0xFF0284C7), Color(0xFF0369A1)))
+      Brush.verticalGradient(listOf(Color(0xFFF59E0B), Color(0xFFD97706)))
     }
   } else {
     if (isDark) {
