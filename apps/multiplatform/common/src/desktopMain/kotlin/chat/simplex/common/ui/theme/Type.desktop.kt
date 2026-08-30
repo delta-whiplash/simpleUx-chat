@@ -5,7 +5,7 @@ import androidx.compose.ui.text.platform.Font
 import chat.simplex.common.platform.desktopPlatform
 import chat.simplex.res.MR
 
-actual val Inter: FontFamily = FontFamily(
+actual val PlusJakartaSans: FontFamily = FontFamily(
   Font(MR.fonts.PlusJakartaSans.regular.file),
   Font(MR.fonts.PlusJakartaSans.italic.file, style = FontStyle.Italic),
   Font(MR.fonts.PlusJakartaSans.bold.file, FontWeight.Bold),

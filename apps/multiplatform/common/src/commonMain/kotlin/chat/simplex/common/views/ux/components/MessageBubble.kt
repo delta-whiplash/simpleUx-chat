@@ -163,7 +163,7 @@ fun MessageBubble(
                             if (!quotedSender.isNullOrBlank()) {
                                 Text(
                                     text = quotedSender,
-                                    fontSize = 11.sp,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = if (isSentByMe) Color(0xFFDBEAFE) else (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)),
                                     maxLines = 1,
@@ -172,7 +172,7 @@ fun MessageBubble(
                             }
                             Text(
                                 text = quotedText,
-                                fontSize = 11.sp,
+                                fontSize = 12.sp,
                                 color = if (isSentByMe) Color(0xCCFFFFFF) else (if (isDark) Color(0xCCF8FAFC) else Color(0xCC0F172A)),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -194,7 +194,7 @@ fun MessageBubble(
                 ) {
                     Text(
                         text = timestampFormatted,
-                        fontSize = 10.sp,
+                        fontSize = 11.sp,
                         color = if (isSentByMe) Color(0xAAFFFFFF) else (if (isDark) Color(0xAA94A3B8) else Color(0xAA64748B))
                     )
                     if (isSentByMe && deliveryStatus != null) {

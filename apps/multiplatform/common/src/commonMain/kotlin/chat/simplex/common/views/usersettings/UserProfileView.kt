@@ -317,7 +317,7 @@ fun UserProfileLayout(
                 Text(
                   text = stringResource(MR.strings.profile_detailed_description),
                   style = TextStyle(
-                    fontFamily = Inter,
+                    fontFamily = PlusJakartaSans,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
@@ -327,7 +327,7 @@ fun UserProfileLayout(
                 Text(
                   text = if (description.value.isBlank()) stringResource(MR.strings.profile_detailed_description_hint) else description.value,
                   style = TextStyle(
-                    fontFamily = Inter,
+                    fontFamily = PlusJakartaSans,
                     fontSize = 14.sp,
                     color = if (description.value.isBlank()) (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)) else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
                   ),
@@ -360,7 +360,7 @@ fun UserProfileLayout(
               Text(
                 text = if (enabled) stringResource(MR.strings.profile_save_changes) else stringResource(MR.strings.profile_no_changes),
                 style = TextStyle(
-                  fontFamily = Inter,
+                  fontFamily = PlusJakartaSans,
                   fontSize = 15.sp,
                   fontWeight = FontWeight.Bold
                 )
@@ -373,7 +373,7 @@ fun UserProfileLayout(
             Text(
               text = stringResource(MR.strings.profile_connections_links),
               style = TextStyle(
-                fontFamily = Inter,
+                fontFamily = PlusJakartaSans,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)
@@ -414,7 +414,7 @@ fun UserProfileLayout(
                     text = stringResource(MR.strings.profile_create_one_time_link),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
-                      fontFamily = Inter,
+                      fontFamily = PlusJakartaSans,
                       fontSize = 12.sp,
                       fontWeight = FontWeight.SemiBold,
                       color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
@@ -452,7 +452,7 @@ fun UserProfileLayout(
                     text = stringResource(MR.strings.profile_scan_paste_link),
                     textAlign = TextAlign.Center,
                     style = TextStyle(
-                      fontFamily = Inter,
+                      fontFamily = PlusJakartaSans,
                       fontSize = 12.sp,
                       fontWeight = FontWeight.SemiBold,
                       color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
@@ -490,7 +490,7 @@ fun ProfileTextBox(
     Text(
       text = label,
       style = TextStyle(
-        fontFamily = Inter,
+        fontFamily = PlusJakartaSans,
         fontSize = 13.sp,
         fontWeight = FontWeight.SemiBold,
         color = if (focused) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
@@ -524,7 +524,7 @@ fun ProfileTextBox(
             .onFocusChanged { focused = it.isFocused }
             .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier),
           textStyle = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
             color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
@@ -537,7 +537,7 @@ fun ProfileTextBox(
               Text(
                 text = placeholder,
                 style = TextStyle(
-                  fontFamily = Inter,
+                  fontFamily = PlusJakartaSans,
                   fontSize = 15.sp,
                   color = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
                 )

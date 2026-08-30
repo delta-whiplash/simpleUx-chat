@@ -59,7 +59,7 @@ fun ContactConnectionView(contactConnection: PendingContactConnection) {
           maxLines = 2,
           overflow = TextOverflow.Ellipsis,
           style = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontSize = 14.sp,
             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
             lineHeight = 19.sp

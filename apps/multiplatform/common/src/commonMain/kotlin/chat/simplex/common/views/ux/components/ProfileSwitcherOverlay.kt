@@ -148,7 +148,7 @@ fun ProfileSwitcherOverlay(
                     Text(
                       text = stringResource(MR.strings.profile_switcher_title),
                       style = TextStyle(
-                        fontFamily = Inter,
+                        fontFamily = PlusJakartaSans,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
@@ -157,7 +157,7 @@ fun ProfileSwitcherOverlay(
                     Text(
                       text = stringResource(MR.strings.profile_switcher_subtitle),
                       style = TextStyle(
-                        fontFamily = Inter,
+                        fontFamily = PlusJakartaSans,
                         fontSize = 12.sp,
                         color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                       )
@@ -278,7 +278,7 @@ fun ProfileSwitcherOverlay(
                             Text(
                               text = (user.displayName.take(1).ifEmpty { "?" }).uppercase(),
                               style = TextStyle(
-                                fontFamily = Inter,
+                                fontFamily = PlusJakartaSans,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isActive) (if (isDark) Color(0xFF0F172A) else Color.White) else Color.White
@@ -297,7 +297,7 @@ fun ProfileSwitcherOverlay(
                           Text(
                             text = user.displayName.ifEmpty { stringResource(MR.strings.profile_no_name) },
                             style = TextStyle(
-                              fontFamily = Inter,
+                              fontFamily = PlusJakartaSans,
                               fontSize = 14.sp,
                               fontWeight = if (isActive) FontWeight.Bold else FontWeight.SemiBold,
                               color = if (isActive) goldAccent else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
@@ -316,7 +316,7 @@ fun ProfileSwitcherOverlay(
                         Text(
                           text = subtitle,
                           style = TextStyle(
-                            fontFamily = Inter,
+                            fontFamily = PlusJakartaSans,
                             fontSize = 12.sp,
                             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
                           ),
@@ -349,8 +349,8 @@ fun ProfileSwitcherOverlay(
                           Text(
                             text = stringResource(MR.strings.profile_switcher_active),
                             style = TextStyle(
-                              fontFamily = Inter,
-                              fontSize = 11.sp,
+                              fontFamily = PlusJakartaSans,
+                              fontSize = 12.sp,
                               fontWeight = FontWeight.Bold,
                               color = goldAccent
                             )
@@ -410,7 +410,7 @@ fun ProfileSwitcherOverlay(
                   Text(
                     text = stringResource(MR.strings.create_profile),
                     style = TextStyle(
-                      fontFamily = Inter,
+                      fontFamily = PlusJakartaSans,
                       fontSize = 13.sp,
                       fontWeight = FontWeight.Bold,
                       color = if (isDark) Color(0xFF0F172A) else Color.White
@@ -459,7 +459,7 @@ fun ProfileSwitcherOverlay(
                   Text(
                     text = stringResource(MR.strings.profile_switcher_manage),
                     style = TextStyle(
-                      fontFamily = Inter,
+                      fontFamily = PlusJakartaSans,
                       fontSize = 13.sp,
                       fontWeight = FontWeight.SemiBold,
                       color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)

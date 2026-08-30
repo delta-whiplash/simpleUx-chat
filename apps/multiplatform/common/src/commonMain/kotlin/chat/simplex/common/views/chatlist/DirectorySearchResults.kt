@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.platform.SimpleUXHapticType
 import chat.simplex.common.platform.performHapticFeedback
-import chat.simplex.common.ui.theme.Inter
+import chat.simplex.common.ui.theme.PlusJakartaSans
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -91,7 +91,7 @@ private fun DirectorySectionHeader() {
     Text(
       text = stringResource(MR.strings.directory_section_header),
       style = TextStyle(
-        fontFamily = Inter,
+        fontFamily = PlusJakartaSans,
         fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
         color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
@@ -165,7 +165,7 @@ private fun DirectoryGroupRow(
           Text(
             text = group.name,
             style = TextStyle(
-              fontFamily = Inter,
+              fontFamily = PlusJakartaSans,
               fontSize = 14.sp,
               fontWeight = FontWeight.SemiBold,
               color = if (isDark) Color.White else Color(0xFF0F172A)
@@ -182,7 +182,7 @@ private fun DirectoryGroupRow(
             Text(
               text = if (group.isDirectoryBot) botCategory else group.category,
               style = TextStyle(
-                fontFamily = Inter,
+                fontFamily = PlusJakartaSans,
                 fontSize = 9.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
@@ -193,7 +193,7 @@ private fun DirectoryGroupRow(
         Text(
           text = if (group.isDirectoryBot) botDescription else group.description,
           style = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontSize = 11.sp,
             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
           ),
@@ -233,7 +233,7 @@ private fun DirectoryGroupRow(
         Text(
           text = if (group.link.contains("/a#")) stringResource(MR.strings.open_verb) else stringResource(MR.strings.join_group_button),
           style = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
           )

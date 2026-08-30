@@ -108,7 +108,7 @@ fun ChatPreviewView(
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         style = TextStyle(
-          fontFamily = Inter,
+          fontFamily = PlusJakartaSans,
           fontSize = 16.sp,
           fontWeight = FontWeight.SemiBold,
           color = titleColor
@@ -285,7 +285,7 @@ fun ChatPreviewView(
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           style = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontStyle = FontStyle.Italic,
             fontSize = 14.sp,
             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
@@ -338,7 +338,7 @@ fun ChatPreviewView(
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
         style = TextStyle(
-          fontFamily = Inter,
+          fontFamily = PlusJakartaSans,
           fontSize = 14.sp,
           color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF475569),
           lineHeight = 19.sp

@@ -3,7 +3,7 @@ package chat.simplex.common.ui.theme
 import androidx.compose.ui.text.font.*
 import chat.simplex.res.MR
 
-actual val Inter: FontFamily = FontFamily(
+actual val PlusJakartaSans: FontFamily = FontFamily(
   Font(MR.fonts.PlusJakartaSans.regular.fontResourceId),
   Font(MR.fonts.PlusJakartaSans.italic.fontResourceId, style = FontStyle.Italic),
   Font(MR.fonts.PlusJakartaSans.bold.fontResourceId, FontWeight.Bold),

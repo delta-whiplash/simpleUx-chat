@@ -102,7 +102,7 @@ fun DefaultAppBar(
               Text(
                 titleText.value,
                 style = TextStyle(
-                  fontFamily = Inter,
+                  fontFamily = PlusJakartaSans,
                   fontSize = 20.sp,
                   fontWeight = FontWeight.Bold,
                   color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),

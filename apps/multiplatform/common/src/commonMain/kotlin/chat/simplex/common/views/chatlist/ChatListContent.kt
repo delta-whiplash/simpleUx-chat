@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.*
 import chat.simplex.common.platform.*
-import chat.simplex.common.ui.theme.Inter
+import chat.simplex.common.ui.theme.PlusJakartaSans
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.planAndConnect
@@ -217,7 +217,7 @@ internal fun BoxScope.ChatListContent(
                 Text(
                   text = stringResource(MR.strings.chat_list_no_local_results, searchText.value.text),
                   style = TextStyle(
-                    fontFamily = Inter,
+                    fontFamily = PlusJakartaSans,
                     fontSize = 13.sp,
                     color = MaterialTheme.colors.secondary
                   )
@@ -283,7 +283,7 @@ internal fun BoxScope.ChatListContent(
                   Text(
                     text = stringResource(MR.strings.chat_list_empty_title),
                     style = TextStyle(
-                      fontFamily = Inter,
+                      fontFamily = PlusJakartaSans,
                       fontSize = 15.sp,
                       fontWeight = FontWeight.SemiBold,
                       color = if (isInDarkTheme()) Color(0xFFF1F5F9) else Color(0xFF0F172A)
@@ -293,7 +293,7 @@ internal fun BoxScope.ChatListContent(
                   Text(
                     text = stringResource(MR.strings.chat_list_empty_subtitle),
                     style = TextStyle(
-                      fontFamily = Inter,
+                      fontFamily = PlusJakartaSans,
                       fontSize = 13.sp,
                       color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF64748B)
                     ),

@@ -12,7 +12,7 @@ import java.io.File
 
 // https://github.com/rsms/inter
 // I place it here because IDEA shows an error (but still works anyway) when this declaration inside Type.kt
-expect val Inter: FontFamily
+expect val PlusJakartaSans: FontFamily
 expect val EmojiFont: FontFamily
 
 object ThemeManager {

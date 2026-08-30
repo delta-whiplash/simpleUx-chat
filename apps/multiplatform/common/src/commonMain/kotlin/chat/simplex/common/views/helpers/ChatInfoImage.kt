@@ -213,7 +213,7 @@ fun ProfileImage(
 }
 
 // badge height in em: calibrated visually so the badge top matches capital letters and digits
-// (Inter's declared cap height is 2048/2816 = 0.727em, but the rendered text is taller than the metrics predict)
+// (PlusJakartaSans's declared cap height is 2048/2816 = 0.727em, but the rendered text is taller than the metrics predict)
 private const val fontCapHeightRatio = 0.95f
 
 // fraction of the badge height pushed below the text baseline (like the undershoot of round letters)

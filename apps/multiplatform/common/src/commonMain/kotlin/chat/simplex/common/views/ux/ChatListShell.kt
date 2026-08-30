@@ -171,7 +171,7 @@ fun TelegramTopHeader(
           text = "SimpleUX",
           color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
           style = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 0.5.sp

@@ -157,7 +157,7 @@ fun FilterPillsRow(
                             Text(
                                 text = if (badgeCount > 99) "99+" else badgeCount.toString(),
                                 color = if (isDark) Color(0xFF0F172A) else Color.White,
-                                fontSize = 10.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                         }

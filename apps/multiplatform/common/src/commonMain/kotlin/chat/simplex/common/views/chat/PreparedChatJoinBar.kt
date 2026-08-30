@@ -99,7 +99,7 @@ fun PreparedChatJoinBar(
         Text(
           text = generalGetString(MR.strings.profile_switcher_title),
           style = TextStyle(
-            fontFamily = Inter,
+            fontFamily = PlusJakartaSans,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
@@ -125,7 +125,7 @@ fun PreparedChatJoinBar(
             Text(
               text = user.chatViewName,
               style = TextStyle(
-                fontFamily = Inter,
+                fontFamily = PlusJakartaSans,
                 fontSize = 13.sp,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                 color = if (isDark) Color.White else Color(0xFF0F172A)
@@ -162,7 +162,7 @@ fun PreparedChatJoinBar(
           Text(
             text = stringResource(MR.strings.incognito),
             style = TextStyle(
-              fontFamily = Inter,
+              fontFamily = PlusJakartaSans,
               fontSize = 13.sp,
               fontWeight = if (isIncognito) FontWeight.SemiBold else FontWeight.Normal,
               color = if (isDark) Color.White else Color(0xFF0F172A)
@@ -225,7 +225,7 @@ fun PreparedChatJoinBar(
           Text(
             text = stringResource(MR.strings.join_bar_join_as),
             style = TextStyle(
-              fontFamily = Inter,
+              fontFamily = PlusJakartaSans,
               fontSize = 10.sp,
               fontWeight = FontWeight.Medium,
               color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
@@ -236,7 +236,7 @@ fun PreparedChatJoinBar(
             Text(
               text = if (incognitoDefault) stringResource(MR.strings.incognito) else selectedUser.value.chatViewName,
               style = TextStyle(
-                fontFamily = Inter,
+                fontFamily = PlusJakartaSans,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = if (isDark) Color.White else Color(0xFF0F172A)
@@ -294,7 +294,7 @@ fun PreparedChatJoinBar(
             Text(
               text = actionText,
               style = TextStyle(
-                fontFamily = Inter,
+                fontFamily = PlusJakartaSans,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
