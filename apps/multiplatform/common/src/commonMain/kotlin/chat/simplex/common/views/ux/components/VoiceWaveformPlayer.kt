@@ -46,9 +46,12 @@ fun VoiceWaveformPlayer(
     playbackSpeed: Float,
     onPlaybackSpeedChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    waveformData: List<Float> = remember {
-        listOf(0.3f, 0.5f, 0.8f, 0.4f, 0.9f, 0.6f, 0.7f, 0.3f, 0.85f, 0.5f, 0.75f, 0.4f, 0.6f, 0.95f, 0.7f, 0.45f, 0.8f, 0.35f, 0.65f, 0.5f)
-    }
+    // #13: uniform ticks, not a fake amplitude envelope — SimpleX does not
+    // carry per-message waveform data (MCVoice has text+duration only), so
+    // varied heights would be decoration pretending to be signal. The bar is
+    // still a real progress/seek control; real envelopes are tracked in the
+    // follow-up issue.
+    waveformData: List<Float> = remember { List(40) { 0.5f } }
 ) {
     val isDark = isInDarkTheme()
 
