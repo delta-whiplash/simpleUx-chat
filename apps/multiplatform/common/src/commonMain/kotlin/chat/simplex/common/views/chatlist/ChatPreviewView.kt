@@ -83,22 +83,39 @@ fun ChatPreviewView(
     }
   }
 
+  // SimpleUX pin (FB-14): subtle marker on pinned chats, mirroring the starred
+  // marker placement next to the chat name. Muted secondary tint on purpose.
+  @Composable
+  fun pinnedMarker() {
+    if (chatModel.pinnedChatIds.contains(chat.id)) {
+      Icon(
+        painterResource(MR.images.ic_pin),
+        contentDescription = stringResource(MR.strings.pin_chat),
+        modifier = Modifier.size(13.dp),
+        tint = MaterialTheme.colors.secondary
+      )
+    }
+  }
+
   @Composable
   fun chatPreviewTitleText(color: Color = Color.Unspecified) {
     val titleColor = if (color == Color.Unspecified) {
       if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A)
     } else color
-    Text(
-      cInfo.chatViewName,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-      style = TextStyle(
-        fontFamily = Inter,
-        fontSize = 16.sp,
-        fontWeight = FontWeight.SemiBold,
-        color = titleColor
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+      Text(
+        cInfo.chatViewName,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        style = TextStyle(
+          fontFamily = Inter,
+          fontSize = 16.sp,
+          fontWeight = FontWeight.SemiBold,
+          color = titleColor
+        )
       )
-    )
+      pinnedMarker()
+    }
   }
 
   @Composable
@@ -174,6 +191,7 @@ fun ChatPreviewView(
             if (isStarred) {
               Text("⭐", fontSize = 12.sp)
             }
+            pinnedMarker()
           }
         }
       }

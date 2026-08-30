@@ -3310,4 +3310,8 @@
   <string name="updater_install">Install update</string>
   <string name="updater_install_permission_hint">To install updates, allow installing unknown apps for SimpleUX in system settings, then tap Install.</string>
   <string name="updater_failed">Update failed. Check your connection and try again.</string>
+
+  <!-- FB-F chat pinning (FB-14) -->
+  <string name="pin_chat">Pin to top</string>
+  <string name="unpin_chat">Unpin</string>
 </resources>

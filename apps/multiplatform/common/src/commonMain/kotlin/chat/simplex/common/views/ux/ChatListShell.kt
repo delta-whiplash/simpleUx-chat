@@ -527,8 +527,12 @@ fun BoxScope.TelegramBottomIslandBar(
       shape = shape,
       color = if (isDark) Color(0xEE121A26) else Color(0xFAFFFFFF),
       elevation = 12.dp,
+      // FB-1: tabs share the width equally, so the pill's width is bounded
+      // (full width up to a phone-friendly cap) instead of hugging uneven
+      // label lengths. On desktop the 400.dp cap keeps the island compact.
       modifier = Modifier
-        .wrapContentWidth()
+        .fillMaxWidth()
+        .widthIn(max = 400.dp)
         .border(
           width = 1.dp,
           brush = Brush.linearGradient(
@@ -542,12 +546,14 @@ fun BoxScope.TelegramBottomIslandBar(
     ) {
       Row(
         modifier = Modifier
+          .fillMaxWidth()
           .padding(horizontal = 14.dp, vertical = 6.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically
       ) {
         // Tab 1: Chats
         IslandTabItem(
+          modifier = Modifier.weight(1f),
           label = stringResource(MR.strings.settings_section_title_chats),
           icon = MR.images.ic_forum,
           isActive = (currentTab == SimpleUxTab.CHATS),
@@ -560,10 +566,9 @@ fun BoxScope.TelegramBottomIslandBar(
           }
         )
 
-        Spacer(Modifier.width(10.dp))
-
         // Tab 2: Contacts
         IslandTabItem(
+          modifier = Modifier.weight(1f),
           label = stringResource(MR.strings.settings_section_title_contact),
           icon = MR.images.ic_supervised_user_circle_filled,
           isActive = (currentTab == SimpleUxTab.CONTACTS),
@@ -573,8 +578,6 @@ fun BoxScope.TelegramBottomIslandBar(
         )
 
         if (onOpenCamera != null) {
-          Spacer(Modifier.width(10.dp))
-
           // Central quick-access camera button (see views/ux/camera/QuickCameraSheet.kt,
           // Android-only for now). It is an action, not a tab, but it wears the exact same
           // labeled-item layout as the tabs — same icon size, same 11sp sub-label ("Scan"),
@@ -582,6 +585,7 @@ fun BoxScope.TelegramBottomIslandBar(
           // (consistency feedback from Delta, 2026-08-29). A raised central disc variant
           // is a possible follow-up polish once screenable on a real device.
           IslandTabItem(
+            modifier = Modifier.weight(1f),
             label = stringResource(MR.strings.island_scan),
             icon = MR.images.ic_photo_camera,
             isActive = false,
@@ -589,10 +593,9 @@ fun BoxScope.TelegramBottomIslandBar(
           )
         }
 
-        Spacer(Modifier.width(10.dp))
-
         // Tab 3: Settings
         IslandTabItem(
+          modifier = Modifier.weight(1f),
           label = stringResource(MR.strings.settings_section_title_settings),
           icon = MR.images.ic_settings,
           isActive = (currentTab == SimpleUxTab.SETTINGS),
@@ -613,7 +616,8 @@ private fun IslandTabItem(
   icon: ImageResource,
   isActive: Boolean,
   onClick: () -> Unit,
-  onLongClick: (() -> Unit)? = null
+  onLongClick: (() -> Unit)? = null,
+  modifier: Modifier = Modifier
 ) {
   val isDark = isInDarkTheme()
   val activeShape = RoundedCornerShape(20.dp)
@@ -627,7 +631,7 @@ private fun IslandTabItem(
   val inactiveColor = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569)
 
   Box(
-    modifier = Modifier
+    modifier = modifier
       .clip(activeShape)
       .background(activeBg)
       .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0xFFF59E0B), activeShape) else Modifier)
@@ -638,7 +642,7 @@ private fun IslandTabItem(
           Modifier.clickable(onClick = onClick)
         }
       )
-      .padding(horizontal = 16.dp, vertical = 6.dp),
+      .padding(horizontal = 12.dp, vertical = 6.dp),
     contentAlignment = Alignment.Center
   ) {
     Column(
@@ -652,9 +656,18 @@ private fun IslandTabItem(
         tint = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFB45309)) else inactiveColor
       )
       Spacer(Modifier.height(2.dp))
+      // FB-11: labels are single-line; instead of wrapping or ellipsizing the four
+      // known short labels, the font shrinks slightly to fit (keeps the tab grid
+      // intact under large font scales / narrow screens).
+      var labelFontSize by remember(label) { mutableStateOf(11.sp) }
       Text(
         label,
-        fontSize = 11.sp,
+        fontSize = labelFontSize,
+        maxLines = 1,
+        softWrap = false,
+        onTextLayout = {
+          if (it.hasVisualOverflow && labelFontSize > 8.sp) labelFontSize *= 0.92f
+        },
         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
         color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFB45309)) else inactiveColor
       )

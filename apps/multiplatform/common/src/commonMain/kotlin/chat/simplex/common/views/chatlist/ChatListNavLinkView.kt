@@ -319,6 +319,7 @@ fun ContactMenuItems(chat: Chat, contact: Contact, chatModel: ChatModel, showMen
       } else {
         MarkUnreadChatAction(chat, chatModel, showMenu)
       }
+      PinChatAction(chat, chatModel, chatModel.pinnedChatIds.contains(chat.id), showMenu)
       ToggleFavoritesChatAction(chat, chatModel, chat.chatInfo.chatSettings?.favorite == true, showMenu)
       ToggleNotificationsChatAction(chat, chatModel, contact.chatSettings.enableNtfs.nextMode(false), showMenu)
       TagListAction(chat, showMenu)
@@ -360,6 +361,7 @@ fun GroupMenuItems(
       } else {
         MarkUnreadChatAction(chat, chatModel, showMenu)
       }
+      PinChatAction(chat, chatModel, chatModel.pinnedChatIds.contains(chat.id), showMenu)
       ToggleFavoritesChatAction(chat, chatModel, chat.chatInfo.chatSettings?.favorite == true, showMenu)
       ToggleNotificationsChatAction(chat, chatModel, groupInfo.chatSettings.enableNtfs.nextMode(true), showMenu)
       TagListAction(chat, showMenu)
@@ -443,6 +445,21 @@ fun ToggleFavoritesChatAction(chat: Chat, chatModel: ChatModel, favorite: Boolea
     if (favorite) painterResource(MR.images.ic_star_off) else painterResource(MR.images.ic_star),
     onClick = {
       toggleChatFavorite(chat.remoteHostId, chat.chatInfo, !favorite, chatModel)
+      showMenu.value = false
+    }
+  )
+}
+
+// SimpleUX pin (FB-14): local-only "pin to top" — the pin state lives in
+// ChatModel.pinnedChatIds (persisted via PinnedChatsPrefs); it is a display
+// preference and never sent to the core or contacts.
+@Composable
+fun PinChatAction(chat: Chat, chatModel: ChatModel, pinned: Boolean, showMenu: MutableState<Boolean>) {
+  ItemAction(
+    stringResource(if (pinned) MR.strings.unpin_chat else MR.strings.pin_chat),
+    painterResource(MR.images.ic_pin),
+    onClick = {
+      chatModel.togglePinnedChat(chat.id)
       showMenu.value = false
     }
   )
