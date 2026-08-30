@@ -20,8 +20,12 @@ buildscript {
     // Whether the app is debuggable or not. Specify `false` if yo`u want good performance in debug builds
     extra.set("enable_debuggable", prop["debuggable"] != "false")
     // Ending part of package name.
-    // Default to empty string to ensure continuity of user databases across builds
-    extra.set("application_id.suffix", prop["application_id.suffix"] ?: "")
+    // SimpleUX (#24): debug builds default to a `.debug` suffix so debug and
+    // release install side-by-side out of the box (debug id
+    // chat.simplex.ux.debug, its own provider authority). Override with
+    // `application_id.suffix=` in local.properties for the old shared-id
+    // behavior; release builds are never suffixed.
+    extra.set("application_id.suffix", prop["application_id.suffix"] ?: ".debug")
     // Compression level for debug AND release apk. 0 = disable compression. Max is 9
     extra.set("compression.level", (prop["compression.level"] as String?)?.toIntOrNull() ?: 0)
     if (prop["simplex.assets.dir"] != null) {
