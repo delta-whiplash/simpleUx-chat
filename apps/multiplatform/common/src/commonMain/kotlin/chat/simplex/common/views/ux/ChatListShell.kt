@@ -34,6 +34,8 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import chat.simplex.common.AppLock
@@ -201,9 +203,15 @@ fun TelegramTopHeader(
         }
 
         val headerScope = rememberCoroutineScope()
+        var kebabCenter by remember { mutableStateOf<Offset?>(null) }
         Box {
           // Options Menu Trigger - Natural & Borderless
-          IconButton(onClick = { showMenu.value = true }) {
+          IconButton(
+            onClick = { showMenu.value = true },
+            // #14: the theme reveal expands from the tapped control's real window
+            // position, not a hardcoded pixel offset that is wrong on most devices.
+            modifier = Modifier.onGloballyPositioned { kebabCenter = it.boundsInWindow().center }
+          ) {
             Icon(
               painterResource(MR.images.ic_more_vert),
               contentDescription = stringResource(MR.strings.icon_descr_options),
@@ -223,7 +231,7 @@ fun TelegramTopHeader(
                 .clickable {
                   showMenu.value = false
                   ThemeAnimationController.trigger(
-                    originOffset = Offset(950f, 145f),
+                    originOffset = kebabCenter,
                     currentlyDark = isDark,
                     scope = headerScope
                   )
