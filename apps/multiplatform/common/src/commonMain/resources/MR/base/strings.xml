@@ -3202,6 +3202,8 @@
   <string name="updater_install">Install update</string>
   <string name="updater_install_permission_hint">To install updates, allow installing unknown apps for SimpleUX in system settings, then tap Install.</string>
   <string name="updater_failed">Update failed. Check your connection and try again.</string>
+  <string name="updater_auto_check">Check for stable updates automatically</string>
+  <string name="updater_auto_available">Install it from Settings → App updates. You can turn automatic checks off there.</string>
   <!-- FB-D share screen redesign (FB-2, views/ux/share/ShareMediaScreen.kt): English base keys, appended as one block -->
   <string name="share_screen_preview_title">Ready to send</string>
   <string name="share_screen_pick_chat_title">Choose a chat</string>

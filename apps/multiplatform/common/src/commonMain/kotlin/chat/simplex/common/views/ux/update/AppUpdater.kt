@@ -170,7 +170,7 @@ expect fun provideAppUpdateInstaller(): AppUpdateInstaller
 /**
  * Orchestrates the manual check → download → install flow for issue #79.
  * Everything is injected (scope, installer, running version) so the class is
- * constructible in isolation; the auto-check flow is intentionally not wired yet.
+ * constructible in isolation.
  */
 class AppUpdater(
   private val scope: CoroutineScope,
@@ -201,6 +201,28 @@ class AppUpdater(
       } catch (e: Exception) {
         Log.e(TAG, "Update check failed: ${e.stackTraceToString()}")
         _state.value = AppUpdateState.Failed
+      }
+    }
+  }
+
+  /**
+   * Silent, opt-in auto check (#79): the user must have enabled it in the
+   * updater section (default OFF — zero network at startup otherwise). Only
+   * stable releases (prerelease = false) are considered; any failure or
+   * "already current" outcome is swallowed so a background check never
+   * bothers the user. A strictly newer stable is pushed both into [state]
+   * (visible if the updater section is open) and to [onUpdateAvailable].
+   */
+  fun autoCheckForUpdates(onUpdateAvailable: (AppUpdateCandidate) -> Unit) {
+    if (_state.value != AppUpdateState.Idle) return
+    scope.launch(Dispatchers.IO) {
+      runCatching {
+        val rawJson = fetchReleasesJson() ?: return@launch
+        val candidate = selectAppUpdateRelease(rawJson, includePrerelease = false) ?: return@launch
+        if (compareAppUpdateVersions(currentVersion, candidate.version) == AppUpdateVersionComparison.NEWER) {
+          _state.value = AppUpdateState.UpdateAvailable(candidate)
+          onUpdateAvailable(candidate)
+        }
       }
     }
   }

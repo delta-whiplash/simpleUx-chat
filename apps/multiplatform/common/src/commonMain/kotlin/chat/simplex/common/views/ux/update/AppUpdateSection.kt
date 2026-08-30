@@ -4,6 +4,7 @@ import SectionItemView
 import SectionView
 import itemHPadding
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,16 +13,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import chat.simplex.common.BuildConfigCommon
+import chat.simplex.common.platform.UpdaterPrefs
 import chat.simplex.common.ui.theme.DEFAULT_PADDING
 import chat.simplex.common.ui.theme.DEFAULT_PADDING_HALF
 import chat.simplex.common.ui.theme.HighOrLowlight
@@ -41,9 +47,31 @@ fun AppUpdateSection() {
   val installer = remember { provideAppUpdateInstaller() }
   val updater = remember(scope, installer) { AppUpdater(scope, installer, BuildConfigCommon.ANDROID_VERSION_NAME) }
   val state by updater.state.collectAsState()
+  val autoCheck = remember { mutableStateOf(UpdaterPrefs.autoCheckEnabled()) }
+  fun setAutoCheck(enabled: Boolean) {
+    autoCheck.value = enabled
+    UpdaterPrefs.setAutoCheckEnabled(enabled)
+  }
 
   SectionView {
     Column {
+      // #79: the auto check is opt-in (default off) and only considers stable
+      // releases; the manual check below stays the way to learn about rolling.
+      // Row tap and Switch go through one setter so both persist.
+      SectionItemView(click = { setAutoCheck(!autoCheck.value) }) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+          Text(
+            generalGetString(MR.strings.updater_auto_check),
+            Modifier.weight(1f),
+            color = MaterialTheme.colors.primary
+          )
+          Switch(
+            checked = autoCheck.value,
+            onCheckedChange = { setAutoCheck(it) }
+          )
+        }
+      }
+
       val busy = state is AppUpdateState.Checking || state is AppUpdateState.Downloading
       SectionItemView(
         click = if (busy) null else updater::checkForUpdates,

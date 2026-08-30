@@ -36,6 +36,8 @@ import chat.simplex.common.views.helpers.ModalManager.Companion.fromStartToEndTr
 import chat.simplex.common.views.localauth.VerticalDivider
 import chat.simplex.common.views.newchat.*
 import chat.simplex.common.views.onboarding.*
+import chat.simplex.common.views.ux.update.AppUpdater
+import chat.simplex.common.views.ux.update.provideAppUpdateInstaller
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -105,6 +107,29 @@ fun MainScreen() {
   LaunchedEffect(chatModel.showAdvertiseLAUnavailableAlert.value) {
     if (chatModel.showAdvertiseLAUnavailableAlert.value) {
       laUnavailableInstructionAlert()
+    }
+  }
+  // #79: opt-in auto check, default OFF — zero GitHub calls at startup unless
+  // the user enabled it. Stable releases only, silent on failure; a newer
+  // stable is announced once via a dialog pointing at the updater section.
+  LaunchedEffect(Unit) {
+    if (
+      appPlatform.isAndroid
+      && UpdaterPrefs.autoCheckEnabled()
+      && chatModel.controller.appPrefs.onboardingStage.get() == OnboardingStage.OnboardingComplete
+    ) {
+      delay(5_000)
+      val updater = AppUpdater(this, provideAppUpdateInstaller(), BuildConfigCommon.ANDROID_VERSION_NAME)
+      updater.autoCheckForUpdates { candidate ->
+        AlertManager.shared.showAlertDialogButtons(
+          title = String.format(generalGetString(MR.strings.updater_new_version_found), candidate.version),
+          text = generalGetString(MR.strings.updater_auto_available)
+        ) {
+          TextButton(onClick = { AlertManager.shared.hideAlert() }) {
+            Text(generalGetString(MR.strings.ok))
+          }
+        }
+      }
     }
   }
   platform.desktopShowAppUpdateNotice()

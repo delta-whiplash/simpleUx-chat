@@ -2456,4 +2456,6 @@
 
   <!-- SimpleUX haptics (#75 Axis A) -->
   <string name="haptic_feedback">Retour haptique</string>
+	<string name="updater_auto_check">Rechercher automatiquement les mises à jour stables</string>
+	<string name="updater_auto_available">Installez-la depuis Réglages → Mises à jour de l\'app. Vous pouvez désactiver la vérification automatique à cet endroit.</string>
 </resources>
