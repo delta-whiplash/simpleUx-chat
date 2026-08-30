@@ -659,3 +659,22 @@ specific requirements.
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
 <https://www.gnu.org/licenses/>.
+
+
+===============================================================================
+SimpleUX Chat notice
+===============================================================================
+
+SimpleUX Chat — Copyright (C) 2026 the SimpleUX project and its contributors.
+
+SimpleUX Chat is a frontend fork of SimpleX Chat: the authoritative Haskell
+core engine (libsimplex / libapp), the JNI/FFI bindings, the wire protocol and
+all cryptography are and remain the unchanged work of the SimpleX Chat project.
+
+  SimpleX Chat — Copyright (c) 2025 SimpleX Chat contributors
+  https://simplex.chat — licensed under GNU AGPL-3.0
+
+This fork redistributes that upstream work under the same GNU AGPL-3.0 terms
+above, and adds only frontend changes (Kotlin Multiplatform / Compose UI,
+release engineering, documentation). Upstream attribution lines are preserved
+throughout; nothing in this notice modifies the license of any upstream code.
