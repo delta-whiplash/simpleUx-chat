@@ -49,15 +49,15 @@ fun SetDeliveryReceiptsView(m: ChatModel) {
       }
     },
     skip = {
+      // #65: ANY answer to the question persists it — tapping "OK" (receipts
+      // stay off) used to hide the prompt for this session only, so the
+      // full-screen interstitial reappeared on every single launch. Answering
+      // "not now" is a choice too; receipts can be enabled in Privacy settings.
       AlertManager.shared.showAlertDialog(
         title = generalGetString(MR.strings.delivery_receipts_are_disabled),
         text = generalGetString(MR.strings.you_can_enable_delivery_receipts_later_alert),
         confirmText = generalGetString(MR.strings.ok),
-        dismissText = generalGetString(MR.strings.dont_show_again),
         onConfirm = {
-          m.setDeliveryReceipts.value = false
-        },
-        onDismiss = {
           m.setDeliveryReceipts.value = false
           m.controller.appPrefs.privacyDeliveryReceiptsSet.set(true)
         }

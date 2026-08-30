@@ -183,9 +183,11 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   val oneHandUI = remember { appPrefs.oneHandUI.state }
 
   LaunchedEffect(Unit) {
-    val showWhatsNew = shouldShowWhatsNew(chatModel)
+    // #65: "What's new" no longer auto-opens full-screen on every update —
+    // it stays reachable from Settings (with a badge when unread). Only the
+    // updated-conditions notice (legal) still surfaces automatically.
     val showUpdatedConditions = chatModel.conditions.value.conditionsAction?.shouldShowNotice ?: false
-    if (showWhatsNew || showUpdatedConditions) {
+    if (showUpdatedConditions) {
       // Requested here, so that the country is known by the time the modal opens
       platform.androidLoadPlayStoreCountry()
       delay(1000L)

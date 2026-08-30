@@ -37,6 +37,7 @@ import chat.simplex.common.views.onboarding.GetStakeView
 import chat.simplex.common.views.onboarding.SimpleXInfo
 import chat.simplex.common.views.onboarding.WhatsNewView
 import chat.simplex.common.views.onboarding.crowdfundingAvailable
+import chat.simplex.common.views.onboarding.shouldShowWhatsNew
 import chat.simplex.common.views.ux.InvitationLinksSection
 import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServersView
 import chat.simplex.res.MR
@@ -311,7 +312,17 @@ fun HelpAndSupportView(
 
     SectionView(stringResource(MR.strings.settings_section_title_help)) {
       SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.how_to_use_simplex_chat), showModal { HelpView(userDisplayName) }, disabled = stopped)
-      SettingsActionItem(painterResource(MR.images.ic_add), stringResource(MR.strings.whats_new), showCustomModal { _, close -> WhatsNewView(viaSettings = true, close = close) }, disabled = stopped)
+      // #65: "What's new" is never auto-opened on update — this entry is the
+      // surface, badged with a gold dot while the current version is unread.
+      SettingsActionItemWithContent(
+        painterResource(MR.images.ic_add), stringResource(MR.strings.whats_new),
+        showCustomModal { _, close -> WhatsNewView(viaSettings = true, close = close) },
+        disabled = stopped
+      ) {
+        if (remember { shouldShowWhatsNew(chatModel) }) {
+          Box(Modifier.size(8.dp).clip(CircleShape).background(MaterialTheme.colors.primary))
+        }
+      }
       SettingsActionItem(painterResource(MR.images.ic_info), stringResource(MR.strings.about_simplex_chat), showModal { SimpleXInfo(it, onboarding = false) })
     }
     SectionDividerSpaced()
