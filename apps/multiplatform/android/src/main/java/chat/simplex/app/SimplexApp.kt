@@ -187,6 +187,7 @@ class SimplexApp: Application(), LifecycleEventObserver {
   private fun initMultiplatform() {
     androidAppContext = this
     chatController.chatModel.loadPersistedStarredChats()
+    chatController.chatModel.loadPersistedPinnedChats()
     APPLICATION_ID = BuildConfig.APPLICATION_ID
     ntfManager = object : chat.simplex.common.platform.NtfManager() {
       override fun notifyCallInvitation(invitation: RcvCallInvitation): Boolean = NtfManager.notifyCallInvitation(invitation)

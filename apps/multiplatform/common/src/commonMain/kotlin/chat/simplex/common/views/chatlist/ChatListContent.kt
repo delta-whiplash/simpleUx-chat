@@ -91,11 +91,15 @@ internal fun BoxScope.ChatListContent(
     }
   }
   val rawChats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
-  val chats = if (activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES)) {
+  // SimpleUX pin (FB-14): pinned chats float to the top of the list, above all
+  // other chats (there are no sort headers on this screen). The sort is stable,
+  // so the existing ordering within each group is untouched, and it reads the
+  // snapshot-backed pinnedChatIds so toggling re-sorts immediately.
+  val chats = (if (activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES)) {
     rawChats.filter { chatModel.starredChatIds.contains(it.id) }
   } else {
     rawChats
-  }
+  }).sortedByDescending { chatModel.pinnedChatIds.contains(it.id) }
 
   val isSearching = searchText.value.text.isNotEmpty() || searchVisible.value
   val bottomPadding = if (isSearching) 16.dp else 96.dp

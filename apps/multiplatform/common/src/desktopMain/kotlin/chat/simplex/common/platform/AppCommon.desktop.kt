@@ -31,6 +31,10 @@ fun initApp() {
     override fun showMessage(title: String, text: String) = chat.simplex.common.model.NtfManager.showMessage(title, text)
   }
   applyAppLocale()
+  // SimpleUX pinned chats (FB-14): seed local pin state after platform init,
+  // mirroring the Android loadPersistedStarredChats timing (no settings access
+  // during ChatModel class init).
+  chatModel.loadPersistedPinnedChats()
   deleteOldChatArchive()
   if (DatabaseUtils.ksSelfDestructPassword.get() == null) {
     initChatControllerOnStart()

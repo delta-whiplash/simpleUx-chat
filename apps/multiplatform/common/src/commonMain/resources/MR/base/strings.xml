@@ -3320,4 +3320,8 @@
   <!-- FB-G: quick camera permission-denied state (FB-10) -->
   <string name="quick_camera_permission_denied_text">SimpleUX needs camera access to scan QR codes and take photos. You can grant it at any time in system settings.</string>
   <string name="quick_camera_open_settings">Open settings</string>
+
+  <!-- FB-F chat pinning (FB-14) -->
+  <string name="pin_chat">Pin to top</string>
+  <string name="unpin_chat">Unpin</string>
 </resources>

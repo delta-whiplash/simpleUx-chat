@@ -171,6 +171,25 @@ object ChatModel {
     StarredChatsPrefs.saveStarredChatIds(starredChatIds)
   }
 
+  // SimpleUX Pinned Chats State (FB-14): local-only display preference that floats
+  // pinned chats to the top of the chat list. Persisted via PinnedChatsPrefs and
+  // loaded by loadPersistedPinnedChats() from the platform app init (same timing
+  // constraint as the starred state above: no settings access during class init).
+  val pinnedChatIds = mutableStateListOf<String>()
+
+  fun loadPersistedPinnedChats() {
+    pinnedChatIds.addAll(PinnedChatsPrefs.loadPinnedChatIds())
+  }
+
+  fun togglePinnedChat(chatId: String) {
+    if (pinnedChatIds.contains(chatId)) {
+      pinnedChatIds.remove(chatId)
+    } else {
+      pinnedChatIds.add(chatId)
+    }
+    PinnedChatsPrefs.savePinnedChatIds(pinnedChatIds)
+  }
+
   fun toggleStarMessage(messageId: Long) {
     if (starredMessageIds.contains(messageId)) {
       starredMessageIds.remove(messageId)
