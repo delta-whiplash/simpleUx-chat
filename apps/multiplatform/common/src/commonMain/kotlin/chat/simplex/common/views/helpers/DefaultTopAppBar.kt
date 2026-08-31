@@ -66,20 +66,24 @@ fun DefaultAppBar(
   }
   Box(
     modifier
-      .clip(topBarShape)
+      .then(
+        if (solidBackground) Modifier.solidTopBarCard(isDark, onTop)
+        else Modifier
+          .clip(topBarShape)
+          .border(
+            width = 1.dp,
+            color = if (isDark) Color(0x38FFFFFF) else Color(0x14000000),
+            shape = topBarShape
+          )
+      )
       .background(
         if (solidBackground) {
-          if (isDark) Color(0xFF141B28) else Color(0xFFF8FAFC)
+          Color.Transparent
         } else if (title != null || fixedTitleText != null || connection == null || !onTop) {
           if (isDark) Color(0xF2141B28) else Color(0xF2F8FAFC)
         } else {
           themeBackgroundMix.copy(topTitleAlpha(false, connection))
         }
-      )
-      .border(
-        width = 1.dp,
-        color = if (isDark) Color(0x38FFFFFF) else Color(0x14000000),
-        shape = topBarShape
       )
   ) {
     val density = LocalDensity.current
@@ -304,3 +308,16 @@ private fun topTitleAlpha(text: Boolean, connection: CollapsingAppBarNestedScrol
 
 val AppBarHeight = 56.dp
 val AppBarHorizontalPadding = 2.dp
+
+
+// #87: the ONE definition of the solid top-bar card (shape + surface + border)
+// shared by every shell tab — DefaultAppBar (Settings/Contacts) and the Chats
+// TelegramTopHeader all consume this so the tops read as one app.
+fun Modifier.solidTopBarCard(isDark: Boolean, onTop: Boolean = true): Modifier {
+  val shape = if (onTop) RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+  else RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+  return this
+    .clip(shape)
+    .background(if (isDark) Color(0xFF141B28) else Color(0xFFF8FAFC))
+    .border(width = 1.dp, color = if (isDark) Color(0x38FFFFFF) else Color(0x14000000), shape = shape)
+}
