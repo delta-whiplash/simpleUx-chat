@@ -2,23 +2,24 @@ package chat.simplex.common.views.ux
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import chat.simplex.common.model.ChatModel
 import chat.simplex.common.platform.ChatFolder
 import chat.simplex.common.platform.ChatFoldersPrefs
@@ -27,314 +28,160 @@ import chat.simplex.common.ui.theme.PlusJakartaSans
 import chat.simplex.common.ui.theme.Slate200
 import chat.simplex.common.ui.theme.Slate400
 import chat.simplex.common.ui.theme.Slate600
+import chat.simplex.common.views.helpers.DefaultAppBar
+import chat.simplex.common.views.helpers.NavigationButtonBack
+import chat.simplex.common.views.helpers.generalGetString
 import chat.simplex.common.views.ux.components.ChatFolderEditDialog
-import chat.simplex.common.views.ux.components.DraggableFolderRow
+import chat.simplex.common.views.ux.components.localizedLabel
 import chat.simplex.common.views.ux.components.UxFilterCategory
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.stringResource
 
-// #98: Chat Folders settings screen. Allows users to manage which filter
-// categories are visible, reorder them, and create custom folders.
-// Telegram-like UX with recommended folders, active list, and create dialog.
-
+// #98: Chat Folders manager. One list, the five preset folders: toggle
+// visibility, rename / add an emoji, reorder by long-press drag.
+// Custom folder creation is deliberately absent until chats can actually be
+// assigned to folders - a folder that filters nothing is a fake affordance.
 @Composable
 fun ChatFoldersSettingsScreen(
   chatModel: ChatModel,
   onBack: () -> Unit
 ) {
-  var folders by remember { mutableStateOf(ChatFoldersPrefs.loadFolders()) }
+  var folders by remember {
+    mutableStateOf(ChatFoldersPrefs.loadFolders().sortedBy { it.order })
+  }
   var editingFolder by remember { mutableStateOf<ChatFolder?>(null) }
-  var showCreateDialog by remember { mutableStateOf(false) }
 
-  Scaffold(
-    topBar = {
-      TopAppBar(
-        title = {
-          Text(
-            text = stringResource(MR.strings.settings_chat_folders),
-            fontFamily = PlusJakartaSans,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp,
-            color = MaterialTheme.colors.onBackground
-          )
-        },
-        navigationIcon = {
-          IconButton(onClick = onBack) {
-            Icon(
-              imageVector = Icons.Filled.ArrowBack,
-              contentDescription = "Back",
-              tint = MaterialTheme.colors.onBackground
-            )
-          }
-        },
-        backgroundColor = MaterialTheme.colors.background,
-        elevation = 0.dp
-      )
-    },
-    backgroundColor = MaterialTheme.colors.background
-  ) { paddingValues ->
-    LazyColumn(
-      modifier = Modifier
-        .fillMaxSize()
-        .padding(paddingValues),
-      contentPadding = PaddingValues(vertical = 16.dp)
-    ) {
-      // Recommended Folders section
-      item {
-        Text(
-          text = stringResource(MR.strings.chat_folders_recommended),
-          fontFamily = PlusJakartaSans,
-          fontSize = 14.sp,
-          fontWeight = FontWeight.Bold,
-          color = AmberGold,
-          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-      }
+  Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+    DefaultAppBar(
+      navigationButton = { NavigationButtonBack(onButtonClicked = onBack) },
+      fixedTitleText = generalGetString(MR.strings.settings_chat_folders),
+      buttons = {},
+      onTop = true,
+      solidBackground = true
+    )
 
-      // Recommended: Unread
-      item {
-        RecommendedFolderRow(
-          name = stringResource(MR.strings.chat_folders_recommended_unread),
-          description = stringResource(MR.strings.chat_folders_recommended_unread_desc),
-          isAdded = folders.any { it.filterKind == UxFilterCategory.UNREAD.ordinal && it.isVisible },
-          onAdd = {
-            folders = folders.map {
-              if (it.filterKind == UxFilterCategory.UNREAD.ordinal) {
-                it.copy(isVisible = true)
-              } else it
-            }.ifEmpty {
-              listOf(ChatFolder(id = "unread", filterKind = UxFilterCategory.UNREAD.ordinal, isVisible = true, order = folders.size))
-            }
-            ChatFoldersPrefs.saveFolders(folders)
-          }
-        )
-      }
-
-      // Recommended: Personal (Direct)
-      item {
-        RecommendedFolderRow(
-          name = stringResource(MR.strings.chat_folders_recommended_personal),
-          description = stringResource(MR.strings.chat_folders_recommended_personal_desc),
-          isAdded = folders.any { it.filterKind == UxFilterCategory.DIRECT.ordinal && it.isVisible },
-          onAdd = {
-            folders = folders.map {
-              if (it.filterKind == UxFilterCategory.DIRECT.ordinal) {
-                it.copy(isVisible = true)
-              } else it
-            }.ifEmpty {
-              listOf(ChatFolder(id = "direct", filterKind = UxFilterCategory.DIRECT.ordinal, isVisible = true, order = folders.size))
-            }
-            ChatFoldersPrefs.saveFolders(folders)
-          }
-        )
-      }
-
-      item {
-        Spacer(modifier = Modifier.height(16.dp))
-      }
-
-      // Active Folders section
-      item {
-        Text(
-          text = stringResource(MR.strings.chat_folders_active),
-          fontFamily = PlusJakartaSans,
-          fontSize = 14.sp,
-          fontWeight = FontWeight.Bold,
-          color = AmberGold,
-          modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-      }
-
-      // Active folders list (with up/down reorder buttons)
-      val visibleFolders = folders.filter { it.isVisible }.sortedBy { it.order }
-      itemsIndexed(visibleFolders) { index, folder ->
-        Column {
-          DraggableFolderRow(
-            folder = folder,
-            onEdit = { editingFolder = it },
-            onDelete = { folderToDelete ->
-              folders = folders.map {
-                if (it.id == folderToDelete.id) it.copy(isVisible = false) else it
-              }
-              ChatFoldersPrefs.saveFolders(folders)
-            }
-          )
-
-          // Reorder buttons
-          if (index < visibleFolders.size - 1) {
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-              horizontalArrangement = Arrangement.Center
-            ) {
-              IconButton(
-                onClick = {
-                  // Move folder down (swap with next)
-                  val currentOrder = folder.order
-                  val nextFolder = visibleFolders.getOrNull(index + 1)
-                  if (nextFolder != null) {
-                    folders = folders.map {
-                      when {
-                        it.id == folder.id -> it.copy(order = nextFolder.order)
-                        it.id == nextFolder.id -> it.copy(order = currentOrder)
-                        else -> it
-                      }
-                    }
-                    ChatFoldersPrefs.saveFolders(folders)
-                  }
-                },
-                modifier = Modifier.size(32.dp)
-              ) {
-                Icon(
-                  imageVector = Icons.Filled.KeyboardArrowDown,
-                  contentDescription = "Move down",
-                  tint = Slate400,
-                  modifier = Modifier.size(20.dp)
-                )
-              }
-            }
-          }
-        }
-      }
-
-      // Create New Folder button
-      item {
-        Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable { showCreateDialog = true }
-            .background(Slate200.copy(alpha = 0.3f))
-            .padding(16.dp),
-          verticalAlignment = Alignment.CenterVertically
-        ) {
-          Icon(
-            imageVector = Icons.Filled.Add,
-            contentDescription = null,
-            tint = AmberGold,
-            modifier = Modifier.size(24.dp)
-          )
-          Spacer(modifier = Modifier.width(12.dp))
-          Text(
-            text = stringResource(MR.strings.chat_folders_create_new),
-            fontFamily = PlusJakartaSans,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = AmberGold
-          )
-        }
-      }
-
-      item {
-        Spacer(modifier = Modifier.height(24.dp))
-      }
-
-      // Show Folder Tags toggle
-      item {
-        Row(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clickable { /* Toggle logic - for now just visual */ },
-          verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-          Text(
-            text = stringResource(MR.strings.chat_folders_show_tags),
-            fontFamily = PlusJakartaSans,
-            fontSize = 14.sp,
-            color = MaterialTheme.colors.onBackground
-          )
-
-          // Disabled toggle (Premium feature placeholder)
-          Switch(
-            checked = false,
-            onCheckedChange = null,
-            enabled = false,
-            colors = SwitchDefaults.colors(
-              checkedThumbColor = AmberGold,
-              uncheckedThumbColor = Slate400
-            )
-          )
-        }
-      }
-    }
+    FolderList(
+      folders = folders,
+      onReorder = { list ->
+        folders = list
+        ChatFoldersPrefs.saveFolders(list)
+      },
+      onEdit = { editingFolder = it }
+    )
   }
 
-  // Edit dialog
   editingFolder?.let { folder ->
     ChatFolderEditDialog(
       initialFolder = folder,
       onDismiss = { editingFolder = null },
       onSave = { updated ->
-        folders = folders.map { if (it.id == updated.id) updated else it }
-        ChatFoldersPrefs.saveFolders(folders)
+        val list = folders.map { if (it.id == updated.id) updated.copy(order = it.order) else it }
+        folders = list
+        ChatFoldersPrefs.saveFolders(list)
         editingFolder = null
-      }
-    )
-  }
-
-  // Create dialog
-  if (showCreateDialog) {
-    ChatFolderEditDialog(
-      onDismiss = { showCreateDialog = false },
-      onSave = { newFolder ->
-        folders = folders + newFolder.copy(order = folders.maxOfOrNull { it.order }?.plus(1) ?: 0)
-        ChatFoldersPrefs.saveFolders(folders)
-        showCreateDialog = false
       }
     )
   }
 }
 
 @Composable
-private fun RecommendedFolderRow(
-  name: String,
-  description: String,
-  isAdded: Boolean,
-  onAdd: () -> Unit
+private fun FolderList(
+  folders: List<ChatFolder>,
+  onReorder: (List<ChatFolder>) -> Unit,
+  onEdit: (ChatFolder) -> Unit
 ) {
-  Row(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(horizontal = 16.dp, vertical = 8.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.SpaceBetween
-  ) {
-    Column(modifier = Modifier.weight(1f)) {
-      Text(
-        text = name,
-        fontFamily = PlusJakartaSans,
-        fontSize = 14.sp,
-        fontWeight = FontWeight.Medium,
-        color = AmberGold
-      )
-      Spacer(modifier = Modifier.height(2.dp))
-      Text(
-        text = description,
-        fontFamily = PlusJakartaSans,
-        fontSize = 12.sp,
-        color = Slate600
-      )
-    }
+  // Long-press drag to reorder: the dragged row follows the finger and rows
+  // swap once it crosses ~60% of the row height. Order is persisted live.
+  val current by rememberUpdatedState(folders)
+  var dragIndex by remember { mutableStateOf(-1) }
+  var offsetY by remember { mutableFloatStateOf(0f) }
 
-    if (!isAdded) {
-      Button(
-        onClick = onAdd,
-        colors = ButtonDefaults.buttonColors(
-          backgroundColor = AmberGold,
-          contentColor = MaterialTheme.colors.background
-        ),
-        shape = RoundedCornerShape(20.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+  fun move(from: Int, to: Int) {
+    val list = current.toMutableList()
+    val item = list.removeAt(from)
+    list.add(to, item)
+    onReorder(list.mapIndexed { i, f -> f.copy(order = i) })
+  }
+
+  Column(Modifier.fillMaxSize()) {
+    Text(
+      text = generalGetString(MR.strings.settings_chat_folders),
+      fontFamily = PlusJakartaSans,
+      fontSize = 13.sp,
+      fontWeight = FontWeight.Bold,
+      color = Slate600,
+      modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+    )
+
+    folders.forEachIndexed { index, folder ->
+      val dragging = index == dragIndex
+      Row(
+        modifier = Modifier
+          .fillMaxWidth()
+          .zIndex(if (dragging) 1f else 0f)
+          .graphicsLayer { translationY = if (dragging) offsetY else 0f }
+          .background(if (dragging) MaterialTheme.colors.surface else MaterialTheme.colors.background)
+          .pointerInput(Unit) {
+            detectDragGesturesAfterLongPress(
+              onDragStart = { dragIndex = index; offsetY = 0f },
+              onDrag = { change, amount ->
+                change.consume()
+                if (dragIndex == -1) dragIndex = index
+                offsetY += amount.y
+                val rowH = size.height.toFloat().coerceAtLeast(1f)
+                while (dragIndex < current.size - 1 && offsetY > rowH * 0.6f) {
+                  move(dragIndex, dragIndex + 1); dragIndex++; offsetY -= rowH
+                }
+                while (dragIndex > 0 && offsetY < -rowH * 0.6f) {
+                  move(dragIndex, dragIndex - 1); dragIndex--; offsetY += rowH
+                }
+              },
+              onDragEnd = { dragIndex = -1; offsetY = 0f },
+              onDragCancel = { dragIndex = -1; offsetY = 0f }
+            )
+          }
+          .clickable { onEdit(folder) }
+          .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
       ) {
+        Icon(
+          imageVector = Icons.Filled.DragHandle,
+          contentDescription = null,
+          tint = Slate400,
+          modifier = Modifier.size(24.dp)
+        )
+        folder.emoji?.let { emoji ->
+          Text(
+            text = emoji,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(start = 16.dp)
+          )
+        }
+        val label = folder.name
+          ?: UxFilterCategory.entries.getOrNull(folder.filterKind)?.localizedLabel()
+          ?: generalGetString(MR.strings.chat_list_all)
         Text(
-          text = stringResource(MR.strings.chat_folders_add),
+          text = label,
           fontFamily = PlusJakartaSans,
-          fontSize = 13.sp,
-          fontWeight = FontWeight.Bold
+          fontSize = 15.sp,
+          fontWeight = FontWeight.Medium,
+          color = MaterialTheme.colors.onBackground,
+          modifier = Modifier
+            .weight(1f)
+            .padding(start = if (folder.emoji != null) 8.dp else 16.dp)
+        )
+        Switch(
+          checked = folder.isVisible,
+          onCheckedChange = { enabled ->
+            val list = current.map { if (it.id == folder.id) it.copy(isVisible = enabled) else it }
+            onReorder(list)
+          },
+          colors = SwitchDefaults.colors(
+            checkedThumbColor = AmberGold,
+            checkedTrackColor = AmberGold.copy(alpha = 0.3f),
+            uncheckedThumbColor = Slate400,
+            uncheckedTrackColor = Slate200
+          )
         )
       }
     }

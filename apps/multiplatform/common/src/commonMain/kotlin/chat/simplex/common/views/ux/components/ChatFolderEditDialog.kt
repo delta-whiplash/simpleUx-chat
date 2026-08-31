@@ -1,27 +1,32 @@
 package chat.simplex.common.views.ux.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.platform.ChatFolder
 import chat.simplex.common.ui.theme.AmberGold
 import chat.simplex.common.ui.theme.PlusJakartaSans
+import chat.simplex.common.ui.theme.Slate300
+import chat.simplex.common.ui.theme.Slate400
+import chat.simplex.common.ui.theme.Slate500
 import chat.simplex.common.ui.theme.Slate600
-import chat.simplex.common.views.ux.components.UxFilterCategory
+import chat.simplex.common.ui.theme.Slate900
+import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.stringResource
 
-// #98: Dialog for creating/editing a chat folder. Supports text name, emoji,
-// and filter kind selection. All strings via MR.strings, colors via tokens.
-
+// #98: rename / set an emoji for a preset folder. No filter-kind picker: the
+// five presets have fixed predicates, creation of new folders comes later
+// together with chat assignment. Empty name/emoji = back to the preset label.
 @Composable
 fun ChatFolderEditDialog(
   initialFolder: ChatFolder? = null,
@@ -30,29 +35,20 @@ fun ChatFolderEditDialog(
 ) {
   var name by remember { mutableStateOf(initialFolder?.name ?: "") }
   var emoji by remember { mutableStateOf(initialFolder?.emoji ?: "") }
-  var selectedFilterKind by remember {
-    mutableIntStateOf(initialFolder?.filterKind ?: UxFilterCategory.ALL.ordinal)
-  }
-  var expanded by remember { mutableStateOf(false) }
 
   AlertDialog(
     onDismissRequest = onDismiss,
     title = {
       Text(
-        text = if (initialFolder == null) {
-          stringResource(MR.strings.chat_folders_create_new)
-        } else {
-          stringResource(MR.strings.chat_folders_edit)
-        },
+        text = stringResource(MR.strings.chat_folders_edit),
         style = MaterialTheme.typography.h6.copy(fontFamily = PlusJakartaSans)
       )
     },
     text = {
       Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
       ) {
-        // Name input
         OutlinedTextField(
           value = name,
           onValueChange = { name = it },
@@ -60,7 +56,7 @@ fun ChatFolderEditDialog(
             Text(
               text = stringResource(MR.strings.chat_folders_name_hint),
               fontFamily = PlusJakartaSans,
-              fontSize = 13.sp
+              fontSize = 14.sp
             )
           },
           modifier = Modifier.fillMaxWidth(),
@@ -68,7 +64,6 @@ fun ChatFolderEditDialog(
           keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
         )
 
-        // Emoji input
         OutlinedTextField(
           value = emoji,
           onValueChange = { emoji = it },
@@ -76,91 +71,53 @@ fun ChatFolderEditDialog(
             Text(
               text = stringResource(MR.strings.chat_folders_emoji_hint),
               fontFamily = PlusJakartaSans,
-              fontSize = 13.sp
+              fontSize = 14.sp
             )
           },
           modifier = Modifier.fillMaxWidth(),
-          singleLine = true,
-          keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None)
+          singleLine = true
         )
-
-        // Filter kind dropdown
-        ExposedDropdownMenuBox(
-          expanded = expanded,
-          onExpandedChange = { expanded = !expanded }
-        ) {
-          OutlinedTextField(
-            value = UxFilterCategory.entries[selectedFilterKind].localizedLabel(),
-            onValueChange = {},
-            readOnly = true,
-            label = {
-              Text(
-                text = stringResource(MR.strings.chat_folders_filter_kind),
-                fontFamily = PlusJakartaSans,
-                fontSize = 13.sp
-              )
-            },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            modifier = Modifier.fillMaxWidth()
-          )
-
-          ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-          ) {
-            UxFilterCategory.entries.forEach { category ->
-              DropdownMenuItem(
-                onClick = {
-                  selectedFilterKind = category.ordinal
-                  expanded = false
-                }
-              ) {
-                Text(
-                  text = category.localizedLabel(),
-                  fontFamily = PlusJakartaSans,
-                  fontSize = 13.sp,
-                  color = if (category.ordinal == selectedFilterKind) AmberGold else Slate600
-                )
-              }
-            }
-          }
-        }
       }
     },
     buttons = {
       Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.End
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
       ) {
         TextButton(onClick = onDismiss) {
           Text(
-            text = "Cancel",
+            text = stringResource(MR.strings.cancel_verb),
             fontFamily = PlusJakartaSans,
-            fontSize = 13.sp,
-            color = Slate600
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            color = if (isInDarkTheme()) Slate300 else Slate600
           )
         }
-        Spacer(modifier = Modifier.width(8.dp))
-        TextButton(
+        Spacer(modifier = Modifier.width(12.dp))
+        Button(
           onClick = {
-            val folder = ChatFolder(
-              id = initialFolder?.id ?: "folder_${System.currentTimeMillis()}",
-              name = name.ifEmpty { null },
-              emoji = emoji.ifEmpty { null },
-              filterKind = selectedFilterKind,
-              isVisible = initialFolder?.isVisible ?: true,
-              order = initialFolder?.order ?: 0
+            onSave(
+              (initialFolder ?: ChatFolder(id = "all", filterKind = 0)).copy(
+                name = name.ifEmpty { null },
+                emoji = emoji.ifEmpty { null }
+              )
             )
-            onSave(folder)
           },
-          enabled = name.isNotEmpty() || emoji.isNotEmpty()
+          colors = ButtonDefaults.buttonColors(
+            backgroundColor = AmberGold,
+            contentColor = if (isInDarkTheme()) Slate900 else Color.White,
+            disabledBackgroundColor = Slate400.copy(alpha = 0.3f),
+            disabledContentColor = Slate500
+          ),
+          shape = RoundedCornerShape(8.dp),
+          contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp)
         ) {
           Text(
-            text = "Save",
+            text = stringResource(MR.strings.save_verb),
             fontFamily = PlusJakartaSans,
-            fontSize = 13.sp,
-            color = AmberGold,
-            fontWeight = MaterialTheme.typography.button.fontWeight
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold
           )
         }
       }

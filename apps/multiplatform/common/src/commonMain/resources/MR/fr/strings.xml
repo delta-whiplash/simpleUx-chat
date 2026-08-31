@@ -2464,23 +2464,10 @@
 	<string name="updater_channel_stable">Stable</string>
 	<string name="updater_channel_rolling">Rolling</string>
 
-	<!-- #98: Personnalisation des dossiers de discussion (style Telegram) -->
+	<!-- #98 : dossiers de discussion prédéfinis (visibilité, renommage, emoji, ordre).
+	     La création de dossiers personnalisés attend l'assignation des discussions. -->
 	<string name="settings_chat_folders">Dossiers de discussion</string>
-	<string name="chat_folders_recommended">Dossiers recommandés</string>
-	<string name="chat_folders_active">Dossiers de discussion</string>
-	<string name="chat_folders_create_new">Créer un nouveau dossier</string>
-	<string name="chat_folders_show_tags">Afficher les onglets de dossiers</string>
-	<string name="chat_folders_add">Ajouter</string>
 	<string name="chat_folders_edit">Modifier</string>
-	<string name="chat_folders_delete">Supprimer</string>
 	<string name="chat_folders_name_hint">Nom du dossier (optionnel)</string>
 	<string name="chat_folders_emoji_hint">Émoji (optionnel)</string>
-	<string name="chat_folders_filter_kind">Type de filtre</string>
-	<string name="chat_folders_all_chats">Toutes les discussions</string>
-	<string name="chat_folders_recommended_unread">Non lus</string>
-	<string name="chat_folders_recommended_unread_desc">Nouveaux messages de toutes les discussions</string>
-	<string name="chat_folders_recommended_personal">Personnel</string>
-	<string name="chat_folders_recommended_personal_desc">Messages des discussions personnelles uniquement</string>
-	<string name="chat_folders_delete_confirm_title">Supprimer ce dossier ?</string>
-	<string name="chat_folders_delete_confirm_text">Le dossier sera retiré de votre liste de discussions.</string>
 </resources>

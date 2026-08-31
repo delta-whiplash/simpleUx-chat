@@ -3232,23 +3232,10 @@
   <string name="invites_delete_confirm_title">Delete this link?</string>
   <string name="invites_delete_confirm_text">The link will stop working and its conversation will be removed.</string>
 
-  <!-- #98: Chat Folders customization (Telegram-like) -->
+  <!-- #98: Chat Folders customization (preset folders: visibility, rename, emoji, order).
+       Creation of custom folders is deferred until chats can be assigned to them. -->
   <string name="settings_chat_folders">Chat Folders</string>
-  <string name="chat_folders_recommended">Recommended Folders</string>
-  <string name="chat_folders_active">Chat Folders</string>
-  <string name="chat_folders_create_new">Create New Folder</string>
-  <string name="chat_folders_show_tags">Show Folder Tags</string>
-  <string name="chat_folders_add">Add</string>
   <string name="chat_folders_edit">Edit</string>
-  <string name="chat_folders_delete">Delete</string>
   <string name="chat_folders_name_hint">Folder name (optional)</string>
   <string name="chat_folders_emoji_hint">Emoji (optional)</string>
-  <string name="chat_folders_filter_kind">Filter type</string>
-  <string name="chat_folders_all_chats">All Chats</string>
-  <string name="chat_folders_recommended_unread">Unread</string>
-  <string name="chat_folders_recommended_unread_desc">New messages from all chats</string>
-  <string name="chat_folders_recommended_personal">Personal</string>
-  <string name="chat_folders_recommended_personal_desc">Only messages from personal chats</string>
-  <string name="chat_folders_delete_confirm_title">Delete this folder?</string>
-  <string name="chat_folders_delete_confirm_text">The folder will be removed from your chat list.</string>
 </resources>

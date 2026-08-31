@@ -6,14 +6,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,9 +47,9 @@ fun UxFilterCategory.localizedLabel(): String = when (this) {
   UxFilterCategory.FAVORITES -> stringResource(MR.strings.chat_list_favorites)
 }
 
-// #98: Filter pills row now accepts a list of visible ChatFolder objects.
-// Each folder can have a name, emoji, or fallback to the filter kind label.
-// A "+" button at the end opens the Chat Folders settings screen.
+// #98: Filter pills driven by the user's Chat Folders config. Each folder can
+// carry a custom name and/or emoji; folders without them fall back to the
+// preset label. The "+" pill opens the folder manager in Settings.
 
 @Composable
 fun FilterPillsRow(
@@ -69,11 +67,11 @@ fun FilterPillsRow(
     modifier = modifier
       .fillMaxWidth()
       .horizontalScroll(scrollState)
-      .padding(horizontal = 16.dp, vertical = 6.dp),
+      // #98 (feedback): breathing room below the top bar card
+      .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 6.dp),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically
   ) {
-    // Render each visible folder
     visibleFolders.sortedBy { it.order }.forEach { folder ->
       val isSelected = folder.id == activeFolderId
       val shape = RoundedCornerShape(20.dp)
@@ -133,15 +131,10 @@ fun FilterPillsRow(
           verticalAlignment = Alignment.CenterVertically,
           horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-          // Show emoji if present
           folder.emoji?.let { emoji ->
-            Text(
-              text = emoji,
-              fontSize = 16.sp
-            )
+            Text(text = emoji, fontSize = 14.sp)
           }
 
-          // Show name or fallback to filter kind label
           val displayName = folder.name
             ?: UxFilterCategory.entries.getOrNull(folder.filterKind)?.localizedLabel()
             ?: stringResource(MR.strings.chat_list_all)
@@ -178,35 +171,29 @@ fun FilterPillsRow(
       }
     }
 
-    // "+" button to open Chat Folders settings
-    if (visibleFolders.size > 1) {
-      val shape = RoundedCornerShape(20.dp)
-      val bgColor = if (isDark) Color(0x1F1E293B) else Slate50
-      val borderColor = if (isDark) Color(0x2EFFFFFF) else Slate200
-      val textColor = if (isDark) Slate400 else Slate600
-
-      Box(
-        modifier = Modifier
-          .clip(shape)
-          .background(bgColor)
-          .border(width = 1.dp, color = borderColor, shape = shape)
-          .bounceClick(scaleDown = 0.95f)
-          .clickable(
-            onClick = {
-              performHapticFeedback(SimpleUXHapticType.LIGHT)
-              onManageClick()
-            }
-          )
-          .padding(horizontal = 10.dp, vertical = 7.dp),
-        contentAlignment = Alignment.Center
-      ) {
-        Text(
-          text = "+",
-          color = textColor,
-          fontSize = 16.sp,
-          fontWeight = FontWeight.Bold
+    // "+" pill opens the folder manager. Identical metrics to the other pills
+    // so the row stays on one visual baseline (feedback 2026-08-31).
+    Box(
+      modifier = Modifier
+        .clip(RoundedCornerShape(20.dp))
+        .background(if (isDark) Color(0x1F1E293B) else Slate50)
+        .border(width = 1.dp, color = if (isDark) Color(0x2EFFFFFF) else Slate200, shape = RoundedCornerShape(20.dp))
+        .bounceClick(scaleDown = 0.95f)
+        .clickable(
+          onClick = {
+            performHapticFeedback(SimpleUXHapticType.LIGHT)
+            onManageClick()
+          }
         )
-      }
+        .padding(horizontal = 14.dp, vertical = 7.dp),
+      contentAlignment = Alignment.Center
+    ) {
+      Text(
+        text = "+",
+        color = if (isDark) Slate400 else Slate600,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold
+      )
     }
   }
 }
