@@ -221,9 +221,10 @@ fun ChatFolderEditScreen(
         )
       }
 
-      // Delete (existing custom folders only)
+      // Delete (existing custom folders only) - quiet destructive text action,
+      // no container: a filled/outline Button shell around it read as clutter
       if (!isNew) {
-        androidx.compose.material.Button(
+        androidx.compose.material.TextButton(
           onClick = {
             val folder = initialFolder
             if (folder != null) {
@@ -240,18 +241,14 @@ fun ChatFolderEditScreen(
               )
             }
           },
-          colors = androidx.compose.material.ButtonDefaults.buttonColors(
-            backgroundColor = Color.Transparent,
-            contentColor = MaterialTheme.colors.error
-          ),
-          shape = RoundedCornerShape(8.dp),
           modifier = Modifier.fillMaxWidth()
         ) {
           Text(
             text = generalGetString(MR.strings.chat_folders_delete_folder),
             fontFamily = PlusJakartaSans,
             fontSize = 15.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colors.error
           )
         }
       }
