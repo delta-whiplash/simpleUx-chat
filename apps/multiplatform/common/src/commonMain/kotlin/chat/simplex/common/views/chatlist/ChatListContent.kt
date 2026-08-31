@@ -147,8 +147,13 @@ internal fun BoxScope.ChatListContent(
               else -> UxFilterCategory.ALL
             }
           }
+          // #83: the pill counts exactly what the Unread filter will list —
+          // chats matching the same unreadTag predicate over the same listable
+          // set. The old sumOf(unreadCount) counted unread MESSAGES across all
+          // chats including the hidden invitation chats (FB-12/13), producing a
+          // non-zero badge over an empty filter.
           val totalUnread = remember(allChats.value) {
-            allChats.value.sumOf { chat -> chat.chatStats.unreadCount }
+            allChats.value.count { it.unreadTag && !isCreatedInvitationChat(it) }
           }
           FilterPillsRow(
             activeCategory = currentUxCategory,
