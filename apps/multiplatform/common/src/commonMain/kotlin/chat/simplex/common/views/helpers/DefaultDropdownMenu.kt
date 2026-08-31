@@ -1,5 +1,7 @@
 package chat.simplex.common.views.helpers
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -10,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import chat.simplex.common.ui.theme.isInDarkTheme
@@ -24,6 +28,25 @@ fun DefaultDropdownMenu(
 ) {
   val isDark = isInDarkTheme()
   val menuShape = RoundedCornerShape(16.dp)
+  
+  // Scale-in animation for visual continuity
+  val scaleAnim = remember { Animatable(0.85f) }
+  val alphaAnim = remember { Animatable(0f) }
+  
+  LaunchedEffect(showMenu.value) {
+    if (showMenu.value) {
+      scaleAnim.snapTo(0.85f)
+      alphaAnim.snapTo(0f)
+      scaleAnim.animateTo(
+        targetValue = 1f,
+        animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f)
+      )
+      alphaAnim.animateTo(
+        targetValue = 1f,
+        animationSpec = spring(dampingRatio = 1f, stiffness = 500f)
+      )
+    }
+  }
 
   MaterialTheme(
     shapes = MaterialTheme.shapes.copy(medium = menuShape)
@@ -46,7 +69,13 @@ fun DefaultDropdownMenu(
           ),
           shape = menuShape
         )
-        .padding(vertical = 4.dp),
+        .padding(vertical = 4.dp)
+        .graphicsLayer {
+          scaleX = scaleAnim.value
+          scaleY = scaleAnim.value
+          alpha = alphaAnim.value
+          transformOrigin = TransformOrigin(0.5f, 0.5f)
+        },
       offset = offset,
     ) {
       dropdownMenuItems?.invoke()

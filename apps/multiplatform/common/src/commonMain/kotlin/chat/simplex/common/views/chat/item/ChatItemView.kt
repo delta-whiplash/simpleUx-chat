@@ -120,6 +120,18 @@ fun ChatItemView(
   val sent = cItem.chatDir.sent
   val alignment = if (sent) Alignment.CenterEnd else Alignment.CenterStart
   val showMenu = remember { mutableStateOf(false) }
+  
+  // Contextual menu offset based on message direction (Telegram-like positioning)
+  // Sent messages (right): offset leftward toward center
+  // Received messages (left): offset rightward toward center
+  val contextualMenuOffset = remember(sent) {
+    if (sent) {
+      DpOffset(x = (-60).dp, y = 0.dp)  // Sent: shift toward center-left
+    } else {
+      DpOffset(x = 60.dp, y = 0.dp)     // Received: shift toward center-right
+    }
+  }
+  
   val fullDeleteAllowed = remember(cInfo) { cInfo.featureEnabled(ChatFeature.FullDelete) }
   val onLinkLongClick = { _: String -> showMenu.value = true }
   val live = remember { derivedStateOf { composeState.value.liveMessage != null } }.value
@@ -423,7 +435,7 @@ fun ChatItemView(
 
             @Composable
             fun DeleteItemMenu() {
-              DefaultDropdownMenu(showMenu) {
+              DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
                 if (cItem.canBeDeletedForSelf) {
                   Divider()
@@ -438,7 +450,7 @@ fun ChatItemView(
               when {
                 // cItem.id check is a special case for live message chat item which has negative ID while not sent yet
                 cItem.isReport && cItem.meta.itemDeleted == null && cInfo is ChatInfo.Group -> {
-                  DefaultDropdownMenu(showMenu) {
+                  DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     if (cItem.chatDir !is CIDirection.GroupSnd && cInfo.groupInfo.membership.memberRole >= GroupMemberRole.Moderator) {
                       ArchiveReportItemAction(cItem.id, cInfo.groupInfo.membership.memberActive, showMenu, archiveReports)
                     }
@@ -448,7 +460,7 @@ fun ChatItemView(
                   }
                 }
                 cItem.content.msgContent != null && cItem.id >= 0 && !cItem.isReport -> {
-                  DefaultDropdownMenu(showMenu) {
+                  DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     if (cInfo.featureEnabled(ChatFeature.Reactions) && cItem.allowAddReaction) {
                       MsgReactionsMenu()
                     }
@@ -549,7 +561,7 @@ fun ChatItemView(
                   }
                 }
                 cItem.meta.itemDeleted != null -> {
-                  DefaultDropdownMenu(showMenu) {
+                  DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     if (revealed.value) {
                       HideItemAction(revealed, showMenu, reveal)
                     } else if (!cItem.isDeletedContent) {
@@ -566,7 +578,7 @@ fun ChatItemView(
                   }
                 }
                 cItem.isDeletedContent -> {
-                  DefaultDropdownMenu(showMenu) {
+                  DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
                     if (cItem.canBeDeletedForSelf) {
@@ -576,7 +588,7 @@ fun ChatItemView(
                   }
                 }
                 cItem.mergeCategory != null && ((range.value?.count() ?: 0) > 1 || revealed.value) -> {
-                  DefaultDropdownMenu(showMenu) {
+                  DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     if (revealed.value) {
                       ShrinkItemAction(revealed, showMenu, reveal)
                     } else {
@@ -590,7 +602,7 @@ fun ChatItemView(
                   }
                 }
                 else -> {
-                  DefaultDropdownMenu(showMenu) {
+                  DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
                     if (selectedChatItems.value == null) {
                       Divider()
@@ -603,7 +615,7 @@ fun ChatItemView(
 
             @Composable
             fun MarkedDeletedItemDropdownMenu() {
-              DefaultDropdownMenu(showMenu) {
+              DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 if (!cItem.isDeletedContent) {
                   RevealItemAction(revealed, showMenu, reveal)
                 }
@@ -635,7 +647,7 @@ fun ChatItemView(
 
             @Composable fun LegacyDeletedItem() {
               DeletedItemView(cItem, cInfo.timedMessagesTTL, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
-              DefaultDropdownMenu(showMenu) {
+              DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
                 if (cItem.canBeDeletedForSelf) {
@@ -702,7 +714,7 @@ fun ChatItemView(
             @Composable
             fun DeletedItem() {
               MarkedDeletedItemView(chatsCtx, cItem, cInfo, cInfo.timedMessagesTTL, revealed, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
-              DefaultDropdownMenu(showMenu) {
+              DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 if (revealed.value) {
                   HideItemAction(revealed, showMenu, reveal)
                 } else if (!cItem.isDeletedContent) {
