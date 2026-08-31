@@ -523,6 +523,13 @@ fun SimpleUxTabHost(
   }
 }
 
+// Vertical space the island bottom bar occupies above the navigation bars:
+// its 2.dp bottom offset + Row vertical padding (2 x 6.dp) + a tab item's
+// icon-over-label content (~50.dp). In-shell panes that draw their own bottom
+// chrome (the Scan camera, #95) must lift it above this line or it lands
+// behind the bar, which is composed last at zIndex(10f) over the tab content.
+val BottomIslandBarClearance = 64.dp
+
 @Composable
 fun BoxScope.TelegramBottomIslandBar(
   currentTab: SimpleUxTab,

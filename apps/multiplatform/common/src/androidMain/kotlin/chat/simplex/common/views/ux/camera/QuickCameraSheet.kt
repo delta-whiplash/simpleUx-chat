@@ -18,12 +18,8 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +49,7 @@ import chat.simplex.common.platform.showToast
 import chat.simplex.common.platform.tmpDir
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.BottomIslandBarClearance
 import chat.simplex.res.MR
 import com.google.common.util.concurrent.ListenableFuture
 import dev.icerock.moko.resources.compose.stringResource
@@ -69,8 +66,9 @@ import java.util.concurrent.Executors
 // never auto-navigate on a bare scan.
 //
 // The chrome is SimpleUX's Luxury Mineral layer (CameraChrome.kt /
-// CameraReticule.kt): dark mineral surfaces regardless of the app theme, an
-// island-style control bar (gallery, shutter, torch) and a gold reticule.
+// CameraReticule.kt): dark mineral surfaces regardless of the app theme, a
+// camera-standard control row (gallery - shutter - torch) lifted above the
+// persistent island tab bar and a gold reticule.
 //
 // The BoofCV QR detection logic here mirrors newchat/QRCodeScanner.android.kt
 // (throttled instead of per-frame) rather than sharing code with it, to avoid
@@ -280,57 +278,42 @@ fun QuickCameraSheet(
 
       CameraReticule(
         pulse = reticulePulse.value,
-        modifier = Modifier.align(Alignment.Center).padding(bottom = 88.dp)
+        // Lifted clear of the control row below (its top edge sits at
+        // BottomIslandBarClearance + 10.dp + 76.dp).
+        modifier = Modifier.align(Alignment.Center).padding(bottom = BottomIslandBarClearance + 96.dp)
       )
 
-      // Bottom control island, same family as the chat-list island bar
-      // (dark glass capsule, specular hairline rim, icon + label items).
-      Box(
-        Modifier
+      // Bottom controls: gallery / shutter / torch in the classic camera row,
+      // lifted ABOVE the persistent island tab bar (one labeled bar on screen).
+      // The labeled capsule island inherited from the modal era sat at the
+      // modal's 16.dp bottom offset and landed behind the tab bar (#95).
+      Row(
+        modifier = Modifier
           .align(Alignment.BottomCenter)
           .navigationBarsPadding()
-          .padding(bottom = 16.dp)
+          .padding(bottom = BottomIslandBarClearance + 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(30.dp),
+        verticalAlignment = Alignment.CenterVertically
       ) {
-        Surface(
-          shape = RoundedCornerShape(32.dp),
-          color = CameraChromeIsland,
-          elevation = 12.dp,
-          modifier = Modifier
-            .border(
-              width = 1.dp,
-              brush = Brush.verticalGradient(listOf(CameraChromeRimHighlight, CameraChromeRimLowlight)),
-              shape = RoundedCornerShape(32.dp)
-            )
-        ) {
-          Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-          ) {
-            CameraIslandItem(
-              label = stringResource(MR.strings.quick_camera_gallery),
-              icon = MR.images.ic_photo_library,
-              active = false,
-              onClick = { galleryLauncher.launch("image/*") }
-            )
-            Spacer(Modifier.width(14.dp))
-            CameraShutterButton(enabled = imageCapture.value != null) { takePhoto() }
-            Spacer(Modifier.width(14.dp))
-            // Cameras without a flash unit simply don't offer the toggle.
-            if (hasFlashUnit) {
-              CameraIslandItem(
-                label = stringResource(MR.strings.quick_camera_torch),
-                icon = if (torchOn.value) MR.images.ic_bolt else MR.images.ic_bolt_off,
-                active = torchOn.value,
-                onClick = {
-                  val cam = camera.value ?: return@CameraIslandItem
-                  val newState = !torchOn.value
-                  cam.cameraControl.enableTorch(newState)
-                  torchOn.value = newState
-                }
-              )
+        CameraRoundControl(
+          icon = MR.images.ic_photo_library,
+          contentDescription = stringResource(MR.strings.quick_camera_gallery),
+          onClick = { galleryLauncher.launch("image/*") }
+        )
+        CameraShutterButton(enabled = imageCapture.value != null) { takePhoto() }
+        // Cameras without a flash unit simply don't offer the toggle.
+        if (hasFlashUnit) {
+          CameraRoundControl(
+            icon = if (torchOn.value) MR.images.ic_bolt else MR.images.ic_bolt_off,
+            contentDescription = stringResource(MR.strings.quick_camera_torch),
+            active = torchOn.value,
+            onClick = {
+              val cam = camera.value ?: return@CameraRoundControl
+              val newState = !torchOn.value
+              cam.cameraControl.enableTorch(newState)
+              torchOn.value = newState
             }
-          }
+          )
         }
       }
 
@@ -339,7 +322,8 @@ fun QuickCameraSheet(
       // explicit tap - never auto-navigates on a bare scan.
       AnimatedVisibility(
         visible = detectedContent.value != null,
-        modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 132.dp, start = 16.dp, end = 16.dp)
+        // Above the control row (top edge at BottomIslandBarClearance + 86.dp).
+        modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = BottomIslandBarClearance + 104.dp, start = 16.dp, end = 16.dp)
       ) {
         val content = detectedContent.value
         if (content != null) {

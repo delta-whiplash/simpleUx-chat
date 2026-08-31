@@ -60,27 +60,32 @@ fun CameraTopBar(onClose: () -> Unit) {
   }
 }
 
-// Labeled control inside the bottom camera island, mirroring the chat-list
-// island bar's inactive tab treatment (icon over an 11sp sub-label).
+// Round glass control flanking the shutter (gallery, torch): fixed dark
+// mineral disc with the specular hairline rim, icon-only on purpose - the
+// labeled bar on screen is the persistent island tab bar below (#95), this
+// row must not read as a second nav bar. Reports actions via callbacks.
 @Composable
-fun CameraIslandItem(
-  label: String,
+fun CameraRoundControl(
   icon: ImageResource,
-  active: Boolean,
+  contentDescription: String,
+  active: Boolean = false,
   onClick: () -> Unit
 ) {
   val tint = if (active) AmberGold else CameraChromeTextSecondary
-  Column(
+  Box(
     Modifier
-      .clip(RoundedCornerShape(20.dp))
-      .clickable(onClick = onClick)
-      .padding(horizontal = 16.dp, vertical = 8.dp).heightIn(min = 48.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center
+      .size(52.dp)
+      .clip(CircleShape)
+      .background(CameraChromeIsland)
+      .border(
+        width = 1.dp,
+        brush = Brush.verticalGradient(listOf(CameraChromeRimHighlight, CameraChromeRimLowlight)),
+        shape = CircleShape
+      )
+      .clickable(onClick = onClick),
+    contentAlignment = Alignment.Center
   ) {
-    Icon(painterResource(icon), contentDescription = label, tint = tint, modifier = Modifier.size(22.dp))
-    Spacer(Modifier.height(3.dp))
-    Text(label, color = tint, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+    Icon(painterResource(icon), contentDescription = contentDescription, tint = tint, modifier = Modifier.size(24.dp))
   }
 }
 
