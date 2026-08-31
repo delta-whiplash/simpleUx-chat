@@ -5,12 +5,15 @@ name: simpleux-release
 # android-quick-apk.yml - this fork never touches the Haskell core) and
 # publishes it to GitHub Releases.
 #
-# Two channels (decided 2026-08-29):
-#   - rolling: every push to `stable` replaces the `rolling` pre-release.
+# Two channels (decided 2026-08-29; per-build history since 2026-08-31):
+#   - rolling: every push to `stable` publishes a NEW versioned pre-release
+#     (tag v<version>) - the full build history is kept, nothing is replaced.
 #     Zero-friction dogfood loop: fix -> push -> install.
 #   - stable:  pushing a tag `v7.0.366-ux.N` (or a manual dispatch with
-#     channel=stable) publishes a versioned release with notes generated
-#     from the commits since the previous v* tag.
+#     channel=stable) publishes the same scheme WITHOUT the pre-release flag.
+#     The in-app updater splits the channels on exactly that flag (STABLE =
+#     prerelease==false, ROLLING = any release), so per-build rolling tags
+#     stay drop-in compatible with it.
 #
 # Versioning (#72): versionName = `<fork.version_base>-ux.<n>`; the rolling
 # counter n is this workflow's run number, a tag carries its own n. versionCode
@@ -70,19 +73,19 @@ jobs:
           fetch-depth: 0
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "17"
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       # Same cache family as simpleux.yml (gradle-<os> restore-keys): the release
       # build reuses dependencies and the Gradle build cache warmed up by the
       # compile CI (--build-cache below feeds build-cache-1, issue #100).
       - name: Cache Gradle
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -94,7 +97,7 @@ jobs:
       # NDK/CMake are large sdkmanager downloads; caching them skips several
       # minutes of install on every rolling build (issue #100).
       - name: Cache Android NDK + CMake
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ${{ env.ANDROID_HOME }}/ndk/23.1.7779620
@@ -265,6 +268,25 @@ jobs:
           cat SHA256SUMS.txt
           echo "DIST_DIR=$(pwd)" >> "$GITHUB_ENV"
 
+      - name: Resolve previous build (for the changelog range)
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          CHANNEL="${{ steps.version.outputs.channel }}"
+          # stable: previous non-prerelease release; rolling: previous
+          # pre-release. target_commitish is the SHA the release targeted.
+          if [ "$CHANNEL" = "stable" ]; then PRE=true; else PRE=false; fi
+          PREV_SHA=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
+            --jq "[.[] | select(.prerelease == ${PRE})][0].target_commitish" 2>/dev/null || true)
+          if [ -n "$PREV_SHA" ] && git cat-file -e "$PREV_SHA" 2>/dev/null; then
+            echo "prev_sha=$PREV_SHA" >> "$GITHUB_OUTPUT"
+            echo "Previous $CHANNEL build: $PREV_SHA"
+          else
+            echo "No previous $CHANNEL build found - changelog falls back to last 20 commits"
+          fi
+
       - name: Build release notes
         id: notes
         run: |
@@ -277,65 +299,58 @@ jobs:
             if [ "$CHANNEL" = "rolling" ]; then
               echo "# Rolling build $VERSION_NAME"
               echo ""
-              echo "Rebuilt automatically on every push to \`stable\` - pre-release quality, expect rough edges."
+              echo "Built automatically on every push to `stable` - pre-release quality, expect rough edges."
             else
               echo "# SimpleUX $VERSION_NAME"
               echo ""
             fi
-            echo "**Fork commit:** \`$GITHUB_SHA\` · **Native libs:** borrowed from upstream \`simplex-chat\` release \`$UPSTREAM_TAG\` (the fork makes zero changes to the native/protocol layer)."
+            echo "**Fork commit:** `$GITHUB_SHA` - **Native libs:** borrowed from upstream `simplex-chat` release `$UPSTREAM_TAG` (the fork makes zero changes to the native/protocol layer)."
             echo ""
-            if [ "$CHANNEL" = "stable" ]; then
-              PREV_TAG=$(git tag -l 'v*' --sort=-creatordate | grep -vx "v$VERSION_NAME" | head -1 || true)
-              echo "## Changes"
-              echo ""
-              if [ -n "$PREV_TAG" ] && git rev-parse -q --verify "$PREV_TAG" > /dev/null; then
-                git log --first-parent --format='- %s (%h)' "$PREV_TAG..HEAD"
-              else
-                git log --first-parent --format='- %s (%h)' -20
-              fi
-              echo ""
+            echo "## Changes"
+            echo ""
+            PREV_SHA="${{ steps.prev.outputs.prev_sha }}"
+            if [ -n "$PREV_SHA" ]; then
+              git log --first-parent --format='- %s (%h)' "$PREV_SHA..HEAD"
+            else
+              git log --first-parent --format='- %s (%h)' -20
             fi
+            echo ""
             echo "## Install"
             echo ""
-            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` (arm64-v8a - any modern phone). SHA-256 sums in \`SHA256SUMS.txt\`."
+            echo "Grab `simplex-ux-${VERSION_NAME}-arm64-v8a.apk` (arm64-v8a - any modern phone). SHA-256 sums in `SHA256SUMS.txt`."
             echo ""
             echo "## Obtainium"
             echo ""
             echo 'Add `https://github.com/delta-whiplash/simpleUx-chat` as a **GitHub** source in [Obtainium](https://github.com/ImranR98/Obtainium).'
-            if [ "$CHANNEL" = "stable" ]; then
-              echo "Stable tags (\`v*-ux.*\`) change per release, so default version detection works."
-            else
-              echo "The \`rolling\` tag is static (replaced each push), so set **Version Detection: No Version Detection** - Obtainium will then pick up each replacement release. Filter APKs to \`arm64-v8a\`."
-            fi
+            echo "Every build gets its own `v*-ux.*` tag, so default version detection works - just enable **Track prereleases** (all builds except explicit stable cuts are prereleases). Filter APKs to `arm64-v8a`."
           } > notes.md
           cat notes.md
 
-      - name: Publish rolling pre-release (replaces the previous one)
-        if: steps.version.outputs.channel == 'rolling'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -e
-          gh release delete rolling -R "$GITHUB_REPOSITORY" --cleanup-tag --yes 2>/dev/null || true
-          gh release create rolling \
-            -R "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
-            --prerelease \
-            --title "Rolling build ${{ steps.version.outputs.version_name }} (${GITHUB_SHA::7})" \
-            --notes-file notes.md \
-            "$DIST_DIR"/*
-
-      - name: Publish stable release
-        if: steps.version.outputs.channel == 'stable'
+      # One versioned release per build - the full history is kept on the
+      # releases page (Delta, 2026-08-31). Channel = the pre-release flag:
+      # rolling -> prerelease, stable -> full release. The in-app updater
+      # splits channels on that exact flag (STABLE = prerelease==false,
+      # ROLLING = any release, latest valid version wins), so per-build
+      # rolling tags are drop-in compatible. The static `rolling` tag is
+      # retired; it remains only as the last pre-#100 release on the page.
+      - name: Publish release (versioned, kept)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -e
           TAG="v${{ steps.version.outputs.version_name }}"
+          if [ "${{ steps.version.outputs.channel }}" = "rolling" ]; then
+            PRERELEASE="--prerelease"
+            TITLE="Rolling build ${{ steps.version.outputs.version_name }} (${GITHUB_SHA::7})"
+          else
+            PRERELEASE=""
+            TITLE="SimpleUX ${{ steps.version.outputs.version_name }}"
+          fi
           gh release create "$TAG" \
             -R "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "SimpleUX ${{ steps.version.outputs.version_name }}" \
+            $PRERELEASE \
+            --title "$TITLE" \
             --notes-file notes.md \
             "$DIST_DIR"/*
 
