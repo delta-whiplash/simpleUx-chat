@@ -1423,6 +1423,7 @@ fun BoxScope.ChatInfoToolbar(
     showSearch = showSearch.value,
     searchAlwaysVisible = contentFilter.value != null,
     onTop = true,
+    solidBackground = true,
     searchPlaceholder = searchPlaceholder,
     onSearchValueChanged = onSearchValueChanged,
     searchTrailingContent = searchTrailingContent,
