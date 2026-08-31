@@ -7,26 +7,9 @@ import chat.simplex.common.helpers.toURI
 import chat.simplex.common.model.*
 import chat.simplex.common.platform.chatModel
 import chat.simplex.common.views.chatlist.connect
-import chat.simplex.common.views.helpers.ModalManager
 import chat.simplex.common.views.helpers.SharedContent
 import chat.simplex.common.views.newchat.ConnectTarget
 import chat.simplex.common.views.newchat.strConnectTarget
-import java.net.URI
-
-actual fun openQuickCameraSheet(
-  onPhotoCaptured: (URI) -> Unit,
-  onQrCode: suspend (String) -> Boolean,
-  onTextShared: (String) -> Unit
-) {
-  ModalManager.start.showCustomModal { close ->
-    QuickCameraSheet(
-      onClose = close,
-      onPhotoCaptured = { uri -> onPhotoCaptured(uri.toURI()) },
-      onQrCode = onQrCode,
-      onTextShared = onTextShared
-    )
-  }
-}
 
 // #84: the camera as an in-shell pane (Scan tab). Same routing semantics the
 // modal version had: photos and shared text use the proven ShareListView
