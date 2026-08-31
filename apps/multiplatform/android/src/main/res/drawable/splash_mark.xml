@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- #88: SimpleUX splash mark — a faceted mineral drawn for the circular
+     splash safe zone (all geometry within r30 of the 108x108 canvas center),
+     replacing the upstream 768x189 SimpleX wordmark that the system circle
+     mask cropped to "MPLEX". Color comes from @color/splash_mark, which is
+     AmberGold at night and the day gold on light canvas. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- top facet -->
+    <path
+        android:fillColor="@color/splash_mark"
+        android:fillAlpha="0.5"
+        android:pathData="M54,24 L72,44 L54,54 L36,44 Z" />
+    <!-- left facet -->
+    <path
+        android:fillColor="@color/splash_mark"
+        android:fillAlpha="0.75"
+        android:pathData="M36,44 L54,54 L54,84 Z" />
+    <!-- right facet -->
+    <path
+        android:fillColor="@color/splash_mark"
+        android:fillAlpha="1"
+        android:pathData="M72,44 L54,54 L54,84 Z" />
+</vector>

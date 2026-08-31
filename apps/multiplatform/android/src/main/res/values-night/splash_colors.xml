@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- #88: splash mark color — AmberGold on the navy night canvas -->
+  <color name="splash_mark">#E2B755</color>
+</resources>
