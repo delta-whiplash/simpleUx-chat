@@ -172,6 +172,9 @@ private fun FolderList(
         )
         Switch(
           checked = folder.isVisible,
+          // "All" is the fallback filter: it stays on, otherwise the chat list
+          // can end up with no default folder at all.
+          enabled = folder.id != "all",
           onCheckedChange = { enabled ->
             val list = current.map { if (it.id == folder.id) it.copy(isVisible = enabled) else it }
             onReorder(list)

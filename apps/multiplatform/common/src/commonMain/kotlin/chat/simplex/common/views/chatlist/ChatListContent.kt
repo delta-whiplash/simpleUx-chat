@@ -133,9 +133,13 @@ internal fun BoxScope.ChatListContent(
         )
 
         if (searchText.value.text.isEmpty() && !searchShowingSimplexLink.value) {
-          // #98: Chat Folders - load visible folders from preferences
-          val chatFolders = remember { mutableStateOf(ChatFoldersPrefs.loadFolders()) }
-          val visibleFolders = chatFolders.value.filter { it.isVisible }.sortedBy { it.order }
+          // #98: Chat Folders - visible folders are re-read from prefs whenever the
+          // settings modal closes (foldersVersion bump in its onDispose), otherwise
+          // toggling a folder in settings never reached this composition.
+          var foldersVersion by remember { mutableStateOf(0) }
+          val visibleFolders = remember(foldersVersion) {
+            ChatFoldersPrefs.loadFolders().filter { it.isVisible }.sortedBy { it.order }
+          }
 
           // SimpleUX Fast Category Filter Pills
           val currentUxCategory = remember(activeFilter.value) {
@@ -192,6 +196,9 @@ internal fun BoxScope.ChatListContent(
               },
               onManageClick = {
                 ModalManager.start.showModal(cardScreen = true) {
+                  DisposableEffect(Unit) {
+                    onDispose { foldersVersion++ }
+                  }
                   ChatFoldersSettingsScreen(
                     chatModel = chatModel,
                     onBack = { ModalManager.start.closeModals() }
