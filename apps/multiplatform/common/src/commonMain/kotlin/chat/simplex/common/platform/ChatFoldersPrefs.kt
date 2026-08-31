@@ -5,20 +5,28 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
-// SimpleUX Chat Folders persistence (issue #98): allows users to customize which
-// filter categories are visible on the chat list, reorder them, and create custom
-// folders with names/emojis. Backed by moko multiplatform-settings (same pattern
-// as PinnedChatsPrefs/StarredChatsPrefs). Stored locally only — never synced.
+// SimpleUX Chat Folders persistence (issue #98 + #101): preset folders control
+// which filter pills are visible on the chat list; custom folders carry their
+// own chat membership (included minus excluded) and are stored locally only.
 
 @Serializable
 data class ChatFolder(
   val id: String,
-  val name: String? = null,       // null = emoji-only display
+  val name: String? = null,       // null = emoji-only display (or preset label)
   val emoji: String? = null,      // null = text-only display
-  val filterKind: Int,            // UxFilterCategory.ordinal
+  val filterKind: Int,            // UxFilterCategory.ordinal; -1 = custom folder
   val isVisible: Boolean = true,
-  val order: Int = 0
-)
+  val order: Int = 0,
+  val includedChatIds: Set<String> = emptySet(),  // #101: custom folder membership
+  val excludedChatIds: Set<String> = emptySet()   // #101: excludes win over includes
+) {
+  val isCustom: Boolean get() = filterKind < 0
+
+  // Telegram semantics: a chat is in the folder when it is included and not
+  // excluded. Preset folders never consult membership.
+  fun matchesChat(chatId: String): Boolean =
+    isCustom && includedChatIds.contains(chatId) && !excludedChatIds.contains(chatId)
+}
 
 expect val chatFoldersSettings: Settings
 
@@ -30,6 +38,20 @@ object ChatFoldersPrefs {
 
   fun saveFolders(folders: List<ChatFolder>, settings: Settings = chatFoldersSettings) {
     settings.putString(CHAT_FOLDERS_KEY, encodeChatFolders(folders))
+  }
+
+  fun saveFolder(folder: ChatFolder, settings: Settings = chatFoldersSettings) {
+    val folders = loadFolders(settings)
+    val updated = if (folders.any { it.id == folder.id }) {
+      folders.map { if (it.id == folder.id) folder else it }
+    } else {
+      folders + folder
+    }
+    saveFolders(updated, settings)
+  }
+
+  fun deleteFolder(folderId: String, settings: Settings = chatFoldersSettings) {
+    saveFolders(loadFolders(settings).filterNot { it.id == folderId }, settings)
   }
 }
 

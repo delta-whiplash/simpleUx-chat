@@ -28,6 +28,7 @@ import chat.simplex.common.views.chat.item.ItemAction
 import chat.simplex.common.views.contacts.onRequestAccepted
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.*
+import chat.simplex.common.views.ux.showAddToFolderModal
 import chat.simplex.res.MR
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
@@ -317,6 +318,7 @@ fun ContactMenuItems(chat: Chat, contact: Contact, chatModel: ChatModel, showMen
         MarkUnreadChatAction(chat, chatModel, showMenu)
       }
       PinChatAction(chat, chatModel, chatModel.pinnedChatIds.contains(chat.id), showMenu)
+      AddToFolderAction(chat.id, showMenu)
       ToggleFavoritesChatAction(chat, chatModel, chat.chatInfo.chatSettings?.favorite == true, showMenu)
       ToggleNotificationsChatAction(chat, chatModel, contact.chatSettings.enableNtfs.nextMode(false), showMenu)
       TagListAction(chat, showMenu)
@@ -359,6 +361,7 @@ fun GroupMenuItems(
         MarkUnreadChatAction(chat, chatModel, showMenu)
       }
       PinChatAction(chat, chatModel, chatModel.pinnedChatIds.contains(chat.id), showMenu)
+      AddToFolderAction(chat.id, showMenu)
       ToggleFavoritesChatAction(chat, chatModel, chat.chatInfo.chatSettings?.favorite == true, showMenu)
       ToggleNotificationsChatAction(chat, chatModel, groupInfo.chatSettings.enableNtfs.nextMode(true), showMenu)
       TagListAction(chat, showMenu)
@@ -387,6 +390,7 @@ fun NoteFolderMenuItems(chat: Chat, showMenu: MutableState<Boolean>, showMarkRea
   }
   // FB-14: saved notes chats are pinnable like contacts and groups
   PinChatAction(chat, chatModel, chatModel.pinnedChatIds.contains(chat.id), showMenu)
+  AddToFolderAction(chat.id, showMenu)
   ClearNoteFolderAction(chat, showMenu)
 }
 
@@ -459,6 +463,23 @@ fun PinChatAction(chat: Chat, chatModel: ChatModel, pinned: Boolean, showMenu: M
     painterResource(MR.images.ic_pin),
     onClick = {
       chatModel.togglePinnedChat(chat.id)
+      showMenu.value = false
+    }
+  )
+}
+
+// #101: add the chat to user-defined folders (local-only membership in
+// ChatFoldersPrefs). Hidden entirely when no custom folder exists - no dead
+// menu entry.
+@Composable
+fun AddToFolderAction(chatId: String, showMenu: MutableState<Boolean>) {
+  val hasCustomFolders = remember { ChatFoldersPrefs.loadFolders().any { it.isCustom } }
+  if (!hasCustomFolders) return
+  ItemAction(
+    stringResource(MR.strings.add_to_folder),
+    painterResource(MR.images.ic_folder_filled),
+    onClick = {
+      showAddToFolderModal(listOf(chatId))
       showMenu.value = false
     }
   )

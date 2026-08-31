@@ -6,6 +6,7 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
@@ -37,10 +38,9 @@ import chat.simplex.common.views.ux.components.UxFilterCategory
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.stringResource
 
-// #98: Chat Folders manager. One list, the five preset folders: toggle
-// visibility, rename / add an emoji, reorder by long-press drag.
-// Custom folder creation is deliberately absent until chats can actually be
-// assigned to folders - a folder that filters nothing is a fake affordance.
+// #98/#101: Chat Folders manager. The five preset folders (toggle visibility,
+// rename / emoji, long-press drag reorder) plus custom folders, which open the
+// full editor with their chat membership (ChatFolderEditScreen).
 @Composable
 fun ChatFoldersSettingsScreen(
   chatModel: ChatModel,
@@ -49,7 +49,9 @@ fun ChatFoldersSettingsScreen(
   var folders by remember {
     mutableStateOf(ChatFoldersPrefs.loadFolders().sortedBy { it.order })
   }
-  var editingFolder by remember { mutableStateOf<ChatFolder?>(null) }
+  var editingPreset by remember { mutableStateOf<ChatFolder?>(null) }
+  var editingCustom by remember { mutableStateOf<ChatFolder?>(null) }
+  var creating by remember { mutableStateOf(false) }
 
   Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
     DefaultAppBar(
@@ -66,19 +68,44 @@ fun ChatFoldersSettingsScreen(
         folders = list
         ChatFoldersPrefs.saveFolders(list)
       },
-      onEdit = { editingFolder = it }
+      onEdit = { folder ->
+        if (folder.isCustom) editingCustom = folder else editingPreset = folder
+      },
+      onCreate = { creating = true }
     )
   }
 
-  editingFolder?.let { folder ->
+  editingPreset?.let { folder ->
     ChatFolderEditDialog(
       initialFolder = folder,
-      onDismiss = { editingFolder = null },
+      onDismiss = { editingPreset = null },
       onSave = { updated ->
         val list = folders.map { if (it.id == updated.id) updated.copy(order = it.order) else it }
         folders = list
         ChatFoldersPrefs.saveFolders(list)
-        editingFolder = null
+        editingPreset = null
+      }
+    )
+  }
+
+  if (creating) {
+    ChatFolderEditScreen(
+      chatModel = chatModel,
+      initialFolder = null,
+      onDone = { _ ->
+        creating = false
+        folders = ChatFoldersPrefs.loadFolders().sortedBy { it.order }
+      }
+    )
+  }
+
+  editingCustom?.let { folder ->
+    ChatFolderEditScreen(
+      chatModel = chatModel,
+      initialFolder = folder,
+      onDone = { _ ->
+        editingCustom = null
+        folders = ChatFoldersPrefs.loadFolders().sortedBy { it.order }
       }
     )
   }
@@ -88,7 +115,8 @@ fun ChatFoldersSettingsScreen(
 private fun FolderList(
   folders: List<ChatFolder>,
   onReorder: (List<ChatFolder>) -> Unit,
-  onEdit: (ChatFolder) -> Unit
+  onEdit: (ChatFolder) -> Unit,
+  onCreate: () -> Unit
 ) {
   // Long-press drag to reorder: the dragged row follows the finger and rows
   // swap once it crosses ~60% of the row height. Order is persisted live.
@@ -189,6 +217,30 @@ private fun FolderList(
           )
         }
       }
+    }
+
+    // #101: create a custom folder with real chat membership
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .clickable(onClick = onCreate)
+        .padding(horizontal = 16.dp, vertical = 16.dp),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+      Icon(
+        imageVector = Icons.Filled.Add,
+        contentDescription = null,
+        tint = AmberGold,
+        modifier = Modifier.size(24.dp)
+      )
+      Spacer(Modifier.width(16.dp))
+      Text(
+        text = generalGetString(MR.strings.chat_folders_create_new),
+        fontFamily = PlusJakartaSans,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Medium,
+        color = AmberGold
+      )
     }
   }
 }

@@ -3233,9 +3233,22 @@
   <string name="invites_delete_confirm_text">The link will stop working and its conversation will be removed.</string>
 
   <!-- #98: Chat Folders customization (preset folders: visibility, rename, emoji, order).
-       Creation of custom folders is deferred until chats can be assigned to them. -->
+       #101: custom folders with chat membership (included minus excluded). -->
   <string name="settings_chat_folders">Chat Folders</string>
   <string name="chat_folders_edit">Edit</string>
   <string name="chat_folders_name_hint">Folder name (optional)</string>
   <string name="chat_folders_emoji_hint">Emoji (optional)</string>
+  <string name="chat_folders_create_new">Create New Folder</string>
+  <string name="chat_folders_new_folder_title">New Folder</string>
+  <string name="chat_folders_edit_folder_title">Edit Folder</string>
+  <string name="chat_folders_included_chats">Included Chats</string>
+  <string name="chat_folders_excluded_chats">Excluded Chats</string>
+  <string name="chat_folders_add_chats">Add Chats</string>
+  <string name="chat_folders_add_chats_exclude">Add Chats to Exclude</string>
+  <string name="chat_folders_helper_text">Choose chats that will appear in this folder.</string>
+  <string name="chat_folders_delete_folder">Delete Folder</string>
+  <string name="chat_folders_delete_confirm_title">Delete this folder?</string>
+  <string name="chat_folders_delete_confirm_text">The folder will be removed from your chat list. Chats are not deleted.</string>
+  <string name="chat_folders_none_yet">No custom folder yet - create one in Settings → Chat Folders.</string>
+  <string name="add_to_folder">Add to Folder</string>
 </resources>

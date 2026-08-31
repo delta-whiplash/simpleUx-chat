@@ -2465,9 +2465,22 @@
 	<string name="updater_channel_rolling">Rolling</string>
 
 	<!-- #98 : dossiers de discussion prédéfinis (visibilité, renommage, emoji, ordre).
-	     La création de dossiers personnalisés attend l'assignation des discussions. -->
+	     #101 : dossiers personnalisés avec assignation de discussions (inclus moins exclus). -->
 	<string name="settings_chat_folders">Dossiers de discussion</string>
 	<string name="chat_folders_edit">Modifier</string>
 	<string name="chat_folders_name_hint">Nom du dossier (optionnel)</string>
 	<string name="chat_folders_emoji_hint">Émoji (optionnel)</string>
+	<string name="chat_folders_create_new">Créer un nouveau dossier</string>
+	<string name="chat_folders_new_folder_title">Nouveau dossier</string>
+	<string name="chat_folders_edit_folder_title">Modifier le dossier</string>
+	<string name="chat_folders_included_chats">Discussions incluses</string>
+	<string name="chat_folders_excluded_chats">Discussions exclues</string>
+	<string name="chat_folders_add_chats">Ajouter des discussions</string>
+	<string name="chat_folders_add_chats_exclude">Ajouter des discussions à exclure</string>
+	<string name="chat_folders_helper_text">Choisissez les discussions qui apparaîtront dans ce dossier.</string>
+	<string name="chat_folders_delete_folder">Supprimer le dossier</string>
+	<string name="chat_folders_delete_confirm_title">Supprimer ce dossier ?</string>
+	<string name="chat_folders_delete_confirm_text">Le dossier sera retiré de votre liste de discussions. Les discussions ne sont pas supprimées.</string>
+	<string name="chat_folders_none_yet">Aucun dossier personnalisé - créez-en un dans Réglages → Dossiers de discussion.</string>
+	<string name="add_to_folder">Ajouter au dossier</string>
 </resources>

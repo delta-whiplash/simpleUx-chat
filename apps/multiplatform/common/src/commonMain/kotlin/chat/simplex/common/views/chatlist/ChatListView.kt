@@ -63,6 +63,8 @@ sealed class ActiveFilter {
   data class PresetTag(val tag: PresetTagKind) : ActiveFilter()
   data class UserTag(val tag: ChatTag) : ActiveFilter()
   data object Unread: ActiveFilter()
+  // #101: local-only custom folder - membership lives in ChatFoldersPrefs
+  data class CustomFolder(val folderId: String) : ActiveFilter()
 }
 
 private fun showNewChatSheet(oneHandUI: State<Boolean>) {
@@ -515,6 +517,8 @@ private fun NoChatsView(searchText: MutableState<TextFieldValue>) {
     when (activeFilter) {
       is ActiveFilter.PresetTag -> Text(generalGetString(MR.strings.no_filtered_chats), color = MaterialTheme.colors.secondary, textAlign = TextAlign.Center) // this should not happen
       is ActiveFilter.UserTag -> Text(String.format(generalGetString(MR.strings.no_chats_in_list), activeFilter.tag.chatTagText), color = MaterialTheme.colors.secondary, textAlign = TextAlign.Center)
+      // #101: custom folder with no matching chats
+      is ActiveFilter.CustomFolder -> Text(generalGetString(MR.strings.no_filtered_chats), color = MaterialTheme.colors.secondary, textAlign = TextAlign.Center)
       is ActiveFilter.Unread -> {
           Row(
             Modifier.clip(shape = CircleShape).clickable { chatModel.activeChatTagFilter.value = null }.padding(DEFAULT_PADDING_HALF),

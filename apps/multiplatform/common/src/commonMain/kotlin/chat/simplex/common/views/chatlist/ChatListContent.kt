@@ -92,17 +92,27 @@ internal fun BoxScope.ChatListContent(
       }
     }
   }
+  // #98/#101: bumped when the Chat Folders settings modal closes so both the
+  // pills row and custom-folder filtering re-read ChatFoldersPrefs.
+  var foldersVersion by remember { mutableStateOf(0) }
   val rawChats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
+  // #101: a custom folder lists exactly its included chats minus the excluded
+  // ones - membership lives in ChatFoldersPrefs.
+  val customFolderFilter = (activeFilter.value as? ActiveFilter.CustomFolder)?.let { cf ->
+    remember(cf.folderId, foldersVersion) { ChatFoldersPrefs.loadFolders().find { it.id == cf.folderId } }
+  }
   // SimpleUX pin (FB-14): pinned chats float to the top of the list, above all
   // other chats (there are no sort headers on this screen). The sort is stable,
   // so the existing ordering within each group is untouched, and it reads the
   // snapshot-backed pinnedChatIds so toggling re-sorts immediately.
   // FB-12/13: created one-time invitations are managed in Settings (InvitationLinksSection),
   // not as chats - hidden here so each preserved link stops polluting the list.
-  val chats = (if (activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES)) {
-    rawChats.filter { chatModel.starredChatIds.contains(it.id) }
-  } else {
-    rawChats
+  val chats = (when {
+    activeFilter.value is ActiveFilter.CustomFolder ->
+      rawChats.filter { customFolderFilter?.matchesChat(it.id) == true }
+    activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES) ->
+      rawChats.filter { chatModel.starredChatIds.contains(it.id) }
+    else -> rawChats
   }).filterNot { isCreatedInvitationChat(it) }
     .sortedByDescending { chatModel.pinnedChatIds.contains(it.id) }
 
@@ -133,41 +143,24 @@ internal fun BoxScope.ChatListContent(
         )
 
         if (searchText.value.text.isEmpty() && !searchShowingSimplexLink.value) {
-          // #98: Chat Folders - visible folders are re-read from prefs whenever the
-          // settings modal closes (foldersVersion bump in its onDispose), otherwise
-          // toggling a folder in settings never reached this composition.
-          var foldersVersion by remember { mutableStateOf(0) }
+          // #98: visible folders re-read whenever the settings modal closes
+          // (foldersVersion bump in its onDispose). "All" is always on
+          // regardless of stored state - it has no toggle in settings.
           val visibleFolders = remember(foldersVersion) {
-            // "All" is always on regardless of stored state - it has no toggle in
-            // settings, and forcing it here also heals installs that saved it off
-            // before the lock existed.
             ChatFoldersPrefs.loadFolders()
               .map { if (it.id == "all") it.copy(isVisible = true) else it }
               .filter { it.isVisible }
               .sortedBy { it.order }
           }
 
-          // SimpleUX Fast Category Filter Pills
-          val currentUxCategory = remember(activeFilter.value) {
-            when (val f = activeFilter.value) {
-              null -> UxFilterCategory.ALL
-              is ActiveFilter.Unread -> UxFilterCategory.UNREAD
-              is ActiveFilter.PresetTag -> when (f.tag) {
-                PresetTagKind.CONTACTS -> UxFilterCategory.DIRECT
-                PresetTagKind.GROUPS -> UxFilterCategory.GROUPS
-                PresetTagKind.FAVORITES -> UxFilterCategory.FAVORITES
-                else -> UxFilterCategory.ALL
-              }
-              else -> UxFilterCategory.ALL
-            }
-          }
-
           // #98: Auto-hide rule - if only 1 folder visible, hide the entire row
           if (visibleFolders.size > 1) {
-            // Find the active folder ID
+            // Active pill follows the domain filter; custom folders (#101)
+            // resolve by their folder id.
             val activeFolderId = when (val f = activeFilter.value) {
               null -> "all"
               is ActiveFilter.Unread -> "unread"
+              is ActiveFilter.CustomFolder -> f.folderId
               is ActiveFilter.PresetTag -> when (f.tag) {
                 PresetTagKind.CONTACTS -> "direct"
                 PresetTagKind.GROUPS -> "groups"
@@ -177,7 +170,7 @@ internal fun BoxScope.ChatListContent(
               else -> "all"
             }
 
-            // #83: the pill counts exactly what the Unread filter will list  - 
+            // #83: the pill counts exactly what the Unread filter will list  -
             // chats matching the same unreadTag predicate over the same listable
             // set. The old sumOf(unreadCount) counted unread MESSAGES across all
             // chats including the hidden invitation chats (FB-12/13), producing a
@@ -191,13 +184,14 @@ internal fun BoxScope.ChatListContent(
               activeFolderId = activeFolderId,
               totalUnread = totalUnread,
               onFolderSelected = { folder ->
-                chatModel.activeChatTagFilter.value = when (folder.id) {
-                  "all" -> null
-                  "unread" -> ActiveFilter.Unread
-                  "direct" -> ActiveFilter.PresetTag(PresetTagKind.CONTACTS)
-                  "groups" -> ActiveFilter.PresetTag(PresetTagKind.GROUPS)
-                  "favorites" -> ActiveFilter.PresetTag(PresetTagKind.FAVORITES)
-                  else -> null // Custom folders default to ALL for now
+                chatModel.activeChatTagFilter.value = when {
+                  folder.id == "all" -> null
+                  folder.id == "unread" -> ActiveFilter.Unread
+                  folder.isCustom -> ActiveFilter.CustomFolder(folder.id)
+                  folder.id == "direct" -> ActiveFilter.PresetTag(PresetTagKind.CONTACTS)
+                  folder.id == "groups" -> ActiveFilter.PresetTag(PresetTagKind.GROUPS)
+                  folder.id == "favorites" -> ActiveFilter.PresetTag(PresetTagKind.FAVORITES)
+                  else -> null
                 }
               },
               onManageClick = {

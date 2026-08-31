@@ -1121,6 +1121,8 @@ object ChatModel {
     val clear = when(val f = activeChatTagFilter.value) {
       is ActiveFilter.PresetTag -> (presetTags[f.tag] ?: 0) == 0
       is ActiveFilter.UserTag -> userTags.value.none { it.chatTagId == f.tag.chatTagId }
+      // #101: custom folders are local-only, no counts track them
+      is ActiveFilter.CustomFolder -> false
       is ActiveFilter.Unread, null -> false
     }
     if (clear) activeChatTagFilter.value = null
