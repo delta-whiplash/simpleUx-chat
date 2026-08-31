@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -80,6 +81,12 @@ private fun CIMetaText(
 ) {
   val showSignature = appPreferences.privacyShowSignature.state.value
   val showEncryption = appPreferences.privacyShowEncryption.state.value
+  // #81: icon heights are in sp (not dp) so the drawn row scales exactly like
+  // the NBSP string reserveSpaceForMeta builds — with fixed-dp icons any font
+  // scale under ~1.1 under-reserved the row and the meta overlaid the text.
+  val d = LocalDensity.current
+  val metaIconHeight = with(d) { 17.sp.toDp() }
+  val metaSpacer = with(d) { 4.sp.toDp() }
   if (showEdited && meta.itemEdited) {
     StatusIconText(painterResource(MR.images.ic_edit), color)
   }
@@ -91,16 +98,16 @@ private fun CIMetaText(
     }
   }
   if (showViaProxy && meta.sentViaProxy == true) {
-    Spacer(Modifier.width(4.dp))
-    Icon(painterResource(MR.images.ic_arrow_forward), null, Modifier.height(17.dp), tint = MaterialTheme.colors.secondary)
+    Spacer(Modifier.width(metaSpacer))
+    Icon(painterResource(MR.images.ic_arrow_forward), null, Modifier.height(metaIconHeight), tint = MaterialTheme.colors.secondary)
   }
   if (showStatus) {
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(metaSpacer))
     val statusIcon = meta.statusIcon(MaterialTheme.colors.primary, color, paleColor)
     if (statusIcon != null) {
       val (icon, statusColor) = statusIcon
       if (meta.itemStatus is CIStatus.SndSent || meta.itemStatus is CIStatus.SndRcvd) {
-        Icon(painterResource(icon), null, Modifier.height(17.dp), tint = statusColor)
+        Icon(painterResource(icon), null, Modifier.height(metaIconHeight), tint = statusColor)
       } else {
         StatusIconText(painterResource(icon), statusColor)
       }
@@ -109,14 +116,14 @@ private fun CIMetaText(
     }
   }
   if (encrypted != null && showEncryption) {
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(metaSpacer))
     StatusIconText(painterResource(if (encrypted) MR.images.ic_lock else MR.images.ic_lock_open_right), color)
   }
   if (showSignature && meta.msgVerified?.verified == true && signedFileVerified != false) {
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(metaSpacer))
     StatusIconText(painterResource(MR.images.ic_verified), color)
   } else if (meta.msgVerified is MsgVerified.SigMissing) {
-    Spacer(Modifier.width(4.dp))
+    Spacer(Modifier.width(metaSpacer))
     StatusIconText(painterResource(MR.images.ic_verified_missing), Color.Red)
   }
 
@@ -140,7 +147,10 @@ fun reserveSpaceForMeta(
 ): String {
   val showSignature = appPreferences.privacyShowSignature.state.value
   val showEncryption = appPreferences.privacyShowEncryption.state.value
-  val iconSpace = " \u00A0\u00A0\u00A0"
+  // #81: one more NBSP than before — with the sp-scaled icons the row is now
+  // proportional to the text, and this adds a small constant margin for the
+  // widest indicators (proxy arrow / delivery checks).
+  val iconSpace = " \u00A0\u00A0\u00A0\u00A0"
   val whiteSpace = "\u00A0"
   var res = if (showTimestamp) "" else iconSpace
   var space: String? = null
@@ -196,7 +206,8 @@ fun reserveSpaceForMeta(
 
 @Composable
 private fun StatusIconText(icon: Painter, color: Color) {
-  Icon(icon, null, Modifier.height(12.dp), tint = color)
+  // #81: sp so the icon width scales with the text the NBSP reserve is built from
+  Icon(icon, null, Modifier.height(with(LocalDensity.current) { 12.sp.toDp() }), tint = color)
 }
 
 @Preview
