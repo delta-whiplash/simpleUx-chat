@@ -1,8 +1,8 @@
 name: simpleux-frontend
 
-# CI for the SimpleUX fork layer (Kotlin/Compose), which build.yml does not cover:
-# build.yml's pull_request paths filter never matches apps/multiplatform/**, so
-# every fork change was previously merged with zero build/test verification.
+# CI for the SimpleUX fork layer (Kotlin/Compose Android), which build.yml does
+# not cover. Android-only by scope (issue #100): the desktop compile/test gates
+# stay local; this workflow validates what we actually ship.
 
 on:
   push:
@@ -21,18 +21,18 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: Compile Kotlin (desktop + Android) + desktop tests
+    name: Compile Android Kotlin + lint guardrails
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # nanohttpd is built from this submodule since upstream #7396
           # (replaces the dead JitPack commit-artifact dependency)
           submodules: recursive
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
@@ -40,8 +40,11 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
+      # Dependencies + Gradle build cache: `--build-cache` below feeds
+      # ~/.gradle/caches/build-cache-1, so consecutive runs only recompile
+      # what changed instead of the whole Kotlin tree (issue #100).
       - name: Cache Gradle
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.gradle/caches
@@ -56,18 +59,10 @@ jobs:
       # Haskell core (scripts/android/build-android.sh) - not available here
       # and not needed to validate a Kotlin/Compose-only change. Full APK
       # assembly (with upstream's precompiled native libs substituted in) is
-      # what android-quick-apk.yml is for, on demand.
+      # what simpleux-release.yml does on every push to stable.
       - name: Compile Android Kotlin (common + android source sets)
         working-directory: apps/multiplatform
-        run: ./gradlew :common:compileDebugKotlinAndroid --stacktrace
-
-      - name: Compile desktop Kotlin
-        working-directory: apps/multiplatform
-        run: ./gradlew :common:compileKotlinDesktop --stacktrace
-
-      - name: Run desktop/common tests
-        working-directory: apps/multiplatform
-        run: ./gradlew desktopTest --stacktrace
+        run: ./gradlew :common:compileDebugKotlinAndroid --build-cache --stacktrace
 
       - name: Lint guardrails (no raw hex colors, no untranslated literals, no ChatModel singleton defaults in views/ux)
         working-directory: apps/multiplatform/common/src/commonMain/kotlin/chat/simplex/common/views/ux
@@ -149,7 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout (full history - base-SHA diffs need it)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -172,8 +167,8 @@ jobs:
           echo "Diffing against: ${BASE:-<none>}"
 
       # AGENTS.md §1: the model layer is byte-frozen. Update FORK_BASE only
-      # when deliberately rebasing onto a new upstream base - never to make
-      # a failing check pass.
+      # when deliberately rebasing onto a new upstream base - never to make a
+      # failing check pass.
       - name: Model layer is byte-frozen (SimpleXAPI.kt)
         run: |
           FORK_BASE=abd595467

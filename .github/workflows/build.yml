@@ -1,14 +1,18 @@
 name: build
 
+# Upstream's Haskell build pipeline - kept as a merge buffer for upstream
+# syncs, deliberately NOT wired to fork activity (issue #100): pushes to
+# `stable` and `v*-ux.*` fork tags are excluded. Fork changes are validated
+# by simpleux.yml + simpleux-release.yml instead.
 on:
   push:
     branches:
       - master
-      - stable
     tags:
       - "v*"
       - "!*-fdroid"
       - "!*-armv7a"
+      - "!v*-ux.*"
   pull_request:
     paths:
       - "src/**"
