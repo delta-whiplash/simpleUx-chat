@@ -38,6 +38,7 @@ import chat.simplex.common.views.onboarding.SimpleXInfo
 import chat.simplex.common.views.onboarding.WhatsNewView
 import chat.simplex.common.views.onboarding.crowdfundingAvailable
 import chat.simplex.common.views.onboarding.shouldShowWhatsNew
+import chat.simplex.common.views.ux.ChatFoldersSettingsScreen
 import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServersView
 import chat.simplex.res.MR
 
@@ -135,6 +136,7 @@ fun SettingsLayout(
     // Groupe 2 : Préférences
     SectionView(stringResource(MR.strings.settings_section_preferences)) {
       SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF1E293B))
+      SettingsActionItem(painterResource(MR.images.ic_folder_filled), stringResource(MR.strings.settings_chat_folders), showSettingsModal { ChatFoldersSettingsScreen(it, onBack = { /* modal closes automatically */ }) }, badgeColor = Color(0xFFF59E0B))
       if (appPlatform == AppPlatform.ANDROID) {
         SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
       }

@@ -28,7 +28,8 @@ import chat.simplex.common.ui.theme.PlusJakartaSans
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.planAndConnect
-import chat.simplex.common.views.ux.TelegramTopHeader
+import chat.simplex.common.views.ux.ChatsTopBar
+import chat.simplex.common.views.ux.ChatFoldersSettingsScreen
 import chat.simplex.common.views.ux.isCreatedInvitationChat
 import chat.simplex.common.views.ux.components.*
 import chat.simplex.res.MR
@@ -119,7 +120,7 @@ internal fun BoxScope.ChatListContent(
           .fillMaxWidth()
           .background(MaterialTheme.colors.background)
       ) {
-        TelegramTopHeader(
+        ChatsTopBar(
           userPickerState = userPickerState,
           setPerformLA = setPerformLA,
           stopped = stopped,
@@ -132,6 +133,10 @@ internal fun BoxScope.ChatListContent(
         )
 
         if (searchText.value.text.isEmpty() && !searchShowingSimplexLink.value) {
+          // #98: Chat Folders - load visible folders from preferences
+          val chatFolders = remember { mutableStateOf(ChatFoldersPrefs.loadFolders()) }
+          val visibleFolders = chatFolders.value.filter { it.isVisible }.sortedBy { it.order }
+
           // SimpleUX Fast Category Filter Pills
           val currentUxCategory = remember(activeFilter.value) {
             when (val f = activeFilter.value) {
@@ -146,31 +151,55 @@ internal fun BoxScope.ChatListContent(
               else -> UxFilterCategory.ALL
             }
           }
-          // #83: the pill counts exactly what the Unread filter will list  - 
-          // chats matching the same unreadTag predicate over the same listable
-          // set. The old sumOf(unreadCount) counted unread MESSAGES across all
-          // chats including the hidden invitation chats (FB-12/13), producing a
-          // non-zero badge over an empty filter.
-          val totalUnread = remember(allChats.value) {
-            allChats.value.count { it.unreadTag && !isCreatedInvitationChat(it) }
-          }
-          FilterPillsRow(
-            activeCategory = currentUxCategory,
-            totalUnread = totalUnread,
-            onCategorySelected = { cat ->
-              chatModel.activeChatTagFilter.value = if (cat == currentUxCategory) {
-                null
-              } else {
-                when (cat) {
-                  UxFilterCategory.ALL -> null
-                  UxFilterCategory.UNREAD -> ActiveFilter.Unread
-                  UxFilterCategory.DIRECT -> ActiveFilter.PresetTag(PresetTagKind.CONTACTS)
-                  UxFilterCategory.GROUPS -> ActiveFilter.PresetTag(PresetTagKind.GROUPS)
-                  UxFilterCategory.FAVORITES -> ActiveFilter.PresetTag(PresetTagKind.FAVORITES)
+
+          // #98: Auto-hide rule - if only 1 folder visible, hide the entire row
+          if (visibleFolders.size > 1) {
+            // Find the active folder ID
+            val activeFolderId = when (val f = activeFilter.value) {
+              null -> "all"
+              is ActiveFilter.Unread -> "unread"
+              is ActiveFilter.PresetTag -> when (f.tag) {
+                PresetTagKind.CONTACTS -> "direct"
+                PresetTagKind.GROUPS -> "groups"
+                PresetTagKind.FAVORITES -> "favorites"
+                else -> "all"
+              }
+              else -> "all"
+            }
+
+            // #83: the pill counts exactly what the Unread filter will list  - 
+            // chats matching the same unreadTag predicate over the same listable
+            // set. The old sumOf(unreadCount) counted unread MESSAGES across all
+            // chats including the hidden invitation chats (FB-12/13), producing a
+            // non-zero badge over an empty filter.
+            val totalUnread = remember(allChats.value) {
+              allChats.value.count { it.unreadTag && !isCreatedInvitationChat(it) }
+            }
+
+            FilterPillsRow(
+              visibleFolders = visibleFolders,
+              activeFolderId = activeFolderId,
+              totalUnread = totalUnread,
+              onFolderSelected = { folder ->
+                chatModel.activeChatTagFilter.value = when (folder.id) {
+                  "all" -> null
+                  "unread" -> ActiveFilter.Unread
+                  "direct" -> ActiveFilter.PresetTag(PresetTagKind.CONTACTS)
+                  "groups" -> ActiveFilter.PresetTag(PresetTagKind.GROUPS)
+                  "favorites" -> ActiveFilter.PresetTag(PresetTagKind.FAVORITES)
+                  else -> null // Custom folders default to ALL for now
+                }
+              },
+              onManageClick = {
+                ModalManager.start.showModal(cardScreen = true) {
+                  ChatFoldersSettingsScreen(
+                    chatModel = chatModel,
+                    onBack = { ModalManager.start.closeModals() }
+                  )
                 }
               }
-            }
-          )
+            )
+          }
 
           // SimpleUX Active Contacts / Favorites Rail (Collapsible on search)
           val scope = rememberCoroutineScope()
@@ -327,8 +356,6 @@ internal fun BoxScope.ChatListContent(
       }
     }
   }
-
-  StatusBarBackground()
 
   LaunchedEffect(activeFilter.value) {
     searchText.value = TextFieldValue("")

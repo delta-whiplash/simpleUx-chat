@@ -66,7 +66,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import chat.simplex.common.views.chatlist.*
 
 @Composable
-fun TelegramTopHeader(
+fun ChatsTopBar(
   userPickerState: MutableStateFlow<AnimatedViewState>,
   setPerformLA: (Boolean) -> Unit,
   stopped: Boolean,
@@ -79,130 +79,84 @@ fun TelegramTopHeader(
 ) {
   val isDark = isInDarkTheme()
   val showMenu = remember { mutableStateOf(false) }
-  val oneHandUI = remember { appPrefs.oneHandUI.state }
-  val focusRequester = remember { FocusRequester() }
   val focusManager = LocalFocusManager.current
+  val tabState = LocalSimpleUxTab.current
+  val headerScope = rememberCoroutineScope()
+  var kebabCenter by remember { mutableStateOf<Offset?>(null) }
 
   if (searchVisible.value || searchText.value.text.isNotEmpty()) {
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(start = 4.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      NavigationButtonBack(
-        onButtonClicked = {
-          searchText.value = TextFieldValue("")
-          searchVisible.value = false
-          focusManager.clearFocus()
-        },
-        tintColor = if (isDark) Sky400 else Blue600
-      )
-
-      Box(
-        modifier = Modifier
-          .weight(1f)
-          .clip(RoundedCornerShape(16.dp))
-          .background(if (isDark) Color(0x661E293B) else Color(0xEEF1F5F9))
-          .border(
-            1.dp,
-            if (isDark) GlassSpecularHighlight else Color(0x1F000000),
-            RoundedCornerShape(16.dp)
-          )
-          .padding(horizontal = 8.dp, vertical = 2.dp)
-      ) {
-        SearchTextField(
-          modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-          placeholder = stringResource(MR.strings.search_or_paste_simplex_link),
-          alwaysVisible = true,
-          searchText = searchText,
-          enabled = !remember { searchShowingSimplexLink }.value,
-          trailingContent = null,
-          reducedCloseButtonPadding = 0.dp,
-        ) {
-          searchText.value = searchText.value.copy(it)
-        }
-      }
-
-      LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-      }
-
-      val hideSearchOnBack: () -> Unit = {
-        searchText.value = TextFieldValue("")
-        searchVisible.value = false
-        focusManager.clearFocus()
-      }
-      BackHandler(onBack = hideSearchOnBack)
-      KeyChangeEffect(chatModel.currentRemoteHost.value) {
-        hideSearchOnBack()
-      }
-    }
+    // Search mode: use DefaultAppBar with search
+    DefaultAppBar(
+      navigationButton = {
+        NavigationButtonBack(
+          onButtonClicked = {
+            searchText.value = TextFieldValue("")
+            searchVisible.value = false
+            focusManager.clearFocus()
+          },
+          tintColor = if (isDark) Sky400 else Blue600
+        )
+      },
+      onTop = true,
+      showSearch = true,
+      searchAlwaysVisible = true,
+      searchPlaceholder = stringResource(MR.strings.search_or_paste_simplex_link),
+      onSearchValueChanged = { searchText.value = searchText.value.copy(it) },
+      searchTrailingContent = null,
+      solidBackground = true
+    )
   } else {
-    // #87/#94: the top bar card's background extends from screen top (behind
-    // the status bar) down to rounded bottom corners. statusBarsPadding pushes
-    // the CONTENT below the status bar while the background stays full-bleed.
-    Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
-        .background(if (isDark) Color(0xFF141B28) else Color(0xFFF8FAFC))
-        .statusBarsPadding()
-        .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
-      horizontalArrangement = Arrangement.SpaceBetween,
-      verticalAlignment = Alignment.CenterVertically
-    ) {
-      Row(
-        modifier = Modifier
-          .clip(RoundedCornerShape(8.dp))
-          .clickable {
-            // #86: single instance - rapid repeated taps on the title must
-            // never stack copies of the Connection Status sheet.
-            if (!ModalManager.start.hasModalOpen(ModalViewId.CONNECTION_STATUS)) {
-              ModalManager.start.showCustomModal(id = ModalViewId.CONNECTION_STATUS) { close ->
-                ServerRadarSheet(
-                  isConnected = chatModel.chatRunning.value == true,
-                  onConfigureServers = {
-                    close()
-                    ModalManager.start.showCustomModal { closeServers ->
-                      NetworkAndServersView(closeServers)
-                    }
-                  },
-                  onClose = close
-                )
+    // Normal mode: title with menu
+    DefaultAppBar(
+      onTop = true,
+      solidBackground = true,
+      title = {
+        Row(
+          modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable {
+              if (!ModalManager.start.hasModalOpen(ModalViewId.CONNECTION_STATUS)) {
+                ModalManager.start.showCustomModal(id = ModalViewId.CONNECTION_STATUS) { close ->
+                  ServerRadarSheet(
+                    isConnected = chatModel.chatRunning.value == true,
+                    onConfigureServers = {
+                      close()
+                      ModalManager.start.showCustomModal { closeServers ->
+                        NetworkAndServersView(closeServers)
+                      }
+                    },
+                    onClose = close
+                  )
+                }
               }
             }
+            .padding(vertical = 4.dp, horizontal = 2.dp),
+          verticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+          Text(
+            text = "SimpleUX",
+            color = if (isDark) AmberGold else Amber600,
+            style = TextStyle(
+              fontFamily = PlusJakartaSans,
+              fontSize = 22.sp,
+              fontWeight = FontWeight.Bold,
+              letterSpacing = 0.5.sp
+            )
+          )
+          val isConnected = chatModel.chatRunning.value == true
+          if (!isConnected) {
+            Box(
+              modifier = Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(Coral500)
+            )
           }
-          .padding(vertical = 4.dp, horizontal = 2.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(6.dp)
-      ) {
-        Text(
-          text = "SimpleUX",
-          color = if (isDark) AmberGold else Amber600,
-          style = TextStyle(
-            fontFamily = PlusJakartaSans,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
-          )
-        )
-        val isConnected = chatModel.chatRunning.value == true
-        if (!isConnected) {
-          Box(
-            modifier = Modifier
-              .size(8.dp)
-              .clip(CircleShape)
-              .background(Coral500)
-          )
         }
-      }
-
-      Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(2.dp)
-      ) {
-        // Search Button - Natural & Borderless
+      },
+      buttons = {
+        // Search Button
         IconButton(onClick = { searchVisible.value = true }) {
           Icon(
             painterResource(MR.images.ic_search),
@@ -212,14 +166,10 @@ fun TelegramTopHeader(
           )
         }
 
-        val headerScope = rememberCoroutineScope()
-        var kebabCenter by remember { mutableStateOf<Offset?>(null) }
+        // Options Menu
         Box {
-          // Options Menu Trigger - Natural & Borderless
           IconButton(
             onClick = { showMenu.value = true },
-            // #14: the theme reveal expands from the tapped control's real window
-            // position, not a hardcoded pixel offset that is wrong on most devices.
             modifier = Modifier.onGloballyPositioned { kebabCenter = it.boundsInWindow().center }
           ) {
             Icon(
@@ -261,8 +211,6 @@ fun TelegramTopHeader(
 
             Divider(color = if (isDark) Color(0x15FFFFFF) else Color(0x10000000), thickness = 0.5.dp)
 
-            val tabState = LocalSimpleUxTab.current
-
             // Profiles & Identities
             val openProfileSwitcher = LocalOpenProfileSwitcher.current
             Row(
@@ -270,9 +218,6 @@ fun TelegramTopHeader(
                 .fillMaxWidth()
                 .clickable {
                   showMenu.value = false
-                  // FB-5: the desktop-only UserPicker is not composed on Android, so flipping
-                  // userPickerState here was dead wiring. Open the real switcher overlay when
-                  // the shell provides it; fall back to the UserPicker on desktop call sites.
                   if (openProfileSwitcher != null) {
                     openProfileSwitcher()
                   } else {
@@ -353,7 +298,7 @@ fun TelegramTopHeader(
           }
         }
       }
-    }
+    )
   }
 
   val view = LocalMultiplatformView()
@@ -398,6 +343,32 @@ fun TelegramTopHeader(
         }
       }
   }
+}
+
+// Kept for backward compatibility - delegates to ChatsTopBar
+@Composable
+fun TelegramTopHeader(
+  userPickerState: MutableStateFlow<AnimatedViewState>,
+  setPerformLA: (Boolean) -> Unit,
+  stopped: Boolean,
+  listState: LazyListState,
+  searchVisible: MutableState<Boolean>,
+  searchText: MutableState<TextFieldValue>,
+  searchShowingSimplexLink: MutableState<Boolean>,
+  searchChatFilteredBySimplexLink: MutableState<Set<String>>,
+  connectNameCandidate: MutableState<String?>
+) {
+  ChatsTopBar(
+    userPickerState = userPickerState,
+    setPerformLA = setPerformLA,
+    stopped = stopped,
+    listState = listState,
+    searchVisible = searchVisible,
+    searchText = searchText,
+    searchShowingSimplexLink = searchShowingSimplexLink,
+    searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
+    connectNameCandidate = connectNameCandidate
+  )
 }
 
 enum class SimpleUxTab {
