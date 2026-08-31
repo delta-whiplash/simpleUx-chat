@@ -3204,6 +3204,10 @@
   <string name="updater_failed">Update failed. Check your connection and try again.</string>
   <string name="updater_auto_check">Check for stable updates automatically</string>
   <string name="updater_auto_available">Install it from Settings → App updates. You can turn automatic checks off there.</string>
+  <!-- SimpleUX updater channel selector (#97) -->
+  <string name="updater_channel_label">Update channel</string>
+  <string name="updater_channel_stable">Stable</string>
+  <string name="updater_channel_rolling">Rolling</string>
   <string name="error_something_went_wrong">Something went wrong. Please try again.</string>
   <!-- FB-D share screen redesign (FB-2, views/ux/share/ShareMediaScreen.kt): English base keys, appended as one block -->
   <string name="share_screen_preview_title">Ready to send</string>
@@ -3227,4 +3231,24 @@
   <string name="invites_status_expired">Expired</string>
   <string name="invites_delete_confirm_title">Delete this link?</string>
   <string name="invites_delete_confirm_text">The link will stop working and its conversation will be removed.</string>
+
+  <!-- #98: Chat Folders customization (Telegram-like) -->
+  <string name="settings_chat_folders">Chat Folders</string>
+  <string name="chat_folders_recommended">Recommended Folders</string>
+  <string name="chat_folders_active">Chat Folders</string>
+  <string name="chat_folders_create_new">Create New Folder</string>
+  <string name="chat_folders_show_tags">Show Folder Tags</string>
+  <string name="chat_folders_add">Add</string>
+  <string name="chat_folders_edit">Edit</string>
+  <string name="chat_folders_delete">Delete</string>
+  <string name="chat_folders_name_hint">Folder name (optional)</string>
+  <string name="chat_folders_emoji_hint">Emoji (optional)</string>
+  <string name="chat_folders_filter_kind">Filter type</string>
+  <string name="chat_folders_all_chats">All Chats</string>
+  <string name="chat_folders_recommended_unread">Unread</string>
+  <string name="chat_folders_recommended_unread_desc">New messages from all chats</string>
+  <string name="chat_folders_recommended_personal">Personal</string>
+  <string name="chat_folders_recommended_personal_desc">Only messages from personal chats</string>
+  <string name="chat_folders_delete_confirm_title">Delete this folder?</string>
+  <string name="chat_folders_delete_confirm_text">The folder will be removed from your chat list.</string>
 </resources>

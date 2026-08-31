@@ -2,6 +2,7 @@ package chat.simplex.app
 
 import chat.simplex.common.views.ux.update.AppUpdateVersionComparison
 import chat.simplex.common.views.ux.update.RELEASES_API_URL
+import chat.simplex.common.views.ux.update.UpdateChannel
 import chat.simplex.common.views.ux.update.compareAppUpdateVersions
 import chat.simplex.common.views.ux.update.selectAppUpdateRelease
 import kotlin.test.Test
@@ -11,7 +12,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
- * Pins the pure logic of the in-app updater (#79): fork-version comparison
+ * Pins the pure logic of the in-app updater (#79, #97): fork-version comparison
  * ("7.0.366-ux.<N>" / "v7.0.366-ux.<N>") and GitHub releases JSON selection.
  * No network: everything parses from String fixtures.
  *
@@ -20,8 +21,8 @@ import kotlin.test.assertTrue
  *    missing "-ux." counter) is NEVER proposed as an update;
  *  - NEWER only when the candidate (upstream base tuple, then fork counter)
  *    is strictly greater than the running version;
- *  - a manual check takes the first release entry (including prereleases  - 
- *    the user dogfoods on rolling); an auto check skips prereleases;
+ *  - ROLLING channel considers all releases and selects the newest by version;
+ *  - STABLE channel only considers stable releases (prerelease=false);
  *  - only assets named `simplex-ux-...-arm64-v8a.apk` are downloadable.
  */
 class AppUpdaterTest {
@@ -159,7 +160,7 @@ class AppUpdaterTest {
 
   @Test
   fun manualCheckTakesFirstReleaseIncludingRolling() {
-    val candidate = selectAppUpdateRelease(releasesFixture, includePrerelease = true)
+    val candidate = selectAppUpdateRelease(releasesFixture, UpdateChannel.ROLLING, "7.0.366-ux.1")
     assertNotNull(candidate)
     assertEquals("rolling", candidate.tagName)
     // The rolling tag is not versionable - the version comes from the asset name.
@@ -174,7 +175,7 @@ class AppUpdaterTest {
 
   @Test
   fun autoCheckSkipsPrereleases() {
-    val candidate = selectAppUpdateRelease(releasesFixture, includePrerelease = false)
+    val candidate = selectAppUpdateRelease(releasesFixture, UpdateChannel.STABLE, "7.0.366-ux.1")
     assertNotNull(candidate)
     assertEquals("v7.0.366-ux.5", candidate.tagName)
     assertEquals("7.0.366-ux.5", candidate.version)
@@ -197,7 +198,7 @@ class AppUpdaterTest {
         }
       ]
     """.trimIndent()
-    val candidate = selectAppUpdateRelease(json, includePrerelease = true)
+    val candidate = selectAppUpdateRelease(json, UpdateChannel.STABLE, "7.0.366-ux.1")
     assertNotNull(candidate)
     assertEquals("simplex-ux-7.0.366-ux.7-arm64-v8a.apk", candidate.apkName)
     assertEquals("https://example.com/arm64.apk", candidate.downloadUrl)
@@ -215,14 +216,14 @@ class AppUpdaterTest {
         }
       ]
     """.trimIndent()
-    assertNull(selectAppUpdateRelease(json, includePrerelease = true))
+    assertNull(selectAppUpdateRelease(json, UpdateChannel.STABLE, "7.0.366-ux.1"))
   }
 
   @Test
   fun emptyOrMalformedReleasesJsonYieldsNull() {
-    assertNull(selectAppUpdateRelease("[]", includePrerelease = true))
-    assertNull(selectAppUpdateRelease("not json at all", includePrerelease = true))
-    assertNull(selectAppUpdateRelease("{}", includePrerelease = true))
+    assertNull(selectAppUpdateRelease("[]", UpdateChannel.STABLE, "7.0.366-ux.1"))
+    assertNull(selectAppUpdateRelease("not json at all", UpdateChannel.STABLE, "7.0.366-ux.1"))
+    assertNull(selectAppUpdateRelease("{}", UpdateChannel.STABLE, "7.0.366-ux.1"))
   }
 
   @Test

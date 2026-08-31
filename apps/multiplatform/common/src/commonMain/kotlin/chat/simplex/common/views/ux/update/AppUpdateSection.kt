@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import chat.simplex.common.BuildConfigCommon
 import chat.simplex.common.platform.UpdaterPrefs
+import chat.simplex.common.platform.UpdateChannel
 import chat.simplex.common.ui.theme.DEFAULT_PADDING
 import chat.simplex.common.ui.theme.DEFAULT_PADDING_HALF
 import chat.simplex.common.ui.theme.HighOrLowlight
@@ -48,13 +49,40 @@ fun AppUpdateSection() {
   val updater = remember(scope, installer) { AppUpdater(scope, installer, BuildConfigCommon.ANDROID_VERSION_NAME) }
   val state by updater.state.collectAsState()
   val autoCheck = remember { mutableStateOf(UpdaterPrefs.autoCheckEnabled()) }
+  val updateChannel = remember { mutableStateOf(UpdaterPrefs.updateChannel()) }
+  
   fun setAutoCheck(enabled: Boolean) {
     autoCheck.value = enabled
     UpdaterPrefs.setAutoCheckEnabled(enabled)
   }
+  
+  fun setUpdateChannel(channel: UpdateChannel) {
+    updateChannel.value = channel
+    UpdaterPrefs.setUpdateChannel(channel)
+  }
 
   SectionView {
     Column {
+      // Update channel selector (#97)
+      SectionItemView(click = { 
+        setUpdateChannel(if (updateChannel.value == UpdateChannel.STABLE) UpdateChannel.ROLLING else UpdateChannel.STABLE)
+      }) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+          Text(
+            generalGetString(MR.strings.updater_channel_label),
+            Modifier.weight(1f),
+            color = MaterialTheme.colors.primary
+          )
+          Text(
+            text = if (updateChannel.value == UpdateChannel.STABLE) 
+              generalGetString(MR.strings.updater_channel_stable)
+            else 
+              generalGetString(MR.strings.updater_channel_rolling),
+            color = MaterialTheme.colors.secondary
+          )
+        }
+      }
+
       // #79: the auto check is opt-in (default off) and only considers stable
       // releases; the manual check below stays the way to learn about rolling.
       // Row tap and Switch go through one setter so both persist.

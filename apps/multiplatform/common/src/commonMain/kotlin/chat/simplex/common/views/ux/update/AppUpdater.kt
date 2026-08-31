@@ -14,9 +14,11 @@ import kotlinx.serialization.json.jsonPrimitive
 import java.net.HttpURLConnection
 import java.net.URL
 import chat.simplex.common.platform.Log
+import chat.simplex.common.platform.UpdateChannel
+import chat.simplex.common.platform.UpdaterPrefs
 
 /** HARD-PINNED to the fork repo - never upstream simplex-chat (pinned by AppUpdaterTest). */
-const val RELEASES_API_URL = "https://api.github.com/repos/delta-whiplash/simpleUx-chat/releases?per_page=5"
+const val RELEASES_API_URL = "https://api.github.com/repos/delta-whiplash/simpleUx-chat/releases?per_page=10"
 
 /** Project home, opened when the user taps the version row in VersionInfoView. */
 const val FORK_PROJECT_URL = "https://github.com/delta-whiplash/simpleUx-chat"
@@ -98,39 +100,65 @@ data class AppUpdateCandidate(
 
 /**
  * Pure structural selection from the GitHub releases JSON (unit-tested offline).
- *
- * @param includePrerelease manual check: the first entry wins (the user dogfoods on rolling).
- *   Auto check (reserved for later): the first entry with `"prerelease": false`.
- * Returns null when no release matches the rules or no entry carries a
+ * 
+ * @param channel The update channel to use (STABLE or ROLLING)
+ * @param currentVersion The current app version for comparison
+ * Returns null when no release matches the channel rules or no entry carries a
  * `simplex-ux-...-arm64-v8a.apk` asset.
  */
-internal fun selectAppUpdateRelease(rawJson: String, includePrerelease: Boolean): AppUpdateCandidate? {
+internal fun selectAppUpdateRelease(rawJson: String, channel: UpdateChannel, currentVersion: String): AppUpdateCandidate? {
   return try {
     val releases = releasesJsonParser.parseToJsonElement(rawJson).jsonArray
-    val release = releases.asSequence()
+    
+    // Filter releases by channel and parse valid candidates
+    val candidates = releases.asSequence()
       .map { it.jsonObject }
-      .firstOrNull { includePrerelease || it["prerelease"]?.jsonPrimitive?.content == "false" }
-    release ?: return null
-    val tagName = release["tag_name"]?.jsonPrimitive?.content ?: return null
-    val assets = release["assets"]?.jsonArray ?: return null
-    val asset = assets.asSequence()
-      .map { it.jsonObject }
-      .firstOrNull { APK_ASSET_REGEX.matches(it["name"]?.jsonPrimitive?.content ?: "") }
-      ?: return null
-    val apkName = asset["name"]?.jsonPrimitive?.content ?: return null
-    val version = if (parseAppUpdateVersion(tagName) != null) tagName.removePrefix("v")
-      else APK_VERSION_REGEX.find(apkName)?.groupValues?.get(1) ?: return null
-    AppUpdateCandidate(
-      tagName = tagName,
-      version = version,
-      apkName = apkName,
-      downloadUrl = asset["browser_download_url"]?.jsonPrimitive?.content ?: return null,
-      sizeBytes = asset["size"]?.jsonPrimitive?.content?.toLongOrNull()
-    )
+      .filter { release ->
+        when (channel) {
+          UpdateChannel.STABLE -> release["prerelease"]?.jsonPrimitive?.content == "false"
+          UpdateChannel.ROLLING -> true // Include all releases for rolling channel
+        }
+      }
+      .mapNotNull { release -> parseReleaseCandidate(release) }
+      .toList()
+    
+    // Find the best candidate by version comparison
+    val currentParsed = parseAppUpdateVersion(currentVersion)
+      ?: parseVersionBase(currentVersion)?.let { AppUpdateVersion(it, 0) }
+    
+    candidates
+      .filter { candidate ->
+        // Only consider candidates newer than current version
+        val candidateParsed = parseAppUpdateVersion(candidate.version)
+        if (candidateParsed == null || currentParsed == null) return@filter false
+        candidateParsed > currentParsed
+      }
+      .maxByOrNull { parseAppUpdateVersion(it.version)?.let { v -> v } ?: AppUpdateVersion(listOf(0), 0) }
+      
   } catch (e: Exception) {
     Log.w(TAG, "Failed to parse releases JSON: ${e.message}")
     null
   }
+}
+
+/** Parse a single release into a candidate, or null if invalid */
+private fun parseReleaseCandidate(release: kotlinx.serialization.json.JsonObject): AppUpdateCandidate? {
+  val tagName = release["tag_name"]?.jsonPrimitive?.content ?: return null
+  val assets = release["assets"]?.jsonArray ?: return null
+  val asset = assets.asSequence()
+    .map { it.jsonObject }
+    .firstOrNull { APK_ASSET_REGEX.matches(it["name"]?.jsonPrimitive?.content ?: "") }
+    ?: return null
+  val apkName = asset["name"]?.jsonPrimitive?.content ?: return null
+  val version = if (parseAppUpdateVersion(tagName) != null) tagName.removePrefix("v")
+    else APK_VERSION_REGEX.find(apkName)?.groupValues?.get(1) ?: return null
+  return AppUpdateCandidate(
+    tagName = tagName,
+    version = version,
+    apkName = apkName,
+    downloadUrl = asset["browser_download_url"]?.jsonPrimitive?.content ?: return null,
+    sizeBytes = asset["size"]?.jsonPrimitive?.content?.toLongOrNull()
+  )
 }
 
 sealed interface AppUpdateState {
@@ -186,15 +214,14 @@ class AppUpdater(
       else -> {}
     }
     _state.value = AppUpdateState.Checking
+    val channel = UpdaterPrefs.updateChannel()
     scope.launch(Dispatchers.IO) {
       try {
         val rawJson = fetchReleasesJson()
-        val candidate = rawJson?.let { selectAppUpdateRelease(it, includePrerelease = true) }
+        val candidate = rawJson?.let { selectAppUpdateRelease(it, channel, currentVersion) }
         _state.value = when {
-          rawJson == null || candidate == null -> AppUpdateState.Failed
-          compareAppUpdateVersions(currentVersion, candidate.version) == AppUpdateVersionComparison.NEWER ->
-            AppUpdateState.UpdateAvailable(candidate)
-          else -> AppUpdateState.UpToDate(currentVersion)
+          rawJson == null || candidate == null -> AppUpdateState.UpToDate(currentVersion)
+          else -> AppUpdateState.UpdateAvailable(candidate)
         }
       } catch (e: CancellationException) {
         throw e
@@ -208,7 +235,7 @@ class AppUpdater(
   /**
    * Silent, opt-in auto check (#79): the user must have enabled it in the
    * updater section (default OFF - zero network at startup otherwise). Only
-   * stable releases (prerelease = false) are considered; any failure or
+   * stable releases are considered for auto-check; any failure or
    * "already current" outcome is swallowed so a background check never
    * bothers the user. A strictly newer stable is pushed both into [state]
    * (visible if the updater section is open) and to [onUpdateAvailable].
@@ -218,11 +245,10 @@ class AppUpdater(
     scope.launch(Dispatchers.IO) {
       runCatching {
         val rawJson = fetchReleasesJson() ?: return@launch
-        val candidate = selectAppUpdateRelease(rawJson, includePrerelease = false) ?: return@launch
-        if (compareAppUpdateVersions(currentVersion, candidate.version) == AppUpdateVersionComparison.NEWER) {
-          _state.value = AppUpdateState.UpdateAvailable(candidate)
-          onUpdateAvailable(candidate)
-        }
+        // Auto-check always uses STABLE channel regardless of user preference
+        val candidate = selectAppUpdateRelease(rawJson, UpdateChannel.STABLE, currentVersion) ?: return@launch
+        _state.value = AppUpdateState.UpdateAvailable(candidate)
+        onUpdateAvailable(candidate)
       }
     }
   }
