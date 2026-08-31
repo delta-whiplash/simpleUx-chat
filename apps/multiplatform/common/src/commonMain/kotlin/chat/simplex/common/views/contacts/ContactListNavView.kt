@@ -101,6 +101,9 @@ fun ContactListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>, showDel
                 disabled,
                 selectedChat,
                 nextChatSelected,
+            selectionActive = false,
+            selectionChecked = false,
+            selectionToggle = null,
             )
         }
         is ChatInfo.ContactRequest -> {
@@ -133,7 +136,10 @@ fun ContactListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>, showDel
                 showMenu,
                 disabled,
                 selectedChat,
-                nextChatSelected)
+                nextChatSelected,
+                selectionActive = false,
+                selectionChecked = false,
+                selectionToggle = null)
         }
         else -> {}
     }

@@ -20,9 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import chat.simplex.common.platform.AppPlatform
+import chat.simplex.common.platform.BackHandler
 import chat.simplex.common.platform.ChatFolder
-import chat.simplex.common.platform.appPlatform
 import chat.simplex.common.ui.theme.AmberGold
 import chat.simplex.common.ui.theme.PlusJakartaSans
 import chat.simplex.common.ui.theme.Slate300
@@ -48,9 +47,7 @@ fun ChatFolderEditDialog(
   var emoji by remember { mutableStateOf(initialFolder?.emoji ?: "") }
   val isDark = isInDarkTheme()
 
-  if (appPlatform == AppPlatform.ANDROID) {
-    androidx.activity.compose.BackHandler(onBack = onDismiss)
-  }
+  BackHandler(onBack = onDismiss)
 
   Box(
     modifier = Modifier

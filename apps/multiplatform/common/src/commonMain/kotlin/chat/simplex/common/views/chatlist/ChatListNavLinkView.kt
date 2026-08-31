@@ -36,8 +36,17 @@ import kotlinx.datetime.Clock
 import chat.simplex.common.views.ux.components.SwipeableChatCard
 
 // Spec: spec/client/chat-list.md#ChatListNavLinkView
+// #102: selection mode - when active, taps toggle the row and long-press no
+// longer opens the context menu (the transformed top bar hosts the actions).
 @Composable
-fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
+fun ChatListNavLinkView(
+  chat: Chat,
+  nextChatSelected: State<Boolean>,
+  selectionActive: Boolean = false,
+  selectionChecked: Boolean = false,
+  onEnterSelection: (() -> Unit)? = null,
+  onToggleSelection: (() -> Unit)? = null
+) {
   val showMenu = remember { mutableStateOf(false) }
   val showMarkRead = remember(chat.chatStats.unreadCount, chat.chatStats.unreadChat) {
     chat.chatStats.unreadCount > 0 || chat.chatStats.unreadChat
@@ -83,10 +92,20 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
   val toggleReadSupported = swipeToggleReadSupported(chat)
   val toggleFavoriteSupported = swipeToggleFavoriteSupported(chat)
 
+  // #102: in selection mode taps toggle instead of opening the chat
+  val effectiveClick: () -> Unit =
+    if (selectionActive && onToggleSelection != null) ({ onToggleSelection() }) else defaultClickAction
+  // long-press: enters selection on a normal list, toggles within it
+  val effectiveLongClick: (() -> Unit)? = when {
+    selectionActive && onToggleSelection != null -> ({ onToggleSelection() })
+    !selectionActive && onEnterSelection != null -> onEnterSelection
+    else -> null
+  }
+
   SwipeableChatCard(
     chat,
     isStarred = isStarred,
-    onClick = defaultClickAction,
+    onClick = effectiveClick,
     onToggleRead = if (toggleReadSupported) ({ c ->
       if (c.unreadTag || c.chatStats.unreadCount > 0) markChatRead(c) else markChatUnread(c, chatModel)
     }) else null,
@@ -110,6 +129,9 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         disabled,
         selectedChat,
         nextChatSelected,
+        selectionActive,
+        selectionChecked,
+        effectiveLongClick,
       )
     }
     is ChatInfo.Group -> {
@@ -129,6 +151,9 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         disabled,
         selectedChat,
         nextChatSelected,
+        selectionActive,
+        selectionChecked,
+        effectiveLongClick,
       )
     }
     is ChatInfo.Local -> {
@@ -148,6 +173,9 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         disabled,
         selectedChat,
         nextChatSelected,
+        selectionActive,
+        selectionChecked,
+        effectiveLongClick,
       )
     }
     is ChatInfo.ContactRequest ->
@@ -167,6 +195,9 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         disabled,
         selectedChat,
         nextChatSelected,
+        selectionActive,
+        selectionChecked,
+        effectiveLongClick,
       )
     is ChatInfo.ContactConnection ->
       ChatListNavLinkLayout(
@@ -187,6 +218,9 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         disabled,
         selectedChat,
         nextChatSelected,
+        selectionActive,
+        selectionChecked,
+        effectiveLongClick,
       )
     is ChatInfo.InvalidJSON ->
       ChatListNavLinkLayout(
@@ -203,6 +237,9 @@ fun ChatListNavLinkView(chat: Chat, nextChatSelected: State<Boolean>) {
         disabled,
         selectedChat,
         nextChatSelected,
+        selectionActive,
+        selectionChecked,
+        effectiveLongClick,
       )
   }
   }
@@ -1115,6 +1152,10 @@ expect fun ChatListNavLinkLayout(
   disabled: Boolean,
   selectedChat: State<Boolean>,
   nextChatSelected: State<Boolean>,
+  // #102 selection mode
+  selectionActive: Boolean,
+  selectionChecked: Boolean,
+  selectionToggle: (() -> Unit)?,
 )
 
 @Preview/*(
@@ -1158,6 +1199,9 @@ fun PreviewChatListNavLinkDirect() {
       disabled = false,
       selectedChat = remember { mutableStateOf(false) },
       nextChatSelected = remember { mutableStateOf(false) },
+      selectionActive = false,
+      selectionChecked = false,
+      selectionToggle = null,
     )
   }
 }
@@ -1203,6 +1247,9 @@ fun PreviewChatListNavLinkGroup() {
       disabled = false,
       selectedChat = remember { mutableStateOf(false) },
       nextChatSelected = remember { mutableStateOf(false) },
+      selectionActive = false,
+      selectionChecked = false,
+      selectionToggle = null,
     )
   }
 }
@@ -1225,6 +1272,9 @@ fun PreviewChatListNavLinkContactRequest() {
       disabled = false,
       selectedChat = remember { mutableStateOf(false) },
       nextChatSelected = remember { mutableStateOf(false) },
+      selectionActive = false,
+      selectionChecked = false,
+      selectionToggle = null,
     )
   }
 }

@@ -23,13 +23,17 @@ actual fun ChatListNavLinkLayout(
   disabled: Boolean,
   selectedChat: State<Boolean>,
   nextChatSelected: State<Boolean>,
+  selectionActive: Boolean,
+  selectionChecked: Boolean,
+  selectionToggle: (() -> Unit)?,
 ) {
   val isDark = isInDarkTheme()
 
-  val rowBg = if (selectedChat.value) {
-    if (isDark) Color(0x3338BDF8) else Color(0x1A0284C7)
-  } else {
-    if (isDark) Color(0xFF131A27) else Color(0xFFFFFFFF)
+  val rowBg = when {
+    // #102: selected rows get the SimpleUX gold wash
+    selectionChecked -> if (isDark) Color(0x33E2B755) else Color(0x1AE2B755)
+    selectedChat.value -> if (isDark) Color(0x3338BDF8) else Color(0x1A0284C7)
+    else -> if (isDark) Color(0xFF131A27) else Color(0xFFFFFFFF)
   }
 
   Box(
@@ -41,8 +45,19 @@ actual fun ChatListNavLinkLayout(
       .then(
         if (!disabled) {
           Modifier
-            .combinedClickable(onClick = click, onLongClick = { showMenu.value = true })
-            .onRightClick { showMenu.value = true }
+            .combinedClickable(
+              onClick = click,
+              onLongClick = {
+                // #102: long-press always enters/toggles selection (Telegram model);
+                // the context menu only exists where no selection is wired
+                if (selectionToggle != null) selectionToggle()
+                else showMenu.value = true
+              }
+            )
+            .onRightClick {
+              if (selectionToggle != null) selectionToggle()
+              else showMenu.value = true
+            }
         } else Modifier
       )
   ) {

@@ -33,15 +33,32 @@ actual fun ChatListNavLinkLayout(
   disabled: Boolean,
   selectedChat: State<Boolean>,
   nextChatSelected: State<Boolean>,
+  selectionActive: Boolean,
+  selectionChecked: Boolean,
+  selectionToggle: (() -> Unit)?,
 ) {
   var modifier = Modifier.fillMaxWidth()
   if (!disabled) modifier = modifier
-    .combinedClickable(onClick = click, onLongClick = { showMenu.value = true })
-    .onRightClick { showMenu.value = true }
+    .combinedClickable(
+      onClick = click,
+      onLongClick = {
+        // #102: long-press always enters/toggles selection (Telegram model);
+        // the context menu only remains where no selection is wired
+        if (selectionToggle != null) selectionToggle()
+        else showMenu.value = true
+      }
+    )
+    .onRightClick {
+      if (selectionToggle != null) selectionToggle()
+      else showMenu.value = true
+    }
   CompositionLocalProvider(
     LocalIndication provides if (selectedChat.value && !disabled) NoIndication else LocalIndication.current
   ) {
     Box(modifier) {
+      if (selectionChecked) {
+        Box(Modifier.matchParentSize().background(MaterialTheme.colors.primary.copy(alpha = 0.12f)))
+      }
       Row(
         modifier = Modifier
           .fillMaxWidth()

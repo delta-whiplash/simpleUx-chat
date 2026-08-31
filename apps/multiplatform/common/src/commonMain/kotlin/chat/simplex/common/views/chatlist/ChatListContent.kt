@@ -30,6 +30,8 @@ import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.planAndConnect
 import chat.simplex.common.views.ux.ChatsTopBar
 import chat.simplex.common.views.ux.ChatFoldersSettingsScreen
+import chat.simplex.common.views.ux.ChatSelectionTopBar
+import chat.simplex.common.views.ux.showAddToFolderModal
 import chat.simplex.common.views.ux.isCreatedInvitationChat
 import chat.simplex.common.views.ux.components.*
 import chat.simplex.res.MR
@@ -61,6 +63,10 @@ internal fun BoxScope.ChatListContent(
 ) {
   val activeFilter = remember { chatModel.activeChatTagFilter }
   val allChats = remember { chatModel.chats }
+  // #102: Telegram-style selection mode - long-press a chat to enter, taps
+  // toggle rows, the top bar morphs into X + count + batch actions.
+  val selectionMode = remember { mutableStateOf(false) }
+  val selectedChatIds = remember { mutableStateListOf<String>() }
   val searchShowingSimplexLink = remember { mutableStateOf(false) }
   val searchChatFilteredBySimplexLink = remember { mutableStateOf<Set<String>>(emptySet()) }
   val connectNameCandidate = remember { mutableStateOf<String?>(null) }
@@ -130,19 +136,45 @@ internal fun BoxScope.ChatListContent(
           .fillMaxWidth()
           .background(MaterialTheme.colors.background)
       ) {
-        ChatsTopBar(
-          userPickerState = userPickerState,
-          setPerformLA = setPerformLA,
-          stopped = stopped,
-          listState = listState,
-          searchVisible = searchVisible,
-          searchText = searchText,
-          searchShowingSimplexLink = searchShowingSimplexLink,
-          searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
-          connectNameCandidate = connectNameCandidate
-        )
+        if (selectionMode.value) {
+          val selectedChats = allChats.value.filter { selectedChatIds.contains(it.id) }
+          ChatSelectionTopBar(
+            count = selectedChatIds.size,
+            anyUnpinned = selectedChats.any { !chatModel.pinnedChatIds.contains(it.id) },
+            anyUnread = selectedChats.any { it.unreadTag || it.chatStats.unreadCount > 0 },
+            onClose = {
+              selectionMode.value = false
+              selectedChatIds.clear()
+            },
+            onPin = {
+              val pinAll = selectedChats.any { !chatModel.pinnedChatIds.contains(it.id) }
+              selectedChats.forEach { chat ->
+                if (chatModel.pinnedChatIds.contains(chat.id) != pinAll) chatModel.togglePinnedChat(chat.id)
+              }
+            },
+            onToggleRead = {
+              val readAll = selectedChats.any { it.unreadTag || it.chatStats.unreadCount > 0 }
+              selectedChats.forEach { chat ->
+                if (readAll) markChatRead(chat) else markChatUnread(chat, chatModel)
+              }
+            },
+            onAddToFolder = { showAddToFolderModal(selectedChatIds) }
+          )
+        } else {
+          ChatsTopBar(
+            userPickerState = userPickerState,
+            setPerformLA = setPerformLA,
+            stopped = stopped,
+            listState = listState,
+            searchVisible = searchVisible,
+            searchText = searchText,
+            searchShowingSimplexLink = searchShowingSimplexLink,
+            searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
+            connectNameCandidate = connectNameCandidate
+          )
+        }
 
-        if (searchText.value.text.isEmpty() && !searchShowingSimplexLink.value) {
+        if (!selectionMode.value && searchText.value.text.isEmpty() && !searchShowingSimplexLink.value) {
           // #98: visible folders re-read whenever the settings modal closes
           // (foldersVersion bump in its onDispose). "All" is always on
           // regardless of stored state - it has no toggle in settings.
@@ -245,7 +277,25 @@ internal fun BoxScope.ChatListContent(
             val nextChatSelected = remember(chat.id, chats) { derivedStateOf {
               chatModel.chatId.value != null && chats.getOrNull(index + 1)?.id == chatModel.chatId.value
             } }
-            ChatListNavLinkView(chat, nextChatSelected)
+            ChatListNavLinkView(
+              chat,
+              nextChatSelected,
+              selectionActive = selectionMode.value,
+              selectionChecked = selectedChatIds.contains(chat.id),
+              onEnterSelection = {
+                selectionMode.value = true
+                selectedChatIds.clear()
+                selectedChatIds.add(chat.id)
+              },
+              onToggleSelection = {
+                if (selectedChatIds.contains(chat.id)) {
+                  selectedChatIds.remove(chat.id)
+                  if (selectedChatIds.isEmpty()) selectionMode.value = false
+                } else {
+                  selectedChatIds.add(chat.id)
+                }
+              }
+            )
           }
 
           if (searchText.value.text.isNotBlank() && chats.isEmpty()) {
