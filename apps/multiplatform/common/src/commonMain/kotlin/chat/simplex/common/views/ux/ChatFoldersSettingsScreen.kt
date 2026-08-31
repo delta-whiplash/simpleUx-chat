@@ -170,22 +170,24 @@ private fun FolderList(
             .weight(1f)
             .padding(start = if (folder.emoji != null) 8.dp else 16.dp)
         )
-        Switch(
-          checked = folder.isVisible,
-          // "All" is the fallback filter: it stays on, otherwise the chat list
-          // can end up with no default folder at all.
-          enabled = folder.id != "all",
-          onCheckedChange = { enabled ->
-            val list = current.map { if (it.id == folder.id) it.copy(isVisible = enabled) else it }
-            onReorder(list)
-          },
-          colors = SwitchDefaults.colors(
-            checkedThumbColor = AmberGold,
-            checkedTrackColor = AmberGold.copy(alpha = 0.3f),
-            uncheckedThumbColor = Slate400,
-            uncheckedTrackColor = Slate200
+        // "All" is the permanent fallback: listed for rename/emoji/reorder but
+        // with no switch at all - it can never be turned off.
+        val isAll = folder.id == "all"
+        if (!isAll) {
+          Switch(
+            checked = folder.isVisible,
+            onCheckedChange = { enabled ->
+              val list = current.map { if (it.id == folder.id) it.copy(isVisible = enabled) else it }
+              onReorder(list)
+            },
+            colors = SwitchDefaults.colors(
+              checkedThumbColor = AmberGold,
+              checkedTrackColor = AmberGold.copy(alpha = 0.3f),
+              uncheckedThumbColor = Slate400,
+              uncheckedTrackColor = Slate200
+            )
           )
-        )
+        }
       }
     }
   }

@@ -138,7 +138,13 @@ internal fun BoxScope.ChatListContent(
           // toggling a folder in settings never reached this composition.
           var foldersVersion by remember { mutableStateOf(0) }
           val visibleFolders = remember(foldersVersion) {
-            ChatFoldersPrefs.loadFolders().filter { it.isVisible }.sortedBy { it.order }
+            // "All" is always on regardless of stored state - it has no toggle in
+            // settings, and forcing it here also heals installs that saved it off
+            // before the lock existed.
+            ChatFoldersPrefs.loadFolders()
+              .map { if (it.id == "all") it.copy(isVisible = true) else it }
+              .filter { it.isVisible }
+              .sortedBy { it.order }
           }
 
           // SimpleUX Fast Category Filter Pills
