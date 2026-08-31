@@ -110,8 +110,17 @@ fun SettingsLayout(
     hideKeyboard(view)
   }
   val notificationsMode = remember { chatModel.controller.appPrefs.notificationsMode.state }
-  ColumnWithScrollBarNoAppBar {
-    Spacer(Modifier.height(8.dp))
+  // Plain scrollable column: the platform ColumnWithScrollBarNoAppBar inserts a
+  // full status-bar-height spacer when oneHandUI is on, stacking it below the
+  // status bar clearance DefaultAppBar(onTop = true) already applied - the gap
+  // above the profile card read as ~60dp.
+  Column(
+    Modifier
+      .fillMaxSize()
+      .verticalScroll(rememberScrollState())
+      .imePadding()
+  ) {
+    Spacer(Modifier.height(4.dp))
 
     UserProfileHeaderCard(
       chatModel = chatModel,
