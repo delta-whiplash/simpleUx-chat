@@ -95,20 +95,23 @@ object ThemeAnimationController {
         revealScope.launch {
             try {
                 animProgress.snapTo(0f)
-                val job = launch {
-                    animProgress.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(durationMillis = 650, easing = FastOutSlowInEasing)
-                    )
-                }
-                delay(180)
+                // #82: apply the theme BEFORE the reveal draws, and without the
+                // system night-mode sync. setApplicationNightMode recreates the
+                // activity (uiMode config change) — that teardown under a
+                // running full-screen animation was the entire jank; the Compose
+                // tree restyles from CurrentColors alone, and the sync still
+                // happens on the next activity create. The opaque overlay disc
+                // (target background) masks the flip near the origin.
                 val targetTheme: String = if (newIsDark) {
                     ChatController.appPrefs.systemDarkTheme.get() ?: DefaultTheme.DARK.themeName
                 } else {
                     DefaultTheme.LIGHT.themeName
                 }
-                ThemeManager.applyTheme(targetTheme)
-                job.join()
+                ThemeManager.applyTheme(targetTheme, syncSystemNightMode = false)
+                animProgress.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                )
             } finally {
                 // ALWAYS reset — also when a screen-scoped scope cancels this coroutine
                 // (e.g. back navigation mid-reveal) — otherwise the hosted overlay

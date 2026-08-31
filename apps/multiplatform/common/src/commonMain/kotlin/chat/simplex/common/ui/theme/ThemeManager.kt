@@ -102,12 +102,18 @@ object ThemeManager {
     )
   }
 
-  fun applyTheme(theme: String) {
+  fun applyTheme(theme: String, syncSystemNightMode: Boolean = true) {
     if (appPrefs.currentTheme.get() != theme) {
       appPrefs.currentTheme.set(theme)
     }
     CurrentColors.value = currentColors(null, null, chatModel.currentUser.value?.uiThemes, appPrefs.themeOverrides.get())
-    platform.androidSetNightModeIfSupported()
+    // #82: setApplicationNightMode recreates the activity (uiMode config
+    // change). An in-app animated toggle must not do that mid-animation — the
+    // Compose tree restyles from CurrentColors alone, and the sync still
+    // happens on the next activity create (MainActivity.onCreate).
+    if (syncSystemNightMode) {
+      platform.androidSetNightModeIfSupported()
+    }
     val c = CurrentColors.value.colors
     platform.androidSetStatusAndNavigationBarAppearance(c.isLight, c.isLight)
   }
