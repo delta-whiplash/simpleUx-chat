@@ -96,7 +96,7 @@ fun TelegramTopHeader(
           searchVisible.value = false
           focusManager.clearFocus()
         },
-        tintColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
+        tintColor = if (isDark) Sky400 else Blue600
       )
 
       Box(
@@ -106,7 +106,7 @@ fun TelegramTopHeader(
           .background(if (isDark) Color(0x661E293B) else Color(0xEEF1F5F9))
           .border(
             1.dp,
-            if (isDark) Color(0x38FFFFFF) else Color(0x1F000000),
+            if (isDark) GlassSpecularHighlight else Color(0x1F000000),
             RoundedCornerShape(16.dp)
           )
           .padding(horizontal = 8.dp, vertical = 2.dp)
@@ -176,7 +176,7 @@ fun TelegramTopHeader(
       ) {
         Text(
           text = "SimpleUX",
-          color = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+          color = if (isDark) AmberGold else Amber600,
           style = TextStyle(
             fontFamily = PlusJakartaSans,
             fontSize = 22.sp,
@@ -190,7 +190,7 @@ fun TelegramTopHeader(
             modifier = Modifier
               .size(8.dp)
               .clip(CircleShape)
-              .background(Color(0xFFEF4444))
+              .background(Coral500)
           )
         }
       }
@@ -204,7 +204,7 @@ fun TelegramTopHeader(
           Icon(
             painterResource(MR.images.ic_search),
             contentDescription = stringResource(MR.strings.search_verb),
-            tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+            tint = if (isDark) Slate300 else Slate600,
             modifier = Modifier.size(22.dp)
           )
         }
@@ -222,7 +222,7 @@ fun TelegramTopHeader(
             Icon(
               painterResource(MR.images.ic_more_vert),
               contentDescription = stringResource(MR.strings.icon_descr_options),
-              tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+              tint = if (isDark) Slate300 else Slate600,
               modifier = Modifier.size(22.dp)
             )
           }
@@ -252,7 +252,7 @@ fun TelegramTopHeader(
                 text = if (isDark) stringResource(MR.strings.theme_mode_light_descr) else stringResource(MR.strings.theme_mode_dark_descr),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                color = if (isDark) Slate50 else Slate900
               )
             }
 
@@ -283,14 +283,14 @@ fun TelegramTopHeader(
               Icon(
                 painterResource(MR.images.ic_supervised_user_circle_filled),
                 contentDescription = null,
-                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                tint = if (isDark) Slate400 else Slate500,
                 modifier = Modifier.size(20.dp)
               )
               Text(
                 text = stringResource(MR.strings.profile_switcher_title),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                color = if (isDark) Slate50 else Slate900
               )
             }
 
@@ -310,14 +310,14 @@ fun TelegramTopHeader(
               Icon(
                 painterResource(MR.images.ic_person_add),
                 contentDescription = null,
-                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                tint = if (isDark) Slate400 else Slate500,
                 modifier = Modifier.size(20.dp)
               )
               Text(
                 text = stringResource(MR.strings.chat_list_new_contact),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                color = if (isDark) Slate50 else Slate900
               )
             }
 
@@ -337,14 +337,14 @@ fun TelegramTopHeader(
               Icon(
                 painterResource(MR.images.ic_settings),
                 contentDescription = null,
-                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                tint = if (isDark) Slate400 else Slate500,
                 modifier = Modifier.size(20.dp)
               )
               Text(
                 text = stringResource(MR.strings.toolbar_settings),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                color = if (isDark) Slate50 else Slate900
               )
             }
           }
@@ -558,7 +558,7 @@ fun BoxScope.TelegramBottomIslandBar(
           brush = Brush.linearGradient(
             listOf(
               if (isDark) Color(0x4DFFFFFF) else Color(0x220F172A),
-              if (isDark) Color(0x1AFFFFFF) else Color(0x0A0F172A)
+              if (isDark) GlassBorderDark else Color(0x0A0F172A)
             )
           ),
           shape = shape
@@ -651,13 +651,13 @@ private fun IslandTabItem(
     SolidColor(Color.Transparent)
   }
 
-  val inactiveColor = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569)
+  val inactiveColor = if (isDark) Slate300 else Slate600
 
   Box(
     modifier = modifier
       .clip(activeShape)
       .background(activeBg)
-      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else Color(0xFFF59E0B), activeShape) else Modifier)
+      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else AmberGold, activeShape) else Modifier)
       .then(
         if (onLongClick != null) {
           Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
@@ -676,7 +676,7 @@ private fun IslandTabItem(
         painterResource(icon),
         contentDescription = label,
         modifier = Modifier.size(20.dp),
-        tint = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFB45309)) else inactiveColor
+        tint = if (isActive) (if (isDark) AmberGold else Color(0xFFB45309)) else inactiveColor
       )
       Spacer(Modifier.height(2.dp))
       // FB-11: labels are single-line; instead of wrapping or ellipsizing the four
@@ -692,7 +692,7 @@ private fun IslandTabItem(
           if (it.hasVisualOverflow && labelFontSize > 8.sp) labelFontSize *= 0.92f
         },
         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
-        color = if (isActive) (if (isDark) Color(0xFFE2B755) else Color(0xFFB45309)) else inactiveColor
+        color = if (isActive) (if (isDark) AmberGold else Color(0xFFB45309)) else inactiveColor
       )
     }
   }

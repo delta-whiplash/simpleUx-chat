@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -118,13 +119,13 @@ fun MessageBubble(
                             listOf(Color(0xFF2563EB), Color(0xFF1D4ED8))
                         )
                     } else {
-                        if (isDark) Brush.linearGradient(listOf(Color(0xFF1E293B), Color(0xFF1E293B)))
-                        else Brush.linearGradient(listOf(Color(0xFFFFFFFF), Color(0xFFFFFFFF)))
+                        if (isDark) Brush.linearGradient(listOf(Slate800, Slate800))
+                        else Brush.linearGradient(listOf(Slate50, Slate50))
                     }
                 )
                 .border(
                     width = 1.dp,
-                    color = if (isSentByMe) Color(0x33FFFFFF) else (if (isDark) Color(0x22FFFFFF) else Color(0xFFE2E8F0)),
+                    color = if (isSentByMe) GlassBorderDark else (if (isDark) GlassBorderDark else Slate200),
                     shape = bubbleShape
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
@@ -136,7 +137,7 @@ fun MessageBubble(
                         text = senderName,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF38BDF8),
+                        color = Sky400,
                         modifier = Modifier.padding(bottom = 2.dp)
                     )
                 }
@@ -156,7 +157,7 @@ fun MessageBubble(
                                 .width(3.dp)
                                 .height(28.dp)
                                 .clip(RoundedCornerShape(1.5.dp))
-                                .background(if (isSentByMe) Color(0xFF93C5FD) else Color(0xFF38BDF8))
+                                .background(if (isSentByMe) Color(0xFF93C5FD) else Sky400)
                         )
                         Spacer(Modifier.width(6.dp))
                         Column {
@@ -165,7 +166,7 @@ fun MessageBubble(
                                     text = quotedSender,
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSentByMe) Color(0xFFDBEAFE) else (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)),
+                                    color = if (isSentByMe) Color(0xFFDBEAFE) else (if (isDark) Sky400 else Blue600),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )

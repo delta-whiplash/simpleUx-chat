@@ -19,6 +19,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -128,7 +129,7 @@ fun VoiceWaveformPlayer(
             Text(
                 text = durationFormatted,
                 fontSize = 11.sp,
-                color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                color = if (isDark) Slate400 else Slate500,
                 fontWeight = FontWeight.Medium
             )
         }
@@ -140,7 +141,7 @@ fun VoiceWaveformPlayer(
                 .background(if (isDark) Color(0x331E293B) else Color(0x140F172A))
                 .border(
                     width = 1.dp,
-                    color = if (isDark) Color(0x22FFFFFF) else Color(0x1A000000),
+                    color = if (isDark) GlassBorderDark else Color(0x1A000000),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .clickable(

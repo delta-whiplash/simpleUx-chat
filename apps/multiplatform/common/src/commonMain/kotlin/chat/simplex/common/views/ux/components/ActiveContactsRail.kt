@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.*
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.ChatInfoImage
 import chat.simplex.common.views.helpers.ProfileImage
@@ -100,10 +101,10 @@ fun ActiveContactsRail(
                                     .background(
                                         when {
                                             hasUnread -> Brush.linearGradient(
-                                                listOf(Color(0xFFE2B755), Color(0xFFD97706))
+                                                listOf(AmberGold, Amber600)
                                             )
                                             isFavorite -> Brush.linearGradient(
-                                                listOf(Color(0xFFF59E0B), Color(0xFFD97706))
+                                                listOf(AmberGold, Amber600)
                                             )
                                             isDark -> Brush.linearGradient(
                                                 listOf(Color(0x44E2B755), Color(0x221E293B))
@@ -119,7 +120,7 @@ fun ActiveContactsRail(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .clip(CircleShape)
-                                        .background(if (isDark) Color(0xFF0F172A) else Color(0xFFF8FAFC)),
+                                        .background(if (isDark) Slate900 else Slate50),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     ChatInfoImage(
@@ -136,8 +137,8 @@ fun ActiveContactsRail(
                                         .size(16.dp)
                                         .align(Alignment.BottomEnd)
                                         .clip(CircleShape)
-                                        .background(Color(0xFFF59E0B))
-                                        .border(1.5.dp, if (isDark) Color(0xFF0F172A) else Color.White, CircleShape),
+                                        .background(AmberGold)
+                                        .border(1.5.dp, if (isDark) Slate900 else Color.White, CircleShape),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Icon(
@@ -152,15 +153,15 @@ fun ActiveContactsRail(
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
                                         .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0xFFE2B755))
-                                        .border(1.5.dp, if (isDark) Color(0xFF0F172A) else Color.White, RoundedCornerShape(8.dp))
+                                        .background(AmberGold)
+                                        .border(1.5.dp, if (isDark) Slate900 else Color.White, RoundedCornerShape(8.dp))
                                         .padding(horizontal = 4.dp, vertical = 1.dp)
                                     ) {
                                     Text(
                                         text = if (unreadCnt > 9) "9+" else if (unreadCnt > 0) "$unreadCnt" else "•",
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF0F172A)
+                                        color = Slate900
                                     )
                                 }
                             }
@@ -174,7 +175,7 @@ fun ActiveContactsRail(
                             overflow = TextOverflow.Ellipsis,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
-                            color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B),
+                            color = if (isDark) Slate200 else Slate800,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.fillMaxWidth()
                         )

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.platform.SimpleUXHapticType
 import chat.simplex.common.platform.performHapticFeedback
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.bounceClick
 import chat.simplex.res.MR
@@ -69,7 +70,7 @@ fun QuickRepliesBar(
                         .background(if (isDark) Color(0x331E293B) else Color(0xEEF1F5F9))
                         .border(
                             1.dp,
-                            if (isDark) Color(0x33FFFFFF) else Color(0x1F000000),
+                            if (isDark) GlassBorderDark else Color(0x1F000000),
                             pillShape
                         )
                         .bounceClick(scaleDown = 0.94f)
@@ -84,7 +85,7 @@ fun QuickRepliesBar(
                         text = reply,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Medium,
-                        color = if (isDark) Color(0xFF94A3B8) else Color(0xFF475569)
+                        color = if (isDark) Slate400 else Slate600
                     )
                 }
             }

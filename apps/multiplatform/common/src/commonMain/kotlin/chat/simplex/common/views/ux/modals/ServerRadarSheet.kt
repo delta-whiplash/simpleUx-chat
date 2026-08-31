@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -34,7 +35,7 @@ fun ServerRadarSheet(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .background(if (isDark) Color(0xFF0F172A) else Color(0xFFFFFFFF))
+            .background(if (isDark) Slate900 else Slate50)
             .windowInsetsPadding(WindowInsets.navigationBars)
             .padding(20.dp)
     ) {
@@ -58,13 +59,13 @@ fun ServerRadarSheet(
                 modifier = Modifier
                     .size(12.dp)
                     .clip(CircleShape)
-                    .background(if (isConnected) Color(0xFF10B981) else Color(0xFFEF4444))
+                    .background(if (isConnected) Emerald500 else Coral500)
             )
             Text(
                 text = stringResource(MR.strings.server_radar_title),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                color = if (isDark) Slate50 else Slate900
             )
         }
 
@@ -76,7 +77,7 @@ fun ServerRadarSheet(
             else
                 stringResource(MR.strings.status_relay_pending),
             fontSize = 13.sp,
-            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+            color = if (isDark) Slate400 else Slate500
         )
 
         Spacer(Modifier.height(16.dp))
@@ -87,7 +88,7 @@ fun ServerRadarSheet(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
                 .background(if (isDark) Color(0x1F1E293B) else Color(0x0F0F172A))
-                .border(1.dp, if (isDark) Color(0x22FFFFFF) else Color(0x14000000), RoundedCornerShape(16.dp))
+                .border(1.dp, if (isDark) GlassBorderDark else GlassBorderLight, RoundedCornerShape(16.dp))
                 .padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -95,28 +96,28 @@ fun ServerRadarSheet(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(MR.strings.server_radar_net_proto), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-                Text(stringResource(MR.strings.server_radar_net_proto_val), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A))
+                Text(stringResource(MR.strings.server_radar_net_proto), fontSize = 13.sp, color = if (isDark) Slate400 else Slate500)
+                Text(stringResource(MR.strings.server_radar_net_proto_val), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Slate50 else Slate900)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(MR.strings.server_radar_file_transfer), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-                Text(stringResource(MR.strings.server_radar_file_transfer_val), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A))
+                Text(stringResource(MR.strings.server_radar_file_transfer), fontSize = 13.sp, color = if (isDark) Slate400 else Slate500)
+                Text(stringResource(MR.strings.server_radar_file_transfer_val), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = if (isDark) Slate50 else Slate900)
             }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(stringResource(MR.strings.server_radar_file_isolation), fontSize = 13.sp, color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
-                Text(stringResource(MR.strings.server_radar_unidirectional), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF10B981))
+                Text(stringResource(MR.strings.server_radar_file_isolation), fontSize = 13.sp, color = if (isDark) Slate400 else Slate500)
+                Text(stringResource(MR.strings.server_radar_unidirectional), fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Emerald500)
             }
             Spacer(Modifier.height(2.dp))
             Text(
                 text = stringResource(MR.strings.server_radar_illustrative_notice),
                 fontSize = 12.sp,
-                color = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+                color = if (isDark) Slate500 else Slate400
             )
         }
 
@@ -158,7 +159,7 @@ fun ServerRadarSheet(
         ) {
             Text(
                 text = stringResource(MR.strings.modal_close),
-                color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                color = if (isDark) Slate50 else Slate900,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium
             )

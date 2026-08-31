@@ -1,5 +1,7 @@
 package chat.simplex.common.views.ux.components
 
+import chat.simplex.common.ui.theme.*
+
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
@@ -62,10 +64,10 @@ object FullscreenEmojiEffectManager {
             val vy = (kotlin.math.sin(angle) * speed).toFloat() - 250f
             val color = when (type) {
                 EmojiBurstType.HEARTS -> listOf(Color(0xFFFF2D55), Color(0xFFFF375F), Color(0xFFFF6482), Color(0xFFFFB3C6)).random(rnd)
-                EmojiBurstType.FIREWORKS -> listOf(Color(0xFFE2B755), Color(0xFF38BDF8), Color(0xFF10B981), Color(0xFFA855F7), Color(0xFFF43F5E)).random(rnd)
-                EmojiBurstType.CONFETTI -> listOf(Color(0xFFF59E0B), Color(0xFF3B82F6), Color(0xFF10B981), Color(0xFFEC4899), Color(0xFF8B5CF6)).random(rnd)
+                EmojiBurstType.FIREWORKS -> listOf(AmberGold, Sky400, Emerald500, Color(0xFFA855F7), Color(0xFFF43F5E)).random(rnd)
+                EmojiBurstType.CONFETTI -> listOf(AmberGold, Color(0xFF3B82F6), Emerald500, Color(0xFFEC4899), Color(0xFF8B5CF6)).random(rnd)
                 EmojiBurstType.FIRE -> listOf(Color(0xFFFF4500), Color(0xFFFF8C00), Color(0xFFFFD700), Color(0xFFFF3300)).random(rnd)
-                EmojiBurstType.THUMBS_UP -> listOf(Color(0xFF38BDF8), Color(0xFF0284C7), Color(0xFFE2B755)).random(rnd)
+                EmojiBurstType.THUMBS_UP -> listOf(Sky400, Color(0xFF0284C7), AmberGold).random(rnd)
             }
             particles.add(
                 Particle(

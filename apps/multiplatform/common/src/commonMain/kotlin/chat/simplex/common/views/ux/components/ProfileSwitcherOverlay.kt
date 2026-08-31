@@ -98,8 +98,8 @@ fun ProfileSwitcherOverlay(
         ) {
           val cardShape = RoundedCornerShape(26.dp)
           val cardBg = if (isDark) Color(0xF7182232) else Color(0xFCFFFFFF)
-          val cardBorder = if (isDark) Color(0x4DE2B755) else Color(0x33D97706)
-          val goldAccent = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+          val cardBorder = if (isDark) AmberGoldRim else Color(0x33D97706)
+          val goldAccent = if (isDark) AmberGold else Amber600
 
           Surface(
             modifier = Modifier
@@ -151,7 +151,7 @@ fun ProfileSwitcherOverlay(
                         fontFamily = PlusJakartaSans,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                        color = if (isDark) Slate50 else Slate900
                       )
                     )
                     Text(
@@ -159,7 +159,7 @@ fun ProfileSwitcherOverlay(
                       style = TextStyle(
                         fontFamily = PlusJakartaSans,
                         fontSize = 12.sp,
-                        color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                        color = if (isDark) Slate400 else Slate500
                       )
                     )
                   }
@@ -170,12 +170,12 @@ fun ProfileSwitcherOverlay(
                   modifier = Modifier
                     .size(32.dp)
                     .clip(CircleShape)
-                    .background(if (isDark) Color(0x2AFFFFFF) else Color(0x14000000))
+                    .background(if (isDark) Color(0x2AFFFFFF) else GlassBorderLight)
                 ) {
                   Icon(
                     painter = painterResource(MR.images.ic_close),
                     contentDescription = stringResource(MR.strings.modal_close),
-                    tint = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+                    tint = if (isDark) Slate300 else Slate600,
                     modifier = Modifier.size(16.dp)
                   )
                 }
@@ -183,7 +183,7 @@ fun ProfileSwitcherOverlay(
 
               Spacer(Modifier.height(14.dp))
               Divider(
-                color = if (isDark) Color(0x22FFFFFF) else Color(0x14000000),
+                color = if (isDark) GlassBorderDark else GlassBorderLight,
                 thickness = 0.5.dp
               )
               Spacer(Modifier.height(10.dp))
@@ -252,7 +252,7 @@ fun ProfileSwitcherOverlay(
                           .clip(CircleShape)
                           .border(
                             width = if (isActive) 2.dp else 1.dp,
-                            color = if (isActive) goldAccent else (if (isDark) Color(0x33FFFFFF) else Color(0x1F000000)),
+                            color = if (isActive) goldAccent else (if (isDark) GlassBorderDark else Color(0x1F000000)),
                             shape = CircleShape
                           ),
                         contentAlignment = Alignment.Center
@@ -269,8 +269,8 @@ fun ProfileSwitcherOverlay(
                               .background(
                                 Brush.linearGradient(
                                   if (isActive) listOf(goldAccent, goldAccent.copy(alpha = 0.8f))
-                                  else if (isDark) listOf(Color(0xFF475569), Color(0xFF334155))
-                                  else listOf(Color(0xFFCBD5E1), Color(0xFF94A3B8))
+                                  else if (isDark) listOf(Slate600, Slate700)
+                                  else listOf(Slate300, Slate400)
                                 )
                               ),
                             contentAlignment = Alignment.Center
@@ -281,7 +281,7 @@ fun ProfileSwitcherOverlay(
                                 fontFamily = PlusJakartaSans,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = if (isActive) (if (isDark) Color(0xFF0F172A) else Color.White) else Color.White
+                                color = if (isActive) (if (isDark) Slate900 else Color.White) else Color.White
                               )
                             )
                           }
@@ -300,7 +300,7 @@ fun ProfileSwitcherOverlay(
                               fontFamily = PlusJakartaSans,
                               fontSize = 14.sp,
                               fontWeight = if (isActive) FontWeight.Bold else FontWeight.SemiBold,
-                              color = if (isActive) goldAccent else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
+                              color = if (isActive) goldAccent else (if (isDark) Slate100 else Slate900)
                             ),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -318,7 +318,7 @@ fun ProfileSwitcherOverlay(
                           style = TextStyle(
                             fontFamily = PlusJakartaSans,
                             fontSize = 12.sp,
-                            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                            color = if (isDark) Slate400 else Slate500
                           ),
                           maxLines = 1,
                           overflow = TextOverflow.Ellipsis
@@ -361,7 +361,7 @@ fun ProfileSwitcherOverlay(
                       Icon(
                         painter = painterResource(MR.images.ic_arrow_forward),
                         contentDescription = null,
-                        tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+                        tint = if (isDark) Slate500 else Slate400,
                         modifier = Modifier.size(16.dp)
                       )
                     }
@@ -371,7 +371,7 @@ fun ProfileSwitcherOverlay(
 
               Spacer(Modifier.height(14.dp))
               Divider(
-                color = if (isDark) Color(0x22FFFFFF) else Color(0x14000000),
+                color = if (isDark) GlassBorderDark else GlassBorderLight,
                 thickness = 0.5.dp
               )
               Spacer(Modifier.height(14.dp))
@@ -395,7 +395,7 @@ fun ProfileSwitcherOverlay(
                   shape = RoundedCornerShape(14.dp),
                   colors = ButtonDefaults.buttonColors(
                     backgroundColor = goldAccent,
-                    contentColor = if (isDark) Color(0xFF0F172A) else Color.White
+                    contentColor = if (isDark) Slate900 else Color.White
                   ),
                   elevation = ButtonDefaults.elevation(defaultElevation = 2.dp),
                   contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
@@ -404,7 +404,7 @@ fun ProfileSwitcherOverlay(
                     painter = painterResource(MR.images.ic_add),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = if (isDark) Color(0xFF0F172A) else Color.White
+                    tint = if (isDark) Slate900 else Color.White
                   )
                   Spacer(Modifier.width(6.dp))
                   Text(
@@ -413,7 +413,7 @@ fun ProfileSwitcherOverlay(
                       fontFamily = PlusJakartaSans,
                       fontSize = 13.sp,
                       fontWeight = FontWeight.Bold,
-                      color = if (isDark) Color(0xFF0F172A) else Color.White
+                      color = if (isDark) Slate900 else Color.White
                     )
                   )
                 }
@@ -444,16 +444,16 @@ fun ProfileSwitcherOverlay(
                   shape = RoundedCornerShape(14.dp),
                   colors = ButtonDefaults.outlinedButtonColors(
                     backgroundColor = if (isDark) Color(0x331E293B) else Color(0x80F1F5F9),
-                    contentColor = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)
+                    contentColor = if (isDark) Slate200 else Slate800
                   ),
-                  border = BorderStroke(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000)),
+                  border = BorderStroke(1.dp, if (isDark) GlassBorderDark else Color(0x1F000000)),
                   contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
                 ) {
                   Icon(
                     painter = painterResource(MR.images.ic_settings),
                     contentDescription = null,
                     modifier = Modifier.size(15.dp),
-                    tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    tint = if (isDark) Slate400 else Slate500
                   )
                   Spacer(Modifier.width(6.dp))
                   Text(
@@ -462,7 +462,7 @@ fun ProfileSwitcherOverlay(
                       fontFamily = PlusJakartaSans,
                       fontSize = 13.sp,
                       fontWeight = FontWeight.SemiBold,
-                      color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)
+                      color = if (isDark) Slate200 else Slate800
                     )
                   )
                 }

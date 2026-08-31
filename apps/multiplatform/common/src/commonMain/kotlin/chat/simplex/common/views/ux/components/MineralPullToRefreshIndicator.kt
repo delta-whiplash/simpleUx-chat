@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -61,7 +62,7 @@ fun MineralPullToRefreshIndicator(
                             listOf(
                                 Color(0x00E2B755),
                                 Color(0x6638BDF8),
-                                Color(0xFFE2B755)
+                                AmberGold
                             )
                         ),
                         startAngle = 0f,
@@ -74,7 +75,7 @@ fun MineralPullToRefreshIndicator(
                 // Progressive arc filling with pull gesture
                 Canvas(modifier = Modifier.size(24.dp)) {
                     drawArc(
-                        color = if (isDark) Color(0xFFE2B755) else Color(0xFFF59E0B),
+                        color = if (isDark) AmberGold else AmberGold,
                         startAngle = -90f,
                         sweepAngle = (pullFraction * 360f).coerceIn(0f, 360f),
                         useCenter = false,
@@ -87,7 +88,7 @@ fun MineralPullToRefreshIndicator(
                     modifier = Modifier
                         .size(14.dp)
                         .rotate((pullFraction * 180f).coerceIn(0f, 180f)),
-                    tint = if (isDark) Color(0xFFE2B755) else Color(0xFFF59E0B)
+                    tint = if (isDark) AmberGold else AmberGold
                 )
             }
         }

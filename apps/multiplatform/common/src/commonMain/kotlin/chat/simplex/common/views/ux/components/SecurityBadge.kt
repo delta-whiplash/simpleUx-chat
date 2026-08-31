@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.Chat
 import chat.simplex.common.model.ChatInfo
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.AlertManager
 import chat.simplex.res.MR
@@ -39,9 +40,9 @@ fun SecurityBadge(
 
     val accentColor = when {
         isVerified -> Color(0xFF00E5FF) // Cyan for Verified
-        encryption == SecurityBadgeEncryption.POST_QUANTUM -> Color(0xFF10B981) // Emerald for Post-Quantum
-        encryption == SecurityBadgeEncryption.STANDARD_E2EE -> if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
-        else -> Color(0xFFEF4444) // Red for Not Encrypted
+        encryption == SecurityBadgeEncryption.POST_QUANTUM -> Emerald500 // Emerald for Post-Quantum
+        encryption == SecurityBadgeEncryption.STANDARD_E2EE -> if (isDark) Slate400 else Slate500
+        else -> Coral500 // Red for Not Encrypted
     }
 
     val alertTitle = stringResource(MR.strings.security_badge_alert_title)

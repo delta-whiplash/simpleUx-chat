@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.stringResource
@@ -41,9 +42,9 @@ fun ZeroJargonOnboarding(
 ) {
     val isDark = isInDarkTheme()
     val bgGradient = if (isDark) {
-        Brush.verticalGradient(listOf(Color(0xFF0F172A), Color(0xFF070B14)))
+        Brush.verticalGradient(listOf(Slate900, Color(0xFF070B14)))
     } else {
-        Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF8FAFC)))
+        Brush.verticalGradient(listOf(Slate50, Slate50))
     }
 
     val features = listOf(
@@ -51,19 +52,19 @@ fun ZeroJargonOnboarding(
             icon = "🛡️",
             title = stringResource(MR.strings.onboarding_feature_1_title),
             subtitle = stringResource(MR.strings.onboarding_feature_1_sub),
-            accentColor = Color(0xFF38BDF8)
+            accentColor = Sky400
         ),
         OnboardingFeature(
             icon = "🔒",
             title = stringResource(MR.strings.onboarding_feature_2_title),
             subtitle = stringResource(MR.strings.onboarding_feature_2_sub),
-            accentColor = Color(0xFF10B981)
+            accentColor = Emerald500
         ),
         OnboardingFeature(
             icon = "✨",
             title = stringResource(MR.strings.onboarding_feature_3_title),
             subtitle = stringResource(MR.strings.onboarding_feature_3_sub),
-            accentColor = Color(0xFFF59E0B)
+            accentColor = AmberGold
         )
     )
 
@@ -93,7 +94,7 @@ fun ZeroJargonOnboarding(
                     color = if (isDark) Color(0x33F59E0B) else Color(0xFFFEF3C7),
                     modifier = Modifier.border(
                         1.dp,
-                        if (isDark) Color(0x66F59E0B) else Color(0xFFF59E0B),
+                        if (isDark) Color(0x66F59E0B) else AmberGold,
                         RoundedCornerShape(20.dp)
                     )
                 ) {
@@ -116,7 +117,7 @@ fun ZeroJargonOnboarding(
                         lineHeight = 36.sp,
                         textAlign = TextAlign.Center
                     ),
-                    color = if (isDark) Color.White else Color(0xFF0F172A)
+                    color = if (isDark) Color.White else Slate900
                 )
 
                 Spacer(Modifier.height(28.dp))
@@ -137,7 +138,7 @@ fun ZeroJargonOnboarding(
                                 .padding(vertical = 6.dp)
                                 .border(
                                     1.dp,
-                                    if (isDark) Color(0x26FFFFFF) else Color(0xFFE2E8F0),
+                                    if (isDark) Color(0x26FFFFFF) else Slate200,
                                     RoundedCornerShape(18.dp)
                                 )
                         ) {
@@ -164,14 +165,14 @@ fun ZeroJargonOnboarding(
                                         text = feature.title,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 15.sp,
-                                        color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                                        color = if (isDark) Slate100 else Slate900
                                     )
                                     Spacer(Modifier.height(3.dp))
                                     Text(
                                         text = feature.subtitle,
                                         fontSize = 13.sp,
                                         lineHeight = 18.sp,
-                                        color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                                        color = if (isDark) Slate400 else Slate500
                                     )
                                 }
                             }
@@ -194,7 +195,7 @@ fun ZeroJargonOnboarding(
                         .height(52.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
-                        backgroundColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                        backgroundColor = if (isDark) AmberGold else Amber600,
                         contentColor = if (isDark) Color.Black else Color.White
                     ),
                     elevation = ButtonDefaults.elevation(defaultElevation = 4.dp)
@@ -211,7 +212,7 @@ fun ZeroJargonOnboarding(
                     TextButton(onClick = onClose) {
                         Text(
                             text = stringResource(MR.strings.modal_close),
-                            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                            color = if (isDark) Slate400 else Slate500,
                             fontSize = 14.sp
                         )
                     }

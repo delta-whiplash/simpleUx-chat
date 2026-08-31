@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -57,7 +58,7 @@ fun QuickReactionsBar(
                 .padding(horizontal = 4.dp, vertical = 2.dp)
                 .border(
                     width = 1.dp,
-                    color = if (isDark) Color(0x33FFFFFF) else Color(0x1F000000),
+                    color = if (isDark) GlassBorderDark else Color(0x1F000000),
                     shape = shape
                 )
         ) {
@@ -103,7 +104,7 @@ fun QuickReactionsBar(
                     modifier = Modifier
                         .size(26.dp)
                         .clip(CircleShape)
-                        .background(if (isDark) Color(0x33FFFFFF) else Color(0x14000000))
+                        .background(if (isDark) GlassBorderDark else GlassBorderLight)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
@@ -115,7 +116,7 @@ fun QuickReactionsBar(
                     Icon(
                         painter = painterResource(MR.images.ic_add),
                         contentDescription = stringResource(MR.strings.more_emojis),
-                        tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                        tint = if (isDark) Slate400 else Slate500,
                         modifier = Modifier.size(14.dp)
                     )
                 }

@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.ChatModel
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.ProfileImage
 import chat.simplex.res.MR
@@ -45,7 +46,7 @@ fun QuickProfileSwitcher(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            .background(if (isDark) Color(0xFF0F172A) else Color(0xFFFFFFFF))
+            .background(if (isDark) Slate900 else Slate50)
             .padding(20.dp)
     ) {
         // Drag handle indicator
@@ -64,7 +65,7 @@ fun QuickProfileSwitcher(
             text = stringResource(MR.strings.profile_switcher_title),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+            color = if (isDark) Slate50 else Slate900
         )
 
         Spacer(Modifier.height(12.dp))
@@ -93,7 +94,7 @@ fun QuickProfileSwitcher(
                         .border(
                             width = 1.dp,
                             color = if (isActive) (if (isDark) Color(0x8000E5FF) else Color(0x660284C7))
-                            else (if (isDark) Color(0x22FFFFFF) else Color(0x14000000)),
+                            else (if (isDark) GlassBorderDark else GlassBorderLight),
                             shape = shape
                         )
                         .clickable {
@@ -106,7 +107,7 @@ fun QuickProfileSwitcher(
                     ProfileImage(
                         image = userItem.user.profile?.image,
                         size = 42.dp,
-                        color = if (isDark) Color(0xFF334155) else Color(0xFFE2E8F0)
+                        color = if (isDark) Slate700 else Slate200
                     )
 
                     Spacer(Modifier.width(12.dp))
@@ -116,13 +117,13 @@ fun QuickProfileSwitcher(
                             text = userItem.user.profile?.displayName ?: stringResource(MR.strings.profile_default_name),
                             fontSize = 15.sp,
                             fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
-                            color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+                            color = if (isDark) Slate50 else Slate900
                         )
                         if (isActive) {
                             Text(
                                 text = stringResource(MR.strings.profile_switcher_active),
                                 fontSize = 12.sp,
-                                color = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)
+                                color = if (isDark) Sky400 else Blue600
                             )
                         }
                     }
@@ -196,7 +197,7 @@ fun QuickProfileSwitcher(
                     .weight(1f)
                     .clip(RoundedCornerShape(14.dp))
                     .background(if (isDark) Color(0x331E293B) else Color(0x140F172A))
-                    .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), RoundedCornerShape(14.dp))
+                    .border(1.dp, if (isDark) GlassBorderDark else Color(0x1F000000), RoundedCornerShape(14.dp))
                     .clickable {
                         onNewProfileClicked()
                         onClose()
@@ -211,12 +212,12 @@ fun QuickProfileSwitcher(
                     Icon(
                         painter = painterResource(MR.images.ic_add),
                         contentDescription = null,
-                        tint = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                        tint = if (isDark) Slate50 else Slate900,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = stringResource(MR.strings.profile_switcher_new_profile),
-                        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                        color = if (isDark) Slate50 else Slate900,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
                     )

@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import chat.simplex.common.model.ChatController
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.DefaultTheme
 import chat.simplex.common.ui.theme.ThemeManager
 import chat.simplex.res.MR
@@ -149,14 +150,14 @@ fun AnimatedThemeIcon(
             Icon(
                 painter = painterResource(MR.images.ic_light_mode),
                 contentDescription = stringResource(MR.strings.theme_mode_light_descr),
-                tint = Color(0xFFE2B755),
+                tint = AmberGold,
                 modifier = Modifier.size(24.dp)
             )
         } else {
             Icon(
                 painter = painterResource(MR.images.ic_bedtime_moon),
                 contentDescription = stringResource(MR.strings.theme_mode_dark_descr),
-                tint = Color(0xFFD97706),
+                tint = Amber600,
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -169,8 +170,8 @@ fun ThemeCircularRevealOverlay() {
         val progress = ThemeAnimationController.animProgress.value
         val origin = ThemeAnimationController.origin.value
         val targetIsDark = ThemeAnimationController.targetIsDark.value
-        val targetBgColor = if (targetIsDark) Color(0xFF0F172A) else Color(0xFFF8FAFC)
-        val ringColor = if (targetIsDark) Color(0xFFE2B755) else Color(0xFFD97706)
+        val targetBgColor = if (targetIsDark) Slate900 else Slate50
+        val ringColor = if (targetIsDark) AmberGold else Amber600
 
         Canvas(
             modifier = Modifier

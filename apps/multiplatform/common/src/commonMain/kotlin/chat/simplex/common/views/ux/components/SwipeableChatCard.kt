@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.Chat
 import chat.simplex.common.platform.*
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -62,8 +63,8 @@ fun SwipeableChatCard(
                     .matchParentSize()
                     .background(
                         when {
-                            currentOffset > 0 -> if (isUnread) Color(0xFF10B981) else Color(0xFF3B82F6) // Right swipe: Read/Unread
-                            else -> if (isFavorite) Color(0xFFF59E0B) else Color(0xFF8B5CF6) // Left swipe: Favorite
+                            currentOffset > 0 -> if (isUnread) Emerald500 else Color(0xFF3B82F6) // Right swipe: Read/Unread
+                            else -> if (isFavorite) AmberGold else Color(0xFF8B5CF6) // Left swipe: Favorite
                         }
                     )
                     .padding(horizontal = 24.dp),
@@ -115,7 +116,7 @@ fun SwipeableChatCard(
             modifier = Modifier
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .fillMaxWidth()
-                .background(if (abs(offsetX.value) > 1f) (if (isDark) Color(0xFF0F172A) else Color(0xFFFFFFFF)) else Color.Transparent)
+                .background(if (abs(offsetX.value) > 1f) (if (isDark) Slate900 else Slate50) else Color.Transparent)
                 .clickable(
                     enabled = onClick != null,
                     interactionSource = remember { MutableInteractionSource() },

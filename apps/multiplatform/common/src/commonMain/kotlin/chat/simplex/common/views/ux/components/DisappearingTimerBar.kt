@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.DefaultDropdownMenu
 import chat.simplex.res.MR
@@ -65,7 +66,7 @@ fun DisappearingTimerBar(
     val isTimerActive = currentTTL != null
     val shape = RoundedCornerShape(12.dp)
 
-    val activeColor = if (isTimerActive) Color(0xFFF59E0B) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+    val activeColor = if (isTimerActive) AmberGold else (if (isDark) Slate400 else Slate500)
 
     Box(modifier = modifier) {
         Box(
@@ -77,7 +78,7 @@ fun DisappearingTimerBar(
                 )
                 .border(
                     width = 1.dp,
-                    color = if (isTimerActive) activeColor.copy(alpha = 0.4f) else (if (isDark) Color(0x22FFFFFF) else Color(0x1A000000)),
+                    color = if (isTimerActive) activeColor.copy(alpha = 0.4f) else (if (isDark) GlassBorderDark else Color(0x1A000000)),
                     shape = shape
                 )
                 .clickable(
@@ -122,13 +123,13 @@ fun DisappearingTimerBar(
                         Icon(
                             painterResource(if (preset.seconds == currentTTL) MR.images.ic_check else MR.images.ic_timer),
                             contentDescription = ttlPresetLabel(preset.seconds),
-                            tint = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                            tint = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Slate50 else Slate900,
                             modifier = Modifier.size(18.dp)
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(
                             text = ttlPresetLabel(preset.seconds),
-                            color = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+                            color = if (preset.seconds == currentTTL) MaterialTheme.colors.primary else if (isInDarkTheme()) Slate50 else Slate900,
                             fontSize = 14.sp,
                             fontWeight = if (preset.seconds == currentTTL) FontWeight.Bold else FontWeight.Medium
                         )

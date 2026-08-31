@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import chat.simplex.common.model.ChatModel
 import chat.simplex.common.platform.SimpleUXHapticType
 import chat.simplex.common.platform.performHapticFeedback
+import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.bounceClick
 import chat.simplex.res.MR
@@ -80,7 +81,7 @@ fun FilterPillsRow(
                     isSelected && isDark -> Color(0x33E2B755)
                     isSelected && !isDark -> Color(0xFFFEF3C7)
                     isDark -> Color(0x1F1E293B)
-                    else -> Color(0xFFFFFFFF)
+                    else -> Slate50
                 },
                 animationSpec = spring()
             )
@@ -88,19 +89,19 @@ fun FilterPillsRow(
             val borderColor = animateColorAsState(
                 targetValue = when {
                     isSelected && isDark -> Color(0x80E2B755)
-                    isSelected && !isDark -> Color(0xFFF59E0B)
+                    isSelected && !isDark -> AmberGold
                     isDark -> Color(0x2EFFFFFF)
-                    else -> Color(0xFFE2E8F0)
+                    else -> Slate200
                 },
                 animationSpec = spring()
             )
 
             val textColor = animateColorAsState(
                 targetValue = when {
-                    isSelected && isDark -> Color(0xFFE2B755)
+                    isSelected && isDark -> AmberGold
                     isSelected && !isDark -> Color(0xFFB45309)
-                    isDark -> Color(0xFF94A3B8)
-                    else -> Color(0xFF475569)
+                    isDark -> Slate400
+                    else -> Slate600
                 },
                 animationSpec = spring()
             )
@@ -129,7 +130,7 @@ fun FilterPillsRow(
                         Icon(
                             painter = painterResource(MR.images.ic_star_filled),
                             contentDescription = null,
-                            tint = if (isSelected) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else textColor.value,
+                            tint = if (isSelected) (if (isDark) AmberGold else Amber600) else textColor.value,
                             modifier = Modifier.size(14.dp)
                         )
                     }
@@ -147,8 +148,8 @@ fun FilterPillsRow(
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(
                                     Brush.linearGradient(
-                                        if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
-                                        else listOf(Color(0xFFD97706), Color(0xFFB45309))
+                                        if (isDark) listOf(AmberGold, Amber600)
+                                        else listOf(Amber600, Color(0xFFB45309))
                                     )
                                 )
                                 .padding(horizontal = 6.dp, vertical = 1.dp),
@@ -156,7 +157,7 @@ fun FilterPillsRow(
                         ) {
                             Text(
                                 text = if (badgeCount > 99) "99+" else badgeCount.toString(),
-                                color = if (isDark) Color(0xFF0F172A) else Color.White,
+                                color = if (isDark) Slate900 else Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
