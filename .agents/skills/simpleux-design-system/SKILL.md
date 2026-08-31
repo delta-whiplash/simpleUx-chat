@@ -55,9 +55,9 @@ val lightSpecularRim = Brush.verticalGradient(
 - **Links / Connection Azure:** `#38BDF8` (Dark) / `#0284C7` (Light)
 
 ### 2.4 Typography Hierarchy
-- **Primary Text:** `Color(0xFFF8FAFC)` (Dark) / `Color(0xFF0F172A)` (Light) — `FontWeight.Bold` / `SemiBold`
-- **Secondary / Subtitles:** `Color(0xFFCBD5E1)` (Dark) / `Color(0xFF334155)` (Light) — `FontWeight.Medium`
-- **Muted / Section Titles:** `Color(0xFF94A3B8)` (Dark) / `Color(0xFF64748B)` (Light) — `13.sp`, `FontWeight.Normal`
+- **Primary Text:** `Color(0xFFF8FAFC)` (Dark) / `Color(0xFF0F172A)` (Light) - `FontWeight.Bold` / `SemiBold`
+- **Secondary / Subtitles:** `Color(0xFFCBD5E1)` (Dark) / `Color(0xFF334155)` (Light) - `FontWeight.Medium`
+- **Muted / Section Titles:** `Color(0xFF94A3B8)` (Dark) / `Color(0xFF64748B)` (Light) - `13.sp`, `FontWeight.Normal`
 
 ---
 

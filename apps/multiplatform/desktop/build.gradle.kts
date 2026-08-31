@@ -41,7 +41,7 @@ compose {
       mainClass = "chat.simplex.desktop.MainKt"
       nativeDistributions {
         // SimpleUX (frontend-only fork of SimpleX Chat): packaging identity must not
-        // collide with the official SimpleX desktop app — distinct product name,
+        // collide with the official SimpleX desktop app - distinct product name,
         // macOS bundle id and Windows upgrade code (coexistence invariant, AGENTS.md §1).
         copyright = "(c) 2026 SimpleUX contributors, based on SimpleX Chat (c) 2020-2026 SimpleX Chat"
         // For debugging via VisualVM

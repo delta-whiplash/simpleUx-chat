@@ -6,7 +6,7 @@ Chat bot for registering and searching groups. Superusers and admins are configu
 
 ## Prerequisites
 
-- GHC 9.6.3 — install via [GHCup](https://www.haskell.org/ghcup/)
+- GHC 9.6.3 - install via [GHCup](https://www.haskell.org/ghcup/)
 - Cabal 3.10.2+
 
 ---
@@ -16,7 +16,7 @@ Chat bot for registering and searching groups. Superusers and admins are configu
 ```sh
 git clone https://github.com/simplex-chat/simplex-chat
 cd simplex-chat
-# OpenSSL build configuration (required) — copy the file for your OS:
+# OpenSSL build configuration (required) - copy the file for your OS:
 cp scripts/cabal.project.local.linux cabal.project.local   # on macOS: scripts/cabal.project.local.mac
 cabal build simplex-directory-service
 ```
@@ -64,16 +64,16 @@ simplex-directory-service \
 
 ### Flags
 
-`simplex-directory-service` also accepts the standard SimpleX Chat core options (custom SMP/XFTP servers, `--socks-proxy`, network settings, etc.) — run `simplex-directory-service --help` for the complete list. The directory-specific options are:
+`simplex-directory-service` also accepts the standard SimpleX Chat core options (custom SMP/XFTP servers, `--socks-proxy`, network settings, etc.) - run `simplex-directory-service --help` for the complete list. The directory-specific options are:
 
 | Flag | Default | Description |
 |---|---|---|
 | `--super-users ID:NAME[,...]` | *(required)* | Super-user contacts (comma-separated) |
 | `--admin-users ID:NAME[,...]` | none | Admin-only contacts (comma-separated) |
-| `--owners-group ID:NAME` | none | Group (by group ID) that owners of listed groups are invited into — automatically on listing, or via `/invite` |
+| `--owners-group ID:NAME` | none | Group (by group ID) that owners of listed groups are invited into - automatically on listing, or via `/invite` |
 | `-d / --database PATH` | `~/.simplex/simplex_directory_service` | Database file path prefix |
 | `--directory-file PATH` | none | Append-only log of directory state (see [Directory state log](#directory-state-log)) |
-| `--migrate-directory-file check\|import\|export\|listing` | — | Check, import (log → DB), export (DB → log), or regenerate listing files, then exit |
+| `--migrate-directory-file check\|import\|export\|listing` | - | Check, import (log → DB), export (DB → log), or regenerate listing files, then exit |
 | `--web-folder PATH` | none | Write static listing JSON + group images here (see [Hosting the directory page](#hosting-the-directory-page)) |
 | `--no-address` | off | Skip checking/creating the bot's contact address |
 | `--service-name NAME` | `SimpleX Directory` | Bot display name (without `*` characters) |
@@ -85,7 +85,7 @@ simplex-directory-service \
 | `--captcha-generator PATH` | none | Executable that renders a captcha image; without it captchas are sent as plain text |
 | `--voice-captcha-generator PATH` | none | Executable that renders a voice captcha |
 | `--run-cli` | off | Run an interactive CLI alongside the bot (useful for bootstrap) |
-| `-v / --version` | — | Print version and exit |
+| `-v / --version` | - | Print version and exit |
 
 ---
 
@@ -97,21 +97,21 @@ simplex-directory-service \
 
 ## Hosting the Directory Page
 
-The `web/` folder contains a ready-to-use page (`directory.html`) that renders a bot's directory as a searchable, paginated list — no build step. Dark mode follows the system preference.
+The `web/` folder contains a ready-to-use page (`directory.html`) that renders a bot's directory as a searchable, paginated list - no build step. Dark mode follows the system preference.
 
 A few things to know before deploying it:
 
-- **Copy the files out of the repo.** `web/directory.js` is a symlink to `website/src/js/directory.js` (kept in sync with the main website), so don't edit it in place — copy `directory.html` and the *contents* of `directory.js` to your web root and edit the copy. The data URL can't be overridden from `directory.html` because `directory.js` declares it as a top-level `const`.
+- **Copy the files out of the repo.** `web/directory.js` is a symlink to `website/src/js/directory.js` (kept in sync with the main website), so don't edit it in place - copy `directory.html` and the *contents* of `directory.js` to your web root and edit the copy. The data URL can't be overridden from `directory.html` because `directory.js` declares it as a top-level `const`.
 - **Serve it under a `/directory` path.** `directory.js` only initialises when the page path starts with `/directory` (e.g. `https://example.com/directory.html` or `https://example.com/directory/`).
-- **Provide the fallback image.** Groups without a profile image (and any image that fails to load) fall back to `/img/group.svg`, resolved from the site root — copy `website/src/img/group.svg` to `<web-root>/img/group.svg`.
+- **Provide the fallback image.** Groups without a profile image (and any image that fails to load) fall back to `/img/group.svg`, resolved from the site root - copy `website/src/img/group.svg` to `<web-root>/img/group.svg`.
 - **Point it at your bot's data.** Near the bottom of `directory.js`, change:
   ```js
   const simplexDirectoryDataURL = 'https://your-domain.example/data/';
   ```
   (the default is the official directory, `https://directory.simplex.chat/data/`). The page fetches `listing.json` from that URL and loads group images relative to it.
-- **Optional:** the "Also available as a SimpleX chat bot" link in `directory.html` points at the official directory bot — update it to your bot's address.
+- **Optional:** the "Also available as a SimpleX chat bot" link in `directory.html` points at the official directory bot - update it to your bot's address.
 
-Then run the bot with `--web-folder` pointing at the folder served at that URL. The bot writes `listing.json` (used by the page), `promoted.json` (the promoted subset — written but not rendered by the bundled page), and group images, refreshing every 5 minutes and immediately when a group is approved or its listing/promotion status changes:
+Then run the bot with `--web-folder` pointing at the folder served at that URL. The bot writes `listing.json` (used by the page), `promoted.json` (the promoted subset - written but not rendered by the bundled page), and group images, refreshing every 5 minutes and immediately when a group is approved or its listing/promotion status changes:
 ```sh
 simplex-directory-service \
   --super-users 2:alice \
@@ -143,7 +143,7 @@ The bot sends a welcome message automatically when you connect.
 
 ### 2. Registering a Group
 
-Registration is a two-step process — see [DIRECTORY.md](../../docs/DIRECTORY.md) for full details:
+Registration is a two-step process - see [DIRECTORY.md](../../docs/DIRECTORY.md) for full details:
 
 1. Invite the directory bot to your group as `admin`.
 2. Wait for admin approval (usually within a day, except holidays).
@@ -156,7 +156,7 @@ If a group with the same display name is already registered (but not yet listed 
 
 ### 3. Managing Your Groups (user commands)
 
-> **Note on `<ID>` vs `<ID>:<name>`:** Commands shown with `<ID>[:<name>]` (`/role`, `/filter`, `/link`) accept just the ID — the name is optional. `/confirm`, `/delete`, and all admin/super-user commands require both, written as `<ID>:<name>`. For user commands the ID is the registration ID shown by `/list`; for admin and super-user commands it's the group ID included in the bot's admin notifications. When the bot expects an `<ID>:<name>` argument it normally quotes the whole command for you (e.g. for `/confirm` and `/approve`), so you can copy it directly; for `/delete` you build it from the ID and name shown by `/list`.
+> **Note on `<ID>` vs `<ID>:<name>`:** Commands shown with `<ID>[:<name>]` (`/role`, `/filter`, `/link`) accept just the ID - the name is optional. `/confirm`, `/delete`, and all admin/super-user commands require both, written as `<ID>:<name>`. For user commands the ID is the registration ID shown by `/list`; for admin and super-user commands it's the group ID included in the bot's admin notifications. When the bot expects an `<ID>:<name>` argument it normally quotes the whole command for you (e.g. for `/confirm` and `/approve`), so you can copy it directly; for `/delete` you build it from the ID and name shown by `/list`.
 
 #### List groups
 
@@ -216,7 +216,7 @@ Omit the argument to view the current filter. Filters apply to people joining vi
 
 `=noimage` means the condition applies only to profiles that have no profile image (`=no_image` and `=no-image` are also accepted).
 
-> The `name` filter only has an effect when the bot was started with `--profile-name-limit` and/or `--blocked-words-file` / `--blocked-fragments-file`; otherwise it does nothing. The `captcha` filter sends a much stronger challenge when `--captcha-generator` (or `--voice-captcha-generator`) is configured — without it the captcha text is sent as a plain message.
+> The `name` filter only has an effect when the bot was started with `--profile-name-limit` and/or `--blocked-words-file` / `--blocked-fragments-file`; otherwise it does nothing. The `captcha` filter sends a much stronger challenge when `--captcha-generator` (or `--voice-captcha-generator`) is configured - without it the captcha text is sent as a plain message.
 
 #### View or upgrade group link
 
@@ -288,10 +288,10 @@ Forward path, from invitation to being listed:
 
 **Transitions out of Active:**
 
-- → **PendingApproval** — profile changes other than the bot link (see ** below); the `approval-id` shown to admins is bumped each time, so stale `/approve` commands are rejected.
-- → **Suspended** — an admin runs `/suspend`; `/resume` re-lists the group.
-- → **SuspendedBadRoles** — the directory bot loses its `admin` role, or the registering owner loses their `owner` role, in the group; automatically restored to **Active** once the roles are corrected.
-- → **Removed** — the owner runs `/delete`, the owner is removed from or leaves the group, the bot is removed from the group, or the group is deleted. The group can be re-registered afterwards.
+- → **PendingApproval** - profile changes other than the bot link (see ** below); the `approval-id` shown to admins is bumped each time, so stale `/approve` commands are rejected.
+- → **Suspended** - an admin runs `/suspend`; `/resume` re-lists the group.
+- → **SuspendedBadRoles** - the directory bot loses its `admin` role, or the registering owner loses their `owner` role, in the group; automatically restored to **Active** once the roles are corrected.
+- → **Removed** - the owner runs `/delete`, the owner is removed from or leaves the group, the bot is removed from the group, or the group is deleted. The group can be re-registered afterwards.
 
 \* Only when the duplicate is registered but not yet listed or suspended. If the name is already listed or suspended, registration is blocked entirely.
 
@@ -299,8 +299,8 @@ Forward path, from invitation to being listed:
 
 **State notes:**
 
-- **PendingConfirmation** — the bot was invited but a group with the same display name is already registered (in a pending state); the owner must run `/confirm` to proceed.
-- **Proposed** — the name is unique (or the duplicate was confirmed via `/confirm`); the bot is joining the group.
-- **PendingUpdate** — legacy state of registrations created before link-at-approval; any profile change moves such a group to PendingApproval.
-- **PendingApproval** — submitted for admin review. The join link is created at first approval, so a new registration has no working link until approved.
-- **Active** — listed in the directory and visible in search results.
+- **PendingConfirmation** - the bot was invited but a group with the same display name is already registered (in a pending state); the owner must run `/confirm` to proceed.
+- **Proposed** - the name is unique (or the duplicate was confirmed via `/confirm`); the bot is joining the group.
+- **PendingUpdate** - legacy state of registrations created before link-at-approval; any profile change moves such a group to PendingApproval.
+- **PendingApproval** - submitted for admin review. The join link is created at first approval, so a new registration has no working link until approved.
+- **Active** - listed in the directory and visible in search results.
