@@ -53,8 +53,8 @@ import chat.simplex.common.views.newchat.*
 import chat.simplex.common.views.onboarding.*
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServersView
+import chat.simplex.common.views.ux.camera.QuickCameraPane
 import chat.simplex.common.views.ux.components.*
-import chat.simplex.common.views.ux.camera.openQuickCameraSheet
 import chat.simplex.common.views.ux.modals.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
@@ -139,10 +139,13 @@ fun TelegramTopHeader(
       }
     }
   } else {
+    // #87: same top-bar card as the Contacts/Settings tabs (shared
+    // solidTopBarCard definition) so all three tops read as one app.
     Row(
       modifier = Modifier
         .fillMaxWidth()
-        .padding(start = 16.dp, end = 8.dp, top = 6.dp, bottom = 4.dp),
+        .solidTopBarCard(isDark)
+        .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
     ) {
@@ -150,17 +153,21 @@ fun TelegramTopHeader(
         modifier = Modifier
           .clip(RoundedCornerShape(8.dp))
           .clickable {
-            ModalManager.start.showCustomModal { close ->
-              ServerRadarSheet(
-                isConnected = chatModel.chatRunning.value == true,
-                onConfigureServers = {
-                  close()
-                  ModalManager.start.showCustomModal { closeServers ->
-                    NetworkAndServersView(closeServers)
-                  }
-                },
-                onClose = close
-              )
+            // #86: single instance — rapid repeated taps on the title must
+            // never stack copies of the Connection Status sheet.
+            if (!ModalManager.start.hasModalOpen(ModalViewId.CONNECTION_STATUS)) {
+              ModalManager.start.showCustomModal(id = ModalViewId.CONNECTION_STATUS) { close ->
+                ServerRadarSheet(
+                  isConnected = chatModel.chatRunning.value == true,
+                  onConfigureServers = {
+                    close()
+                    ModalManager.start.showCustomModal { closeServers ->
+                      NetworkAndServersView(closeServers)
+                    }
+                  },
+                  onClose = close
+                )
+              }
             }
           }
           .padding(vertical = 4.dp, horizontal = 2.dp),
@@ -391,7 +398,7 @@ fun TelegramTopHeader(
 }
 
 enum class SimpleUxTab {
-  CHATS, CONTACTS, SETTINGS
+  CHATS, CONTACTS, SCAN, SETTINGS
 }
 
 val LocalSimpleUxTab = compositionLocalOf<MutableState<SimpleUxTab>> { mutableStateOf(SimpleUxTab.CHATS) }
@@ -421,7 +428,6 @@ fun SimpleUxTabHost(
   val keyboardState by getKeyboardState()
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
-  val quickCameraConnectFilter = remember { mutableStateOf(emptySet<String>()) }
 
   CompositionLocalProvider(
     LocalSimpleUxTab provides currentTab,
@@ -444,9 +450,22 @@ fun SimpleUxTabHost(
             }
             val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
             Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
-              val modalData = remember { ModalData() }
-              modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
+              Column(Modifier.fillMaxSize()) {
+                // #85: created one-time invitations live in the Contacts tab —
+                // the context where they are created and consumed — not at the
+                // bottom of Settings. Zero-state: renders nothing at all.
+                InvitationLinksSection()
+                val modalData = remember { ModalData() }
+                modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
+              }
             }
+          }
+          // #84: Scan is a tab, not a page — the top bar and island bar stay
+          // in place and only the content area swaps to the camera. The pane's
+          // own BackHandler routes back to CHATS (FB-16 lesson: back must
+          // always have an in-app way out).
+          SimpleUxTab.SCAN -> {
+            QuickCameraPane(onClose = { currentTab.value = SimpleUxTab.CHATS })
           }
           SimpleUxTab.SETTINGS -> {
             if (appPlatform.isAndroid) {
@@ -480,36 +499,9 @@ fun SimpleUxTabHost(
               searchText.value = TextFieldValue("")
             }
           },
-          onOpenCamera = if (appPlatform.isAndroid) {
-            {
-              openQuickCameraSheet(
-                onPhotoCaptured = { uri ->
-                  // Reuses the same cross-chat hand-off as Android's system share-into-SimpleX
-                  // flow: setting sharedContent swaps this screen for ShareListView (App.kt's
-                  // StartPartOfScreen), which already knows how to pick a chat and attach media.
-                  // (The camera button lives on the chat-LIST screen, not inside an open
-                  // conversation -- ChatView slides over this screen on mobile -- so there is no
-                  // "currently active chat" to silently attach to; picking one is the real flow.)
-                  chatModel.sharedContent.value = SharedContent.Media(text = "", uris = listOf(uri))
-                },
-                onQrCode = { link ->
-                  val target = strConnectTarget(link.trim())
-                  if (target is ConnectTarget.Link) {
-                    connect(target.text, quickCameraConnectFilter) {}
-                    true
-                  } else {
-                    false
-                  }
-                },
-                onTextShared = { text ->
-                  // Same proven share hand-off as the photo path above:
-                  // ShareListView routes SharedContent.Text (it pre-fills the
-                  // composer of the chat the user picks).
-                  chatModel.sharedContent.value = SharedContent.Text(text)
-                }
-              )
-            }
-          } else null
+          // #84: Scan is a tab now — the camera renders as QuickCameraPane in
+          // the tab host; the island item only needs to know it's available.
+          scanAvailable = appPlatform.isAndroid
         )
       }
 
@@ -536,7 +528,9 @@ fun BoxScope.TelegramBottomIslandBar(
   userPickerState: MutableStateFlow<AnimatedViewState>,
   setPerformLA: (Boolean) -> Unit,
   onChatsClick: () -> Unit,
-  onOpenCamera: (() -> Unit)? = null
+  // #84: whether the device offers the Scan pane (Android); when false the
+  // Scan item is not composed at all.
+  scanAvailable: Boolean = false
 ) {
   val isDark = isInDarkTheme()
   val shape = RoundedCornerShape(32.dp)
@@ -603,19 +597,22 @@ fun BoxScope.TelegramBottomIslandBar(
           }
         )
 
-        if (onOpenCamera != null) {
-          // Central quick-access camera button (see views/ux/camera/QuickCameraSheet.kt,
-          // Android-only for now). It is an action, not a tab, but it wears the exact same
-          // labeled-item layout as the tabs — same icon size, same 11sp sub-label ("Scan"),
-          // same monochrome inactive tint — so the island reads as one uniform family
-          // (consistency feedback from Delta, 2026-08-29). A raised central disc variant
-          // is a possible follow-up polish once screenable on a real device.
+        if (scanAvailable) {
+          // Scan (see views/ux/camera/QuickCameraPane, Android-only): a real
+          // tab since #84 — active while the camera pane is shown, re-tap
+          // returns to CHATS. Same labeled-item layout as the other tabs.
           IslandTabItem(
             modifier = Modifier.weight(1f),
             label = stringResource(MR.strings.island_scan),
             icon = MR.images.ic_photo_camera,
-            isActive = false,
-            onClick = onOpenCamera
+            isActive = (currentTab == SimpleUxTab.SCAN),
+            onClick = {
+              if (currentTab == SimpleUxTab.SCAN) {
+                onSelectTab(SimpleUxTab.CHATS)
+              } else {
+                onSelectTab(SimpleUxTab.SCAN)
+              }
+            }
           )
         }
 
