@@ -1,6 +1,6 @@
-# SimpleUX Chat 💬✨
+# SimpleUX Chat 💬
 
-> **The modern, delightful UI/UX fork of SimpleX Chat — where haute-horlogerie aesthetics meet uncompromising, zero-metadata privacy.**
+> **A personal, UX-first fork of SimpleX Chat — same protocol, same untouched core, an interface I can actually live in every day.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](./LICENSE)
 [![SimpleX Protocol Compatible](https://img.shields.io/badge/SimpleX_Protocol-100%25_Compatible-brightgreen.svg)](https://simplex.chat)
@@ -22,16 +22,17 @@
 
 ---
 
-## 🌟 Why SimpleUX?
+## 🌟 Why this fork exists
 
-**SimpleX Chat** is a cryptographic masterclass: the first messaging platform with **no user identifiers of any kind**, end-to-end encryption with post-quantum resistance, and isolated unidirectional messaging queues.
+**SimpleX Chat** is a cryptographic masterclass: the first messaging platform with **no user identifiers of any kind**, end-to-end encryption with post-quantum resistance, and isolated unidirectional messaging queues. It is a project with **a lot of potential** — and one that deserves far more contributions toward its user interface.
 
-However, great privacy shouldn't come with visual friction or complex ergonomics.
+**This fork exists because I wanted to live in SimpleX every day, and the interface made that hard.** To be blunt: the UX felt dated and unpleasant for daily use — at least, to me.
 
-**SimpleUX Chat** is an interface-first fork designed around a single guiding principle:
-> **"Uncompromising privacy meets world-class user experience."**
+And to be clear about the ambition: **I am not claiming this UI is better — it is not, by far.** I am simply implementing, for my own use, the interaction patterns I find pleasant in the messengers I already use every day, so that moving to the SimpleX ecosystem stops feeling like a comfort downgrade. If some of it is useful to you, welcome.
 
-We completely modernize and polish the frontend experience — fluid spring animations, tactile micro-interactions, and refined typography — while keeping the authoritative Haskell core engine (`libsimplex` / `libapp`) and JNI/FFI cryptographic bindings **100% untouched and fully interoperable**.
+**Why a fork instead of pull requests?** I would genuinely have preferred to contribute this upstream. But the number of long-open pull requests on the parent project made it obvious that interface changes of this scale would land far too slowly for someone who wants to *use* the app today, not in a few years. This fork is that impatience made useful.
+
+What moves here: the frontend only (Kotlin Multiplatform / Compose). The authoritative Haskell core engine (`libsimplex` / `libapp`) and the JNI/FFI cryptographic bindings stay **100% untouched and fully interoperable** with official SimpleX clients.
 
 ---
 
