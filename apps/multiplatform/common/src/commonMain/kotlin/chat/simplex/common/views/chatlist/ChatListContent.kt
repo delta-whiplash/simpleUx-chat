@@ -118,7 +118,6 @@ internal fun BoxScope.ChatListContent(
         Modifier
           .fillMaxWidth()
           .background(MaterialTheme.colors.background)
-          .windowInsetsPadding(WindowInsets.statusBars)
       ) {
         TelegramTopHeader(
           userPickerState = userPickerState,

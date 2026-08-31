@@ -139,12 +139,15 @@ fun TelegramTopHeader(
       }
     }
   } else {
-    // #87: same top-bar card as the Contacts/Settings tabs (shared
+    // #87/#94: same top-bar card as the Contacts/Settings tabs (shared
     // solidTopBarCard definition) so all three tops read as one app.
+    // statusBarsPadding is INSIDE the card so the card's background extends
+    // behind the status bar (seamless integration, no gap above the card).
     Row(
       modifier = Modifier
         .fillMaxWidth()
         .solidTopBarCard(isDark)
+        .statusBarsPadding()
         .padding(start = 16.dp, end = 8.dp, top = 12.dp, bottom = 12.dp),
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically
