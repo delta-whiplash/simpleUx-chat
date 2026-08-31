@@ -1,7 +1,7 @@
-# `views/ux/` — layering rules
+# `views/ux/` - layering rules
 
 This package holds all SimpleUX-specific UI (the "Luxury Mineral" design layer).
-It exists so the fork can evolve without rewriting upstream screens in place —
+It exists so the fork can evolve without rewriting upstream screens in place  - 
 every rewrite of an upstream file is a future merge conflict.
 
 ## Rules (enforced by CI where possible)
@@ -23,15 +23,15 @@ every rewrite of an upstream file is a future merge conflict.
 3. **No fabricated data.** Never render invented server data, member counts,
    directory listings, or diagnostics as if they came from a real connection.
    If a feature needs real data and the wiring isn't ready, don't ship the UI
-   yet — or label it explicitly as illustrative.
+   yet - or label it explicitly as illustrative.
 
 4. **Tokens, not literals.** No raw `0xFF...` hex colors and no hardcoded
-   user-visible strings in this package — colors come from `ui/theme`, text
+   user-visible strings in this package - colors come from `ui/theme`, text
    comes from `MR.strings` (with translations, not just the base locale).
 
 5. **One feature at a time.** A new `views/ux/` feature ships complete
    (localized, tokenized, ≥48dp touch targets, no upstream edits) before the
-   next one starts. This is a side project — half-finished parallel features
+   next one starts. This is a side project - half-finished parallel features
    are the main way it gets unmaintainable.
 
 ## Why this exists

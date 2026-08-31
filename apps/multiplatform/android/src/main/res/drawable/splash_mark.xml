@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- #88: SimpleUX splash mark — a faceted mineral drawn for the circular
+<!-- #88: SimpleUX splash mark - a faceted mineral drawn for the circular
      splash safe zone (all geometry within r30 of the 108x108 canvas center),
      replacing the upstream 768x189 SimpleX wordmark that the system circle
      mask cropped to "MPLEX". Color comes from @color/splash_mark, which is

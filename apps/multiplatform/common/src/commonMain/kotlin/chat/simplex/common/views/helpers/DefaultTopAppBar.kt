@@ -311,7 +311,7 @@ val AppBarHorizontalPadding = 2.dp
 
 
 // #87: the ONE definition of the solid top-bar card (shape + surface + border)
-// shared by every shell tab — DefaultAppBar (Settings/Contacts) and the Chats
+// shared by every shell tab - DefaultAppBar (Settings/Contacts) and the Chats
 // TelegramTopHeader all consume this so the tops read as one app.
 fun Modifier.solidTopBarCard(isDark: Boolean, onTop: Boolean = true): Modifier {
   val shape = if (onTop) RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)

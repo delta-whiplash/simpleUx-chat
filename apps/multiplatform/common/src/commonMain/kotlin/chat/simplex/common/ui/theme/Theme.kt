@@ -599,7 +599,7 @@ data class ThemeModeOverride (
 // Canvas color for settings/info screens (drawn behind cards by themedBackground)
 // and for the 2dp item divider inside section cards (matches canvas so dividers
 // read as gaps showing the screen behind).
-// LIGHT: formula derives off-white from palette bg + onBackground — lifts white
+// LIGHT: formula derives off-white from palette bg + onBackground - lifts white
 // cards above. DARK/BLACK: palette bg (cards already raised via founder's
 // formula in Section.kt). SIMPLEX: gradient bottom stop (darker), since the
 // canvas itself is a gradient drawn by themedBackgroundBrush.

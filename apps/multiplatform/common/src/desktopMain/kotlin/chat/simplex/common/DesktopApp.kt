@@ -32,7 +32,7 @@ import kotlin.system.exitProcess
 val simplexWindowState = SimplexWindowState()
 
 fun showApp() {
-  // Probe SystemTray off the EDT — the lazy's first read would otherwise block the
+  // Probe SystemTray off the EDT - the lazy's first read would otherwise block the
   // EDT during composition; JDK-8322750's GNOME detection forks a subprocess.
   trayIsAvailable
   while (true) {
@@ -47,7 +47,7 @@ fun showApp() {
               shareText = true
             )
             Log.e(TAG, "App crashed, thread name: " + Thread.currentThread().name + ", exception: " + e.stackTraceToString())
-            // Must precede dispatchEvent — handleCloseRequest reads this flag.
+            // Must precede dispatchEvent - handleCloseRequest reads this flag.
             closedByError.value = true
             window.dispatchEvent(WindowEvent(window, WindowEvent.WINDOW_CLOSING))
             includeMoreFailedComposables()
@@ -231,10 +231,10 @@ private fun ApplicationScope.AppWindow(closedByError: MutableState<Boolean>) {
   }
 }
 
-// Not invoked for macOS Cmd+Q — that goes through AWT's default QuitHandler and
+// Not invoked for macOS Cmd+Q - that goes through AWT's default QuitHandler and
 // exits the process directly. Intentional: Cmd+Q is canonical "always quit" on macOS.
 private fun ApplicationScope.handleCloseRequest(closedByError: MutableState<Boolean>) {
-  // Crash dispatch — bypass user-facing policy and exit; outer loop will restart.
+  // Crash dispatch - bypass user-facing policy and exit; outer loop will restart.
   if (closedByError.value) {
     exitApplication()
     return
@@ -248,7 +248,7 @@ private fun ApplicationScope.handleCloseRequest(closedByError: MutableState<Bool
     CloseBehavior.Ask -> if (trayIsAvailable && singleInstanceLock) {
       requestCloseBehavior()
     } else {
-      // Tray unavailable — Minimize is not a real option; remember Quit and exit.
+      // Tray unavailable - Minimize is not a real option; remember Quit and exit.
       pref.set(CloseBehavior.Quit)
       exitApplication()
     }

@@ -151,7 +151,7 @@ suspend fun AwaitPointerEventScope.waitForUpOrCancellation(
 ): PointerInputChange? {
   // out of bounds in local coordinates while stationary in window coordinates is the node
   // moving under the pointer (chat list shifted after a sent message), not the pointer
-  // leaving the node — such a press stays valid
+  // leaving the node - such a press stays valid
   fun stationaryInWindow(change: PointerInputChange): Boolean =
     downPositionInWindow != null && positionInWindow != null &&
       (positionInWindow() + change.position - downPositionInWindow).getDistance() <= viewConfiguration.touchSlop

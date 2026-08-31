@@ -30,7 +30,7 @@ data class SimpleUxDirectoryGroup(
 )
 
 /**
- * Language-neutral result of parsing one directory listing entry — pure data with no localized
+ * Language-neutral result of parsing one directory listing entry - pure data with no localized
  * strings, so it can be unit-tested offline.
  *
  * @param description  cleaned listing text, or null when the directory provided no usable text
@@ -152,7 +152,7 @@ private val directoryJsonParser = Json {
  *    non-blank line that is not a "Link to join" line kept (whole trimmed text when all lines filter out);
  *  - an explicit JSON null in any field reads as absent, never as the literal string "null" (#74);
  *  - a structurally corrupt entry is skipped and parsing continues with the rest of the
- *    listing (#74) — one broken entry no longer truncates everything after it.
+ *    listing (#74) - one broken entry no longer truncates everything after it.
  */
 internal fun parseDirectoryEntries(rawJson: String): List<SimpleUxDirectoryEntry> {
   val root = try {
@@ -179,7 +179,7 @@ internal fun parseDirectoryEntries(rawJson: String): List<SimpleUxDirectoryEntry
 
 /**
  * Parses one listing entry; null return means "skip this entry". Throws on structurally broken
- * members (container-shaped fields of the wrong type) — the caller isolates failures per entry (#74).
+ * members (container-shaped fields of the wrong type) - the caller isolates failures per entry (#74).
  *
  * Fallback decisions (#74):
  *  - name is required: an absent, JSON-null or blank displayName means the entry cannot be listed
@@ -263,7 +263,7 @@ private fun JsonObject.stringField(key: String): String? =
 
 /**
  * Member as a JSON object, or null when the member is absent or an explicit JSON null (#74).
- * Any other shape throws — the caller's per-entry isolation skips the corrupt entry.
+ * Any other shape throws - the caller's per-entry isolation skips the corrupt entry.
  */
 private fun JsonObject.objectField(key: String): JsonObject? {
   val v = this[key] ?: return null
@@ -273,7 +273,7 @@ private fun JsonObject.objectField(key: String): JsonObject? {
 
 /**
  * Member as a JSON array, or null when the member is absent or an explicit JSON null (#74).
- * Any other shape throws — the caller's per-entry isolation skips the corrupt entry.
+ * Any other shape throws - the caller's per-entry isolation skips the corrupt entry.
  */
 private fun JsonObject.arrayField(key: String): JsonArray? {
   val v = this[key] ?: return null

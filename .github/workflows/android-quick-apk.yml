@@ -1,12 +1,12 @@
 name: android-quick-apk
 
-# On-demand only (manual trigger from the Actions tab) — this is NOT part of
+# On-demand only (manual trigger from the Actions tab) - this is NOT part of
 # the regular CI. It builds a debug APK you can side-load to quickly try out
 # UI changes, without waiting for a real release build.
 #
 # How it gets a working APK fast: this fork never touches the native
 # Haskell core (see AGENTS.md's frontend-only tenet, and the audit in
-# plans/2026-08-15-ux-audit-backlog.md — zero protocol/FFI changes). Building
+# plans/2026-08-15-ux-audit-backlog.md - zero protocol/FFI changes). Building
 # that core from scratch (scripts/android/build-android.sh, via Nix) can take
 # hours on a cold runner. Instead, this workflow reuses the precompiled
 # libsimplex.so / libsupport.so from an upstream simplex-chat release and
@@ -96,7 +96,7 @@ jobs:
           done
 
           if [ "$found_any" != "true" ]; then
-            echo "::error::Could not extract libsimplex.so/libsupport.so for any ABI from the upstream APK. Its internal layout may have changed — inspect it with 'unzip -l /tmp/upstream.apk' and update this workflow."
+            echo "::error::Could not extract libsimplex.so/libsupport.so for any ABI from the upstream APK. Its internal layout may have changed - inspect it with 'unzip -l /tmp/upstream.apk' and update this workflow."
             exit 1
           fi
 
@@ -114,7 +114,7 @@ jobs:
             echo ""
             echo "- Fork commit: \`${{ github.sha }}\`"
             echo "- Native libs (libsimplex.so / libsupport.so) borrowed from upstream simplex-chat release: \`${{ steps.release.outputs.tag }}\`"
-            echo "- This fork makes zero changes to the native/protocol layer, so this substitution is safe for trying out UI changes. It is **not** a reproducible release build — do not distribute it as one."
+            echo "- This fork makes zero changes to the native/protocol layer, so this substitution is safe for trying out UI changes. It is **not** a reproducible release build - do not distribute it as one."
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload APK(s)

@@ -12,7 +12,7 @@ expect fun openQuickCameraSheet(
   onTextShared: (String) -> Unit = {}
 )
 
-// #84: the same camera as an in-shell pane — rendered INSIDE the Chats tab
+// #84: the same camera as an in-shell pane - rendered INSIDE the Chats tab
 // content area (top bar and island bar stay put), so Scan feels like the other
 // tabs instead of a dedicated fullscreen page. [onClose] runs on the sheet's
 // close affordance and its back handler; hosts typically route it back to CHATS.

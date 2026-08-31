@@ -10,14 +10,14 @@ import chat.simplex.common.platform.settings
  * (`model/SimpleXAPI.kt`, `privacySanitizeLinks = mkBoolPreference(..., false)`;
  * its key constant `SHARED_PREFS_PRIVACY_SANITIZE_LINKS` is private). SimpleUX flips
  * the *effective* default here instead of editing the model: when the underlying
- * store has no explicitly written value yet — fresh install, toggle never touched,
- * no settings import, no remote-host sync — link sanitization is ON. Once any
- * explicit value exists (user toggle, settings import, remote sync — all write via
+ * store has no explicitly written value yet - fresh install, toggle never touched,
+ * no settings import, no remote-host sync - link sanitization is ON. Once any
+ * explicit value exists (user toggle, settings import, remote sync - all write via
  * `SharedPreference.set`), it is honored as-is, including a deliberate opt-out.
  */
 
 // Must stay in sync with model/SimpleXAPI.kt `SHARED_PREFS_PRIVACY_SANITIZE_LINKS`
-// (frozen file — do not edit there; duplicated here because the constant is private).
+// (frozen file - do not edit there; duplicated here because the constant is private).
 private const val PRIVACY_SANITIZE_LINKS_KEY = "PrivacySanitizeLinks"
 
 /**

@@ -72,7 +72,7 @@ struct CreateProfile: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 140)
-                    // No trailing spacer — asset image has empty space on the right
+                    // No trailing spacer - asset image has empty space on the right
                     #endif
                 }
             }

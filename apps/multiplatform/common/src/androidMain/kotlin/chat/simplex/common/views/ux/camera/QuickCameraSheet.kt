@@ -63,9 +63,9 @@ import java.util.concurrent.Executors
 
 // Single always-on camera screen for the SimpleUX central quick-access button:
 // the shutter is always available, and EVERY code entering the frame surfaces
-// a confirmation card with its decoded content — SimpleX link (connect flow),
+// a confirmation card with its decoded content - SimpleX link (connect flow),
 // URL (explicit "open in browser" tap) or plain text (copy / share into
-// SimpleX) — instead of being silently dropped. Auto-detect, tap to act,
+// SimpleX) - instead of being silently dropped. Auto-detect, tap to act,
 // never auto-navigate on a bare scan.
 //
 // The chrome is SimpleUX's Luxury Mineral layer (CameraChrome.kt /
@@ -103,7 +103,7 @@ fun QuickCameraSheet(
       onPhotoCaptured(uri)
       // ShareListView renders behind this full-screen modal, so the sheet must
       // step aside or the hand-off looks like a no-op (shutter had the same
-      // issue — found on emulator, 2026-08-29).
+      // issue - found on emulator, 2026-08-29).
       onClose()
     }
   }
@@ -145,7 +145,7 @@ fun QuickCameraSheet(
   val openAppSettings: () -> Unit = {
     try {
       // Deep-link to this app's page in system settings, where camera access
-      // is granted — the only reliable path after a permanent ("don't ask
+      // is granted - the only reliable path after a permanent ("don't ask
       // again") denial stops Android from re-showing the runtime dialog.
       context.startActivity(
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null))
@@ -158,7 +158,7 @@ fun QuickCameraSheet(
   DisposableEffect(lifecycleOwner) {
     // Re-check on resume: the user grants the permission in system settings
     // while this sheet is backgrounded, so the result never arrives through
-    // the launcher callback — the camera must come alive when they return.
+    // the launcher callback - the camera must come alive when they return.
     val observer = LifecycleEventObserver { _, event ->
       if (event == Lifecycle.Event.ON_RESUME) {
         hasCameraPermission =
@@ -336,7 +336,7 @@ fun QuickCameraSheet(
 
       // Universal QR routing: EVERY detected code surfaces its decoded
       // content here (SimpleX link, URL or plain text) and waits for an
-      // explicit tap — never auto-navigates on a bare scan.
+      // explicit tap - never auto-navigates on a bare scan.
       AnimatedVisibility(
         visible = detectedContent.value != null,
         modifier = Modifier.align(Alignment.BottomCenter).navigationBarsPadding().padding(bottom = 132.dp, start = 16.dp, end = 16.dp)
@@ -368,7 +368,7 @@ fun QuickCameraSheet(
       }
 
       // FB-16: composed LAST so the close button draws above the fullscreen
-      // camera preview — the PreviewView used to cover it entirely, leaving
+      // camera preview - the PreviewView used to cover it entirely, leaving
       // the granted path with no visible way out.
       CameraTopBar(onClose)
     }

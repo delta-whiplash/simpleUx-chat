@@ -393,7 +393,7 @@ final class ChatModel: ObservableObject {
     @Published var groupMembers: [GMember] = []
     @Published var groupMembersIndexes: Dictionary<Int64, Int> = [:] // groupMemberId to index in groupMembers list
     @Published var membersLoaded = false
-    // Runtime-only relay hostnames for pre-join channel display, not persisted — lost on app restart.
+    // Runtime-only relay hostnames for pre-join channel display, not persisted - lost on app restart.
     // APIConnectPreparedGroup re-fetches fresh relays at connect time, so stale data doesn't affect join.
     @Published var channelRelayHostnames: [Int64: [String]] = [:]
     // items in the terminal view
@@ -1302,7 +1302,7 @@ final class ChatModel: ObservableObject {
                     self.groupMembers[i].created = Date.now
                 }
                 // Updating wrapped on a reference-type GMember doesn't mutate the groupMembers array,
-                // so ChatModel.objectWillChange doesn't fire automatically — notify views explicitly.
+                // so ChatModel.objectWillChange doesn't fire automatically - notify views explicitly.
                 if connStatusChanged {
                     objectWillChange.send()
                 }

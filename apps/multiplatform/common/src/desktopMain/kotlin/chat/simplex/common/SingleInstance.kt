@@ -45,7 +45,7 @@ fun acquireSingleInstance(): Boolean {
     LockResult.Taken -> {
       // Ensure the signal file exists (createShowFile is a no-op if it does)
       // and wait up to 1s for the primary's watcher to consume it. If still
-      // there after the wait, the primary is hung — let the user decide.
+      // there after the wait, the primary is hung - let the user decide.
       createShowFile()
       val deadline = System.currentTimeMillis() + 1000
       while (Files.exists(showPath) && System.currentTimeMillis() < deadline) {

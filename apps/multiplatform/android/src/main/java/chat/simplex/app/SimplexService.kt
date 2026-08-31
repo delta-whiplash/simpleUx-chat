@@ -166,7 +166,7 @@ class SimplexService: Service() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
       // #46: MIN hides the persistent service notification from the status bar
-      // and parks it at the very bottom of the shade — present for the OS, not
+      // and parks it at the very bottom of the shade - present for the OS, not
       // in the user's face.
       val channel = NotificationChannel(NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_NAME, NotificationManager.IMPORTANCE_MIN).let {
         it.setShowBadge(false) // no long-press badge
@@ -305,7 +305,7 @@ class SimplexService: Service() {
 
   companion object {
     const val TAG = "SIMPLEX_SERVICE"
-    // #46: new channel id — Android caches importance per channel, so the
+    // #46: new channel id - Android caches importance per channel, so the
     // promotion from IMPORTANCE_LOW to IMPORTANCE_MIN needs a fresh id to
     // apply for existing installs.
     const val NOTIFICATION_CHANNEL_ID = "chat.simplex.app.SIMPLEX_SERVICE_NOTIFICATION_V2"

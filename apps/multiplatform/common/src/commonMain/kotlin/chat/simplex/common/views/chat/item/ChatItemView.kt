@@ -1447,7 +1447,7 @@ fun Modifier.clipChatItem(chatItem: ChatItem? = null, tailVisible: Boolean = fal
     is ShapeStyle.Bubble -> {
       // Modifier.clip of the bubble GenericShape mis-hit-tests its path on very tall
       // items, dropping long-press on the lower part of the bubble (issue #6991). Clip
-      // in the draw pass instead — drawing is clipped identically (the press ripple
+      // in the draw pass instead - drawing is clipped identically (the press ripple
       // included), with no effect on hit-test.
       val shape = chatItemShape(cornerRoundness, LocalDensity.current, style.tailVisible, chatItem?.chatDir?.sent == true)
       this.drawWithCache {
@@ -1459,7 +1459,7 @@ fun Modifier.clipChatItem(chatItem: ChatItem? = null, tailVisible: Boolean = fal
         }
       }
     }
-    // RoundRect hit-tests correctly — no bug here, keep the antialiased Modifier.clip.
+    // RoundRect hit-tests correctly - no bug here, keep the antialiased Modifier.clip.
     is ShapeStyle.RoundRect -> this.clip(RoundedCornerShape(style.radius * cornerRoundness))
   }
 }

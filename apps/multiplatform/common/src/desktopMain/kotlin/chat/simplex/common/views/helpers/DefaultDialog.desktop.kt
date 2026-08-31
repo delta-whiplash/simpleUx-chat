@@ -81,7 +81,7 @@ fun FrameWindowScope.FileDialogChooserMultiple(
       fileChooser.isAcceptAllFileFilterUsed = fileFilter == null
       // Only install the glob bypass for the real file-save case (filename != null). When filename
       // is null the dialog runs in DIRECTORIES_ONLY mode (e.g. "Save QR code as image"), where the
-      // Save button must approve the selected directory — the literal-filename handler would instead
+      // Save button must approve the selected directory - the literal-filename handler would instead
       // traverse into it (or no-op on an empty field), making directory selection impossible.
       if (!isLoad && filename != null && desktopPlatform.isLinux()) {
         installUnixSaveGlobBypass(fileChooser)
@@ -131,7 +131,7 @@ fun FrameWindowScope.FileDialogChooserMultiple(
 
 // Replace the Save button's action with a literal-filename handler. This bypasses JFileChooser's
 // glob-on-save behaviour, which mis-handles '[' as a glob char on Unix (breaking filenames like
-// '[1].pdf') and is not a feature of any native OS save dialog — macOS NSSavePanel and native
+// '[1].pdf') and is not a feature of any native OS save dialog - macOS NSSavePanel and native
 // Windows / Linux GTK / KDE save dialogs all treat the typed filename as a literal name.
 private fun installUnixSaveGlobBypass(fc: JFileChooser) {
   val ui = fc.ui as? BasicFileChooserUI ?: return

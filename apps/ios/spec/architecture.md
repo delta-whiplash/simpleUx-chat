@@ -60,7 +60,7 @@ The app follows a strict layered model where each layer communicates only with i
 | API | [`Shared/Model/AppAPITypes.swift`](../Shared/Model/AppAPITypes.swift#L15) | `ChatCommand`, `ChatResponse`, `ChatEvent` enums | L15, L649, L1055 |
 | FFI | [`SimpleXChat/SimpleX.h`](../SimpleXChat/SimpleX.h#L1-L49) | C header declaring Haskell exports | |
 | FFI | [`SimpleXChat/APITypes.swift`](../SimpleXChat/APITypes.swift#L27) | `APIResult<R>`, `ChatError`, `ChatCmdProtocol` | L27, L699, L17 |
-| Core | `../../src/Simplex/Chat/Controller.hs` | Haskell command processor — see `processCommand` in `Controller.hs` | |
+| Core | `../../src/Simplex/Chat/Controller.hs` | Haskell command processor - see `processCommand` in `Controller.hs` | |
 
 ---
 
@@ -329,7 +329,7 @@ Chat relays are SMP servers that forward messages to channel subscribers. They a
 | Shared types | [`SimpleXChat/APITypes.swift`](../SimpleXChat/APITypes.swift#L27) | L27 |
 | C header | [`SimpleXChat/SimpleX.h`](../SimpleXChat/SimpleX.h#L1-L49) | |
 | NSE | [`SimpleX NSE/NotificationService.swift`](../SimpleX%20NSE/NotificationService.swift#L1-L1228) | |
-| Haskell core | `../../src/Simplex/Chat/Controller.hs` — see `processCommand` in `Controller.hs` | |
+| Haskell core | `../../src/Simplex/Chat/Controller.hs` - see `processCommand` in `Controller.hs` | |
 | Chat protocol (x-events, message envelopes) | `../../src/Simplex/Chat/Protocol.hs` | |
 
 ### External: simplexmq Library
@@ -343,5 +343,5 @@ The lower-level protocol and encryption layers are in the separate [simplexmq](h
 | SMP Agent (duplex connections) | `simplexmq/protocol/agent-protocol.md` | `simplexmq/src/Simplex/Messaging/Agent.hs` |
 | Double ratchet (PQDR) | `simplexmq/protocol/pqdr.md` | `simplexmq/src/Simplex/Messaging/Crypto/Ratchet.hs` |
 | Post-quantum KEM (sntrup761) | `simplexmq/protocol/pqdr.md` | `simplexmq/src/Simplex/Messaging/Crypto/SNTRUP761.hs` |
-| TLS transport | — | `simplexmq/src/Simplex/Messaging/Transport.hs` |
-| File encryption | — | `simplexmq/src/Simplex/Messaging/Crypto/File.hs` |
+| TLS transport | - | `simplexmq/src/Simplex/Messaging/Transport.hs` |
+| File encryption | - | `simplexmq/src/Simplex/Messaging/Crypto/File.hs` |

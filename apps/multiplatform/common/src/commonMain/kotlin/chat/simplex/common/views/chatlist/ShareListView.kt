@@ -25,7 +25,7 @@ import chat.simplex.res.MR
 import kotlinx.coroutines.launch
 
 /**
- * FB-2: the share-into-SimpleX surface now renders ShareMediaScreen (views/ux/share) —
+ * FB-2: the share-into-SimpleX surface now renders ShareMediaScreen (views/ux/share)  - 
  * proper header, incoming-content preview, and the chat picker as mineral cards. This file
  * stays the thin adapter: it computes per-chat enablement from the shared-content flags and
  * performs the business actions on selection. The legacy ShareList / ShareListToolbar /

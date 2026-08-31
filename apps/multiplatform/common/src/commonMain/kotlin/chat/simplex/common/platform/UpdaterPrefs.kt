@@ -3,7 +3,7 @@ package chat.simplex.common.platform
 import com.russhwolf.settings.Settings
 
 // SimpleUX updater preferences (#79), backed by their own moko
-// multiplatform-settings instance — kept separate from AppPreferences
+// multiplatform-settings instance - kept separate from AppPreferences
 // (model/SimpleXAPI.kt is byte-frozen). The auto check defaults to false:
 // a privacy messenger must not contact api.github.com unless asked.
 expect val updaterSettings: Settings

@@ -7,7 +7,7 @@ import kotlin.test.assertNull
 
 /**
  * Pins the on-device SimpleX-name search grammar implemented by
- * `nameSearchCandidate` in views/chatlist/ChatListView.kt (search field only — the message
+ * `nameSearchCandidate` in views/chatlist/ChatListView.kt (search field only - the message
  * parser and wire format are untouched).
  *
  * Grammar (mirrors nameLabelP/mkDomain in SimplexName.hs):

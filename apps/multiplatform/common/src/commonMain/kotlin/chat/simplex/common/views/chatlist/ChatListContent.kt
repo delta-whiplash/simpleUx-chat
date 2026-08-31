@@ -46,7 +46,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 // The header (TelegramTopHeader + filter pills) is composed OUTSIDE the LazyColumn, as a sibling
 // above it. It used to be a `stickyHeader` inside the list; that pinned-sticky mechanism left a
 // background-colored "hole" across the middle of the viewport whenever long search results
-// scrolled under it (issue #58, reproduced and root-caused 2026-08-28 on emulator-5554 — see
+// scrolled under it (issue #58, reproduced and root-caused 2026-08-28 on emulator-5554 - see
 // issue comments). The header is always pinned anyway, so hoisting it is visually identical and
 // removes the sticky machinery entirely.
 @Composable
@@ -97,7 +97,7 @@ internal fun BoxScope.ChatListContent(
   // so the existing ordering within each group is untouched, and it reads the
   // snapshot-backed pinnedChatIds so toggling re-sorts immediately.
   // FB-12/13: created one-time invitations are managed in Settings (InvitationLinksSection),
-  // not as chats — hidden here so each preserved link stops polluting the list.
+  // not as chats - hidden here so each preserved link stops polluting the list.
   val chats = (if (activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES)) {
     rawChats.filter { chatModel.starredChatIds.contains(it.id) }
   } else {
@@ -147,7 +147,7 @@ internal fun BoxScope.ChatListContent(
               else -> UxFilterCategory.ALL
             }
           }
-          // #83: the pill counts exactly what the Unread filter will list —
+          // #83: the pill counts exactly what the Unread filter will list  - 
           // chats matching the same unreadTag predicate over the same listable
           // set. The old sumOf(unreadCount) counted unread MESSAGES across all
           // chats including the hidden invitation chats (FB-12/13), producing a

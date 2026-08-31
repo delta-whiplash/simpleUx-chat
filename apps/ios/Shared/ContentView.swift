@@ -445,7 +445,7 @@ struct ContentView: View {
 
     // Spec: spec/client/navigation.md#connectViaUrl
     // a URL opened via link that is ready to be connected now (appOpenUrl immediately, or
-    // appOpenUrlLater once the app is active — see .onChange(of: scenePhase) in SimpleXApp)
+    // appOpenUrlLater once the app is active - see .onChange(of: scenePhase) in SimpleXApp)
     private var pendingConnectUrl: URL? {
         let m = ChatModel.shared
         if let url = m.appOpenUrl { return url }

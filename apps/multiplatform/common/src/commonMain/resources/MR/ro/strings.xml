@@ -92,7 +92,7 @@
     <string name="keychain_is_storing_securely">Android Keystore este folosit pentru a stoca în siguranță parola. Acest lucru permite funcționarea serviciului de notificări.</string>
     <string name="rcv_group_and_other_events">și %d alte evenimente</string>
     <string name="answer_call">Răspunde la apel</string>
-    <string name="keychain_allows_to_receive_ntfs">Android Keystore va fi folosit pentru a stoca în siguranță parola după ce repornești aplicația sau schimbi parola — acest lucru va permite primirea de notificări.</string>
+    <string name="keychain_allows_to_receive_ntfs">Android Keystore va fi folosit pentru a stoca în siguranță parola după ce repornești aplicația sau schimbi parola - acest lucru va permite primirea de notificări.</string>
     <string name="create_group_button">Creează grup</string>
     <string name="v4_6_audio_video_calls">Apeluri audio și video</string>
     <string name="migrate_from_device_archive_and_upload">Arhivează și încarcă</string>

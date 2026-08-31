@@ -53,7 +53,7 @@ jobs:
       # Note: this intentionally stops at Kotlin compilation, not a full APK.
       # apps/multiplatform's Android variant links against libsimplex.so /
       # libsupport.so, which come from a separate Nix cross-build of the
-      # Haskell core (scripts/android/build-android.sh) — not available here
+      # Haskell core (scripts/android/build-android.sh) - not available here
       # and not needed to validate a Kotlin/Compose-only change. Full APK
       # assembly (with upstream's precompiled native libs substituted in) is
       # what android-quick-apk.yml is for, on demand.
@@ -75,7 +75,7 @@ jobs:
           set -e
           echo "Checking for raw 0xFF hex colors outside ui/theme tokens..."
           # Baseline of files that already had raw hex literals before this lint existed
-          # (tracked by issue #16 / #15 — the design-token consolidation). This list must
+          # (tracked by issue #16 / #15 - the design-token consolidation). This list must
           # only ever shrink as those files get tokenized, never grow: any *new* file, or
           # any file not on this list, is held to the real rule with no exceptions.
           hex_baseline=(
@@ -130,13 +130,13 @@ jobs:
           # viewport center. Root-caused and removed 2026-08-29; do not re-introduce it in
           # the shell (repro + bisect trail on the issue).
           if grep -Eq "AnimatedContent[[:space:]]*\(" ./ChatListShell.kt; then
-            echo "::error::AnimatedContent found in ChatListShell.kt — it caused the issue #58 viewport hole (background-colored band eating list rows). Do not re-add it to the tab host."
+            echo "::error::AnimatedContent found in ChatListShell.kt - it caused the issue #58 viewport hole (background-colored band eating list rows). Do not re-add it to the tab host."
             exit 1
           fi
           # The directory section must stay split into per-group lazy items (directorySearchItems):
           # a single item taller than the viewport was the second half of the #58 rendering hazard.
           if ! grep -q "directorySearchItems(" ../chatlist/ChatListContent.kt ../newchat/NewChatSheet.kt 2>/dev/null; then
-            echo "::error::directorySearchItems call sites missing — the directory search section must be emitted as per-group lazy items (issue #58)."
+            echo "::error::directorySearchItems call sites missing - the directory search section must be emitted as per-group lazy items (issue #58)."
             exit 1
           fi
           echo "OK"
@@ -148,7 +148,7 @@ jobs:
     name: Truth checks (model layer frozen, migration gates reachable, no new French literals)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (full history — base-SHA diffs need it)
+      - name: Checkout (full history - base-SHA diffs need it)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -172,7 +172,7 @@ jobs:
           echo "Diffing against: ${BASE:-<none>}"
 
       # AGENTS.md §1: the model layer is byte-frozen. Update FORK_BASE only
-      # when deliberately rebasing onto a new upstream base — never to make
+      # when deliberately rebasing onto a new upstream base - never to make
       # a failing check pass.
       - name: Model layer is byte-frozen (SimpleXAPI.kt)
         run: |
@@ -189,7 +189,7 @@ jobs:
       # AGENTS.md §4: a migration gate `lastMigration < N` only runs for
       # users whose stored version is below N. Adding such a gate while the
       # version_code at the base is already >= N means every existing user
-      # skips it — the dead migration wave-3 nearly shipped (#60). Adding a
+      # skips it - the dead migration wave-3 nearly shipped (#60). Adding a
       # gate in the release where version_code first reaches N is fine
       # (upstream's own release pattern).
       - name: Migration gates are reachable (no new gate under an already-shipped version_code)
@@ -207,14 +207,14 @@ jobs:
           HEAD_VC=$(git show HEAD:apps/multiplatform/gradle.properties | grep -oE '^android\.version_code=[0-9]+' | cut -d= -f2)
           echo "Added gate '< $ADDED_N' ; version_code $BASE_VC -> $HEAD_VC"
           if [ -n "$BASE_VC" ] && [ "$BASE_VC" -ge "$ADDED_N" ]; then
-            echo "::error::Dead migration: gate '< $ADDED_N' added while version_code was already $BASE_VC at the base — existing users will never run it. Bump version_code and gate above the previously shipped value. See #60 and AGENTS.md §4."
+            echo "::error::Dead migration: gate '< $ADDED_N' added while version_code was already $BASE_VC at the base - existing users will never run it. Bump version_code and gate above the previously shipped value. See #60 and AGENTS.md §4."
             exit 1
           fi
 
       # AGENTS.md §3/§5: user-visible strings go through MR.strings. Heuristic
       # net over ADDED lines only (existing literals are tracked in #19 and
       # must shrink): accented characters or known French UI words. Not
-      # exhaustive — the honest fix is MR.strings.
+      # exhaustive - the honest fix is MR.strings.
       - name: No new hardcoded French literals in Kotlin
         run: |
           BASE="${{ steps.base.outputs.base }}"

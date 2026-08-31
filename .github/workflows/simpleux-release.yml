@@ -2,7 +2,7 @@ name: simpleux-release
 
 # Release pipeline (issue #78): builds a signed FOSS release APK on top of
 # upstream's precompiled native libs (same borrow-the-core trick as
-# android-quick-apk.yml — this fork never touches the Haskell core) and
+# android-quick-apk.yml - this fork never touches the Haskell core) and
 # publishes it to GitHub Releases.
 #
 # Two channels (decided 2026-08-29):
@@ -16,7 +16,7 @@ name: simpleux-release
 # counter n is this workflow's run number, a tag carries its own n. versionCode
 # is a monotonic function of the run number (36600000 + run_number*100), so it
 # strictly increases across every build of either channel. The committed
-# `android.version_code` in gradle.properties is NOT touched in git — it stays
+# `android.version_code` in gradle.properties is NOT touched in git - it stays
 # the local-IDE default and the migration-floor anchor that the truth-check job
 # gates on (AGENTS.md §4); this workflow overrides it in the working copy only.
 #
@@ -24,7 +24,7 @@ name: simpleux-release
 # ANDROID_RELEASE_KEY* repo secrets and handed to Gradle via the
 # `android.injected.signing.*` properties, which upstream's compressApk task
 # forwards to scripts/android/compress-and-sign-apk.sh (deterministic zip ->
-# zipalign -> apksigner). `compression.level=1` is what arms that task — it is
+# zipalign -> apksigner). `compression.level=1` is what arms that task - it is
 # read from local.properties, not from a -P flag. The v1 signature is final:
 # a different key would force uninstall + data loss on every device.
 
@@ -63,7 +63,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      - name: Checkout (full history + submodules — notes need tags, build needs nanohttpd)
+      - name: Checkout (full history + submodules - notes need tags, build needs nanohttpd)
         uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -265,7 +265,7 @@ jobs:
             if [ "$CHANNEL" = "rolling" ]; then
               echo "# Rolling build $VERSION_NAME"
               echo ""
-              echo "Rebuilt automatically on every push to \`stable\` — pre-release quality, expect rough edges."
+              echo "Rebuilt automatically on every push to \`stable\` - pre-release quality, expect rough edges."
             else
               echo "# SimpleUX $VERSION_NAME"
               echo ""
@@ -285,7 +285,7 @@ jobs:
             fi
             echo "## Install"
             echo ""
-            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` (arm64-v8a — any modern phone). SHA-256 sums in \`SHA256SUMS.txt\`."
+            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` (arm64-v8a - any modern phone). SHA-256 sums in \`SHA256SUMS.txt\`."
           } > notes.md
           cat notes.md
 

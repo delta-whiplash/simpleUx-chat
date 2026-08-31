@@ -82,7 +82,7 @@ private fun CIMetaText(
   val showSignature = appPreferences.privacyShowSignature.state.value
   val showEncryption = appPreferences.privacyShowEncryption.state.value
   // #81: icon heights are in sp (not dp) so the drawn row scales exactly like
-  // the NBSP string reserveSpaceForMeta builds — with fixed-dp icons any font
+  // the NBSP string reserveSpaceForMeta builds - with fixed-dp icons any font
   // scale under ~1.1 under-reserved the row and the meta overlaid the text.
   val d = LocalDensity.current
   val metaIconHeight = with(d) { 17.sp.toDp() }
@@ -147,7 +147,7 @@ fun reserveSpaceForMeta(
 ): String {
   val showSignature = appPreferences.privacyShowSignature.state.value
   val showEncryption = appPreferences.privacyShowEncryption.state.value
-  // #81: one more NBSP than before — with the sp-scaled icons the row is now
+  // #81: one more NBSP than before - with the sp-scaled icons the row is now
   // proportional to the text, and this adds a small constant margin for the
   // widest indicators (proxy arrow / delivery checks).
   val iconSpace = " \u00A0\u00A0\u00A0\u00A0"

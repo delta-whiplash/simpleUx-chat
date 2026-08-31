@@ -52,12 +52,12 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `App.kt` | PC1 through PC31 | High | Root composable — navigation scaffold for all features |
+| `App.kt` | PC1 through PC31 | High | Root composable - navigation scaffold for all features |
 | `AppLock.kt` | PC22 | Medium | App lock state and authorization lifecycle |
-| `model/ChatModel.kt` | PC1 through PC31 | High | Central state object — every feature reads or writes here |
-| `model/SimpleXAPI.kt` | PC1 through PC31 | High | FFI bridge to Haskell core — all commands and responses |
+| `model/ChatModel.kt` | PC1 through PC31 | High | Central state object - every feature reads or writes here |
+| `model/SimpleXAPI.kt` | PC1 through PC31 | High | FFI bridge to Haskell core - all commands and responses |
 | `model/CryptoFile.kt` | PC10, PC23 | Medium | Encrypted file read/write helpers |
-| `platform/Core.kt` | PC1 through PC31 | High | Native FFI declarations (`chatMigrateInit`, `chatSendCmd`, etc.) — all API traffic |
+| `platform/Core.kt` | PC1 through PC31 | High | Native FFI declarations (`chatMigrateInit`, `chatSendCmd`, etc.) - all API traffic |
 | `platform/AppCommon.kt` | PC1 through PC31 | Medium | Shared app initialization logic |
 | `platform/Files.kt` | PC10, PC23, PC26 | Medium | File path resolution, temp dirs, encryption utilities |
 | `platform/NtfManager.kt` | PC18 | High | Notification manager expect declarations |
@@ -73,7 +73,7 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `platform/Back.kt` | PC1 | Low | Back navigation handling |
 | `platform/UI.kt` | PC24 | Low | UI density and locale helpers |
 | `platform/ScrollableColumn.kt` | PC1 | Low | Scrollable list abstractions |
-| `platform/Log.kt` | — | Low | Logging utility — no direct product impact |
+| `platform/Log.kt` | - | Low | Logging utility - no direct product impact |
 | `platform/Modifier.kt` | PC24 | Low | Compose modifier extensions |
 | `platform/Resources.kt` | PC24 | Low | Resource loading helpers |
 
@@ -81,17 +81,17 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `ui/theme/ThemeManager.kt` | PC24 | Medium | Theme resolution engine — all color and wallpaper logic |
+| `ui/theme/ThemeManager.kt` | PC24 | Medium | Theme resolution engine - all color and wallpaper logic |
 | `ui/theme/Theme.kt` | PC24 | Medium | Theme composables and `SimpleXTheme` |
 | `ui/theme/Color.kt` | PC24 | Low | Color palette definitions |
 | `ui/theme/Shape.kt` | PC24 | Low | Shape token definitions |
 | `ui/theme/Type.kt` | PC24 | Low | Typography definitions |
 
-### 1.3 Views — Chat List
+### 1.3 Views - Chat List
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `views/chatlist/ChatListView.kt` | PC1, PC28 | High | Main screen — chat list rendering and search |
+| `views/chatlist/ChatListView.kt` | PC1, PC28 | High | Main screen - chat list rendering and search |
 | `views/chatlist/ChatListNavLinkView.kt` | PC1, PC2, PC3 | Medium | Navigation from chat list item to chat |
 | `views/chatlist/ChatPreviewView.kt` | PC1, PC2, PC3, PC11 | Medium | Chat row preview rendering |
 | `views/chatlist/TagListView.kt` | PC28 | Medium | Chat tag filter UI |
@@ -103,12 +103,12 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/chatlist/ContactConnectionView.kt` | PC12 | Low | Pending connection row |
 | `views/chatlist/ServersSummaryView.kt` | PC25 | Low | Server status summary |
 
-### 1.4 Views — Chat & Messaging
+### 1.4 Views - Chat & Messaging
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `views/chat/ChatView.kt` | PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC11 | High | Core conversation UI — most messaging features |
-| `views/chat/ComposeView.kt` | PC4, PC6, PC9, PC10, PC11 | High | Message composition — send path for all messages |
+| `views/chat/ChatView.kt` | PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC11 | High | Core conversation UI - most messaging features |
+| `views/chat/ComposeView.kt` | PC4, PC6, PC9, PC10, PC11 | High | Message composition - send path for all messages |
 | `views/chat/SendMsgView.kt` | PC4, PC9 | Medium | Send button and voice record toggle |
 | `views/chat/ComposeVoiceView.kt` | PC9 | Medium | Voice message recording UI |
 | `views/chat/ComposeFileView.kt` | PC10 | Low | File attachment preview in compose area |
@@ -128,7 +128,7 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/chat/ComposeContextGroupDirectInvitationActionsView.kt` | PC14 | Low | Direct invitation action buttons in compose |
 | `views/chat/ComposeContextContactRequestActionsView.kt` | PC12 | Low | Contact request action buttons in compose |
 
-### 1.5 Views — Chat Items
+### 1.5 Views - Chat Items
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
@@ -151,11 +151,11 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/chat/item/DeletedItemView.kt` | PC7 | Low | Deleted message placeholder |
 | `views/chat/item/MarkedDeletedItemView.kt` | PC7 | Low | Moderated/marked-deleted placeholder |
 | `views/chat/item/ImageFullScreenView.kt` | PC10 | Low | Full-screen image viewer |
-| `views/chat/item/CIBrokenComposableView.kt` | — | Low | Fallback for render failures |
-| `views/chat/item/CIInvalidJSONView.kt` | — | Low | Fallback for malformed items |
+| `views/chat/item/CIBrokenComposableView.kt` | - | Low | Fallback for render failures |
+| `views/chat/item/CIInvalidJSONView.kt` | - | Low | Fallback for malformed items |
 | `views/chat/item/IntegrityErrorItemView.kt` | PC2, PC3 | Low | Message integrity error display |
 
-### 1.6 Views — Groups
+### 1.6 Views - Groups
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
@@ -175,7 +175,7 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/chat/group/MemberSupportChatView.kt` | PC30 | Medium | Member support chat conversation |
 | `views/chat/group/WelcomeMessageView.kt` | PC3, PC14 | Low | Group welcome message editor |
 
-### 1.7 Views — Calls
+### 1.7 Views - Calls
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
@@ -184,11 +184,11 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/call/WebRTC.kt` | PC17 | High | WebRTC types and signaling |
 | `views/call/IncomingCallAlertView.kt` | PC17, PC18 | Medium | Incoming call overlay |
 
-### 1.8 Views — New Chat & Contacts
+### 1.8 Views - New Chat & Contacts
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `views/newchat/NewChatView.kt` | PC12, PC29 | High | New connection creation — onramp for all contacts |
+| `views/newchat/NewChatView.kt` | PC12, PC29 | High | New connection creation - onramp for all contacts |
 | `views/newchat/NewChatSheet.kt` | PC12 | Medium | Bottom sheet with connection options |
 | `views/newchat/ConnectPlan.kt` | PC12, PC15 | Medium | Link parsing and connection plan resolution |
 | `views/newchat/AddGroupView.kt` | PC3, PC14 | Medium | New group creation flow |
@@ -200,7 +200,7 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/contacts/ContactListNavView.kt` | PC1, PC12 | Medium | Contact list navigation |
 | `views/contacts/ContactPreviewView.kt` | PC12 | Low | Contact row preview |
 
-### 1.9 Views — User Settings
+### 1.9 Views - User Settings
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
@@ -218,10 +218,10 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/usersettings/Preferences.kt` | PC2, PC3, PC8 | Medium | Chat feature preferences UI |
 | `views/usersettings/SetDeliveryReceiptsView.kt` | PC2 | Low | Delivery receipts toggle |
 | `views/usersettings/RTCServers.kt` | PC17, PC25 | Medium | WebRTC ICE server configuration |
-| `views/usersettings/DeveloperView.kt` | — | Low | Developer/debug settings |
-| `views/usersettings/HelpView.kt` | — | Low | Help and support links |
+| `views/usersettings/DeveloperView.kt` | - | Low | Developer/debug settings |
+| `views/usersettings/HelpView.kt` | - | Low | Help and support links |
 | `views/usersettings/MarkdownHelpView.kt` | PC4 | Low | Markdown formatting guide |
-| `views/usersettings/VersionInfoView.kt` | — | Low | Version display |
+| `views/usersettings/VersionInfoView.kt` | - | Low | Version display |
 | `views/usersettings/networkAndServers/NetworkAndServers.kt` | PC25 | High | Server and network configuration hub |
 | `views/usersettings/networkAndServers/AdvancedNetworkSettings.kt` | PC25 | Medium | SOCKS proxy, timeouts, etc. |
 | `views/usersettings/networkAndServers/OperatorView.kt` | PC25 | Medium | Server operator management |
@@ -230,17 +230,17 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/usersettings/networkAndServers/NewServerView.kt` | PC25 | Low | Add new server |
 | `views/usersettings/networkAndServers/ScanProtocolServer.kt` | PC25 | Low | QR scan for server address |
 
-### 1.10 Views — Database & Migration
+### 1.10 Views - Database & Migration
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `views/database/DatabaseView.kt` | PC23, PC26 | High | Database management — export, import, passphrase |
+| `views/database/DatabaseView.kt` | PC23, PC26 | High | Database management - export, import, passphrase |
 | `views/database/DatabaseEncryptionView.kt` | PC23 | High | Database encryption passphrase change |
 | `views/database/DatabaseErrorView.kt` | PC23 | Medium | Database open error recovery |
 | `views/migration/MigrateFromDevice.kt` | PC26 | High | Outbound device migration |
 | `views/migration/MigrateToDevice.kt` | PC26 | High | Inbound device migration |
 
-### 1.11 Views — Local Auth & Onboarding
+### 1.11 Views - Local Auth & Onboarding
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
@@ -253,18 +253,18 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/onboarding/SetNotificationsMode.kt` | PC18 | Medium | Notification permission and mode setup |
 | `views/onboarding/SetupDatabasePassphrase.kt` | PC23 | Medium | Initial database passphrase setup |
 | `views/onboarding/ChooseServerOperators.kt` | PC25 | Medium | Initial server operator selection |
-| `views/onboarding/WhatsNewView.kt` | — | Low | Release notes display |
-| `views/onboarding/HowItWorks.kt` | — | Low | Educational content |
+| `views/onboarding/WhatsNewView.kt` | - | Low | Release notes display |
+| `views/onboarding/HowItWorks.kt` | - | Low | Educational content |
 | `views/onboarding/LinkAMobileView.kt` | PC27 | Low | Mobile linking onboarding |
 
-### 1.12 Views — Remote Desktop
+### 1.12 Views - Remote Desktop
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
 | `views/remote/ConnectDesktopView.kt` | PC27 | Medium | Connect-to-desktop flow (from mobile) |
 | `views/remote/ConnectMobileView.kt` | PC27 | Medium | Connect-to-mobile flow (from desktop) |
 
-### 1.13 Views — Helpers
+### 1.13 Views - Helpers
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
@@ -283,35 +283,35 @@ Path prefix: `common/src/commonMain/kotlin/chat/simplex/common/`
 | `views/helpers/SearchTextField.kt` | PC1 | Low | Search bar composable |
 | `views/helpers/CustomTimePicker.kt` | PC8 | Low | Time picker for timed messages |
 | `views/helpers/DragAndDrop.kt` | PC10 | Low | Drag-and-drop file handling |
-| `views/helpers/ProcessedErrors.kt` | — | Low | Error aggregation |
+| `views/helpers/ProcessedErrors.kt` | - | Low | Error aggregation |
 | `views/helpers/AnimationUtils.kt` | PC24 | Low | Animation helpers |
-| `views/helpers/DefaultDialog.kt` | — | Low | Dialog composable primitives |
-| `views/helpers/DefaultDropdownMenu.kt` | — | Low | Dropdown menu composable |
-| `views/helpers/Section.kt` | — | Low | Settings section composable |
-| `views/helpers/SimpleButton.kt` | — | Low | Button composable |
-| `views/helpers/DefaultTopAppBar.kt` | — | Low | App bar composable |
+| `views/helpers/DefaultDialog.kt` | - | Low | Dialog composable primitives |
+| `views/helpers/DefaultDropdownMenu.kt` | - | Low | Dropdown menu composable |
+| `views/helpers/Section.kt` | - | Low | Settings section composable |
+| `views/helpers/SimpleButton.kt` | - | Low | Button composable |
+| `views/helpers/DefaultTopAppBar.kt` | - | Low | App bar composable |
 | `views/helpers/DefaultBasicTextField.kt` | PC4 | Low | Text field composable |
-| `views/helpers/AppBarTitle.kt` | — | Low | App bar title composable |
+| `views/helpers/AppBarTitle.kt` | - | Low | App bar title composable |
 | `views/helpers/BlurModifier.kt` | PC22 | Low | Blur modifier for app lock |
-| `views/helpers/CollapsingAppBar.kt` | — | Low | Collapsing toolbar composable |
-| `views/helpers/CustomIcons.kt` | — | Low | Custom icon definitions |
-| `views/helpers/DataClasses.kt` | — | Low | Shared data class utilities |
-| `views/helpers/DefaultProgressBar.kt` | — | Low | Progress bar composable |
-| `views/helpers/DefaultSwitch.kt` | — | Low | Switch composable |
-| `views/helpers/Enums.kt` | — | Low | Enum utility extensions |
-| `views/helpers/ExposedDropDownSettingRow.kt` | — | Low | Dropdown setting row composable |
-| `views/helpers/GestureDetector.kt` | — | Low | Touch gesture utilities |
-| `views/helpers/Modifiers.kt` | — | Low | Compose modifier extensions |
+| `views/helpers/CollapsingAppBar.kt` | - | Low | Collapsing toolbar composable |
+| `views/helpers/CustomIcons.kt` | - | Low | Custom icon definitions |
+| `views/helpers/DataClasses.kt` | - | Low | Shared data class utilities |
+| `views/helpers/DefaultProgressBar.kt` | - | Low | Progress bar composable |
+| `views/helpers/DefaultSwitch.kt` | - | Low | Switch composable |
+| `views/helpers/Enums.kt` | - | Low | Enum utility extensions |
+| `views/helpers/ExposedDropDownSettingRow.kt` | - | Low | Dropdown setting row composable |
+| `views/helpers/GestureDetector.kt` | - | Low | Touch gesture utilities |
+| `views/helpers/Modifiers.kt` | - | Low | Compose modifier extensions |
 | `views/helpers/SubscriptionStatusIcon.kt` | PC25 | Low | Server connection status icon |
 
-### 1.14 Views — Other
+### 1.14 Views - Other
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `views/TerminalView.kt` | — | Low | Developer chat console |
-| `views/SplashView.kt` | — | Low | Splash screen |
+| `views/TerminalView.kt` | - | Low | Developer chat console |
+| `views/SplashView.kt` | - | Low | Splash screen |
 | `views/WelcomeView.kt` | PC1 | Low | Empty-state welcome |
-| `views/Preview.kt` | — | Low | Compose preview utilities |
+| `views/Preview.kt` | - | Low | Compose preview utilities |
 
 ---
 
@@ -323,14 +323,14 @@ Path prefix: `android/src/main/java/chat/simplex/app/`
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `SimplexApp.kt` | PC1 through PC31 | High | Application class — initializes core, preferences, and notification channels |
-| `MainActivity.kt` | PC1 through PC31 | High | Single-activity host — intent handling, lifecycle, deep links |
-| `SimplexService.kt` | PC18 | High | Foreground service — keeps message receiver alive |
+| `SimplexApp.kt` | PC1 through PC31 | High | Application class - initializes core, preferences, and notification channels |
+| `MainActivity.kt` | PC1 through PC31 | High | Single-activity host - intent handling, lifecycle, deep links |
+| `SimplexService.kt` | PC18 | High | Foreground service - keeps message receiver alive |
 | `CallService.kt` | PC17 | Medium | Foreground service for active calls |
 | `MessagesFetcherWorker.kt` | PC18 | Medium | WorkManager periodic message fetch |
 | `model/NtfManager.android.kt` | PC18 | High | Android notification channels, display, and actions |
 | `views/call/CallActivity.kt` | PC17 | Medium | Dedicated activity for full-screen call UI |
-| `views/helpers/Util.kt` | — | Low | Android-specific utility extensions |
+| `views/helpers/Util.kt` | - | Low | Android-specific utility extensions |
 
 ### 2.2 Android Platform Implementations (androidMain)
 
@@ -351,14 +351,14 @@ Path prefix: `common/src/androidMain/kotlin/chat/simplex/common/`
 | `platform/Back.android.kt` | PC1 | Low | Android back press handler |
 | `platform/UI.android.kt` | PC24 | Low | Android density and locale |
 | `platform/ScrollableColumn.android.kt` | PC1 | Low | Android lazy list actual implementation |
-| `platform/Log.android.kt` | — | Low | Android Log wrapper |
-| `platform/Modifier.android.kt` | — | Low | Android modifier extensions |
-| `platform/Resources.android.kt` | — | Low | Android resource loading |
+| `platform/Log.android.kt` | - | Low | Android Log wrapper |
+| `platform/Modifier.android.kt` | - | Low | Android modifier extensions |
+| `platform/Resources.android.kt` | - | Low | Android resource loading |
 | `helpers/NetworkObserver.kt` | PC25 | Medium | Android ConnectivityManager observer |
 | `helpers/Permissions.kt` | PC9, PC10, PC17, PC18 | Medium | Android runtime permission requests |
 | `helpers/SoundPlayer.kt` | PC17, PC18 | Low | Android sound playback for calls and notifications |
-| `helpers/Extensions.kt` | — | Low | Kotlin extension utilities |
-| `helpers/Locale.kt` | — | Low | Locale helpers |
+| `helpers/Extensions.kt` | - | Low | Kotlin extension utilities |
+| `helpers/Locale.kt` | - | Low | Locale helpers |
 | `views/call/CallView.android.kt` | PC17 | Medium | Android WebView-based WebRTC call |
 | `views/call/CallAudioDeviceManager.kt` | PC17 | Medium | Android audio routing (speaker, earpiece, bluetooth) |
 | `views/chat/ComposeView.android.kt` | PC4, PC10 | Low | Android compose view extensions |
@@ -379,16 +379,16 @@ Path prefix: `common/src/androidMain/kotlin/chat/simplex/common/`
 | `views/helpers/ChooseAttachmentView.android.kt` | PC10 | Low | Android file/camera chooser |
 | `views/helpers/GetImageView.android.kt` | PC10, PC19 | Low | Android image capture |
 | `views/helpers/CustomTimePicker.android.kt` | PC8 | Low | Android time picker |
-| `views/helpers/Utils.android.kt` | — | Low | Android utility extensions |
-| `views/helpers/DefaultDialog.android.kt` | — | Low | Android dialog extensions |
-| `views/helpers/WorkaroundFocusSearchLayout.kt` | — | Low | Android focus workaround |
+| `views/helpers/Utils.android.kt` | - | Low | Android utility extensions |
+| `views/helpers/DefaultDialog.android.kt` | - | Low | Android dialog extensions |
+| `views/helpers/WorkaroundFocusSearchLayout.kt` | - | Low | Android focus workaround |
 | `views/newchat/QRCode.android.kt` | PC12 | Low | Android QR code rendering |
 | `views/newchat/QRCodeScanner.android.kt` | PC12 | Low | Android camera QR scanner |
 | `views/onboarding/SimpleXInfo.android.kt` | PC1 | Low | Android onboarding extensions |
 | `views/onboarding/SetNotificationsMode.android.kt` | PC18 | Low | Android notification mode extensions |
 | `views/usersettings/Appearance.android.kt` | PC24 | Low | Android appearance extensions |
 | `views/usersettings/PrivacySettings.android.kt` | PC20, PC22 | Low | Android privacy settings extensions |
-| `views/usersettings/SettingsView.android.kt` | — | Low | Android settings extensions |
+| `views/usersettings/SettingsView.android.kt` | - | Low | Android settings extensions |
 | `views/usersettings/networkAndServers/OperatorView.android.kt` | PC25 | Low | Android operator view extensions |
 | `views/usersettings/networkAndServers/ScanProtocolServer.android.kt` | PC25 | Low | Android server QR scan |
 | `ui/theme/Theme.android.kt` | PC24 | Low | Android dynamic color / system theme |
@@ -404,7 +404,7 @@ Path prefix: `desktop/src/jvmMain/kotlin/chat/simplex/desktop/`
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `Main.kt` | PC1 through PC31 | High | JVM entry point — Haskell init, migrations, app launch |
+| `Main.kt` | PC1 through PC31 | High | JVM entry point - Haskell init, migrations, app launch |
 
 ### 3.2 Desktop Platform Implementations (desktopMain)
 
@@ -412,8 +412,8 @@ Path prefix: `common/src/desktopMain/kotlin/chat/simplex/common/`
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `DesktopApp.kt` | PC1, PC2, PC3 | High | Desktop Compose window — window lifecycle, crash recovery |
-| `StoreWindowState.kt` | — | Low | Window position/size persistence |
+| `DesktopApp.kt` | PC1, PC2, PC3 | High | Desktop Compose window - window lifecycle, crash recovery |
+| `StoreWindowState.kt` | - | Low | Window position/size persistence |
 | `model/NtfManager.desktop.kt` | PC18 | Medium | Desktop system tray notification display |
 | `platform/AppCommon.desktop.kt` | PC1 through PC31 | Medium | Desktop app initialization actual declarations |
 | `platform/SimplexService.desktop.kt` | PC18 | Low | Desktop background receiver (no foreground service) |
@@ -429,10 +429,10 @@ Path prefix: `common/src/desktopMain/kotlin/chat/simplex/common/`
 | `platform/Back.desktop.kt` | PC1 | Low | Desktop back navigation |
 | `platform/UI.desktop.kt` | PC24 | Low | Desktop density and locale |
 | `platform/ScrollableColumn.desktop.kt` | PC1 | Low | Desktop lazy list |
-| `platform/Platform.desktop.kt` | — | Low | Platform detection |
-| `platform/Log.desktop.kt` | — | Low | Desktop log output |
-| `platform/Modifier.desktop.kt` | — | Low | Desktop modifier extensions |
-| `platform/Resources.desktop.kt` | — | Low | Desktop resource loading |
+| `platform/Platform.desktop.kt` | - | Low | Platform detection |
+| `platform/Log.desktop.kt` | - | Low | Desktop log output |
+| `platform/Modifier.desktop.kt` | - | Low | Desktop modifier extensions |
+| `platform/Resources.desktop.kt` | - | Low | Desktop resource loading |
 | `views/call/CallView.desktop.kt` | PC17 | Medium | Desktop WebView-based WebRTC call |
 | `views/chat/ComposeView.desktop.kt` | PC4, PC10 | Low | Desktop compose view (drag-and-drop, paste) |
 | `views/chat/SendMsgView.desktop.kt` | PC4 | Low | Desktop send shortcut (Enter key handling) |
@@ -448,21 +448,21 @@ Path prefix: `common/src/desktopMain/kotlin/chat/simplex/common/`
 | `views/chatlist/UserPicker.desktop.kt` | PC19 | Low | Desktop profile picker |
 | `views/database/DatabaseView.desktop.kt` | PC23, PC26 | Low | Desktop database view extensions |
 | `views/database/DatabaseEncryptionView.desktop.kt` | PC23 | Low | Desktop encryption view extensions |
-| `views/helpers/AppUpdater.kt` | — | Low | Desktop auto-update checker and installer |
-| `views/helpers/OkHttpProgressListener.kt` | — | Low | Download progress tracking for updates |
+| `views/helpers/AppUpdater.kt` | - | Low | Desktop auto-update checker and installer |
+| `views/helpers/OkHttpProgressListener.kt` | - | Low | Download progress tracking for updates |
 | `views/helpers/LocalAuthentication.desktop.kt` | PC22 | Low | Desktop passcode-only auth (no biometrics) |
 | `views/helpers/ChooseAttachmentView.desktop.kt` | PC10 | Low | Desktop file chooser dialog |
 | `views/helpers/GetImageView.desktop.kt` | PC10, PC19 | Low | Desktop image file picker |
 | `views/helpers/CustomTimePicker.desktop.kt` | PC8 | Low | Desktop time picker |
-| `views/helpers/Utils.desktop.kt` | — | Low | Desktop utility extensions |
-| `views/helpers/DefaultDialog.desktop.kt` | — | Low | Desktop dialog extensions |
+| `views/helpers/Utils.desktop.kt` | - | Low | Desktop utility extensions |
+| `views/helpers/DefaultDialog.desktop.kt` | - | Low | Desktop dialog extensions |
 | `views/newchat/QRCode.desktop.kt` | PC12 | Low | Desktop QR code rendering |
 | `views/newchat/QRCodeScanner.desktop.kt` | PC12 | Low | Desktop QR code scanner (screen/clipboard) |
 | `views/onboarding/SimpleXInfo.desktop.kt` | PC1 | Low | Desktop onboarding extensions |
 | `views/onboarding/SetNotificationsMode.desktop.kt` | PC18 | Low | Desktop notification mode extensions |
 | `views/usersettings/Appearance.desktop.kt` | PC24 | Low | Desktop appearance extensions |
 | `views/usersettings/PrivacySettings.desktop.kt` | PC20, PC22 | Low | Desktop privacy settings extensions |
-| `views/usersettings/SettingsView.desktop.kt` | — | Low | Desktop settings extensions |
+| `views/usersettings/SettingsView.desktop.kt` | - | Low | Desktop settings extensions |
 | `views/usersettings/networkAndServers/OperatorView.desktop.kt` | PC25 | Low | Desktop operator view extensions |
 | `views/usersettings/networkAndServers/ScanProtocolServer.desktop.kt` | PC25 | Low | Desktop server address scan |
 | `ui/theme/Theme.desktop.kt` | PC24 | Low | Desktop system theme detection |
@@ -477,13 +477,13 @@ The Haskell core is compiled as a shared native library (`libsimplex.so` / `libs
 
 | Source File | Product Concepts Affected | Risk Level | Notes |
 |-------------|--------------------------|------------|-------|
-| `src/Simplex/Chat.hs` | PC1 through PC31 | High | Main chat module — top-level orchestration |
-| `src/Simplex/Chat/Controller.hs` | PC1 through PC31 | High | Command processor — all API commands dispatched here |
+| `src/Simplex/Chat.hs` | PC1 through PC31 | High | Main chat module - top-level orchestration |
+| `src/Simplex/Chat/Controller.hs` | PC1 through PC31 | High | Command processor - all API commands dispatched here |
 | `src/Simplex/Chat/Types.hs` | PC1 through PC31 | High | Core data types shared across all features |
 | `src/Simplex/Chat/Core.hs` | PC1 through PC31 | High | Chat engine lifecycle (start, stop, subscribe) |
 | `src/Simplex/Chat/Library/Commands.hs` | PC1 through PC31 | High | API command handler implementations |
 | `src/Simplex/Chat/Library/Internal.hs` | PC1 through PC31 | High | Internal helpers for command processing |
-| `src/Simplex/Chat/Library/Subscriber.hs` | PC1 through PC31 | High | Event subscriber — incoming message routing |
+| `src/Simplex/Chat/Library/Subscriber.hs` | PC1 through PC31 | High | Event subscriber - incoming message routing |
 | `src/Simplex/Chat/Protocol.hs` | PC2, PC3, PC4, PC5, PC6, PC7 | High | Chat-level message protocol (x-events) |
 | `src/Simplex/Chat/Messages.hs` | PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9 | High | Message types and content |
 | `src/Simplex/Chat/Messages/CIContent.hs` | PC4, PC5, PC6, PC7, PC8, PC9, PC11 | Medium | Chat item content variants |
@@ -523,14 +523,14 @@ The Haskell core is compiled as a shared native library (`libsimplex.so` / `libs
 | `src/Simplex/Chat/Operators/Presets.hs` | PC25 | Low | Preset server operators |
 | `src/Simplex/Chat/Operators/Conditions.hs` | PC25 | Low | Operator usage conditions |
 | `src/Simplex/Chat/AppSettings.hs` | PC25 | Low | App settings sync types |
-| `src/Simplex/Chat/Mobile.hs` | PC1 through PC31 | High | C FFI exports — JNI bridge target |
+| `src/Simplex/Chat/Mobile.hs` | PC1 through PC31 | High | C FFI exports - JNI bridge target |
 | `src/Simplex/Chat/Mobile/File.hs` | PC10 | Medium | Mobile file read/write FFI |
 | `src/Simplex/Chat/Mobile/Shared.hs` | PC1 through PC31 | Medium | Shared FFI helpers |
 | `src/Simplex/Chat/Mobile/WebRTC.hs` | PC17 | Low | WebRTC FFI helpers |
 | `src/Simplex/Chat/View.hs` | PC1 through PC31 | Low | Terminal view rendering (not used by mobile/desktop UI) |
 | `src/Simplex/Chat/Stats.hs` | PC25 | Low | Server statistics tracking |
-| `src/Simplex/Chat/Util.hs` | — | Low | General Haskell utilities |
-| `src/Simplex/Chat/Styled.hs` | — | Low | Terminal styled text (not used by mobile/desktop UI) |
-| `src/Simplex/Chat/Help.hs` | — | Low | Terminal help text |
-| `src/Simplex/Chat/Bot.hs` | — | Low | Chat bot framework |
-| `src/Simplex/Chat/Bot/KnownContacts.hs` | — | Low | Bot known contacts |
+| `src/Simplex/Chat/Util.hs` | - | Low | General Haskell utilities |
+| `src/Simplex/Chat/Styled.hs` | - | Low | Terminal styled text (not used by mobile/desktop UI) |
+| `src/Simplex/Chat/Help.hs` | - | Low | Terminal help text |
+| `src/Simplex/Chat/Bot.hs` | - | Low | Chat bot framework |
+| `src/Simplex/Chat/Bot/KnownContacts.hs` | - | Low | Bot known contacts |

@@ -15,7 +15,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import chat.simplex.common.platform.Log
 
-/** HARD-PINNED to the fork repo — never upstream simplex-chat (pinned by AppUpdaterTest). */
+/** HARD-PINNED to the fork repo - never upstream simplex-chat (pinned by AppUpdaterTest). */
 const val RELEASES_API_URL = "https://api.github.com/repos/delta-whiplash/simpleUx-chat/releases?per_page=5"
 
 /** Project home, opened when the user taps the version row in VersionInfoView. */
@@ -29,7 +29,7 @@ private val releasesJsonParser = Json {
 }
 
 private val APK_ASSET_REGEX = Regex("simplex-ux-.*-arm64-v8a\\.apk")
-// Extracts the fork version from an asset name — rolling releases carry a floating
+// Extracts the fork version from an asset name - rolling releases carry a floating
 // "rolling" tag, so the version only lives in the asset name ("7.0.366-ux.5" below).
 private val APK_VERSION_REGEX = Regex("simplex-ux-(.+)-arm64-v8a\\.apk")
 
@@ -50,8 +50,8 @@ internal data class AppUpdateVersion(val base: List<Int>, val forkCounter: Int) 
 }
 
 /**
- * Parses "7.0.366-ux.5" / "v7.0.366-ux.5". Anything else — the floating "rolling" tag,
- * versions without the "-ux." counter, malformed numbers — yields null so the candidate
+ * Parses "7.0.366-ux.5" / "v7.0.366-ux.5". Anything else - the floating "rolling" tag,
+ * versions without the "-ux." counter, malformed numbers - yields null so the candidate
  * is never proposed as an update.
  */
 internal fun parseAppUpdateVersion(raw: String): AppUpdateVersion? {
@@ -69,7 +69,7 @@ internal fun parseAppUpdateVersion(raw: String): AppUpdateVersion? {
  * Language-neutral version comparison for the updater: NEWER only when [candidate] is a
  * parseable fork version strictly greater than [current]; NOT_A_VERSION means "never
  * propose an update from this tag". A [current] version without the "-ux." counter
- * (local builds and pre-#72 installs) still has a meaningful upstream base — its fork
+ * (local builds and pre-#72 installs) still has a meaningful upstream base - its fork
  * counter is treated as 0 so it can be updated.
  */
 fun compareAppUpdateVersions(current: String, candidate: String): AppUpdateVersionComparison {
@@ -207,7 +207,7 @@ class AppUpdater(
 
   /**
    * Silent, opt-in auto check (#79): the user must have enabled it in the
-   * updater section (default OFF — zero network at startup otherwise). Only
+   * updater section (default OFF - zero network at startup otherwise). Only
    * stable releases (prerelease = false) are considered; any failure or
    * "already current" outcome is swallowed so a background check never
    * bothers the user. A strictly newer stable is pushed both into [state]

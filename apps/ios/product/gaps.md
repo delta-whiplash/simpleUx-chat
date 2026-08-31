@@ -28,7 +28,7 @@ When `ChatModel.chatInitialized` transitions to `true`, the chat list appears fu
 
 ## Flows: Group Lifecycle
 
-### GAP: Bulk member role change — API supports batch but UI uses single-member calls
+### GAP: Bulk member role change - API supports batch but UI uses single-member calls
 **Source:** [spec/api.md](../spec/api.md)
 `APIMembersRole` accepts `NonEmpty GroupMemberId`, supporting batch role changes at the API level. However, the iOS UI (`GroupMemberInfoView.swift`) currently invokes it with a single member at a time.
 

@@ -52,7 +52,7 @@ actual class RecorderNative: RecorderInterface {
     }
     RecorderInterface.stopRecording = { stop() }
     progressJob = CoroutineScope(Dispatchers.Default).launch {
-      // Shared factory init may take a few seconds on first VLC use — progress shows 0 until recording starts
+      // Shared factory init may take a few seconds on first VLC use - progress shows 0 until recording starts
       val p = vlcFactory.mediaPlayers().newMediaPlayer()
       player = p
       p.media().play(mrl, *options.toTypedArray())

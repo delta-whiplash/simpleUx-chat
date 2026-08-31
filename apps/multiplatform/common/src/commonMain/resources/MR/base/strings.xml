@@ -252,7 +252,7 @@
   <string name="turning_off_service_and_periodic">Battery optimization is active, turning off background service and periodic requests for new messages. You can re-enable them via settings.</string>
   <string name="periodic_notifications">Periodic notifications</string>
   <string name="periodic_notifications_disabled">Periodic notifications are disabled!</string>
-  <string name="periodic_notifications_desc">The app fetches new messages periodically — it uses a few percent of the battery per day. The app doesn\'t use push notifications — data from your device is not sent to the servers.</string>
+  <string name="periodic_notifications_desc">The app fetches new messages periodically - it uses a few percent of the battery per day. The app doesn\'t use push notifications - data from your device is not sent to the servers.</string>
   <string name="turn_off_battery_optimization_button">Allow</string>
   <string name="turn_off_system_restriction_button">Open app settings</string>
   <string name="disable_notifications_button">Disable notifications</string>
@@ -1285,7 +1285,7 @@
 
   <!-- ChooseServerOperators.kt -->
   <string name="onboarding_conditions_private_chats_not_accessible">Operators commit to:\n- Be independent\n- Minimize metadata usage\n- Run verified open-source code</string>
-  <string name="onboarding_conditions_by_using_you_agree">You commit to:\n- Only legal content in public groups\n- Respect other users — no spam</string>
+  <string name="onboarding_conditions_by_using_you_agree">You commit to:\n- Only legal content in public groups\n- Respect other users - no spam</string>
   <string name="onboarding_conditions_privacy_policy_and_conditions_of_use">Privacy policy and conditions of use.</string>
   <string name="onboarding_conditions_accept">Accept</string>
   <string name="onboarding_choose_server_operators">Server operators</string>
@@ -3027,7 +3027,7 @@
   <string name="tray_show">Show SimpleX</string>
   <string name="tray_quit">Quit SimpleX</string>
   <string name="tray_tooltip">SimpleX</string>
-  <string name="tray_tooltip_unread">SimpleX — %d unread</string>
+  <string name="tray_tooltip_unread">SimpleX - %d unread</string>
   <string name="appearance_minimize_to_tray">Close to tray</string>
   <string name="appearance_minimize_to_tray_desc">Runs in background to receive messages</string>
   <string name="badge_supports_simplex">%s supports SimpleX Chat.</string>
@@ -3067,7 +3067,7 @@
   <string name="profile_switcher_manage">Manage</string>
 
   <!-- Onboarding Strings -->
-  <string name="onboarding_badge">SimpleUX — Private by Design</string>
+  <string name="onboarding_badge">SimpleUX - Private by Design</string>
   <string name="onboarding_hero_title">Private Messaging, Redefined</string>
   <string name="onboarding_feature_1_title">Zero Identifiers, Zero Numbers</string>
   <string name="onboarding_feature_1_sub">No phone numbers, no emails, no centralized accounts. Completely metadata-free by design.</string>

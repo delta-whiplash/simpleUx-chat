@@ -75,7 +75,7 @@ object ThemeAnimationController {
      * @param scope scope running the reveal; null = controller-owned scope. A screen-scoped
      *   scope is safe: cancellation resets [isAnimating] via finally.
      *
-     * Triggers while a reveal is already running are ignored — see [nextRevealTarget].
+     * Triggers while a reveal is already running are ignored - see [nextRevealTarget].
      */
     fun trigger(
         originOffset: Offset? = null,
@@ -86,7 +86,7 @@ object ThemeAnimationController {
         val newIsDark = nextRevealTarget(isAnimating.value, currentIsDark) ?: return
         val revealScope = scope ?: controllerScope
         // A dead scope would never run the coroutine body, so it could also never run the
-        // finally that resets isAnimating — never arm the overlay in that case.
+        // finally that resets isAnimating - never arm the overlay in that case.
         if (!revealScope.isActive) return
         origin.value = resolveRevealOrigin(originOffset)
         targetIsDark.value = newIsDark
@@ -97,7 +97,7 @@ object ThemeAnimationController {
                 animProgress.snapTo(0f)
                 // #82: apply the theme BEFORE the reveal draws, and without the
                 // system night-mode sync. setApplicationNightMode recreates the
-                // activity (uiMode config change) — that teardown under a
+                // activity (uiMode config change) - that teardown under a
                 // running full-screen animation was the entire jank; the Compose
                 // tree restyles from CurrentColors alone, and the sync still
                 // happens on the next activity create. The opaque overlay disc
@@ -113,8 +113,8 @@ object ThemeAnimationController {
                     animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
                 )
             } finally {
-                // ALWAYS reset — also when a screen-scoped scope cancels this coroutine
-                // (e.g. back navigation mid-reveal) — otherwise the hosted overlay
+                // ALWAYS reset - also when a screen-scoped scope cancels this coroutine
+                // (e.g. back navigation mid-reveal) - otherwise the hosted overlay
                 // (zIndex 9999) keeps drawing a frozen partial circle over the app.
                 isAnimating.value = false
             }

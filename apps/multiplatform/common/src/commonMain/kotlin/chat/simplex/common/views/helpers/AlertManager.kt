@@ -78,7 +78,7 @@ class AlertManager {
     onDismissRequest: (() -> Unit)? = null,
     hostDevice: Pair<Long?, String>? = null,
     belowTextContent: @Composable (() -> Unit) = {},
-    // When false, [text] is rendered as literal text — use for user-controlled content.
+    // When false, [text] is rendered as literal text - use for user-controlled content.
     parseHtml: Boolean = true,
     buttons: @Composable () -> Unit,
   ) {
@@ -133,7 +133,7 @@ class AlertManager {
     onDismissRequest: (() -> Unit)? = null,
     destructive: Boolean = false,
     hostDevice: Pair<Long?, String>? = null,
-    // When false, [text] is rendered as literal text — use for user-controlled content.
+    // When false, [text] is rendered as literal text - use for user-controlled content.
     parseHtml: Boolean = true,
   ) {
     showAlert {

@@ -797,7 +797,7 @@ struct ChatListSearchBar: View {
     }
 }
 
-// Row shown when the search text is a SimpleX name — in place of the list tags in the chat list, below
+// Row shown when the search text is a SimpleX name - in place of the list tags in the chat list, below
 // the search field in the new chat sheet. The @ icon marks a contact name, the tag icon a channel/other
 // name; tapping hides the keyboard, connects online, and clears the field.
 struct ConnectByNameRow: View {
@@ -844,7 +844,7 @@ private func isNameLabel(_ s: String) -> Bool {
 }
 
 // On-device candidate for connecting by SimpleX name: the string sent to the core to resolve it.
-// The chat id a local (.never) search resolved to — a contact, business, or channel — or nil on a miss.
+// The chat id a local (.never) search resolved to - a contact, business, or channel - or nil on a miss.
 // A name-resolved chat may be prepared in the store but not yet listed, so add it so the filter can surface it.
 @MainActor
 func knownChatId(_ result: ConnectionPlanResult?) -> String? {

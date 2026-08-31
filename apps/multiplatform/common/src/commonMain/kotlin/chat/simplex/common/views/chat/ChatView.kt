@@ -1049,7 +1049,7 @@ fun ChatLayout(
                   CommandsMenuView(chatsCtx, chat, composeState, showCommandsMenu)
                 }
               }
-              // Copy button inside TopStart-aligned wrapper — above messages,
+              // Copy button inside TopStart-aligned wrapper - above messages,
               // behind compose (ABPL paints compose after) and toolbars (outer Box paints after ABPL)
               if (appPlatform.isDesktop) {
                 Box(Modifier.matchParentSize()) {
@@ -1378,7 +1378,7 @@ fun BoxScope.ChatInfoToolbar(
     }
   }
 
-  // Single unified action button in Top Bar — not in Saved Messages, where the
+  // Single unified action button in Top Bar - not in Saved Messages, where the
   // header tap is the filter entry point (#57) and a kebab would duplicate it
   if (menuItems.isNotEmpty() && chatInfo !is ChatInfo.Local) {
     barButtons.add {

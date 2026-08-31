@@ -146,7 +146,7 @@ Accessible from channel info; shows relay members (role == `Relay`):
 
 Owner sees relay status from `apiGetGroupRelays`; non-owner sees connection status only.
 
-#### Channel Member Info — relay surface (in `GroupMemberInfoView`)
+#### Channel Member Info - relay surface (in `GroupMemberInfoView`)
 
 | Element | Description |
 |---|---|

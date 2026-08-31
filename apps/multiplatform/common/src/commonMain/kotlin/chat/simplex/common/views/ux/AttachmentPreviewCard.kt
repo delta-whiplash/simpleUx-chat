@@ -39,7 +39,7 @@ import dev.icerock.moko.resources.compose.painterResource
  * The attached content (thumbnails, file icon + name) is passed via the
  * content slot by [chat.simplex.common.views.chat.ComposeImageView] /
  * [chat.simplex.common.views.chat.ComposeFileView], which keep the same
- * cancel callbacks as before — remove/send logic is unchanged.
+ * cancel callbacks as before - remove/send logic is unchanged.
  *
  * Parameterized and side-effect-free: constructible in isolation (AGENTS §5).
  */

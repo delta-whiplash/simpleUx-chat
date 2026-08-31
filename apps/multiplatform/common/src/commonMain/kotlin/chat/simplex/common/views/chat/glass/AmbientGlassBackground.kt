@@ -71,7 +71,7 @@ fun AmbientGlassBackground(
             val width = size.width
             val height = size.height
 
-            // Orb 1: Indigo / Electric Blue — top left (gently drifting)
+            // Orb 1: Indigo / Electric Blue - top left (gently drifting)
             val c1 = Offset(width * (0.15f + drift1), height * (0.12f + drift2))
             drawCircle(
                 brush = Brush.radialGradient(
@@ -86,7 +86,7 @@ fun AmbientGlassBackground(
                 radius = width * 0.75f
             )
 
-            // Orb 2: Violet / Purple — center right
+            // Orb 2: Violet / Purple - center right
             val c2 = Offset(width * (0.85f - drift2), height * (0.45f + drift1))
             drawCircle(
                 brush = Brush.radialGradient(
@@ -101,7 +101,7 @@ fun AmbientGlassBackground(
                 radius = width * 0.65f
             )
 
-            // Orb 3: Cyan / Emerald — bottom left
+            // Orb 3: Cyan / Emerald - bottom left
             val c3 = Offset(width * (0.25f + drift2), height * (0.85f - drift1))
             drawCircle(
                 brush = Brush.radialGradient(

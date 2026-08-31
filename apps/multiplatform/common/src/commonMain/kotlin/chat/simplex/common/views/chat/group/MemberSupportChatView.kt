@@ -116,7 +116,7 @@ fun MemberSupportChatAppBar(
   )
 
   // FB-4: the kebab menu (and its trigger button) was removed with its only entry, the
-  // "Dark mode" toggle — the same misplaced, crash-on-tap theme item as the main chat
+  // "Dark mode" toggle - the same misplaced, crash-on-tap theme item as the main chat
   // conversation menu (theme switching lives in the chat-list header and Appearance).
 
   ItemsReload(chatsCtx)

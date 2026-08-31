@@ -1244,7 +1244,7 @@
     <string name="whats_new_thanks_to_users_contribute_weblate">Ευχαριστούμε τους χρήστες – συνεισφέρετε μέσω του Weblate!</string>
     <string name="thank_you_for_installing_simplex">Σε ευχαριστούμε που εγκατέστησες το SimpleX Chat!</string>
     <string name="share_profile_via_link_alert_text">Η διεύθυνση θα είναι σύντομη και το προφίλ σου θα κοινοποιηθεί μέσω αυτής.</string>
-    <string name="periodic_notifications_desc">Η εφαρμογή λαμβάνει νέα μηνύματα περιοδικά — καταναλώνει ένα μικρό ποσοστό της μπαταρίας ανά ημέρα. Η εφαρμογή δεν χρησιμοποιεί ειδοποιήσεις push — τα δεδομένα από τη συσκευή σου δεν αποστέλλονται στους διακομιστές.</string>
+    <string name="periodic_notifications_desc">Η εφαρμογή λαμβάνει νέα μηνύματα περιοδικά - καταναλώνει ένα μικρό ποσοστό της μπαταρίας ανά ημέρα. Η εφαρμογή δεν χρησιμοποιεί ειδοποιήσεις push - τα δεδομένα από τη συσκευή σου δεν αποστέλλονται στους διακομιστές.</string>
     <string name="system_restricted_background_in_call_desc">Η εφαρμογή ενδέχεται να κλείσει μετά από 1 λεπτό στο παρασκήνιο.</string>
     <string name="onboarding_network_operators_app_will_use_different_operators">Η εφαρμογή προστατεύει το απόρρητό σου χρησιμοποιώντας διαφορετικούς χειριστές σε κάθε συνομιλία.</string>
     <string name="app_will_ask_to_confirm_unknown_file_servers">Η εφαρμογή θα ζητήσει επιβεβαίωση για λήψεις από άγνωστους διακομιστές αρχείων (εκτός από .onion ή όταν είναι ενεργοποιημένος ο διακομιστής μεσολάβησης SOCKS).</string>

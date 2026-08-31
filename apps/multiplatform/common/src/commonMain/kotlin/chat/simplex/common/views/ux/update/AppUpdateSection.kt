@@ -36,7 +36,7 @@ import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.stringResource
 
 /**
- * "App updates" section of the version screen (issue #79, Android only — the
+ * "App updates" section of the version screen (issue #79, Android only - the
  * desktop target renders nothing, the section is not even composed there).
  * Owns a screen-scoped [AppUpdater]; all platform work is behind
  * [AppUpdateInstaller].

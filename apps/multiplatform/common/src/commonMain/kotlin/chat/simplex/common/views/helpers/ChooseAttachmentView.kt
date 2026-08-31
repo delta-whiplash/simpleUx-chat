@@ -33,7 +33,7 @@ sealed class AttachmentOption {
 }
 
 /**
- * #56: bottom attachment panel in the Luxury Mineral language — rounded
+ * #56: bottom attachment panel in the Luxury Mineral language - rounded
  * sheet, circular tinted icon wells with labels underneath, instead of the
  * old flat icon row whose width fractions came from a removed column layout
  * and overflowed. One implementation for both platforms (the camera action

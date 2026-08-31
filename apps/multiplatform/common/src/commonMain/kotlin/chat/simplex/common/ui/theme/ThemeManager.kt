@@ -108,7 +108,7 @@ object ThemeManager {
     }
     CurrentColors.value = currentColors(null, null, chatModel.currentUser.value?.uiThemes, appPrefs.themeOverrides.get())
     // #82: setApplicationNightMode recreates the activity (uiMode config
-    // change). An in-app animated toggle must not do that mid-animation — the
+    // change). An in-app animated toggle must not do that mid-animation - the
     // Compose tree restyles from CurrentColors alone, and the sync still
     // happens on the next activity create (MainActivity.onCreate).
     if (syncSystemNightMode) {

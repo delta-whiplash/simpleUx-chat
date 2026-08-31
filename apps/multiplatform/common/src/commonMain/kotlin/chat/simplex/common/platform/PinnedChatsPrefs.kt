@@ -6,7 +6,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 // SimpleUX pin ("pin to top") persistence for chats (FB-14), backed by its own
-// moko multiplatform-settings instance — same pattern as StarredChatsPrefs, and
+// moko multiplatform-settings instance - same pattern as StarredChatsPrefs, and
 // kept separate from AppPreferences for the same reason (model/SimpleXAPI.kt is
 // byte-frozen; the settings store must not be touched during ChatModel class
 // init, so ids are seeded via ChatModel.loadPersistedPinnedChats() from the

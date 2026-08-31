@@ -35,7 +35,7 @@ internal fun nameSearchCandidate(str: String): String? {
   }
 }
 
-// The chat id a local (PRMNever) search resolved to — a contact, a business, or a channel — or null on a miss.
+// The chat id a local (PRMNever) search resolved to - a contact, a business, or a channel - or null on a miss.
 // The core returns the correct type for @ vs # (getContactToConnect / type-filtered getGroupToConnect), so no
 // client-side type check is needed.
 internal suspend fun knownChatId(rhId: Long?, result: ConnectionPlanResult?): String? = when (val plan = result?.connectionPlan) {

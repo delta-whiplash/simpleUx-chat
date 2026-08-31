@@ -47,7 +47,7 @@
     <string name="open_simplex_chat_to_accept_call">Отворете SimpleX Chat, за да приемете повикването</string>
     <string name="v4_6_audio_video_calls_descr">Поддръжка на bluetooth и други подобрения.</string>
     <string name="relay_server_protects_ip">Relay сървърът защитава вашия IP адрес, но може да наблюдава продължителността на разговора.</string>
-    <string name="periodic_notifications_desc">Приложението изтегля нови съобщения периодично - това използва няколко процента от батерията на ден. Приложението не използва push известия — данни от вашето устройство не се изпращат до сървърите.</string>
+    <string name="periodic_notifications_desc">Приложението изтегля нови съобщения периодично - това използва няколко процента от батерията на ден. Приложението не използва push известия - данни от вашето устройство не се изпращат до сървърите.</string>
     <string name="callstate_waiting_for_answer">чака се отговор…</string>
     <string name="icon_descr_cancel_file_preview">Спри визуализацията на файла</string>
     <string name="rcv_group_event_changed_your_role">променена е вашата ролята на %s</string>

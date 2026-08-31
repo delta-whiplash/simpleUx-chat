@@ -108,7 +108,7 @@ fun CameraShutterButton(enabled: Boolean, onClick: () -> Unit) {
 // Material look. Shown once the system permission dialog has been answered
 // with a denial (soft or permanent). Two actions, both real: "Open settings"
 // deep-links to the app's system settings page (the only reliable path once
-// Android stopped re-showing the dialog), and "Close" dismisses the sheet —
+// Android stopped re-showing the dialog), and "Close" dismisses the sheet  - 
 // the user always has a way out (FB-10).
 @Composable
 fun CameraPermissionCard(onOpenSettings: () -> Unit, onClose: () -> Unit) {

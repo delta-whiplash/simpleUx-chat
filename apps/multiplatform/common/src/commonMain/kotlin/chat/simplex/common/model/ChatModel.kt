@@ -138,7 +138,7 @@ object ChatModel {
   val groupMembers = mutableStateOf<List<GroupMember>>(emptyList())
   val groupMembersIndexes = mutableStateOf<Map<Long, Int>>(emptyMap())
   val membersLoaded = mutableStateOf(false)
-  // Runtime-only relay hostnames for pre-join channel display, not persisted — lost on app restart.
+  // Runtime-only relay hostnames for pre-join channel display, not persisted - lost on app restart.
   // APIConnectPreparedGroup re-fetches fresh relays at connect time, so stale data doesn't affect join.
   val channelRelayHostnames = mutableStateMapOf<Long, List<String>>()
 
@@ -150,7 +150,7 @@ object ChatModel {
 
   // SimpleUX Starred / Favorites State
   // Chat stars are persisted locally via StarredChatsPrefs and loaded by
-  // loadPersistedStarredChats() once the platform app context exists — the
+  // loadPersistedStarredChats() once the platform app context exists - the
   // settings store must NOT be touched during class init (it crashed cold
   // start on Android: androidAppContext is only set in SimplexApp
   // .initMultiplatform, after this class initializes). Message stars stay

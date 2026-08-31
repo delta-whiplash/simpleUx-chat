@@ -2661,7 +2661,7 @@
     <string name="tray_show">SimpleXを表示</string>
     <string name="tray_quit">SimpleXを終了</string>
     <string name="tray_tooltip">SimpleX</string>
-    <string name="tray_tooltip_unread">SimpleX — %d 件の未読</string>
+    <string name="tray_tooltip_unread">SimpleX - %d 件の未読</string>
     <string name="appearance_minimize_to_tray">閉じる時にトレイへ</string>
     <string name="appearance_minimize_to_tray_desc">メッセージを受信するためにバックグラウンドで実行します</string>
     <string name="badge_supports_simplex">%s は SimpleX Chat をサポートしています。</string>

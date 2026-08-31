@@ -400,7 +400,7 @@ private fun ShareEmptyState() {
   }
 }
 
-/** Inset card with hairline specular rim — the design system's grouped-surface recipe. */
+/** Inset card with hairline specular rim - the design system's grouped-surface recipe. */
 @Composable
 private fun MineralCard(content: @Composable ColumnScope.() -> Unit) {
   val shape = RoundedCornerShape(18.dp)

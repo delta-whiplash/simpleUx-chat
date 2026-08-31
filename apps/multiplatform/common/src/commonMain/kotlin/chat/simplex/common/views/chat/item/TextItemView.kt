@@ -84,7 +84,7 @@ private fun typingIndicator(recent: Boolean, typingIdx: Int): AnnotatedString = 
 private fun typing(w: FontWeight = FontWeight.Light): AnnotatedString =
   AnnotatedString(".", SpanStyle(fontWeight = w))
 
-// Display text for a single formatted segment — must be coordinated with MarkdownText.
+// Display text for a single formatted segment - must be coordinated with MarkdownText.
 fun itemSegmentDisplayText(ft: FormattedText, ci: ChatItem, linkMode: SimplexLinkMode): String =
   when (ft.format) {
     is Format.Mention -> {
@@ -106,14 +106,14 @@ fun itemSegmentDisplayText(ft: FormattedText, ci: ChatItem, linkMode: SimplexLin
     else -> ft.text
   }
 
-// Full display text for a chat item — joins segment display texts.
+// Full display text for a chat item - joins segment display texts.
 fun itemDisplayText(ci: ChatItem, linkMode: SimplexLinkMode): String {
   val formattedText = ci.formattedText ?: return ci.text
   return formattedText.joinToString("") { itemSegmentDisplayText(it, ci, linkMode) }
 }
 
 // Display-only prefix rendered before ci.text (e.g. "Spam: " for reports).
-// Renderers and selection code MUST share this string — otherwise selection offsets drift from screen.
+// Renderers and selection code MUST share this string - otherwise selection offsets drift from screen.
 fun itemPrefixText(ci: ChatItem): String = when (val mc = ci.content.msgContent) {
   is MsgContent.MCReport -> if (mc.text.isEmpty()) mc.reason.text else "${mc.reason.text}: "
   else -> ""

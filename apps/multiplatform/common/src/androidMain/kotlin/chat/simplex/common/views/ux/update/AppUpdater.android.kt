@@ -21,7 +21,7 @@ actual fun provideAppUpdateInstaller(): AppUpdateInstaller = AndroidAppUpdateIns
  * package installer. The FileProvider authority is computed at runtime from
  * [APPLICATION_ID] (mirroring Utils.android.kt / QuickCameraSheet.kt), which
  * resolves the manifest placeholder `${provider_authorities}` including any
- * debug suffix — never hard-coded here.
+ * debug suffix - never hard-coded here.
  */
 object AndroidAppUpdateInstaller : AppUpdateInstaller {
   private const val TAG = "AppUpdateInstaller"

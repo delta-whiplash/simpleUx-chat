@@ -20,7 +20,7 @@ import kotlin.test.assertTrue
  *    missing "-ux." counter) is NEVER proposed as an update;
  *  - NEWER only when the candidate (upstream base tuple, then fork counter)
  *    is strictly greater than the running version;
- *  - a manual check takes the first release entry (including prereleases —
+ *  - a manual check takes the first release entry (including prereleases  - 
  *    the user dogfoods on rolling); an auto check skips prereleases;
  *  - only assets named `simplex-ux-...-arm64-v8a.apk` are downloadable.
  */
@@ -113,7 +113,7 @@ class AppUpdaterTest {
 
   @Test
   fun unstampedCurrentVersionCanBeUpdated() {
-    // Local builds and pre-#72 installs have no "-ux." counter — the upstream base still
+    // Local builds and pre-#72 installs have no "-ux." counter - the upstream base still
     // decides, with the fork counter treated as 0.
     assertEquals(
       AppUpdateVersionComparison.NEWER,
@@ -162,7 +162,7 @@ class AppUpdaterTest {
     val candidate = selectAppUpdateRelease(releasesFixture, includePrerelease = true)
     assertNotNull(candidate)
     assertEquals("rolling", candidate.tagName)
-    // The rolling tag is not versionable — the version comes from the asset name.
+    // The rolling tag is not versionable - the version comes from the asset name.
     assertEquals("7.0.367-ux.2", candidate.version)
     assertEquals("simplex-ux-7.0.367-ux.2-arm64-v8a.apk", candidate.apkName)
     assertEquals(

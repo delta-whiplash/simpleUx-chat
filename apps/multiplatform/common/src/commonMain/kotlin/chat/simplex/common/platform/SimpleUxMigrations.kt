@@ -12,7 +12,7 @@ import chat.simplex.common.model.ChatController
 fun runSimpleUxMigrations() {
   if (!SimpleUxPrefs.chatStyleDefaultsApplied()) {
     // Chat style: apply the SimpleUX design defaults (sharper corners, no
-    // message tails) in the UI layer — the model defaults in SimpleXAPI.kt
+    // message tails) in the UI layer - the model defaults in SimpleXAPI.kt
     // stay untouched (byte-frozen per AGENTS.md §1). Only values still at the
     // upstream defaults are overridden; anything the user explicitly set in
     // Appearance afterwards is left alone.

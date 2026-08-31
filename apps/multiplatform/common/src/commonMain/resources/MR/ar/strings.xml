@@ -2202,7 +2202,7 @@
     <string name="group_member_status_pending_approval">موافقة الانتظار</string>
     <string name="onboarding_conditions_privacy_policy_and_conditions_of_use">سياسة الخصوصية وشروط الاستخدام.</string>
     <string name="onboarding_conditions_private_chats_not_accessible">يلتزم المشغلون بما يلي:\n- الاستقلالية\n- تقليل استخدام البيانات الوصفية\n- تشغيل برمجيات مفتوحة المصدر وموثقة</string>
-    <string name="onboarding_conditions_by_using_you_agree">أنت تلتزم بـ:\n- المحتوى القانوني فقط في المجموعات العامة\n- احترام المستخدمين الآخرين — لا للرسائل المزعجة</string>
+    <string name="onboarding_conditions_by_using_you_agree">أنت تلتزم بـ:\n- المحتوى القانوني فقط في المجموعات العامة\n- احترام المستخدمين الآخرين - لا للرسائل المزعجة</string>
     <string name="onboarding_conditions_accept">اقبل</string>
     <string name="link_requires_newer_app_version_please_upgrade">يتطلب هذا الرابط إصدار تطبيق أحدث. يُرجى ترقية التطبيق أو اطلب من جهة اتصالك إرسال رابط متوافق.</string>
     <string name="full_link_button_text">رابط كامل</string>
@@ -2638,7 +2638,7 @@
     <string name="tray_quit">أنهِ SimpleX</string>
     <string name="tray_show">أظهر SimpleX</string>
     <string name="tray_tooltip">SimpleX</string>
-    <string name="tray_tooltip_unread">SimpleX — %d غير مقروءة</string>
+    <string name="tray_tooltip_unread">SimpleX - %d غير مقروءة</string>
     <string name="another_instance_not_responding">قد تكون هناك نُسخة أخرى من التطبيق قيد التشغيل أو لم تُغلق بشكل صحيح. أتريد البدء على أي حال؟</string>
     <string name="another_instance_title">التطبيق يعمل بالفعل</string>
     <string name="relay_status_rejected">رُفض</string>

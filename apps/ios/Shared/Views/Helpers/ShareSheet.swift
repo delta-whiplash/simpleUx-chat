@@ -284,7 +284,7 @@ class OpenChatAlertViewController: UIViewController {
         var buttonDividerConstraints: [NSLayoutConstraint] = []
 
         if let confirmTitle, let secondTitle {
-            // Three buttons (a sibling action is present) — always vertical
+            // Three buttons (a sibling action is present) - always vertical
             let confirmButton = UIButton(type: .system)
             confirmButton.setTitle(confirmTitle, for: .normal)
             confirmButton.titleLabel?.font = UIFont.preferredFont(forTextStyle: .body)

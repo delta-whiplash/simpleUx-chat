@@ -86,7 +86,7 @@
     <string name="turning_off_service_and_periodic">Die Akkuoptimierung ist aktiv, der Hintergrunddienst und die periodische Nachfrage nach neuen Nachrichten ist abgeschaltet. Sie können diese Funktion in den Einstellungen wieder aktivieren.</string>
     <string name="periodic_notifications">Periodische Benachrichtigungen</string>
     <string name="periodic_notifications_disabled">Periodische Benachrichtigungen sind deaktiviert!</string>
-    <string name="periodic_notifications_desc">Die App holt periodisch neue Nachrichten ab — dies benötigt ein paar Prozent Akkuleistung am Tag. Die App nutzt keine Push-Benachrichtigungen — es werden keine Daten von Ihrem Gerät an Server gesendet.</string>
+    <string name="periodic_notifications_desc">Die App holt periodisch neue Nachrichten ab - dies benötigt ein paar Prozent Akkuleistung am Tag. Die App nutzt keine Push-Benachrichtigungen - es werden keine Daten von Ihrem Gerät an Server gesendet.</string>
     <string name="enter_passphrase_notification_title">Passwort wird benötigt</string>
     <string name="enter_passphrase_notification_desc">Geben Sie bitte das Datenbank-Passwort ein, um Benachrichtigungen zu erhalten.</string>
     <string name="database_initialization_error_title">Die Datenbank kann nicht initialisiert werden</string>
@@ -2732,7 +2732,7 @@
     <string name="tray_quit">SimpleX beenden</string>
     <string name="tray_show">SimpleX anzeigen</string>
     <string name="tray_tooltip">SimpleX</string>
-    <string name="tray_tooltip_unread">SimpleX — %d ungelesen</string>
+    <string name="tray_tooltip_unread">SimpleX - %d ungelesen</string>
     <string name="error_deleting_message">Fehler beim Löschen der Nachricht</string>
     <string name="from_history">Aus dem Nachrichtenverlauf</string>
     <string name="another_instance_title">App ist bereits gestartet</string>
@@ -2855,7 +2855,7 @@
     <string name="profile_switcher_manage">Verwalten</string>
 
     <!-- Onboarding Strings -->
-    <string name="onboarding_badge">SimpleUX — Privatsphäre nach Design</string>
+    <string name="onboarding_badge">SimpleUX - Privatsphäre nach Design</string>
     <string name="onboarding_hero_title">Private Nachrichten, neu definiert</string>
     <string name="onboarding_feature_1_title">Null Kennungen, Null Nummern</string>
     <string name="onboarding_feature_1_sub">Keine Telefonnummern, keine E-Mails, keine zentralen Konten. Vollständig anonym durch Design.</string>

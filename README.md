@@ -1,6 +1,6 @@
 # SimpleUX Chat 💬
 
-> **A personal, UX-first fork of SimpleX Chat — same protocol, same untouched core, an interface I can actually live in every day.**
+> **A personal, UX-first fork of SimpleX Chat - same protocol, same untouched core, an interface I can actually live in every day.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](./LICENSE)
 [![SimpleX Protocol Compatible](https://img.shields.io/badge/SimpleX_Protocol-100%25_Compatible-brightgreen.svg)](https://simplex.chat)
@@ -24,11 +24,11 @@
 
 ## 🌟 Why this fork exists
 
-**SimpleX Chat** is a cryptographic masterclass: the first messaging platform with **no user identifiers of any kind**, end-to-end encryption with post-quantum resistance, and isolated unidirectional messaging queues. It is a project with **a lot of potential** — and one that deserves far more contributions toward its user interface.
+**SimpleX Chat** is a cryptographic masterclass: the first messaging platform with **no user identifiers of any kind**, end-to-end encryption with post-quantum resistance, and isolated unidirectional messaging queues. It is a project with **a lot of potential** - and one that deserves far more contributions toward its user interface.
 
-**This fork exists because I wanted to live in SimpleX every day, and the interface made that hard.** To be blunt: the UX felt dated and unpleasant for daily use — at least, to me.
+**This fork exists because I wanted to live in SimpleX every day, and the interface made that hard.** To be blunt: the UX felt dated and unpleasant for daily use - at least, to me.
 
-And to be clear about the ambition: **I am not claiming this UI is better — it is not, by far.** I am simply implementing, for my own use, the interaction patterns I find pleasant in the messengers I already use every day, so that moving to the SimpleX ecosystem stops feeling like a comfort downgrade. If some of it is useful to you, welcome.
+And to be clear about the ambition: **I am not claiming this UI is better - it is not, by far.** I am simply implementing, for my own use, the interaction patterns I find pleasant in the messengers I already use every day, so that moving to the SimpleX ecosystem stops feeling like a comfort downgrade. If some of it is useful to you, welcome.
 
 **Why a fork instead of pull requests?** I would genuinely have preferred to contribute this upstream. But the number of long-open pull requests on the parent project made it obvious that interface changes of this scale would land far too slowly for someone who wants to *use* the app today, not in a few years. This fork is that impatience made useful.
 
@@ -166,9 +166,9 @@ open SimpleX.xcodeproj
 
 ## 📖 Documentation & Guidelines
 
-- **[AGENTS.md](./AGENTS.md)** — Architectural invariants, coexistence strategy, and guidelines for contributors.
-- **[Design System Skill](./.agents/skills/simpleux-design-system/SKILL.md)** — Full specification of tokens, colors, shapes, and micro-interaction patterns.
-- **[Upstream Documentation](./docs/)** — In-depth specifications of the SMP/XFTP protocols and cryptographic fundamentals.
+- **[AGENTS.md](./AGENTS.md)** - Architectural invariants, coexistence strategy, and guidelines for contributors.
+- **[Design System Skill](./.agents/skills/simpleux-design-system/SKILL.md)** - Full specification of tokens, colors, shapes, and micro-interaction patterns.
+- **[Upstream Documentation](./docs/)** - In-depth specifications of the SMP/XFTP protocols and cryptographic fundamentals.
 
 ---
 

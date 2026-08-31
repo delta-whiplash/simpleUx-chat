@@ -487,7 +487,7 @@
     <string name="if_you_cant_meet_in_person">หากคุณไม่สามารถพบกันในชีวิตจริงได้ ให้แสดงคิวอาร์โค้ดในวิดีโอคอล หรือแชร์ลิงก์</string>
     <string name="network_disable_socks_info">หากคุณยืนยัน เซิร์ฟเวอร์การส่งข้อความจะสามารถเห็นที่อยู่ IP ของคุณและผู้ให้บริการของคุณ - ซึ่งคือเซิร์ฟเวอร์ใดที่คุณกำลังเชื่อมต่ออยู่</string>
     <string name="if_you_enter_self_destruct_code">หากคุณใส่รหัสผ่านทำลายตัวเองขณะเปิดแอป:</string>
-    <string name="incognito_info_protects">โหมดไม่ระบุตัวตนปกป้องความเป็นส่วนตัวของชื่อและรูปภาพโปรไฟล์หลักของคุณ — สำหรับผู้ติดต่อใหม่แต่ละราย จะมีการสร้างโปรไฟล์ใหม่แบบสุ่ม</string>
+    <string name="incognito_info_protects">โหมดไม่ระบุตัวตนปกป้องความเป็นส่วนตัวของชื่อและรูปภาพโปรไฟล์หลักของคุณ - สำหรับผู้ติดต่อใหม่แต่ละราย จะมีการสร้างโปรไฟล์ใหม่แบบสุ่ม</string>
     <string name="conn_level_desc_indirect">ทางอ้อม (%1$s)</string>
     <string name="install_simplex_chat_for_terminal">ติดตั้ง SimpleX Chat สำหรับเทอร์มินัล</string>
     <string name="alert_text_skipped_messages_it_can_happen_when">มันสามารถเกิดขึ้นได้เมื่อ:
@@ -893,7 +893,7 @@
     <string name="simplex_link_invitation">คำเชิญ SimpleX แบบครั้งเดียว</string>
     <string name="simplex_link_mode">ลิงก์ SimpleX</string>
     <string name="error_smp_test_failed_at_step">การทดสอบล้มเหลวในขั้นตอน %s</string>
-    <string name="periodic_notifications_desc">แอปดึงข้อความใหม่เป็นระยะ — แอปใช้แบตเตอรี่เพียงไม่กี่เปอร์เซ็นต์ต่อวัน แอปไม่ได้ใช้การแจ้งเตือนแบบพุช — ข้อมูลจากอุปกรณ์ของคุณจะไม่ถูกส่งไปยังเซิร์ฟเวอร์</string>
+    <string name="periodic_notifications_desc">แอปดึงข้อความใหม่เป็นระยะ - แอปใช้แบตเตอรี่เพียงไม่กี่เปอร์เซ็นต์ต่อวัน แอปไม่ได้ใช้การแจ้งเตือนแบบพุช - ข้อมูลจากอุปกรณ์ของคุณจะไม่ถูกส่งไปยังเซิร์ฟเวอร์</string>
     <string name="database_initialization_error_desc">ฐานข้อมูลทำงานไม่ถูกต้อง แตะเพื่อเรียนรู้เพิ่มเติม</string>
     <string name="ntf_channel_calls">การโทร SimpleX Chat</string>
     <string name="ntf_channel_messages">ข้อความแชท SimpleX</string>

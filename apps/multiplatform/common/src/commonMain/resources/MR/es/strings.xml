@@ -2226,7 +2226,7 @@
     <string name="onboarding_conditions_accept">Aceptar</string>
     <string name="onboarding_conditions_privacy_policy_and_conditions_of_use">Política de privacidad y condiciones de uso.</string>
     <string name="onboarding_conditions_private_chats_not_accessible">Los operadores se comprometen a:\n- Ser independientes\n- Minimizar el tratamiento de metadatos\n- Ejecutar código open-source verificado</string>
-    <string name="onboarding_conditions_by_using_you_agree">Te comprometes a:\n- Sólo contenido legal en grupos públicos  \n- Respetar a los demás usuarios — no hacer spam</string>
+    <string name="onboarding_conditions_by_using_you_agree">Te comprometes a:\n- Sólo contenido legal en grupos públicos  \n- Respetar a los demás usuarios - no hacer spam</string>
     <string name="simplex_link_channel">Enlace de canal SimpleX</string>
     <string name="full_link_button_text">Enlace completo</string>
     <string name="short_link_button_text">Enlace corto</string>
@@ -2661,7 +2661,7 @@
     <string name="select_relays">Seleccionar servidores</string>
     <string name="tray_show">Ver SimpleX</string>
     <string name="tray_tooltip">SimpleX</string>
-    <string name="tray_tooltip_unread">SimpleX — %d no leído</string>
+    <string name="tray_tooltip_unread">SimpleX - %d no leído</string>
     <string name="last_active_relay_warning">Este es el último servidor activo. Si lo eliminas los mensajes no llegarán a los suscriptores.</string>
     <string name="settings_section_title_contact">Contacto</string>
     <string name="group_member_role_member_channel">colaborador</string>
@@ -2783,7 +2783,7 @@
     <string name="profile_switcher_manage">Gestionar</string>
 
     <!-- Onboarding Strings -->
-    <string name="onboarding_badge">SimpleUX — Privado por Diseño</string>
+    <string name="onboarding_badge">SimpleUX - Privado por Diseño</string>
     <string name="onboarding_hero_title">Mensajería privada reinventada</string>
     <string name="onboarding_feature_1_title">Cero Identificadores, Cero Números</string>
     <string name="onboarding_feature_1_sub">Sin números de teléfono, sin correos, sin cuentas centralizadas. Completamente anónimo por diseño.</string>

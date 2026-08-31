@@ -449,7 +449,7 @@ fun ToggleFavoritesChatAction(chat: Chat, chatModel: ChatModel, favorite: Boolea
   )
 }
 
-// SimpleUX pin (FB-14): local-only "pin to top" — the pin state lives in
+// SimpleUX pin (FB-14): local-only "pin to top" - the pin state lives in
 // ChatModel.pinnedChatIds (persisted via PinnedChatsPrefs); it is a display
 // preference and never sent to the core or contacts.
 @Composable

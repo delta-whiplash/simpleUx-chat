@@ -184,7 +184,7 @@ fun SettingsLayout(
         textAlign = TextAlign.Center,
         // Issue #73: the settings version row is the entry point to VersionInfoView
         // (app updates, project links). AppVersionItem's clickable variant is orphaned
-        // in this redesigned layout — wire this footer instead of composing it.
+        // in this redesigned layout - wire this footer instead of composing it.
         modifier = Modifier.clickable { showVersion() }
       )
     }
@@ -312,7 +312,7 @@ fun HelpAndSupportView(
 
     SectionView(stringResource(MR.strings.settings_section_title_help)) {
       SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.how_to_use_simplex_chat), showModal { HelpView(userDisplayName) }, disabled = stopped)
-      // #65: "What's new" is never auto-opened on update — this entry is the
+      // #65: "What's new" is never auto-opened on update - this entry is the
       // surface, badged with a gold dot while the current version is unread.
       SettingsActionItemWithContent(
         painterResource(MR.images.ic_add), stringResource(MR.strings.whats_new),

@@ -153,7 +153,7 @@ fun TelegramTopHeader(
         modifier = Modifier
           .clip(RoundedCornerShape(8.dp))
           .clickable {
-            // #86: single instance — rapid repeated taps on the title must
+            // #86: single instance - rapid repeated taps on the title must
             // never stack copies of the Connection Status sheet.
             if (!ModalManager.start.hasModalOpen(ModalViewId.CONNECTION_STATUS)) {
               ModalManager.start.showCustomModal(id = ModalViewId.CONNECTION_STATUS) { close ->
@@ -451,8 +451,8 @@ fun SimpleUxTabHost(
             val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
             Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
               Column(Modifier.fillMaxSize()) {
-                // #85: created one-time invitations live in the Contacts tab —
-                // the context where they are created and consumed — not at the
+                // #85: created one-time invitations live in the Contacts tab  - 
+                // the context where they are created and consumed - not at the
                 // bottom of Settings. Zero-state: renders nothing at all.
                 InvitationLinksSection()
                 val modalData = remember { ModalData() }
@@ -460,7 +460,7 @@ fun SimpleUxTabHost(
               }
             }
           }
-          // #84: Scan is a tab, not a page — the top bar and island bar stay
+          // #84: Scan is a tab, not a page - the top bar and island bar stay
           // in place and only the content area swaps to the camera. The pane's
           // own BackHandler routes back to CHATS (FB-16 lesson: back must
           // always have an in-app way out).
@@ -499,7 +499,7 @@ fun SimpleUxTabHost(
               searchText.value = TextFieldValue("")
             }
           },
-          // #84: Scan is a tab now — the camera renders as QuickCameraPane in
+          // #84: Scan is a tab now - the camera renders as QuickCameraPane in
           // the tab host; the island item only needs to know it's available.
           scanAvailable = appPlatform.isAndroid
         )
@@ -599,7 +599,7 @@ fun BoxScope.TelegramBottomIslandBar(
 
         if (scanAvailable) {
           // Scan (see views/ux/camera/QuickCameraPane, Android-only): a real
-          // tab since #84 — active while the camera pane is shown, re-tap
+          // tab since #84 - active while the camera pane is shown, re-tap
           // returns to CHATS. Same labeled-item layout as the other tabs.
           IslandTabItem(
             modifier = Modifier.weight(1f),

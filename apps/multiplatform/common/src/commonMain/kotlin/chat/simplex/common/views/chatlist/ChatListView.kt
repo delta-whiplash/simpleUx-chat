@@ -132,7 +132,7 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
   val oneHandUI = remember { appPrefs.oneHandUI.state }
 
   LaunchedEffect(Unit) {
-    // #65: "What's new" no longer auto-opens full-screen on every update —
+    // #65: "What's new" no longer auto-opens full-screen on every update  - 
     // it stays reachable from Settings (with a badge when unread). Only the
     // updated-conditions notice (legal) still surfaces automatically.
     val showUpdatedConditions = chatModel.conditions.value.conditionsAction?.shouldShowNotice ?: false

@@ -80,7 +80,7 @@
         SimpleX-family app installed; with the official app also present the OS
         shows a chooser (coexistence, no silent hijacking). simplex-ux:/ and
         simpleux:/ are dedicated SimpleUX schemes. The https filter below is
-        deliberately NOT autoVerify — verified App Links (simplex.chat) resolve
+        deliberately NOT autoVerify - verified App Links (simplex.chat) resolve
         to the official app by default, and SimpleUX remains an explicit,
         non-destructive choice.
       -->

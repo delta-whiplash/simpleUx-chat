@@ -85,7 +85,7 @@ struct UserProfile: View {
         }
         // Lifecycle
         .onAppear {
-            // load once — returning from the description editor re-fires onAppear and would discard edits
+            // load once - returning from the description editor re-fires onAppear and would discard edits
             if !loaded {
                 getCurrentProfile()
                 loaded = true
@@ -287,7 +287,7 @@ struct ProfileDescriptionEditor: View {
                         .lineLimit(6...12)
                         .focused($keyboardVisible)
                 } else {
-                    // iOS 15 has no vertically-growing TextField (axis:) — fixed-height editor instead
+                    // iOS 15 has no vertically-growing TextField (axis:) - fixed-height editor instead
                     ZStack {
                         Group {
                             if description.isEmpty {

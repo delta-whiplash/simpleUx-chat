@@ -2327,7 +2327,7 @@
     <string name="profile_switcher_manage">Gérer</string>
 
     <!-- Onboarding Strings -->
-    <string name="onboarding_badge">SimpleUX — Privé par Conception</string>
+    <string name="onboarding_badge">SimpleUX - Privé par Conception</string>
     <string name="onboarding_hero_title">La messagerie privée réinventée</string>
     <string name="onboarding_feature_1_title">Zéro Identifiant, Zéro Numéro</string>
     <string name="onboarding_feature_1_sub">Pas de numéro de téléphone, pas d\'email, pas de compte centralisé. Vous êtes entièrement anonyme par conception.</string>

@@ -15,9 +15,9 @@ import kotlin.test.assertTrue
  * welcomeMessage/shortDescr arrays of {text}, entryType{groupType|type,summary{currentMembers|members}}
  * and imageFile.
  *
- * `description == null` in the parsed entry means "no text provided by the directory" — the
+ * `description == null` in the parsed entry means "no text provided by the directory" - the
  * repository mapping substitutes the localized default description at render time.
- * `membersCount == null` means "no positive member count" — the mapping falls back to the
+ * `membersCount == null` means "no positive member count" - the mapping falls back to the
  * localized "public group" string.
  *
  * Robustness contract (#74): one structurally corrupt entry is skipped and parsing continues with
@@ -400,7 +400,7 @@ class SimpleUxDirectoryRepositoryTest {
 
   @Test
   fun nullDisplayNameSkipsEntry() {
-    // Fallback decision: name is required — an entry with no usable name (absent, null or blank
+    // Fallback decision: name is required - an entry with no usable name (absent, null or blank
     // displayName) cannot be listed and is skipped, never rendered named "null".
     val json = """
       { "entries": [
@@ -428,7 +428,7 @@ class SimpleUxDirectoryRepositoryTest {
 
   @Test
   fun nullShortLinkFallsBackToFullLink() {
-    // Fallback decision: short link preferred, full link is the fallback — a null short link must
+    // Fallback decision: short link preferred, full link is the fallback - a null short link must
     // count as absent, not produce a broken ".../null" link.
     val json = """
       { "entries": [ {

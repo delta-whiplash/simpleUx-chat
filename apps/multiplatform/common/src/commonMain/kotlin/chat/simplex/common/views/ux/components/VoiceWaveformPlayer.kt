@@ -46,7 +46,7 @@ fun VoiceWaveformPlayer(
     playbackSpeed: Float,
     onPlaybackSpeedChange: (Float) -> Unit,
     modifier: Modifier = Modifier,
-    // #13: uniform ticks, not a fake amplitude envelope — SimpleX does not
+    // #13: uniform ticks, not a fake amplitude envelope - SimpleX does not
     // carry per-message waveform data (MCVoice has text+duration only), so
     // varied heights would be decoration pretending to be signal. The bar is
     // still a real progress/seek control; real envelopes are tracked in the

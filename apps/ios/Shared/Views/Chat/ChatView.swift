@@ -921,7 +921,7 @@ struct ChatView: View {
                         let channelReceived = !ci.chatDir.sent && cInfo.isChannel
                         // consecutive (no-avatar) received messages in channels drop the avatar-sized
                         // left padding (see .leading padding below), so they get the full row width here
-                        // too — otherwise the reserved avatar inset would leave a gap on the right
+                        // too - otherwise the reserved avatar inset would leave a gap on the right
                         let channelReceivedNoAvatar = channelReceived && !shouldShowAvatar(mergedItem.newest().item, mergedItem.oldest().nextItem)
                         let maxWidth = cInfo.chatType == .group
                         ? channelReceivedNoAvatar

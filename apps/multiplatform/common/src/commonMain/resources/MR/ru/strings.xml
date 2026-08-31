@@ -2788,7 +2788,7 @@
     <string name="save_simplex_name_question">Сохранить SimpleX имя?</string>
     <string name="remove_name">Удалить имя</string>
     <string name="sign_message">Подписать сообщение</string>
-    <string name="sign_message_desc">Подпись доказывает, что Вы — автор этого сообщения, и это нельзя будет отрицать.</string>
+    <string name="sign_message_desc">Подпись доказывает, что Вы - автор этого сообщения, и это нельзя будет отрицать.</string>
     <string name="info_row_signed">Подписано</string>
     <string name="info_row_signed_verified">Подписано и проверено</string>
     <string name="sign_messages">Подпись сообщений</string>
@@ -2858,7 +2858,7 @@
     <string name="profile_switcher_manage">Управление</string>
 
     <!-- Onboarding Strings -->
-    <string name="onboarding_badge">SimpleUX — Приватность по Дизайну</string>
+    <string name="onboarding_badge">SimpleUX - Приватность по Дизайну</string>
     <string name="onboarding_hero_title">Приватные сообщения заново</string>
     <string name="onboarding_feature_1_title">Ноль Идентификаторов, Ноль Номеров</string>
     <string name="onboarding_feature_1_sub">Без номеров телефонов, без email, без централизованных серверов. Полная анонимность по дизайну.</string>

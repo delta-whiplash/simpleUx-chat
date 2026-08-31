@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <!-- #88: splash mark color — day gold (Luxury Mineral light accent) -->
+  <!-- #88: splash mark color - day gold (Luxury Mineral light accent) -->
   <color name="splash_mark">#D97706</color>
 </resources>

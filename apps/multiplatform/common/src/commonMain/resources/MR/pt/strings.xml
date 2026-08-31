@@ -342,7 +342,7 @@
     <string name="rcv_group_event_invited_via_your_group_link">convidado através da ligação do seu grupo</string>
     <string name="invite_prohibited_description">Você está a tentar convidar um contacto com quem partilhou um perfil anónimo para um grupo no qual você está a usar o seu perfil principal</string>
     <string name="info_row_connection">Conexão</string>
-    <string name="incognito_info_protects">O modo anónimo protege a privacidade do nome e da imagem do seu perfil principal — para cada novo contato um novo perfil aleatório é criado.</string>
+    <string name="incognito_info_protects">O modo anónimo protege a privacidade do nome e da imagem do seu perfil principal - para cada novo contato um novo perfil aleatório é criado.</string>
     <string name="description_you_shared_one_time_link">você partilhou a ligação de utilização única</string>
     <string name="description_you_shared_one_time_link_incognito">você partilhou a ligação anónima de utilização única</string>
     <string name="invalid_connection_link">Ligação de conexão inválida</string>

@@ -1192,7 +1192,7 @@
     <string name="smp_server_test_create_queue">Buat antrian</string>
     <string name="it_can_disabled_via_settings_notifications_still_shown"><![CDATA[<b>Dapat dimatikan melalui pengaturan</b> – notifikasi akan tetap ditampilkan saat aplikasi berjalan.]]></string>
     <string name="to_preserve_privacy_simplex_has_background_service_instead_of_push_notifications_it_uses_a_few_pc_battery"><![CDATA[Untuk tingkatkan privasi, <b>SimpleX berjalan di latar belakang</b> alih-alih gunakan notifikasi push.]]></string>
-    <string name="periodic_notifications_desc">Aplikasi terima pesan baru secara berkala — aplikasi ini memakai beberapa persen baterai per hari. Aplikasi ini tidak gunakan notifikasi push — data dari perangkat tidak dikirim ke server.</string>
+    <string name="periodic_notifications_desc">Aplikasi terima pesan baru secara berkala - aplikasi ini memakai beberapa persen baterai per hari. Aplikasi ini tidak gunakan notifikasi push - data dari perangkat tidak dikirim ke server.</string>
     <string name="simplex_service_notification_title">Layanan SimpleX Chat</string>
     <string name="notification_preview_mode_contact">Nama kontak</string>
     <string name="la_enter_app_passcode">Masukkan Kode Sandi</string>

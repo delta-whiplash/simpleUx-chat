@@ -109,7 +109,7 @@ fun MainScreen() {
       laUnavailableInstructionAlert()
     }
   }
-  // #79: opt-in auto check, default OFF — zero GitHub calls at startup unless
+  // #79: opt-in auto check, default OFF - zero GitHub calls at startup unless
   // the user enabled it. Stable releases only, silent on failure; a newer
   // stable is announced once via a dialog pointing at the updater section.
   LaunchedEffect(Unit) {

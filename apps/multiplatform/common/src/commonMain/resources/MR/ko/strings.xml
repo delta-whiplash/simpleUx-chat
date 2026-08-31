@@ -629,7 +629,7 @@
     <string name="profile_will_be_sent_to_contact_sending_link">이 링크를 보낸 상대에게 프로필이 전송될 거예요.</string>
     <string name="please_check_correct_link_and_maybe_ask_for_a_new_one">올바른 링크를 사용했는지 확인하거나 상대에게 다른 링크를 보내달라고 말해 주세요</string>
     <string name="periodic_notifications">주기적 알림</string>
-    <string name="periodic_notifications_desc">주기적으로 새 메시지를 확인해요 — 하루에 몇 퍼센트의 배터리를 사용할 거예요. 푸시 알림을 사용하지 않아요 — 기기의 데이터가 서버로 전송되지 않아요.</string>
+    <string name="periodic_notifications_desc">주기적으로 새 메시지를 확인해요 - 하루에 몇 퍼센트의 배터리를 사용할 거예요. 푸시 알림을 사용하지 않아요 - 기기의 데이터가 서버로 전송되지 않아요.</string>
     <string name="periodic_notifications_disabled">주기적 알림이 비활성화되었어요.</string>
     <string name="ntf_channel_calls">SimpleX Chat 통화</string>
     <string name="ntf_channel_messages">SimpleX Chat 메시지</string>

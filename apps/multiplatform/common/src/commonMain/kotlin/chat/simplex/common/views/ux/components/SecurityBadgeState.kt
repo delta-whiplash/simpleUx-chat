@@ -14,7 +14,7 @@ enum class SecurityBadgeEncryption { POST_QUANTUM, STANDARD_E2EE, NOT_ENCRYPTED 
  *   not encrypted when there is no active connection.
  * - Groups: standard E2EE (every member connection is E2EE by protocol).
  * - Returns `null` when there is nothing verifiable to display (no chat, pending contact
- *   requests/connections, local notes) — the badge is hidden rather than guessing.
+ *   requests/connections, local notes) - the badge is hidden rather than guessing.
  */
 fun Chat?.securityBadgeEncryption(): SecurityBadgeEncryption? =
   when (val info = this?.chatInfo) {
