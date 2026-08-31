@@ -277,7 +277,7 @@ jobs:
           CHANNEL="${{ steps.version.outputs.channel }}"
           # stable: previous non-prerelease release; rolling: previous
           # pre-release. target_commitish is the SHA the release targeted.
-          if [ "$CHANNEL" = "stable" ]; then PRE=true; else PRE=false; fi
+          if [ "$CHANNEL" = "stable" ]; then PRE=false; else PRE=true; fi
           PREV_SHA=$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
             --jq "[.[] | select(.prerelease == ${PRE})][0].target_commitish" 2>/dev/null || true)
           if [ -n "$PREV_SHA" ] && git cat-file -e "$PREV_SHA" 2>/dev/null; then
@@ -299,12 +299,12 @@ jobs:
             if [ "$CHANNEL" = "rolling" ]; then
               echo "# Rolling build $VERSION_NAME"
               echo ""
-              echo "Built automatically on every push to `stable` - pre-release quality, expect rough edges."
+              echo "Built automatically on every push to \`stable\` - pre-release quality, expect rough edges."
             else
               echo "# SimpleUX $VERSION_NAME"
               echo ""
             fi
-            echo "**Fork commit:** `$GITHUB_SHA` - **Native libs:** borrowed from upstream `simplex-chat` release `$UPSTREAM_TAG` (the fork makes zero changes to the native/protocol layer)."
+            echo "**Fork commit:** \`$GITHUB_SHA\` - **Native libs:** borrowed from upstream \`simplex-chat\` release \`$UPSTREAM_TAG\` (the fork makes zero changes to the native/protocol layer)."
             echo ""
             echo "## Changes"
             echo ""
@@ -317,12 +317,12 @@ jobs:
             echo ""
             echo "## Install"
             echo ""
-            echo "Grab `simplex-ux-${VERSION_NAME}-arm64-v8a.apk` (arm64-v8a - any modern phone). SHA-256 sums in `SHA256SUMS.txt`."
+            echo "Grab \`simplex-ux-${VERSION_NAME}-arm64-v8a.apk\` (arm64-v8a - any modern phone). SHA-256 sums in \`SHA256SUMS.txt\`."
             echo ""
             echo "## Obtainium"
             echo ""
             echo 'Add `https://github.com/delta-whiplash/simpleUx-chat` as a **GitHub** source in [Obtainium](https://github.com/ImranR98/Obtainium).'
-            echo "Every build gets its own `v*-ux.*` tag, so default version detection works - just enable **Track prereleases** (all builds except explicit stable cuts are prereleases). Filter APKs to `arm64-v8a`."
+            echo "Every build gets its own \`v*-ux.*\` tag, so default version detection works - just enable **Track prereleases** (all builds except explicit stable cuts are prereleases). Filter APKs to \`arm64-v8a\`."
           } > notes.md
           cat notes.md
 
