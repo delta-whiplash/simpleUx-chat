@@ -111,6 +111,37 @@ fun ChatsTopBar(
     )
   } else {
     // Normal mode: title with menu
+    // #63: server status is a real bottom sheet (the sheet-styled content used to be
+    // pushed via showCustomModal, which strands it at the top of an empty full page)
+    val radarSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+    var radarOpen by remember { mutableStateOf(false) }
+    val radarScope = rememberCoroutineScope()
+    LaunchedEffect(radarOpen) {
+      if (radarOpen) radarSheetState.show()
+    }
+    LaunchedEffect(radarSheetState.currentValue, radarSheetState.targetValue) {
+      if (radarSheetState.currentValue == ModalBottomSheetValue.Hidden && radarSheetState.targetValue == ModalBottomSheetValue.Hidden && radarOpen) {
+        radarOpen = false
+      }
+    }
+    BackHandler(enabled = radarOpen) {
+      radarScope.launch { radarSheetState.hide() }
+    }
+    ModalBottomSheetLayout(
+      sheetState = radarSheetState,
+      sheetContent = {
+        ServerRadarSheet(
+          isConnected = chatModel.chatRunning.value == true,
+          onConfigureServers = {
+            radarScope.launch { radarSheetState.hide() }
+            ModalManager.start.showCustomModal { closeServers ->
+              NetworkAndServersView(closeServers)
+            }
+          },
+          onClose = { radarScope.launch { radarSheetState.hide() } }
+        )
+      }
+    ) {
     DefaultAppBar(
       onTop = true,
       solidBackground = true,
@@ -119,19 +150,8 @@ fun ChatsTopBar(
           modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .clickable {
-              if (!ModalManager.start.hasModalOpen(ModalViewId.CONNECTION_STATUS)) {
-                ModalManager.start.showCustomModal(id = ModalViewId.CONNECTION_STATUS) { close ->
-                  ServerRadarSheet(
-                    isConnected = chatModel.chatRunning.value == true,
-                    onConfigureServers = {
-                      close()
-                      ModalManager.start.showCustomModal { closeServers ->
-                        NetworkAndServersView(closeServers)
-                      }
-                    },
-                    onClose = close
-                  )
-                }
+              if (!radarOpen) {
+                radarOpen = true
               }
             }
             .padding(vertical = 4.dp, horizontal = 2.dp),
@@ -303,6 +323,7 @@ fun ChatsTopBar(
         }
       }
     )
+    }
   }
 
   val view = LocalMultiplatformView()

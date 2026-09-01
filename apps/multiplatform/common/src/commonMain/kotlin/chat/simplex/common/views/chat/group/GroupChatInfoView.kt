@@ -205,6 +205,7 @@ fun ModalData.GroupChatInfoView(
           }
       },
       onSearchClicked = onSearchClicked,
+      close = close,
       deletingItems = deletingItems
       )
     }
@@ -538,7 +539,9 @@ fun ModalData.GroupChatInfoLayout(
   manageGroupLink: () -> Unit,
   manageWebPage: () -> Unit,
   setSimplexName: () -> Unit,
-  close: () -> Unit = { ModalManager.closeAllModalsEverywhere()},
+  // #63: no closeAllModalsEverywhere default - closing this page must pop only this
+  // modal, not eject the user past intermediate screens. Callers pass their own close.
+  close: () -> Unit,
   onSearchClicked: () -> Unit,
   deletingItems: State<Boolean>
 ) {
@@ -1484,6 +1487,7 @@ fun PreviewGroupChatInfoLayout() {
       manageWebPage = {},
       onSearchClicked = {},
       setSimplexName = {},
+      close = {},
       deletingItems = remember { mutableStateOf(true) }
     )
   }
