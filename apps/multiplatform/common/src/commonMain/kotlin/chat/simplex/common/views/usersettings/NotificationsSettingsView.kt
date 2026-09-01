@@ -21,63 +21,6 @@ import chat.simplex.res.MR
 import kotlin.collections.ArrayList
 
 @Composable
-fun NotificationsSettingsView(
-  chatModel: ChatModel,
-) {
-  NotificationsSettingsLayout(
-    notificationsMode = remember { chatModel.controller.appPrefs.notificationsMode.state },
-    showNotificationsMode = {
-      ModalManager.start.showModalCloseable(true) {
-        NotificationsModeView(chatModel.controller.appPrefs.notificationsMode.state) { changeNotificationsMode(it, chatModel) }
-      }
-    },
-  )
-}
-
-@Composable
-fun NotificationsSettingsLayout(
-  notificationsMode: State<NotificationsMode>,
-  showNotificationsMode: () -> Unit,
-) {
-  val modes = remember { notificationModes() }
-
-  ColumnWithScrollBar {
-    AppBarTitle(stringResource(MR.strings.notifications))
-    SectionView(null) {
-      if (appPlatform == AppPlatform.ANDROID) {
-        SettingsActionItemWithContent(null, stringResource(MR.strings.settings_notifications_mode_title), showNotificationsMode) {
-          Text(
-            modes.firstOrNull { it.value == notificationsMode.value }?.title ?: "",
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colors.secondary
-          )
-        }
-      }
-    }
-    if (platform.androidIsXiaomiDevice() && (notificationsMode.value == NotificationsMode.PERIODIC || notificationsMode.value == NotificationsMode.SERVICE)) {
-      SectionTextFooter(annotatedStringResource(MR.strings.xiaomi_ignore_battery_optimization))
-    }
-    SectionBottomSpacer()
-  }
-}
-
-@Composable
-fun NotificationsModeView(
-  notificationsMode: State<NotificationsMode>,
-  onNotificationsModeSelected: (NotificationsMode) -> Unit,
-) {
-  val modes = remember { notificationModes() }
-  ColumnWithScrollBar {
-    AppBarTitle(stringResource(MR.strings.settings_notifications_mode_title).lowercase().capitalize(Locale.current))
-    SectionViewSelectable(null, notificationsMode, modes, onNotificationsModeSelected)
-    if (platform.androidIsXiaomiDevice() && (notificationsMode.value == NotificationsMode.PERIODIC || notificationsMode.value == NotificationsMode.SERVICE)) {
-      SectionTextFooter(annotatedStringResource(MR.strings.xiaomi_ignore_battery_optimization))
-    }
-  }
-}
-
-@Composable
 fun NotificationPreviewView(
   notificationPreviewMode: State<NotificationPreviewMode>,
   onNotificationPreviewModeSelected: (NotificationPreviewMode) -> Unit,
@@ -90,7 +33,7 @@ fun NotificationPreviewView(
 }
 
 // mode, name, description
-private fun notificationModes(): List<ValueTitleDesc<NotificationsMode>> {
+fun notificationModes(): List<ValueTitleDesc<NotificationsMode>> {
   val res = ArrayList<ValueTitleDesc<NotificationsMode>>()
   res.add(
     ValueTitleDesc(

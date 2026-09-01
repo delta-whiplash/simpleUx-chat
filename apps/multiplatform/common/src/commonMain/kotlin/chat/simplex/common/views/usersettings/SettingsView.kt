@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import SectionTextFooter
 import androidx.compose.ui.platform.*
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -147,7 +148,19 @@ fun SettingsLayout(
       SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF1E293B))
       SettingsActionItem(painterResource(MR.images.ic_folder_filled), stringResource(MR.strings.settings_chat_folders), showSettingsModal { ChatFoldersSettingsScreen(it, onBack = { /* modal closes automatically */ }) }, badgeColor = Color(0xFFF59E0B))
       if (appPlatform == AppPlatform.ANDROID) {
-        SettingsActionItem(painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt), stringResource(MR.strings.notifications), showSettingsModal { NotificationsSettingsView(it) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
+        // #63: notifications mode is a 3-option choice - inline dropdown on the Settings
+        // page, not a settings page holding one row that opens a second page of radios
+        ExposedDropDownSettingRow(
+          title = stringResource(MR.strings.notifications),
+          values = notificationModes().map { it.value to it.title },
+          selection = notificationsMode,
+          icon = painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt),
+          enabled = remember { mutableStateOf(!stopped) },
+          onSelected = { changeNotificationsMode(it, chatModel) }
+        )
+        if (platform.androidIsXiaomiDevice() && (notificationsMode.value == NotificationsMode.PERIODIC || notificationsMode.value == NotificationsMode.SERVICE)) {
+          SectionTextFooter(annotatedStringResource(MR.strings.xiaomi_ignore_battery_optimization))
+        }
       }
       SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
     }

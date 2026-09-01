@@ -54,16 +54,7 @@ fun AddGroupMembersView(rhId: Long?, groupInfo: GroupInfo, creatingGroup: Boolea
         GroupPreferencesView(chatModel, rhId, groupInfo.id, close)
       }
     },
-    openMemberAdmission = {
-      ModalManager.end.showCustomModal { close ->
-        MemberAdmissionView(
-          chat.simplex.common.platform.chatModel,
-          rhId,
-          groupInfo.id,
-          close
-        )
-      }
-    },
+    rhId = rhId,
     inviteMembers = {
       allowModifyMembers = false
       withLongRunningApi(slow = 120_000) {
@@ -120,7 +111,7 @@ fun AddGroupMembersLayout(
   allowModifyMembers: Boolean,
   searchText: MutableState<TextFieldValue>,
   openPreferences: () -> Unit,
-  openMemberAdmission: () -> Unit,
+  rhId: Long?,
   inviteMembers: () -> Unit,
   clearSelection: () -> Unit,
   addContact: (Long) -> Unit,
@@ -176,9 +167,7 @@ fun AddGroupMembersLayout(
     } else {
       SectionView {
         if (creatingGroup) {
-          SectionItemView(openMemberAdmission) {
-            Text(stringResource(MR.strings.set_member_admission))
-          }
+          MemberAdmissionRow(groupInfo, rhId)
           SectionItemView(openPreferences) {
             Text(stringResource(MR.strings.set_group_preferences))
           }
@@ -391,7 +380,7 @@ fun PreviewAddGroupMembersLayout() {
       allowModifyMembers = true,
       searchText = remember { mutableStateOf(TextFieldValue("")) },
       openPreferences = {},
-      openMemberAdmission = {},
+      rhId = null,
       inviteMembers = {},
       clearSelection = {},
       addContact = {},

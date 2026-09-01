@@ -72,6 +72,7 @@ fun GroupPreferencesView(m: ChatModel, rhId: Long?, chatId: String, close: () ->
       preferences,
       currentPreferences,
       gInfo,
+      rhId,
       applyPrefs = { prefs ->
         preferences = prefs
       },
@@ -79,16 +80,6 @@ fun GroupPreferencesView(m: ChatModel, rhId: Long?, chatId: String, close: () ->
         preferences = currentPreferences
       },
       savePrefs = ::savePrefs,
-      openMemberAdmission = {
-        ModalManager.end.showCustomModal { close ->
-          MemberAdmissionView(
-            chatModel,
-            rhId,
-            chatId,
-            close
-          )
-        }
-      }
     )
   }
 }
@@ -98,10 +89,10 @@ private fun GroupPreferencesLayout(
   preferences: FullGroupPreferences,
   currentPreferences: FullGroupPreferences,
   groupInfo: GroupInfo,
+  rhId: Long?,
   applyPrefs: (FullGroupPreferences) -> Unit,
   reset: () -> Unit,
   savePrefs: () -> Unit,
-  openMemberAdmission: () -> Unit,
 ) {
   val onTTLUpdated = { ttl: Int? ->
     applyPrefs(preferences.copy(timedMessages = preferences.timedMessages.copy(ttl = ttl)))
@@ -192,7 +183,7 @@ private fun GroupPreferencesLayout(
     if (!groupInfo.useRelays) {
       if (groupInfo.businessChat == null) {
         SectionView {
-          MemberAdmissionButton(openMemberAdmission)
+          MemberAdmissionRow(groupInfo, rhId)
         }
         SectionDividerSpaced()
       }
@@ -251,15 +242,6 @@ private fun GroupPreferencesLayout(
     }
     SectionBottomSpacer()
   }
-}
-
-@Composable
-private fun MemberAdmissionButton(onClick: () -> Unit) {
-  SettingsActionItem(
-    painterResource(MR.images.ic_toggle_on),
-    stringResource(MR.strings.member_admission),
-    click = onClick
-  )
 }
 
 @Composable
