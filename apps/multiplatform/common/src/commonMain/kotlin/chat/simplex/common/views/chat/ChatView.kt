@@ -2196,12 +2196,10 @@ fun BoxScope.ChatItemsList(
           }
         }
       }
-      Column(modifier = Modifier.fillMaxWidth()) {
-        if (itemSeparation.date != null) {
-          DateSeparator(itemSeparation.date)
-        }
-        ChatItemView(cItem, range, itemSeparation, previousItemSeparationLargeGap)
+      if (itemSeparation.date != null) {
+        DateSeparator(itemSeparation.date)
       }
+      ChatItemView(cItem, range, itemSeparation, previousItemSeparationLargeGap)
     }
   }
 
@@ -2370,17 +2368,25 @@ fun BoxScope.ChatItemsList(
       val item = listItem.item
 
       if (item.content is CIContent.ChatBanner) {
-        Box(
-          contentAlignment = Alignment.Center,
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = DEFAULT_PADDING)
-            .padding(bottom = 12.dp, top = DEFAULT_PADDING)
-        ) {
-          ChatBannerView()
+        Column {
+          Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+              .fillMaxSize()
+              .padding(horizontal = DEFAULT_PADDING)
+              .padding(bottom = 12.dp, top = DEFAULT_PADDING)
+          ) {
+            ChatBannerView()
+          }
+
+          val prevItem = listItem.prevItem
+          if (prevItem != null) {
+            DateSeparator(prevItem.meta.itemTs)
+          }
         }
       } else {
         val isLastItem = index == mergedItemsValue.items.lastIndex
+        val last = if (isLastItem) reversedChatItems.value.lastOrNull() else null
         val range = if (merged is MergedItem.Grouped) {
           merged.rangeInReversed.value
         } else {
@@ -2390,20 +2396,24 @@ fun BoxScope.ChatItemsList(
         val isRevealed = remember { derivedStateOf { revealedItems.value.contains(item.id) } }
         val itemSeparation: ItemSeparation
         val prevItemSeparationLargeGap: Boolean
-        val next = listItem.nextItem
         if (merged is MergedItem.Single || isRevealed.value) {
           val prev = listItem.prevItem
-          itemSeparation = getItemSeparation(item, prev, next)
-          val nextForGap = if ((item.mergeCategory != null && item.mergeCategory == prev?.mergeCategory) || isLastItem) null else next
+          itemSeparation = getItemSeparation(item, prev)
+          val nextForGap = if ((item.mergeCategory != null && item.mergeCategory == prev?.mergeCategory) || isLastItem) null else listItem.nextItem
           prevItemSeparationLargeGap = if (nextForGap == null) false else getItemSeparationLargeGap(nextForGap, item)
         } else {
-          itemSeparation = getItemSeparation(item, null, next)
+          itemSeparation = getItemSeparation(item, null)
           prevItemSeparationLargeGap = false
         }
         CompositionLocalProvider(LocalItemContext provides ItemContext(selectionIndex = index)) {
           ChatViewListItem(index == 0, rememberUpdatedState(range), showAvatar, item, itemSeparation, prevItemSeparationLargeGap, isRevealed) {
             if (merged is MergedItem.Grouped) merged.reveal(it, revealedItems)
           }
+        }
+
+        if (last != null) {
+          // no using separate item(){} block in order to have total number of items in LazyColumn match number of merged items
+          DateSeparator(last.meta.itemTs)
         }
         if (item.isRcvNew) {
           val itemIds = when (merged) {
@@ -3729,35 +3739,9 @@ private fun handleForwardConfirmation(
   )
 }
 
-fun isSecurityOrFeatureItem(item: ChatItem?): Boolean {
-  if (item == null) return false
-  return when (item.content) {
-    is CIContent.SndDirectE2EEInfo,
-    is CIContent.RcvDirectE2EEInfo,
-    is CIContent.SndGroupE2EEInfo,
-    is CIContent.RcvGroupE2EEInfo,
-    is CIContent.RcvChatFeature,
-    is CIContent.SndChatFeature,
-    is CIContent.RcvGroupFeature,
-    is CIContent.SndGroupFeature,
-    is CIContent.RcvChatPreference,
-    is CIContent.SndChatPreference,
-    is CIContent.RcvChatFeatureRejected,
-    is CIContent.RcvGroupFeatureRejected -> true
-    else -> false
-  }
-}
-
-private fun getItemSeparation(chatItem: ChatItem, prevItem: ChatItem?, nextItem: ChatItem?): ItemSeparation {
-  val showDate = when {
-    chatItem.content is CIContent.ChatBanner || isSecurityOrFeatureItem(chatItem) -> null
-    nextItem == null || nextItem.content is CIContent.ChatBanner || isSecurityOrFeatureItem(nextItem) -> chatItem.meta.itemTs
-    getTimestampDateText(chatItem.meta.itemTs) != getTimestampDateText(nextItem.meta.itemTs) -> chatItem.meta.itemTs
-    else -> null
-  }
-
+private fun getItemSeparation(chatItem: ChatItem, prevItem: ChatItem?): ItemSeparation {
   if (prevItem == null) {
-    return ItemSeparation(timestamp = true, largeGap = true, date = showDate)
+    return ItemSeparation(timestamp = true, largeGap = true, date = null)
   }
 
   val sameMemberAndDirection = if (prevItem.chatDir is GroupRcv && chatItem.chatDir is GroupRcv) {
@@ -3770,7 +3754,7 @@ private fun getItemSeparation(chatItem: ChatItem, prevItem: ChatItem?, nextItem:
   return ItemSeparation(
     timestamp = largeGap || prevItem.meta.timestampText != chatItem.meta.timestampText,
     largeGap = largeGap,
-    date = showDate
+    date = if (getTimestampDateText(chatItem.meta.itemTs) == getTimestampDateText(prevItem.meta.itemTs)) null else prevItem.meta.itemTs
   )
 }
 
