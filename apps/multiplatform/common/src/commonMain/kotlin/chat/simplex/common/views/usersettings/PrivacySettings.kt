@@ -683,10 +683,16 @@ fun SimplexLockView(
     if (performLA.value && laMode.value == LAMode.PASSCODE) {
       SectionDividerSpaced()
       SectionView(stringResource(MR.strings.self_destruct_passcode)) {
+        // #63: info dialog in context instead of a full page holding one paragraph
+        // plus three static lines
         val openInfo = {
-          ModalManager.start.showModal {
-            SelfDestructInfoView()
-          }
+          AlertManager.shared.showAlertMsg(
+            title = generalGetString(MR.strings.self_destruct),
+            text = generalGetString(MR.strings.if_you_enter_self_destruct_code) + "\n\n" +
+              "1. " + generalGetString(MR.strings.all_app_data_will_be_cleared) + "\n" +
+              "2. " + generalGetString(MR.strings.app_passcode_replaced_with_self_destruct) + "\n" +
+              "3. " + generalGetString(MR.strings.empty_chat_profile_is_created)
+          )
         }
         SettingsActionItemWithContent(null, null, click = openInfo) {
           SharedPreferenceToggleWithIcon(
@@ -727,21 +733,6 @@ fun SimplexLockView(
   }
 }
 
-@Composable
-private fun SelfDestructInfoView() {
-  ColumnWithScrollBar(
-    Modifier.fillMaxWidth().padding(horizontal = DEFAULT_PADDING),
-  ) {
-    AppBarTitle(stringResource(MR.strings.self_destruct), withPadding = false)
-    ReadableText(stringResource(MR.strings.if_you_enter_self_destruct_code))
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-      TextListItem("1.", stringResource(MR.strings.all_app_data_will_be_cleared))
-      TextListItem("2.", stringResource(MR.strings.app_passcode_replaced_with_self_destruct))
-      TextListItem("3.", stringResource(MR.strings.empty_chat_profile_is_created))
-    }
-    SectionBottomSpacer()
-  }
-}
 
 @Composable
 private fun EnableSelfDestruct(

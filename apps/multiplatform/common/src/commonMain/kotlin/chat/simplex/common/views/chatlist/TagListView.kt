@@ -399,7 +399,7 @@ fun TagListNameTextField(name: MutableState<String>, showError: State<Boolean>) 
   )
 }
 
-private fun setTag(rhId: Long?, tagId: Long?, chat: Chat, close: () -> Unit) {
+fun setTag(rhId: Long?, tagId: Long?, chat: Chat, close: () -> Unit) {
   withBGApi {
     val tagIds: List<Long> = if (tagId == null) {
       emptyList()

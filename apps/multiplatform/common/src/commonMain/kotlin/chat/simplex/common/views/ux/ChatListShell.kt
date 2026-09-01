@@ -401,10 +401,35 @@ fun SimpleUxTabHost(
   val keyboardState by getKeyboardState()
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
+  // #63: chat → tag assignment sheet (triggered from chat-row menus via LocalTagListPicker)
+  val tagPickerChat = remember { mutableStateOf<Chat?>(null) }
+  val tagPickerSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+  LaunchedEffect(tagPickerChat.value) {
+    if (tagPickerChat.value != null) tagPickerSheetState.show() else tagPickerSheetState.hide()
+  }
+  LaunchedEffect(tagPickerSheetState.currentValue, tagPickerSheetState.targetValue) {
+    if (tagPickerSheetState.currentValue == ModalBottomSheetValue.Hidden && tagPickerSheetState.targetValue == ModalBottomSheetValue.Hidden && tagPickerChat.value != null) {
+      tagPickerChat.value = null
+    }
+  }
+  BackHandler(enabled = tagPickerChat.value != null) {
+    scope.launch { tagPickerSheetState.hide() }
+  }
 
+  ModalBottomSheetLayout(
+    sheetState = tagPickerSheetState,
+    sheetContent = {
+      tagPickerChat.value?.let { chat ->
+        TagListPickerSheetContent(chat) {
+          tagPickerChat.value = null
+        }
+      }
+    }
+  ) {
   CompositionLocalProvider(
     LocalSimpleUxTab provides currentTab,
-    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true }
+    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true },
+    LocalTagListPicker provides { c: Chat -> tagPickerChat.value = c }
   ) {
     Box(Modifier.fillMaxSize()) {
       // No animated tab transitions here (issue #58): the transition's retained layer
@@ -493,6 +518,7 @@ fun SimpleUxTabHost(
 
       ThemeCircularRevealOverlay()
     }
+  }
   }
 }
 

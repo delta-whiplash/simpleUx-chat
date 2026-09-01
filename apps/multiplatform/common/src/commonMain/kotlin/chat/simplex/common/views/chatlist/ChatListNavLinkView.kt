@@ -462,14 +462,22 @@ fun TagListAction(
   showMenu: MutableState<Boolean>
 ) {
   val userTags = remember { chatModel.userTags }
+  // #63: tag assignment opens as a bottom sheet over the chat list (LocalTagListPicker,
+  // provided by SimpleUxTabHost) instead of a full-screen picker page; falls back to the
+  // page only where the local is absent (previews / isolated composition)
+  val openTagPicker = LocalTagListPicker.current
   ItemAction(
     stringResource(if (chat.chatInfo.chatTags.isNullOrEmpty()) MR.strings.add_to_list else MR.strings.change_list),
     painterResource(MR.images.ic_label),
     onClick = {
-      ModalManager.start.showModalCloseable { close ->
-        if (userTags.value.isEmpty()) {
+      if (userTags.value.isEmpty()) {
+        ModalManager.start.showModalCloseable { close ->
           TagListEditor(rhId = chat.remoteHostId, chat = chat, close = close)
-        } else {
+        }
+      } else if (openTagPicker != null) {
+        openTagPicker(chat)
+      } else {
+        ModalManager.start.showModalCloseable { close ->
           TagListView(rhId = chat.remoteHostId, chat = chat, close = close, reorderMode = false)
         }
       }
