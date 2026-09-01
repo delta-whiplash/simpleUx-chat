@@ -611,6 +611,7 @@
   <string name="you_are_subscriber">you are subscriber</string>
   <string name="observer_cant_send_message_desc">Please contact group admin.</string>
   <string name="channel_role_label">channel</string>
+  <string name="group_role_label">group</string>
   <string name="cant_send_message_rejected">request to join rejected</string>
   <string name="cant_send_message_group_deleted">group is deleted</string>
   <string name="cant_send_message_mem_removed">removed from group</string>
@@ -705,6 +706,8 @@
   <string name="sync_connection_desc">Connection requires encryption renegotiation.</string>
   <string name="sync_connection_confirm">Fix</string>
   <string name="encryption_renegotiation_in_progress">Encryption renegotiation in progress.</string>
+  <string name="security_e2e_active">End-to-end encryption active</string>
+  <string name="security_public_unencrypted">Public / unencrypted</string>
   <string name="view_security_code">View security code</string>
   <string name="verify_security_code">Verify security code</string>
 

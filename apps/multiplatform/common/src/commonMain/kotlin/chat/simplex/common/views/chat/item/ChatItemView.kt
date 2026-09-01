@@ -764,7 +764,7 @@ fun ChatItemView(
                         }
                         Spacer(Modifier.width(6.dp))
                         Text(
-                          text = if (isPublic) "Public / Unencrypted" else "Chiffrement de bout en bout actif",
+                          text = if (isPublic) stringResource(MR.strings.security_public_unencrypted) else stringResource(MR.strings.security_e2e_active),
                           color = if (isPublic) Color(0xFFFCA5A5) else GlassTokens.SecurityPillText,
                           fontSize = 12.sp,
                           fontWeight = FontWeight.Bold

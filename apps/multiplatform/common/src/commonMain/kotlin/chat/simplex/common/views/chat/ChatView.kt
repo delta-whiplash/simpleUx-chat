@@ -1550,14 +1550,14 @@ fun ChatInfoToolbarTitle(cInfo: ChatInfo, imageSize: Dp = 40.dp, iconColor: Colo
         }
         if (memberCount != null) {
           Text(
-            if (cInfo.groupInfo.useRelays) subscriberCountStr(memberCount) else "$memberCount members",
+            if (cInfo.groupInfo.useRelays) subscriberCountStr(memberCount) else stringResource(MR.strings.directory_members_count, memberCount),
             style = MaterialTheme.typography.body2,
             color = MaterialTheme.colors.secondary,
             maxLines = 1, overflow = TextOverflow.Ellipsis
           )
         } else if (cInfo is ChatInfo.Group) {
           Text(
-            if (cInfo.groupInfo.useRelays) "channel" else "group",
+            if (cInfo.groupInfo.useRelays) stringResource(MR.strings.channel_role_label) else stringResource(MR.strings.group_role_label),
             style = MaterialTheme.typography.body2.copy(fontSize = 11.5.sp),
             color = MaterialTheme.colors.secondary,
             maxLines = 1, overflow = TextOverflow.Ellipsis
