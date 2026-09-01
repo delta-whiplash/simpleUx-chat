@@ -410,6 +410,7 @@ private fun GroupWelcomeSheetBody(
           enabled = welcomeText.value.isNotEmpty()
         ) {
           clipboard.setText(AnnotatedString(welcomeText.value))
+          showToast(generalGetString(MR.strings.copied))
         }
       }
     }

@@ -406,7 +406,7 @@ private fun ProgressStepView(
 
   ModalView(
     close = { showCancelAlert() },
-    showClose = false,
+    showClose = true,
   ) {
     ColumnWithScrollBar {
       AppBarTitle(generalGetString(MR.strings.creating_channel))

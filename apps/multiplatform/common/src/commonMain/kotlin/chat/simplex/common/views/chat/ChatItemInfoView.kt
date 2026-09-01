@@ -115,6 +115,7 @@ fun ChatItemInfoView(chatRh: Long?, ci: ChatItem, ciInfo: ChatItemInfo, devTools
           })
           ItemAction(stringResource(MR.strings.copy_verb), painterResource(MR.images.ic_content_copy), onClick = {
             clipboard.setText(AnnotatedString(text))
+            showToast(generalGetString(MR.strings.copied))
             showMenu.value = false
           })
         }
@@ -155,6 +156,7 @@ fun ChatItemInfoView(chatRh: Long?, ci: ChatItem, ciInfo: ChatItemInfo, devTools
           })
           ItemAction(stringResource(MR.strings.copy_verb), painterResource(MR.images.ic_content_copy), onClick = {
             clipboard.setText(AnnotatedString(text))
+            showToast(generalGetString(MR.strings.copied))
             showMenu.value = false
           })
         }

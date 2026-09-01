@@ -717,7 +717,12 @@ suspend fun importArchive(
         appFilesCountAndSize.value = directoryFileCountAndSize(appFilesDir.absolutePath)
         if (archiveErrors.isEmpty()) {
           operationEnded(m, progressIndicator) {
-            AlertManager.shared.showAlertMsg(generalGetString(MR.strings.chat_database_imported), text = generalGetString(MR.strings.restart_the_app_to_use_imported_chat_database))
+            AlertManager.shared.showAlertDialog(
+              title = generalGetString(MR.strings.chat_database_imported),
+              text = generalGetString(MR.strings.restart_the_app_to_use_imported_chat_database),
+              confirmText = generalGetString(MR.strings.restart_chat_button),
+              onConfirm = ::restartChatOrApp
+            )
           }
           if (chatModel.localUserCreated.value == false) {
             chatModel.chatRunning.value = false
@@ -785,7 +790,12 @@ private suspend fun deleteChat(m: ChatModel, progressIndicator: MutableState<Boo
   try {
     deleteChatAsync(m)
     operationEnded(m, progressIndicator) {
-      AlertManager.shared.showAlertMsg(generalGetString(MR.strings.chat_database_deleted), generalGetString(MR.strings.restart_the_app_to_create_a_new_chat_profile))
+      AlertManager.shared.showAlertDialog(
+        title = generalGetString(MR.strings.chat_database_deleted),
+        text = generalGetString(MR.strings.restart_the_app_to_create_a_new_chat_profile),
+        confirmText = generalGetString(MR.strings.restart_chat_button),
+        onConfirm = ::restartChatOrApp
+      )
     }
   } catch (e: Throwable) {
     operationEnded(m, progressIndicator) {

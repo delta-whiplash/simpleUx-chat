@@ -751,6 +751,7 @@ fun LinkTextView(link: String, share: Boolean) {
       IconButton({
         chatModel.markShowingInvitationUsed()
         clipboard.setText(AnnotatedString(link))
+        showToast(generalGetString(MR.strings.copied))
       }, Modifier.size(20.dp)) {
         Icon(painterResource(MR.images.ic_content_copy), null, tint = MaterialTheme.colors.primary)
       }
