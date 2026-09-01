@@ -34,6 +34,7 @@ fun initApp() {
   // SimpleUX pinned chats (FB-14): seed local pin state after platform init,
   // mirroring the Android loadPersistedStarredChats timing (no settings access
   // during ChatModel class init).
+  chatModel.loadPersistedStarredChats()
   chatModel.loadPersistedPinnedChats()
   deleteOldChatArchive()
   if (DatabaseUtils.ksSelfDestructPassword.get() == null) {
