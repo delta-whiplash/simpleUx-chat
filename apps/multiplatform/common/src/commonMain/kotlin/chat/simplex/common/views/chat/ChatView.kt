@@ -43,6 +43,7 @@ import chat.simplex.common.views.chat.item.*
 import chat.simplex.common.views.chatlist.*
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.ux.components.*
+import chat.simplex.common.views.ux.isCenteredEvent
 import chat.simplex.common.model.GroupInfo
 import chat.simplex.common.platform.*
 import chat.simplex.common.platform.AudioPlayer
@@ -1927,20 +1928,7 @@ fun BoxScope.ChatItemsList(
         )
         val sent = cItem.chatDir.sent
 
-        val isCenterEvent = cItem.content is CIContent.SndDirectE2EEInfo ||
-            cItem.content is CIContent.RcvDirectE2EEInfo ||
-            cItem.content is CIContent.SndGroupE2EEInfo ||
-            cItem.content is CIContent.RcvGroupE2EEInfo ||
-            cItem.content is CIContent.RcvChatFeature ||
-            cItem.content is CIContent.SndChatFeature ||
-            cItem.content is CIContent.RcvGroupFeature ||
-            cItem.content is CIContent.SndGroupFeature ||
-            cItem.content is CIContent.RcvChatPreference ||
-            cItem.content is CIContent.SndChatPreference ||
-            cItem.content is CIContent.RcvDirectEventContent ||
-            cItem.content is CIContent.RcvGroupEventContent ||
-            cItem.content is CIContent.RcvConnEventContent ||
-            cItem.content is CIContent.SndConnEventContent
+        val isCenterEvent = isCenteredEvent(cItem.content)
 
         @Composable
         fun ChatItemBox(modifier: Modifier = Modifier, content: @Composable () -> Unit = { }) {

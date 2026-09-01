@@ -35,6 +35,7 @@ import chat.simplex.common.views.chat.*
 import chat.simplex.common.views.chatlist.openChat
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.ux.components.QuickReactionsBar
+import chat.simplex.common.views.ux.isCenteredEvent
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.StringResource
@@ -338,20 +339,7 @@ fun ChatItemView(
       }
     }
 
-    val isCenterEvent = cItem.content is CIContent.SndDirectE2EEInfo ||
-        cItem.content is CIContent.RcvDirectE2EEInfo ||
-        cItem.content is CIContent.SndGroupE2EEInfo ||
-        cItem.content is CIContent.RcvGroupE2EEInfo ||
-        cItem.content is CIContent.RcvChatFeature ||
-        cItem.content is CIContent.SndChatFeature ||
-        cItem.content is CIContent.RcvGroupFeature ||
-        cItem.content is CIContent.SndGroupFeature ||
-        cItem.content is CIContent.RcvChatPreference ||
-        cItem.content is CIContent.SndChatPreference ||
-        cItem.content is CIContent.RcvDirectEventContent ||
-        cItem.content is CIContent.RcvGroupEventContent ||
-        cItem.content is CIContent.RcvConnEventContent ||
-        cItem.content is CIContent.SndConnEventContent
+    val isCenterEvent = isCenteredEvent(cItem.content)
 
     Column(
       modifier = if (isCenterEvent) Modifier.fillMaxWidth() else Modifier,
