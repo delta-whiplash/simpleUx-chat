@@ -1,9 +1,6 @@
 package chat.simplex.common.platform
 
 import com.russhwolf.settings.Settings
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.Json
 
 // SimpleUX pin ("pin to top") persistence for chats (FB-14), backed by its own
 // moko multiplatform-settings instance - same pattern as StarredChatsPrefs, and
@@ -18,20 +15,9 @@ private const val PINNED_CHAT_IDS_KEY = "simpleux.pinned.chatIds"
 
 object PinnedChatsPrefs {
   fun loadPinnedChatIds(settings: Settings = pinnedChatsSettings): Set<String> =
-    decodePinnedChatIds(settings.getStringOrNull(PINNED_CHAT_IDS_KEY))
+    SettingsIdSetStore(settings, PINNED_CHAT_IDS_KEY).load()
 
   fun savePinnedChatIds(ids: Collection<String>, settings: Settings = pinnedChatsSettings) {
-    settings.putString(PINNED_CHAT_IDS_KEY, encodePinnedChatIds(ids))
+    SettingsIdSetStore(settings, PINNED_CHAT_IDS_KEY).save(ids)
   }
-}
-
-// Encoding is JSON so chat ids never collide with a separator character.
-internal fun encodePinnedChatIds(ids: Collection<String>): String =
-  Json.encodeToString(ListSerializer(String.serializer()), ids.toList())
-
-internal fun decodePinnedChatIds(raw: String?): Set<String> {
-  if (raw.isNullOrEmpty()) return emptySet()
-  return runCatching {
-    Json.decodeFromString(ListSerializer(String.serializer()), raw).toSet()
-  }.getOrDefault(emptySet())
 }
