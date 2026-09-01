@@ -7,21 +7,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import dev.icerock.moko.resources.compose.painterResource
+import dev.icerock.moko.resources.compose.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,19 +36,13 @@ import chat.simplex.common.platform.*
 import chat.simplex.common.views.*
 import chat.simplex.common.views.newchat.*
 import chat.simplex.res.MR
-import dev.icerock.moko.resources.compose.painterResource
-import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.net.URI
 
 @Composable
-fun UserProfileView(
-  chatModel: ChatModel,
-  close: () -> Unit,
-  onNavigateToSettings: (() -> Unit)? = null
-) {
-  val u = remember { chatModel.currentUser }
+fun UserProfileView(chatModel: ChatModel, close: () -> Unit) {
+  val u = remember {chatModel.currentUser}
   val user = u.value
   KeyChangeEffect(u.value?.remoteHostId, u.value?.userId) {
     close()
@@ -56,16 +53,9 @@ fun UserProfileView(
     UserProfileLayout(
       profile = profile,
       close = close,
-      onNavigateToSettings = onNavigateToSettings,
       saveProfile = { displayName, fullName, shortDescr, description, image ->
         withBGApi {
-          val updatedProfile = profile.copy(
-            displayName = displayName.trim(),
-            fullName = fullName.trim(),
-            shortDescr = shortDescr.trim().ifEmpty { null },
-            description = description.trim().ifEmpty { null },
-            image = image
-          )
+          val updatedProfile = profile.copy(displayName = displayName.trim(), fullName = fullName.trim(), shortDescr = shortDescr.trim().ifEmpty { null }, description = description.trim().ifEmpty { null }, image = image)
           val updated = chatModel.controller.apiUpdateProfile(user.remoteHostId, updatedProfile)
           if (updated != null) {
             val (newProfile, _) = updated
@@ -85,7 +75,6 @@ fun UserProfileView(
 fun UserProfileLayout(
   profile: Profile,
   close: () -> Unit,
-  onNavigateToSettings: (() -> Unit)? = null,
   saveProfile: (String, String, String, String, String?) -> Unit,
 ) {
   val isDark = isInDarkTheme()
@@ -103,98 +92,100 @@ fun UserProfileLayout(
   val focusRequester = remember { FocusRequester() }
   val descrFocusRequester = remember { FocusRequester() }
   var editingDescription by remember { mutableStateOf(false) }
-
-  ModalBottomSheetLayout(
-    modifier = Modifier.fillMaxSize().clipToBounds(),
-    scrimColor = Color.Black.copy(alpha = 0.5F),
-    sheetContent = {
-      GetImageBottomSheet(
-        chosenImage,
-        onImageChange = { bitmap -> profileImage.value = resizeImageToStrSize(cropToSquare(bitmap), maxDataSize = 12500) },
-        hideBottomSheet = {
-          scope.launch { bottomSheetModalState.hide() }
-        }
-      )
-    },
-    sheetState = bottomSheetModalState,
-    sheetShape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp)
-  ) {
-    fun dataUnchanged(): Boolean =
-      displayName.value.trim() == profile.displayName &&
-          fullName.value.trim() == profile.fullName &&
-          shortDescr.value.trim() == (profile.shortDescr ?: "") &&
-          description.value.trim() == (profile.description ?: "") &&
-          profile.image == profileImage.value
-
-    fun onClose(close: () -> Unit): Boolean = if (dataUnchanged() || !canSaveProfile(displayName.value, shortDescr.value, profile)) {
-      chatModel.centerPanelBackgroundClickHandler = null
-      close()
-      false
-    } else {
-      showUnsavedChangesAlert(
-        {
-          chatModel.centerPanelBackgroundClickHandler = null
-          saveProfile(displayName.value, fullName.value, shortDescr.value, description.value, profileImage.value)
-        },
-        {
-          chatModel.centerPanelBackgroundClickHandler = null
-          close()
-        }
-      )
-      true
-    }
-
-    DisposableEffect(Unit) {
-      onDispose { chatModel.centerPanelBackgroundClickHandler = null }
-    }
-    LaunchedEffect(Unit) {
-      chatModel.centerPanelBackgroundClickHandler = {
-        onClose(close = { ModalManager.start.closeModals() })
-      }
-    }
-    LaunchedEffect(editingDescription) {
-      if (editingDescription) {
-        delay(200)
-        descrFocusRequester.requestFocus()
-      }
-    }
-
-    if (editingDescription) {
-      Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background).imePadding()) {
-        DefaultAppBar(
-          navigationButton = { NavigationButtonBack(onButtonClicked = { editingDescription = false }) },
-          fixedTitleText = generalGetString(MR.strings.profile_description__field),
-          onTop = true
-        )
-        Column(Modifier.fillMaxSize().padding(horizontal = DEFAULT_PADDING)) {
-          Box(Modifier.weight(1f, fill = false).padding(top = DEFAULT_PADDING, bottom = DEFAULT_PADDING)) {
-            TextEditor(
-              description,
-              Modifier.heightIn(min = 140.dp),
-              placeholder = stringResource(MR.strings.enter_description_optional),
-              contentPadding = PaddingValues(),
-              focusRequester = descrFocusRequester,
-              maxLines = Int.MAX_VALUE
-            )
+    ModalBottomSheetLayout(
+      scrimColor = Color.Black.copy(alpha = 0.12F),
+      sheetContent = {
+        GetImageBottomSheet(
+          chosenImage,
+          onImageChange = { bitmap -> profileImage.value = resizeImageToStrSize(cropToSquare(bitmap), maxDataSize = 12500) },
+          hideBottomSheet = {
+            scope.launch { bottomSheetModalState.hide() }
+          })
+      },
+      sheetState = bottomSheetModalState,
+      sheetShape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp)
+    ) {
+      fun dataUnchanged(): Boolean =
+        displayName.value.trim() == profile.displayName &&
+            fullName.value.trim() == profile.fullName &&
+            shortDescr.value.trim() == (profile.shortDescr ?: "") &&
+            description.value.trim() == (profile.description ?: "") &&
+            profile.image == profileImage.value
+      fun onClose(close: () -> Unit): Boolean = if (dataUnchanged() || !canSaveProfile(displayName.value, shortDescr.value, profile)) {
+        chatModel.centerPanelBackgroundClickHandler = null
+        close()
+        false
+      } else {
+        showUnsavedChangesAlert(
+          {
+            chatModel.centerPanelBackgroundClickHandler = null
+            saveProfile(displayName.value, fullName.value, shortDescr.value, description.value, profileImage.value)
+          },
+          {
+            chatModel.centerPanelBackgroundClickHandler = null
+            close()
           }
-          Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
+        )
+        true
+      }
+      DisposableEffect(Unit) {
+        onDispose { chatModel.centerPanelBackgroundClickHandler = null }
+      }
+      LaunchedEffect(Unit) {
+        chatModel.centerPanelBackgroundClickHandler = {
+          onClose(close = { ModalManager.start.closeModals() })
         }
       }
-    } else {
-      Column(Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
-        DefaultAppBar(
-          navigationButton = { NavigationButtonBack(onButtonClicked = { onClose(close) }) },
-          fixedTitleText = stringResource(MR.strings.context_user_picker_your_profile),
-          onTop = true
-        )
-        ColumnWithScrollBarNoAppBar(
+      LaunchedEffect(editingDescription) {
+        if (editingDescription) {
+          delay(200)
+          descrFocusRequester.requestFocus()
+        }
+      }
+      ModalView(close = if (editingDescription) ({ editingDescription = false }) else ({ onClose(close) })) {
+        if (editingDescription) {
+          // app bar is top (default) or bottom (one-handed) — mirror ColumnWithScrollBar's spacers
+          // so the entry area never runs under the app bar, keyboard, or system bars
+          val oneHandUI = remember { ChatController.appPrefs.oneHandUI.state }
+          Column(Modifier.fillMaxSize().imePadding().padding(horizontal = DEFAULT_PADDING)) {
+            if (oneHandUI.value) {
+              Spacer(Modifier.padding(top = DEFAULT_PADDING + 5.dp).windowInsetsTopHeight(WindowInsets.statusBars))
+            } else {
+              Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier))
+            }
+            AppBarTitle(stringResource(MR.strings.profile_description__field), withPadding = false)
+            // weight goes on the Box (a direct Column child); TextEditor forwards its modifier
+            // to the inner BasicTextField, where weight would be ignored
+            Box(Modifier.weight(1f, fill = false).padding(bottom = DEFAULT_PADDING)) {
+              TextEditor(
+                description,
+                Modifier.heightIn(min = 140.dp),
+                placeholder = stringResource(MR.strings.enter_description_optional),
+                contentPadding = PaddingValues(),
+                focusRequester = descrFocusRequester,
+                maxLines = Int.MAX_VALUE
+              )
+            }
+            if (oneHandUI.value) {
+              Spacer(Modifier.navigationBarsPadding().padding(bottom = AppBarHeight * fontSizeSqrtMultiplier))
+            } else {
+              Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
+            }
+          }
+          return@ModalView
+        }
+        ColumnWithScrollBar(
           Modifier
             .padding(horizontal = DEFAULT_PADDING),
         ) {
-          Spacer(Modifier.height(8.dp))
-
-          Column(Modifier.fillMaxWidth()) {
-            // Avatar with Photo Badge in bottom-right corner
+          // FB-15: SimpleUX title copy ("Your profile") instead of upstream's your_current_profile
+          AppBarTitle(stringResource(MR.strings.context_user_picker_your_profile), withPadding = false)
+          ReadableText(generalGetString(MR.strings.your_profile_is_stored_on_device_and_shared_only_with_contacts_simplex_cannot_see_it), TextAlign.Center)
+          Column(
+            Modifier
+              .fillMaxWidth()
+          ) {
+            // Avatar with Photo Badge in bottom-right corner (SimpleUX restyle)
             Box(
               Modifier
                 .fillMaxWidth()
@@ -257,11 +248,14 @@ fun UserProfileLayout(
             }
 
             // Profile Text Box 1: Display Name
+            // keyboardOptions restores the IME behavior upstream's ProfileNameField carried
+            // (no autocorrect / no capitalization for name and bio fields)
             ProfileTextBox(
               value = displayName,
               label = stringResource(MR.strings.profile_name_label),
               placeholder = stringResource(MR.strings.profile_name_placeholder),
               focusRequester = focusRequester,
+              keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrect = false),
               isValid = { isValidNewProfileName(it, profile) },
               trailingIcon = if (!isValidNewProfileName(displayName.value, profile)) {
                 {
@@ -277,7 +271,8 @@ fun UserProfileLayout(
               ProfileTextBox(
                 value = fullName,
                 label = stringResource(MR.strings.profile_full_name_label),
-                placeholder = stringResource(MR.strings.profile_full_name_label)
+                placeholder = stringResource(MR.strings.profile_full_name_label),
+                keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrect = false)
               )
             }
 
@@ -288,6 +283,7 @@ fun UserProfileLayout(
               value = shortDescr,
               label = stringResource(MR.strings.profile_bio_label),
               placeholder = stringResource(MR.strings.profile_bio_placeholder),
+              keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.None, autoCorrect = false),
               isValid = { bioFitsLimit(it) },
               trailingIcon = if (!bioFitsLimit(shortDescr.value)) {
                 {
@@ -303,7 +299,7 @@ fun UserProfileLayout(
 
             Spacer(Modifier.height(14.dp))
 
-            // Profile Description Card
+            // Profile Description Card (SimpleUX restyle of upstream's add/edit description link)
             Box(
               modifier = Modifier
                 .fillMaxWidth()
@@ -338,7 +334,7 @@ fun UserProfileLayout(
 
             Spacer(Modifier.height(24.dp))
 
-            // Save and Notify Contacts Button
+            // Save and Notify Contacts Button (SimpleUX button row; upstream uses a text link)
             val enabled = !dataUnchanged() && canSaveProfile(displayName.value, shortDescr.value, profile)
             Button(
               onClick = {
@@ -369,7 +365,7 @@ fun UserProfileLayout(
 
             Spacer(Modifier.height(20.dp))
 
-            // Connection Sharing Actions (Moved from Contacts to Profile)
+            // Connection Sharing Actions (SimpleUX addition; moved from Contacts to Profile)
             Text(
               text = stringResource(MR.strings.profile_connections_links),
               style = TextStyle(
@@ -462,12 +458,19 @@ fun UserProfileLayout(
               }
             }
           }
-
-          Spacer(Modifier.height(100.dp))
+          Spacer(Modifier.height(DEFAULT_BOTTOM_BUTTON_PADDING))
+          if (savedKeyboardState != keyboardState) {
+            LaunchedEffect(keyboardState) {
+              scope.launch {
+                savedKeyboardState = keyboardState
+                scrollState.animateScrollTo(scrollState.maxValue)
+              }
+            }
+          }
+          SectionBottomSpacer()
         }
       }
     }
-  }
 }
 
 @Composable
@@ -478,6 +481,7 @@ fun ProfileTextBox(
   singleLine: Boolean = true,
   maxLines: Int = 1,
   focusRequester: FocusRequester? = null,
+  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   isValid: (String) -> Boolean = { true },
   trailingIcon: (@Composable () -> Unit)? = null
 ) {
@@ -529,6 +533,7 @@ fun ProfileTextBox(
             fontWeight = FontWeight.Medium,
             color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
           ),
+          keyboardOptions = keyboardOptions,
           singleLine = singleLine,
           maxLines = maxLines,
           cursorBrush = SolidColor(if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)),
@@ -601,7 +606,11 @@ private fun showFullName(profile: Profile): Boolean =
 private fun canSaveProfile(displayName: String, shortDescr: String, profile: Profile): Boolean =
   displayName.trim().isNotEmpty() && isValidNewProfileName(displayName, profile) && bioFitsLimit(shortDescr)
 
-@Preview
+@Preview/*(
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+  showBackground = true,
+  name = "Dark Mode"
+)*/
 @Composable
 fun PreviewUserProfileLayoutEditOff() {
   SimpleXTheme {
@@ -613,3 +622,18 @@ fun PreviewUserProfileLayoutEditOff() {
   }
 }
 
+@Preview/*(
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+  showBackground = true,
+  name = "Dark Mode"
+)*/
+@Composable
+fun PreviewUserProfileLayoutEditOn() {
+  SimpleXTheme {
+    UserProfileLayout(
+      profile = Profile.sampleData,
+      close = {},
+      saveProfile = { _, _, _, _, _ -> }
+    )
+  }
+}

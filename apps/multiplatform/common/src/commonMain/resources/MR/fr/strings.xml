@@ -316,6 +316,7 @@
     <string name="save_and_notify_group_members">Enregistrer et en informer les membres du groupe</string>
     <string name="your_profile_is_stored_on_your_device">Votre profil, vos contacts et les messages reçus sont stockés sur votre appareil.</string>
     <string name="profile_is_only_shared_with_your_contacts">Le profil n\'est partagé qu\'avec vos contacts.</string>
+    <string name="your_profile_is_stored_on_device_and_shared_only_with_contacts_simplex_cannot_see_it">Votre profil est stocké sur votre appareil et partagé uniquement avec vos contacts. Les serveurs SimpleX ne peuvent pas voir votre profil.</string>
     <string name="you_can_use_markdown_to_format_messages__prompt">Vous pouvez utiliser le format markdown pour mettre en forme les messages :</string>
     <string name="bold_text">gras</string>
     <string name="italic_text">italique</string>
@@ -2421,6 +2422,7 @@
     <string name="icon_descr_my_qr_code">Mon QR Code</string>
 
     <!-- SimpleUX i18n : profil utilisateur -->
+    <string name="context_user_picker_your_profile">Votre profil</string>
     <string name="icon_descr_change_photo">Changer la photo</string>
     <string name="profile_name_label">Nom de profil</string>
     <string name="profile_name_placeholder">Entrez votre nom de profil</string>
