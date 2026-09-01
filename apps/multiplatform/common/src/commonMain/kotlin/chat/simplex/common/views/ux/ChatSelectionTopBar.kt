@@ -6,17 +6,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DriveFileMove
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import chat.simplex.common.ui.theme.AmberGold
 import chat.simplex.common.ui.theme.PlusJakartaSans
 import chat.simplex.common.ui.theme.Slate400
 import chat.simplex.common.views.helpers.generalGetString
@@ -25,16 +28,20 @@ import dev.icerock.moko.resources.compose.painterResource
 
 // #102: Telegram-style transformed top bar for chat-list selection mode:
 // X + selected count on the left, batch actions on the right. All actions are
-// real (pin / mark read-unread / add to folder) - no decorative icons.
+// real (pin / mark read-unread / add to folder / delete) - no decorative icons.
+// Action glyphs share one style: filled Material vectors tinted Slate400 -
+// the gold circle-folder badge is an avatar asset, not an action glyph.
 @Composable
 fun ChatSelectionTopBar(
   count: Int,
   anyUnpinned: Boolean,
   anyUnread: Boolean,
+  deleteEnabled: Boolean,
   onClose: () -> Unit,
   onPin: () -> Unit,
   onToggleRead: () -> Unit,
-  onAddToFolder: () -> Unit
+  onAddToFolder: () -> Unit,
+  onDelete: () -> Unit
 ) {
   Row(
     // #102: without this the bar draws under the system status bar and its
@@ -80,9 +87,19 @@ fun ChatSelectionTopBar(
     }
     IconButton(onClick = onAddToFolder) {
       Icon(
-        painter = painterResource(MR.images.ic_folder_filled),
+        imageVector = Icons.Filled.DriveFileMove,
         contentDescription = generalGetString(MR.strings.add_to_folder),
-        tint = AmberGold,
+        tint = Slate400,
+        modifier = Modifier.size(20.dp)
+      )
+    }
+    IconButton(onClick = onDelete, enabled = deleteEnabled) {
+      Icon(
+        imageVector = Icons.Filled.Delete,
+        contentDescription = generalGetString(MR.strings.delete_verb),
+        // explicit tint bypasses IconButton's disabled dimming (it rides on
+        // LocalContentAlpha), so the disabled state is applied here
+        tint = Slate400.copy(alpha = if (deleteEnabled) ContentAlpha.high else ContentAlpha.disabled),
         modifier = Modifier.size(20.dp)
       )
     }

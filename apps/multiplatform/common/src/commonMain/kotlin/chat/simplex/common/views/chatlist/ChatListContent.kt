@@ -138,10 +138,17 @@ internal fun BoxScope.ChatListContent(
       ) {
         if (selectionMode.value) {
           val selectedChats = allChats.value.filter { selectedChatIds.contains(it.id) }
+          // #102: note-folder chats (Private notes) cannot be deleted - the core
+          // rejects ApiDeleteChat for Local chats ("not supported", verified on
+          // emulator-5554), same as Telegram's Saved Messages. Delete only
+          // offers the remaining selected chats; the action dims when that
+          // set is empty.
+          val deletableChats = selectedChats.filter { it.chatInfo !is ChatInfo.Local }
           ChatSelectionTopBar(
             count = selectedChatIds.size,
             anyUnpinned = selectedChats.any { !chatModel.pinnedChatIds.contains(it.id) },
             anyUnread = selectedChats.any { it.unreadTag || it.chatStats.unreadCount > 0 },
+            deleteEnabled = deletableChats.isNotEmpty(),
             onClose = {
               selectionMode.value = false
               selectedChatIds.clear()
@@ -158,7 +165,33 @@ internal fun BoxScope.ChatListContent(
                 if (readAll) markChatRead(chat) else markChatUnread(chat, chatModel)
               }
             },
-            onAddToFolder = { showAddToFolderModal(selectedChatIds) }
+            onAddToFolder = { showAddToFolderModal(selectedChatIds) },
+            onDelete = {
+              // #102: batch delete - one confirmation naming the chats, then the
+              // same SimpleXAPI.deleteChat path the single-chat delete uses
+              if (deletableChats.isNotEmpty()) {
+                AlertManager.shared.showAlertDialog(
+                  title = generalGetString(MR.strings.delete_chat_question),
+                  text = deletableChats.joinToString(", ") { it.chatInfo.displayName },
+                  parseHtml = false,
+                  confirmText = generalGetString(MR.strings.delete_verb),
+                  onConfirm = {
+                    withBGApi {
+                      deletableChats.forEach { chatModel.controller.deleteChat(it) }
+                      withContext(Dispatchers.Main) {
+                        if (chatModel.chatId.value != null && deletableChats.any { it.id == chatModel.chatId.value }) {
+                          chatModel.chatId.value = null
+                        }
+                        selectionMode.value = false
+                        selectedChatIds.clear()
+                      }
+                    }
+                  },
+                  destructive = true,
+                  dismissText = generalGetString(MR.strings.cancel_verb)
+                )
+              }
+            }
           )
         } else {
           ChatsTopBar(
