@@ -94,6 +94,9 @@ val Blue500 = Color(0xFF3B82F6)
 val Blue600 = Color(0xFF2563EB)
 val Amber600 = Color(0xFFD97706)
 val Amber700 = Color(0xFFB45309)
+// Luxury Mineral champagne-gold solid (design system active gold #E2B755, dark mode);
+// light-mode counterpart is Amber600 (#D97706). CTAs, active accents.
+val ChampagneGold = Color(0xFFE2B755)
 val Emerald500 = Color(0xFF10B981)
 val Coral500 = Color(0xFFEF4444)
 
