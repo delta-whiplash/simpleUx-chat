@@ -46,7 +46,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 // the views/ux hex-lint baseline must not grow. State ownership, remember keys and call order are
 // unchanged.
 //
-// The header (TelegramTopHeader + filter pills) is composed OUTSIDE the LazyColumn, as a sibling
+// The header (ChatsTopBar + filter pills) is composed OUTSIDE the LazyColumn, as a sibling
 // above it. It used to be a `stickyHeader` inside the list; that pinned-sticky mechanism left a
 // background-colored "hole" across the middle of the viewport whenever long search results
 // scrolled under it (issue #58, reproduced and root-caused 2026-08-28 on emulator-5554 - see
