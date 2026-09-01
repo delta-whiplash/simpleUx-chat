@@ -23,6 +23,7 @@ import chat.simplex.common.model.*
 import chat.simplex.common.platform.*
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
+import chat.simplex.common.views.ux.audio.rememberVoiceEnvelope
 import chat.simplex.common.views.ux.components.VoiceWaveformPlayer
 import kotlinx.coroutines.flow.*
 import kotlin.math.*
@@ -94,11 +95,14 @@ fun CIVoiceView(
           AudioPlayer.stop()
         }
       } else {
-        val progressRatio = if (duration.value > 0) progress.value.toFloat() / duration.value.toFloat() else 0f
+        // #91: real decoded envelope when the file is local (async + cached); empty until
+        // decoded / not downloaded yet / desktop -> the player renders uniform ticks
+        val envelope = rememberVoiceEnvelope(fileSource.value, duration.value.toLong())
         VoiceWaveformPlayer(
           isPlaying = audioPlaying.value,
-          progress = progressRatio,
+          progress = { if (duration.value > 0) progress.value.toFloat() / duration.value.toFloat() else 0f },
           durationFormatted = text.value,
+          amplitudes = envelope,
           // Speed lives in the shared player session so it survives this composable leaving
           // composition and applies to the currently playing item (#13)
           playbackSpeed = AudioPlayer.playbackSpeed.value,

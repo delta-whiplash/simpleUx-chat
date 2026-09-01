@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
+import chat.simplex.common.views.ux.audio.VOICE_ENVELOPE_BUCKETS
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import kotlin.math.roundToInt
@@ -38,7 +39,9 @@ fun nextPlaybackSpeed(current: Float): Float = when (current) {
 @Composable
 fun VoiceWaveformPlayer(
     isPlaying: Boolean,
-    progress: Float, // 0.0 to 1.0
+    // Lambda so per-tick reads invalidate only the bars scope, not the whole
+    // chat item row (the #99 audit's P1-3, made possible by the #91 contract)
+    progress: () -> Float,
     durationFormatted: String,
     onPlayPauseToggle: () -> Unit,
     onSeek: (Float) -> Unit,
@@ -46,15 +49,16 @@ fun VoiceWaveformPlayer(
     // local state, so it survives scrolling the item out of composition (issue #13).
     playbackSpeed: Float,
     onPlaybackSpeedChange: (Float) -> Unit,
+    // Real decoded envelope (#91); empty or wrong-size falls back to uniform ticks -
+    // never a synthesized fake envelope
+    amplitudes: List<Float> = emptyList(),
     modifier: Modifier = Modifier
 ) {
     val isDark = isInDarkTheme()
-    // #13: uniform ticks, not a fake amplitude envelope - SimpleX does not
-    // carry per-message waveform data (MCVoice has text+duration only), so
-    // varied heights would be decoration pretending to be signal. The bar is
-    // still a real progress/seek control; real envelopes are tracked in the
-    // follow-up issue.
-    val waveformData = remember { List(40) { 0.5f } }
+    // #13/#91: uniform ticks when no decoded envelope exists - SimpleX carries no
+    // per-message waveform data (MCVoice has text+duration only), so varied heights
+    // without a decoded envelope would be decoration pretending to be signal.
+    val waveformData = if (amplitudes.size == VOICE_ENVELOPE_BUCKETS) amplitudes else remember { List(VOICE_ENVELOPE_BUCKETS) { 0.5f } }
 
     Row(
         modifier = modifier
@@ -107,9 +111,11 @@ fun VoiceWaveformPlayer(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    // Read here so playback ticks re-render only the bars
+                    val progressRatio = progress()
                     waveformData.forEachIndexed { index, heightRatio ->
                         val barProgress = index.toFloat() / waveformData.size.toFloat()
-                        val isPassed = barProgress <= progress
+                        val isPassed = barProgress <= progressRatio
                         val activeColor = Color(0xFF60A5FA)
                         val inactiveColor = if (isDark) Color(0x55FFFFFF) else Color(0x33000000)
 
