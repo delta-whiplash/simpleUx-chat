@@ -204,29 +204,36 @@ fun QuickCameraSheet(
     // A fresh bind starts with the torch off.
     torchOn.value = false
 
-    // Mirrors QRCodeScanner.android.kt's approach of doing the actual detection work on
-    // Main via withApi (not the analyzer's own background executor thread), so Compose
-    // state reads/writes here are safe. The throttle below keeps Main-thread load well
-    // under what the always-on QR-only scanner already does per frame.
+    // (#99) This lambda runs on cameraExecutor (setAnalyzer below). The
+    // expensive work - full-frame YUV->gray conversion + BoofCV decode, every
+    // 350 ms - stays on that thread instead of hopping to Main like the
+    // upstream QRCodeScanner it originally mirrored: the Scan tab is a
+    // persistent pane, not a short-lived modal, so per-tick main-thread decodes
+    // janked whatever shared the frame. Only the Compose state writes hop to
+    // Main via withApi; the state reads (throttle, connecting, detectedRaw) are
+    // snapshot reads, safe off the main thread.
     val analyzer = ImageAnalysis.Analyzer { proxy ->
-      withApi {
-        val now = System.currentTimeMillis()
-        if (now - lastAnalysisAt[0] < 350L || connecting.value) {
-          proxy.close()
-          return@withApi
-        }
-        lastAnalysisAt[0] = now
-        val gray = imageProxyToGrayU8(proxy)
-        if (gray != null) {
-          detector.process(gray)
-          val qr = detector.detections.firstOrNull()
-          if (qr != null && qr.message != null && qr.message != detectedRaw.value) {
-            detectedRaw.value = qr.message
-            detectedContent.value = classifyQrContent(qr.message)
-          }
-        }
+      val now = System.currentTimeMillis()
+      if (now - lastAnalysisAt[0] < 350L || connecting.value) {
         proxy.close()
+        return@Analyzer
       }
+      lastAnalysisAt[0] = now
+      val gray = imageProxyToGrayU8(proxy)
+      val qr = if (gray != null) {
+        detector.process(gray)
+        detector.detections.firstOrNull()
+      } else {
+        null
+      }
+      val raw = qr?.message
+      if (raw != null && raw != detectedRaw.value) {
+        withApi {
+          detectedRaw.value = raw
+          detectedContent.value = classifyQrContent(raw)
+        }
+      }
+      proxy.close()
     }
     val imageAnalysis = ImageAnalysis.Builder()
       .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
