@@ -19,37 +19,50 @@ import chat.simplex.common.ui.theme.isInDarkTheme
  *
  * Creates a deep dark canvas with three colored orbs (Indigo, Violet, Cyan)
  * that provide the diffused light source refracted through glass surfaces.
- * Features subtle floating & breathing animation for dynamic mineral luminescence.
- * This is the outermost visual wrapper for the chat screen in glass mode.
- *
  * In light mode, orb opacity is reduced and the base background is lighter.
+ *
+ * #99: `animated` defaults to false - the drift tweens write state every vsync
+ * for a full-screen 3-radial-gradient redraw at display refresh rate for the
+ * whole chat session, for a visually near-free +/-4% wobble. Opt in only if a
+ * low-frequency gated animation (drawWithCache + <=10 Hz step) is built.
+ * This is the outermost visual wrapper for the chat screen in glass mode.
  */
 @Composable
 fun AmbientGlassBackground(
     modifier: Modifier = Modifier,
+    animated: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val isDark = isInDarkTheme()
     val baseBackground = if (isDark) GlassTokens.DarkBackground else Color(0xFFF0F2F5)
     val orbAlphaMultiplier = if (isDark) 1f else 0.5f
 
-    val infiniteTransition = rememberInfiniteTransition()
-    val drift1 by infiniteTransition.animateFloat(
-        initialValue = -0.04f,
-        targetValue = 0.04f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(9000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
+    val drift1: Float
+    val drift2: Float
+    if (animated) {
+        val infiniteTransition = rememberInfiniteTransition()
+        val a1 by infiniteTransition.animateFloat(
+            initialValue = -0.04f,
+            targetValue = 0.04f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(9000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            )
         )
-    )
-    val drift2 by infiniteTransition.animateFloat(
-        initialValue = 0.03f,
-        targetValue = -0.03f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(12000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
+        val a2 by infiniteTransition.animateFloat(
+            initialValue = 0.03f,
+            targetValue = -0.03f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(12000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            )
         )
-    )
+        drift1 = a1
+        drift2 = a2
+    } else {
+        drift1 = 0f
+        drift2 = 0f
+    }
 
     Box(
         modifier = modifier
