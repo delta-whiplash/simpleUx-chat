@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -56,22 +57,27 @@ fun SwipeableChatCard(
             .fillMaxWidth()
     ) {
         // Background Actions Bar (Revealed on swipe)
-        val currentOffset = offsetX.value
-        if (abs(currentOffset) > 10f) {
+        // #99: derived booleans instead of reading offsetX.value in composition -
+        // the drag writes offsetX per frame (plus the spring settle), which used
+        // to recompose the whole card every frame; now the card recomposes only
+        // when a reveal boolean flips.
+        val swipedRight by remember { derivedStateOf { offsetX.value > 10f } }
+        val swipedLeft by remember { derivedStateOf { offsetX.value < -10f } }
+        if (swipedRight || swipedLeft) {
             Row(
                 modifier = Modifier
                     .matchParentSize()
                     .background(
                         when {
-                            currentOffset > 0 -> if (isUnread) Emerald500 else Color(0xFF3B82F6) // Right swipe: Read/Unread
+                            swipedRight -> if (isUnread) Emerald500 else Color(0xFF3B82F6) // Right swipe: Read/Unread
                             else -> if (isFavorite) AmberGold else Color(0xFF8B5CF6) // Left swipe: Favorite
                         }
                     )
                     .padding(horizontal = 24.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = if (currentOffset > 0) Arrangement.Start else Arrangement.End
+                horizontalArrangement = if (swipedRight) Arrangement.Start else Arrangement.End
             ) {
-                if (currentOffset > 0) {
+                if (swipedRight) {
                     // Right swipe action
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -116,7 +122,9 @@ fun SwipeableChatCard(
             modifier = Modifier
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                 .fillMaxWidth()
-                .background(if (abs(offsetX.value) > 1f) (if (isDark) Slate900 else Slate50) else Color.Transparent)
+                // #99: opaque surface while swiped, painted in the draw phase so
+                // the per-frame offset no longer recomposes the card for it.
+                .drawBehind { if (abs(offsetX.value) > 1f) drawRect(if (isDark) Slate900 else Slate50) }
                 .clickable(
                     enabled = onClick != null,
                     interactionSource = remember { MutableInteractionSource() },
