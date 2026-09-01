@@ -85,7 +85,12 @@ fun ModalData.GroupChatInfoView(
       .filter { it.memberStatus != GroupMemberStatus.MemLeft && it.memberStatus != GroupMemberStatus.MemRemoved }
       .sortedByDescending { it.memberRole }
 
-    GroupChatInfoLayout(
+    // #64: short group/channel editors open as bottom sheets over this modal
+    // instead of dedicated full pages
+    val groupInfoSheet = remember { mutableStateOf<GroupInfoSheetKind?>(null) }
+
+    GroupInfoSheetHost(rhId, groupInfo, groupInfoSheet) {
+      GroupChatInfoLayout(
       chat,
       groupInfo,
       currentUser,
@@ -143,10 +148,10 @@ fun ModalData.GroupChatInfoView(
         }
       },
       editGroupProfile = {
-        ModalManager.end.showCustomModal { close -> GroupProfileView(rhId, groupInfo, chatModel, close) }
+        groupInfoSheet.value = GroupInfoSheetKind.PROFILE
       },
       addOrEditWelcomeMessage = {
-        ModalManager.end.showCustomModal { close -> GroupWelcomeView(chatModel, rhId, groupInfo, close) }
+        groupInfoSheet.value = GroupInfoSheetKind.WELCOME_MESSAGE
       },
       openMemberSupport = {
         ModalManager.end.showCustomModal { close ->
@@ -176,7 +181,7 @@ fun ModalData.GroupChatInfoView(
           ModalManager.end.showModal(cardScreen = true) { GroupLinkView(chatModel, rhId, groupInfo, groupLink, onGroupLinkUpdated, isChannel = groupInfo.useRelays, shareGroupInfo = groupInfo) }
       },
       manageWebPage = {
-          ModalManager.end.showCustomModal { close -> ChannelWebPageView(rhId, groupInfo, chatModel, close) }
+          groupInfoSheet.value = GroupInfoSheetKind.WEB_PAGE
       },
       setSimplexName = {
           ModalManager.end.showCustomModal { close ->
@@ -201,7 +206,8 @@ fun ModalData.GroupChatInfoView(
       },
       onSearchClicked = onSearchClicked,
       deletingItems = deletingItems
-    )
+      )
+    }
   }
 }
 

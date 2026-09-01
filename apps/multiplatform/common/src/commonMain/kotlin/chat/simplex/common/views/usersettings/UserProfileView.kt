@@ -92,6 +92,7 @@ fun UserProfileLayout(
   val focusRequester = remember { FocusRequester() }
   val descrFocusRequester = remember { FocusRequester() }
   var editingDescription by remember { mutableStateOf(false) }
+  var descrHadFocus by remember { mutableStateOf(false) }
     ModalBottomSheetLayout(
       scrimColor = Color.Black.copy(alpha = 0.12F),
       sheetContent = {
@@ -138,42 +139,12 @@ fun UserProfileLayout(
       }
       LaunchedEffect(editingDescription) {
         if (editingDescription) {
+          descrHadFocus = false
           delay(200)
           descrFocusRequester.requestFocus()
         }
       }
-      ModalView(close = if (editingDescription) ({ editingDescription = false }) else ({ onClose(close) })) {
-        if (editingDescription) {
-          // app bar is top (default) or bottom (one-handed) — mirror ColumnWithScrollBar's spacers
-          // so the entry area never runs under the app bar, keyboard, or system bars
-          val oneHandUI = remember { ChatController.appPrefs.oneHandUI.state }
-          Column(Modifier.fillMaxSize().imePadding().padding(horizontal = DEFAULT_PADDING)) {
-            if (oneHandUI.value) {
-              Spacer(Modifier.padding(top = DEFAULT_PADDING + 5.dp).windowInsetsTopHeight(WindowInsets.statusBars))
-            } else {
-              Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier))
-            }
-            AppBarTitle(stringResource(MR.strings.profile_description__field), withPadding = false)
-            // weight goes on the Box (a direct Column child); TextEditor forwards its modifier
-            // to the inner BasicTextField, where weight would be ignored
-            Box(Modifier.weight(1f, fill = false).padding(bottom = DEFAULT_PADDING)) {
-              TextEditor(
-                description,
-                Modifier.heightIn(min = 140.dp),
-                placeholder = stringResource(MR.strings.enter_description_optional),
-                contentPadding = PaddingValues(),
-                focusRequester = descrFocusRequester,
-                maxLines = Int.MAX_VALUE
-              )
-            }
-            if (oneHandUI.value) {
-              Spacer(Modifier.navigationBarsPadding().padding(bottom = AppBarHeight * fontSizeSqrtMultiplier))
-            } else {
-              Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
-            }
-          }
-          return@ModalView
-        }
+      ModalView(close = { onClose(close) }) {
         ColumnWithScrollBar(
           Modifier
             .padding(horizontal = DEFAULT_PADDING),
@@ -299,36 +270,70 @@ fun UserProfileLayout(
 
             Spacer(Modifier.height(14.dp))
 
-            // Profile Description Card (SimpleUX restyle of upstream's add/edit description link)
+            // Profile Description Card (SimpleUX restyle of upstream's add/edit description link).
+            // #64: expands IN PLACE into the editor instead of swapping the modal for a full editor
+            // page; collapse on the chevron or on focus loss (value stays in `description`, saved
+            // via the Save button / unsaved-changes alert like the other fields).
             Box(
               modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
                 .background(if (isDark) Color(0x661E293B) else Color(0xF2F1F5F9))
                 .border(1.dp, if (isDark) Color(0x2AFFFFFF) else Color(0x18000000), RoundedCornerShape(14.dp))
-                .clickable { editingDescription = true }
+                .then(if (editingDescription) Modifier else Modifier.clickable { editingDescription = true })
+                .onFocusChanged { focusState ->
+                  if (focusState.hasFocus) {
+                    descrHadFocus = true
+                  } else if (descrHadFocus && editingDescription) {
+                    editingDescription = false
+                  }
+                }
                 .padding(horizontal = 14.dp, vertical = 12.dp)
             ) {
               Column {
-                Text(
-                  text = stringResource(MR.strings.profile_detailed_description),
-                  style = TextStyle(
-                    fontFamily = PlusJakartaSans,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                  Text(
+                    text = stringResource(MR.strings.profile_detailed_description),
+                    style = TextStyle(
+                      fontFamily = PlusJakartaSans,
+                      fontSize = 13.sp,
+                      fontWeight = FontWeight.SemiBold,
+                      color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                    ),
+                    modifier = Modifier.weight(1f)
                   )
-                )
+                  if (editingDescription) {
+                    IconButton(onClick = { editingDescription = false }, modifier = Modifier.size(24.dp)) {
+                      Icon(
+                        painter = painterResource(MR.images.ic_arrow_upward),
+                        contentDescription = stringResource(MR.strings.profile_detailed_description),
+                        tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                        modifier = Modifier.size(18.dp)
+                      )
+                    }
+                  }
+                }
                 Spacer(Modifier.height(4.dp))
-                Text(
-                  text = if (description.value.isBlank()) stringResource(MR.strings.profile_detailed_description_hint) else description.value,
-                  style = TextStyle(
-                    fontFamily = PlusJakartaSans,
-                    fontSize = 14.sp,
-                    color = if (description.value.isBlank()) (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)) else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
-                  ),
-                  maxLines = 3
-                )
+                if (editingDescription) {
+                  TextEditor(
+                    description,
+                    Modifier.fillMaxWidth().heightIn(min = 140.dp),
+                    placeholder = stringResource(MR.strings.enter_description_optional),
+                    contentPadding = PaddingValues(),
+                    focusRequester = descrFocusRequester,
+                    maxLines = Int.MAX_VALUE
+                  )
+                } else {
+                  Text(
+                    text = if (description.value.isBlank()) stringResource(MR.strings.profile_detailed_description_hint) else description.value,
+                    style = TextStyle(
+                      fontFamily = PlusJakartaSans,
+                      fontSize = 14.sp,
+                      color = if (description.value.isBlank()) (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)) else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
+                    ),
+                    maxLines = 3
+                  )
+                }
               }
             }
 
