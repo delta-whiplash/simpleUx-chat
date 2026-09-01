@@ -31,16 +31,6 @@ fun MineralPullToRefreshIndicator(
     modifier: Modifier = Modifier
 ) {
     val isDark = isInDarkTheme()
-    val infiniteTransition = rememberInfiniteTransition()
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(900, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        )
-    )
-
     val scale = if (isRefreshing) 1f else pullFraction.coerceIn(0f, 1f)
     val alpha = if (isRefreshing) 1f else (pullFraction * 1.5f).coerceIn(0f, 1f)
 
@@ -55,6 +45,18 @@ fun MineralPullToRefreshIndicator(
             contentAlignment = Alignment.Center
         ) {
             if (isRefreshing) {
+                // #99: the rotation clock exists only while actually refreshing -
+                // created here, inside the branch, so the home screen carries no
+                // infinite frame-clock wakeup while the indicator is invisible.
+                val infiniteTransition = rememberInfiniteTransition()
+                val rotation by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(900, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart
+                    )
+                )
                 // Haute Horlogerie rotating gold/cyan gear spinner
                 Canvas(modifier = Modifier.size(24.dp).rotate(rotation)) {
                     drawArc(
