@@ -111,37 +111,6 @@ fun ChatsTopBar(
     )
   } else {
     // Normal mode: title with menu
-    // #63: server status is a real bottom sheet (the sheet-styled content used to be
-    // pushed via showCustomModal, which strands it at the top of an empty full page)
-    val radarSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
-    var radarOpen by remember { mutableStateOf(false) }
-    val radarScope = rememberCoroutineScope()
-    LaunchedEffect(radarOpen) {
-      if (radarOpen) radarSheetState.show()
-    }
-    LaunchedEffect(radarSheetState.currentValue, radarSheetState.targetValue) {
-      if (radarSheetState.currentValue == ModalBottomSheetValue.Hidden && radarSheetState.targetValue == ModalBottomSheetValue.Hidden && radarOpen) {
-        radarOpen = false
-      }
-    }
-    BackHandler(enabled = radarOpen) {
-      radarScope.launch { radarSheetState.hide() }
-    }
-    ModalBottomSheetLayout(
-      sheetState = radarSheetState,
-      sheetContent = {
-        ServerRadarSheet(
-          isConnected = chatModel.chatRunning.value == true,
-          onConfigureServers = {
-            radarScope.launch { radarSheetState.hide() }
-            ModalManager.start.showCustomModal { closeServers ->
-              NetworkAndServersView(closeServers)
-            }
-          },
-          onClose = { radarScope.launch { radarSheetState.hide() } }
-        )
-      }
-    ) {
     DefaultAppBar(
       onTop = true,
       solidBackground = true,
@@ -150,8 +119,19 @@ fun ChatsTopBar(
           modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
             .clickable {
-              if (!radarOpen) {
-                radarOpen = true
+              if (!ModalManager.start.hasModalOpen(ModalViewId.CONNECTION_STATUS)) {
+                ModalManager.start.showCustomModal(id = ModalViewId.CONNECTION_STATUS) { close ->
+                  ServerRadarSheet(
+                    isConnected = chatModel.chatRunning.value == true,
+                    onConfigureServers = {
+                      close()
+                      ModalManager.start.showCustomModal { closeServers ->
+                        NetworkAndServersView(closeServers)
+                      }
+                    },
+                    onClose = close
+                  )
+                }
               }
             }
             .padding(vertical = 4.dp, horizontal = 2.dp),
@@ -323,7 +303,6 @@ fun ChatsTopBar(
         }
       }
     )
-    }
   }
 
   val view = LocalMultiplatformView()
@@ -401,35 +380,10 @@ fun SimpleUxTabHost(
   val keyboardState by getKeyboardState()
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
-  // #63: chat → tag assignment sheet (triggered from chat-row menus via LocalTagListPicker)
-  val tagPickerChat = remember { mutableStateOf<Chat?>(null) }
-  val tagPickerSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
-  LaunchedEffect(tagPickerChat.value) {
-    if (tagPickerChat.value != null) tagPickerSheetState.show() else tagPickerSheetState.hide()
-  }
-  LaunchedEffect(tagPickerSheetState.currentValue, tagPickerSheetState.targetValue) {
-    if (tagPickerSheetState.currentValue == ModalBottomSheetValue.Hidden && tagPickerSheetState.targetValue == ModalBottomSheetValue.Hidden && tagPickerChat.value != null) {
-      tagPickerChat.value = null
-    }
-  }
-  BackHandler(enabled = tagPickerChat.value != null) {
-    scope.launch { tagPickerSheetState.hide() }
-  }
 
-  ModalBottomSheetLayout(
-    sheetState = tagPickerSheetState,
-    sheetContent = {
-      tagPickerChat.value?.let { chat ->
-        TagListPickerSheetContent(chat) {
-          tagPickerChat.value = null
-        }
-      }
-    }
-  ) {
   CompositionLocalProvider(
     LocalSimpleUxTab provides currentTab,
-    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true },
-    LocalTagListPicker provides { c: Chat -> tagPickerChat.value = c }
+    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true }
   ) {
     Box(Modifier.fillMaxSize()) {
       // No animated tab transitions here (issue #58): the transition's retained layer
@@ -518,7 +472,6 @@ fun SimpleUxTabHost(
 
       ThemeCircularRevealOverlay()
     }
-  }
   }
 }
 
