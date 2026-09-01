@@ -29,7 +29,7 @@ import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
-fun defaultQuickReplies(): List<String> = listOf(
+private fun defaultQuickReplies(): List<String> = listOf(
     stringResource(MR.strings.quick_reply_agree),
     stringResource(MR.strings.quick_reply_thanks),
     stringResource(MR.strings.quick_reply_perfect),
@@ -42,12 +42,10 @@ fun defaultQuickReplies(): List<String> = listOf(
 fun QuickRepliesBar(
     isVisible: Boolean,
     onQuickReplySelected: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    replies: List<String> = emptyList()
+    modifier: Modifier = Modifier
 ) {
     val isDark = isInDarkTheme()
     val scrollState = rememberScrollState()
-    val resolvedReplies = replies.ifEmpty { defaultQuickReplies() }
 
     AnimatedVisibility(
         visible = isVisible,
@@ -62,7 +60,7 @@ fun QuickRepliesBar(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            resolvedReplies.forEach { reply ->
+            defaultQuickReplies().forEach { reply ->
                 val pillShape = RoundedCornerShape(16.dp)
                 Box(
                     modifier = Modifier

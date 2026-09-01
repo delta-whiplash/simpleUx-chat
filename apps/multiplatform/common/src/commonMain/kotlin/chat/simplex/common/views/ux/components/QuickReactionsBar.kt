@@ -30,15 +30,13 @@ import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 
-val DEFAULT_QUICK_EMOJIS = listOf("👍", "❤️", "🔥", "😂", "😮", "😢")
-
 @Composable
 fun QuickReactionsBar(
     isVisible: Boolean,
     onReactionSelected: (String) -> Unit,
     onMoreEmojisClicked: () -> Unit,
     modifier: Modifier = Modifier,
-    emojis: List<String> = DEFAULT_QUICK_EMOJIS
+    emojis: List<String>
 ) {
     val isDark = isInDarkTheme()
     val shape = RoundedCornerShape(24.dp)

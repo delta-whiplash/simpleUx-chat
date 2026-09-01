@@ -345,32 +345,6 @@ fun ChatsTopBar(
   }
 }
 
-// Kept for backward compatibility - delegates to ChatsTopBar
-@Composable
-fun TelegramTopHeader(
-  userPickerState: MutableStateFlow<AnimatedViewState>,
-  setPerformLA: (Boolean) -> Unit,
-  stopped: Boolean,
-  listState: LazyListState,
-  searchVisible: MutableState<Boolean>,
-  searchText: MutableState<TextFieldValue>,
-  searchShowingSimplexLink: MutableState<Boolean>,
-  searchChatFilteredBySimplexLink: MutableState<Set<String>>,
-  connectNameCandidate: MutableState<String?>
-) {
-  ChatsTopBar(
-    userPickerState = userPickerState,
-    setPerformLA = setPerformLA,
-    stopped = stopped,
-    listState = listState,
-    searchVisible = searchVisible,
-    searchText = searchText,
-    searchShowingSimplexLink = searchShowingSimplexLink,
-    searchChatFilteredBySimplexLink = searchChatFilteredBySimplexLink,
-    connectNameCandidate = connectNameCandidate
-  )
-}
-
 enum class SimpleUxTab {
   CHATS, CONTACTS, SCAN, SETTINGS
 }

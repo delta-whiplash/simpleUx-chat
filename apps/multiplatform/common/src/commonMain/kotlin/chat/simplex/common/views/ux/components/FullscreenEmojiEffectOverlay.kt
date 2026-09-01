@@ -28,8 +28,6 @@ enum class EmojiBurstType {
 }
 
 data class Particle(
-    val initialX: Float,
-    val initialY: Float,
     val velocityX: Float,
     val velocityY: Float,
     val size: Float,
@@ -71,8 +69,6 @@ object FullscreenEmojiEffectManager {
             }
             particles.add(
                 Particle(
-                    initialX = 0.5f,
-                    initialY = 0.5f,
                     velocityX = vx,
                     velocityY = vy,
                     size = rnd.nextFloat() * 12f + 8f,

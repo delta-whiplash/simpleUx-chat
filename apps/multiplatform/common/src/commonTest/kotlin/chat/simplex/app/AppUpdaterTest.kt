@@ -2,7 +2,7 @@ package chat.simplex.app
 
 import chat.simplex.common.views.ux.update.AppUpdateVersionComparison
 import chat.simplex.common.views.ux.update.RELEASES_API_URL
-import chat.simplex.common.views.ux.update.UpdateChannel
+import chat.simplex.common.platform.UpdateChannel
 import chat.simplex.common.views.ux.update.compareAppUpdateVersions
 import chat.simplex.common.views.ux.update.selectAppUpdateRelease
 import kotlin.test.Test

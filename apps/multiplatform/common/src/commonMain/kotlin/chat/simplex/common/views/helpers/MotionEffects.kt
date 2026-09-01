@@ -19,11 +19,6 @@ val SnappySpringSpec = spring<Float>(
   stiffness = Spring.StiffnessLow
 )
 
-val GentleSpringSpec = spring<Float>(
-  dampingRatio = Spring.DampingRatioNoBouncy,
-  stiffness = Spring.StiffnessMedium
-)
-
 private enum class PressState { Pressed, Idle }
 
 /**
