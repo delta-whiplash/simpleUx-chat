@@ -153,6 +153,14 @@ cd apps/multiplatform
 ./gradlew :desktop:packageDistributionForCurrentOS
 ```
 
+### Installing builds via Obtainium
+
+Add `https://github.com/delta-whiplash/simpleUx-chat` as a **GitHub** source in
+[Obtainium](https://github.com/ImranR98/Obtainium). Every build gets its own
+`v*-ux.*` tag, so default version detection works — just enable
+**Track prereleases** (all builds except explicit stable cuts are prereleases)
+and filter APKs to `arm64-v8a`.
+
 ### iOS (Native Swift / SwiftUI)
 
 **Prerequisites:** macOS with Xcode 15+, CocoaPods / Swift Package Manager.
