@@ -191,7 +191,11 @@ class SimplexService: Service() {
       .setContentIntent(pendingIntent)
       .setSilent(true)
       .setShowWhen(false) // no date/time
-      .setOngoing(true) // Starting SDK 33 / Android 13, foreground notifications can be swiped away
+      // #104: on Android 13+ (SDK 33) the service notification is user-dismissable
+      // (swiping it does NOT stop the foreground service; START_STICKY + the boot/
+      // task-removed receivers + the WorkManager restart worker recover the rare
+      // rogue-ROM swipe-kill). Below 13 the OS ignores dismissal anyway.
+      .setOngoing(Build.VERSION.SDK_INT < 33)
 
     // #46: on Android 12+ defer the FGS notification so short-lived service runs
     // never surface anything at all.
@@ -309,7 +313,7 @@ class SimplexService: Service() {
     // promotion from IMPORTANCE_LOW to IMPORTANCE_MIN needs a fresh id to
     // apply for existing installs.
     const val NOTIFICATION_CHANNEL_ID = "chat.simplex.app.SIMPLEX_SERVICE_NOTIFICATION_V2"
-    const val NOTIFICATION_CHANNEL_NAME = "SimpleX Chat service"
+    const val NOTIFICATION_CHANNEL_NAME = "SimpleUX service"
     const val SIMPLEX_SERVICE_ID = 6789
     const val SERVICE_START_WORKER_VERSION = BuildConfig.VERSION_CODE
     const val SERVICE_START_WORKER_INTERVAL_MINUTES = 3 * 60L

@@ -130,7 +130,7 @@
     <string name="settings_notification_preview_title">Aperçu de notification</string>
     <string name="database_initialization_error_title">Échec d’initialisation de la base de données</string>
     <string name="enter_passphrase_notification_desc">Pour recevoir des notifications, veuillez entrer la phrase secrète de la base de données</string>
-    <string name="simplex_service_notification_title">service SimpleX Chat</string>
+    <string name="simplex_service_notification_title">Service SimpleUX</string>
     <string name="group_preview_join_as">rejoindre en tant que %s</string>
     <string name="group_preview_you_are_invited">vous êtes invité·e au groupe</string>
     <string name="you_have_no_chats">Vous n\'avez aucune discussion</string>

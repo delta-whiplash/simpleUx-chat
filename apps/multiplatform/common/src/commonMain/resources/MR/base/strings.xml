@@ -267,8 +267,8 @@
   <string name="database_initialization_error_desc">The database is not working correctly. Tap to learn more</string>
   <string name="xiaomi_ignore_battery_optimization"><![CDATA[<b>Xiaomi devices</b>: please enable Autostart in the system settings for notifications to work.]]></string>
 
-  <!-- SimpleX Chat foreground Service -->
-  <string name="simplex_service_notification_title">SimpleX Chat service</string>
+  <!-- SimpleUX foreground Service -->
+  <string name="simplex_service_notification_title">SimpleUX service</string>
   <string name="simplex_service_notification_text">Receiving messages…</string>
   <string name="call_service_notification_audio_call">Audio call</string>
   <string name="call_service_notification_video_call">Video call</string>
