@@ -177,7 +177,10 @@ fun ChatListView(chatModel: ChatModel, userPickerState: MutableStateFlow<Animate
     }
   )
 
-  if (searchText.value.text.isEmpty()) {
+  // #99: derived so typing in the search field recomposes this wrapper only when
+  // the query crosses empty <-> non-empty, not on every keystroke.
+  val searchQueryEmpty by remember { derivedStateOf { searchText.value.text.isEmpty() } }
+  if (searchQueryEmpty) {
     if (appPlatform.isDesktop && !oneHandUI.value) {
       val call = remember { chatModel.activeCall }.value
       if (call != null) {

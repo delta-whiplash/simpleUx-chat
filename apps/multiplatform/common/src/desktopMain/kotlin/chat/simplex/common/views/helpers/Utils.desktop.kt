@@ -159,12 +159,27 @@ actual fun getAppFilePath(uri: URI): String? = uri.toFile().absolutePath
 
 actual fun getFileSize(uri: URI): Long? = uri.toFile().length()
 
-actual fun getBitmapFromUri(uri: URI, withAlertOnException: Boolean): ImageBitmap? =
+actual fun getBitmapFromUri(uri: URI, withAlertOnException: Boolean, targetSize: Int?): ImageBitmap? =
   try {
     // No dimension cap here: this path decodes user-picked local files (image picker, compose, save),
     // not untrusted received attachments. The cap is applied in getBitmapFromByteArray (auto-rendered content).
     uri.inputStream().use {
-      ImageIO.read(it).toComposeImageBitmap()
+      val img = ImageIO.read(it) ?: return@use null
+      // #99: thumbnail consumers (share previews) request a downsampled decode.
+      if (targetSize != null) {
+        val maxDim = maxOf(img.width, img.height)
+        if (maxDim > targetSize) {
+          val scale = targetSize.toFloat() / maxDim
+          val w = (img.width * scale).toInt().coerceAtLeast(1)
+          val h = (img.height * scale).toInt().coerceAtLeast(1)
+          val scaled = BufferedImage(w, h, if (img.colorModel.hasAlpha()) BufferedImage.TYPE_INT_ARGB else BufferedImage.TYPE_INT_RGB)
+          val g = scaled.createGraphics()
+          g.drawImage(img, 0, 0, w, h, null)
+          g.dispose()
+          return@use scaled.toComposeImageBitmap()
+        }
+      }
+      img.toComposeImageBitmap()
     }
   } catch (e: Exception) {
     Log.e(TAG, "Error while decoding drawable: ${e.stackTraceToString()}")

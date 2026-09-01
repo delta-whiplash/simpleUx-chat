@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -198,21 +199,29 @@ private fun SharedContentPreview(sharedContent: SharedContent?) {
 private fun MediaPreviewRow(uris: List<URI>) {
   // Decode off the main thread; failed decodes fall back to a typed placeholder instead
   // of an empty preview area (the reported "big empty area" bug).
-  var previews by remember(uris) { mutableStateOf<List<SharedMediaPreview>?>(null) }
+  // #99: decode at thumbnail size - the row renders 84.dp boxes, so full-res
+  // decodes of a multi-photo share were pure OOM risk - and emit previews
+  // incrementally per URI instead of waiting for the last decode.
+  val thumbSizePx = with(LocalDensity.current) { 84.dp.roundToPx() }
+  var previews by remember(uris) { mutableStateOf<List<SharedMediaPreview>>(emptyList()) }
   LaunchedEffect(uris) {
-    previews = withContext(Dispatchers.IO) {
-      uris.map { uri -> SharedMediaPreview(uri, runCatching { getBitmapFromUri(uri, withAlertOnException = false) }.getOrNull(), !isImage(uri)) }
+    withContext(Dispatchers.IO) {
+      val decoded = mutableListOf<SharedMediaPreview>()
+      uris.forEach { uri ->
+        val bitmap = runCatching { getBitmapFromUri(uri, withAlertOnException = false, targetSize = thumbSizePx) }.getOrNull()
+        decoded.add(SharedMediaPreview(uri, bitmap, !isImage(uri)))
+        previews = decoded.toList()
+      }
     }
   }
-  val loaded = previews
-  if (loaded == null) {
+  if (previews.isEmpty()) {
     Box(Modifier.fillMaxWidth().height(84.dp))
   } else {
     LazyRow(
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = Alignment.CenterVertically
     ) {
-      items(loaded) { preview ->
+      items(previews, key = { it.uri.toString() }) { preview ->
         val shape = RoundedCornerShape(14.dp)
         Box(
           Modifier

@@ -748,8 +748,15 @@ var systemInDarkThemeCurrently: Boolean = isInNightMode()
 // Spec: spec/services/theme.md#CurrentColors
 val CurrentColors: MutableStateFlow<ThemeManager.ActiveTheme> = MutableStateFlow(ThemeManager.currentColors(null, null, chatModel.currentUser.value?.uiThemes, appPreferences.themeOverrides.get()))
 
+// #99: provided by SimpleXTheme / SimpleXThemeOverride so each isInDarkTheme()
+// call site doesn't open its own CurrentColors collector (~136 call sites, all
+// sharing one collector at the theme root instead). Null means "not under a
+// theme root" (previews, isolated components) - the fallback keeps the exact
+// previous behavior there.
+val LocalIsInDarkTheme = compositionLocalOf<Boolean?> { null }
+
 @Composable
-fun isInDarkTheme(): Boolean = !CurrentColors.collectAsState().value.colors.isLight
+fun isInDarkTheme(): Boolean = LocalIsInDarkTheme.current ?: !CurrentColors.collectAsState().value.colors.isLight
 
 /**
  * Returns true when the Glassmorphism 2026 visual mode should be active.
@@ -847,6 +854,7 @@ fun SimpleXTheme(darkTheme: Boolean? = null, content: @Composable () -> Unit) {
         LocalAppColors provides rememberedAppColors,
         LocalAppWallpaper provides rememberedWallpaper,
         LocalDensity provides density,
+        LocalIsInDarkTheme provides !theme.colors.isLight,
         content = content
       )
     }
@@ -874,6 +882,7 @@ fun SimpleXThemeOverride(theme: ThemeManager.ActiveTheme, content: @Composable (
         LocalContentColor provides MaterialTheme.colors.onBackground,
         LocalAppColors provides rememberedAppColors,
         LocalAppWallpaper provides rememberedWallpaper,
+        LocalIsInDarkTheme provides !theme.colors.isLight,
         content = content)
     }
   )

@@ -84,7 +84,11 @@ fun ChatsTopBar(
   val headerScope = rememberCoroutineScope()
   var kebabCenter by remember { mutableStateOf<Offset?>(null) }
 
-  if (searchVisible.value || searchText.value.text.isNotEmpty()) {
+  // #99: derived so per-keystroke search writes don't recompose the header
+  // wrapper - it only flips when search mode is entered/left.
+  val searchModeActive by remember { derivedStateOf { searchVisible.value || searchText.value.text.isNotEmpty() } }
+
+  if (searchModeActive) {
     // Search mode: use DefaultAppBar with search
     DefaultAppBar(
       navigationButton = {
@@ -427,7 +431,10 @@ fun SimpleUxTabHost(
         }
       }
 
-      if (keyboardState == KeyboardState.Closed && searchText.value.text.isEmpty() && !searchVisible.value) {
+      // #99: derived - reading searchText here directly recomposed the whole
+      // tab-host shell on every keystroke.
+      val showIslandBar by remember { derivedStateOf { keyboardState == KeyboardState.Closed && searchText.value.text.isEmpty() && !searchVisible.value } }
+      if (showIslandBar) {
         TelegramBottomIslandBar(
           currentTab = currentTab.value,
           onSelectTab = { tab ->
