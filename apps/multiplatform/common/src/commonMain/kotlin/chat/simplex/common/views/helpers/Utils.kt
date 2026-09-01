@@ -142,7 +142,9 @@ expect fun getAppFilePath(uri: URI): String?
 
 expect fun getFileSize(uri: URI): Long?
 
-expect fun getBitmapFromUri(uri: URI, withAlertOnException: Boolean = true): ImageBitmap?
+// targetSize: when set, decode downsampled so the larger dimension is ~targetSize px
+// (thumbnail use cases - full-res decodes of multi-image shares are an OOM lottery, #99).
+expect fun getBitmapFromUri(uri: URI, withAlertOnException: Boolean = true, targetSize: Int? = null): ImageBitmap?
 
 expect fun getBitmapFromByteArray(data: ByteArray, withAlertOnException: Boolean): ImageBitmap?
 

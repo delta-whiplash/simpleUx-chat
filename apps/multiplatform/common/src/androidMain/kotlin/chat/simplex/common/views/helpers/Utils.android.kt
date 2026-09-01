@@ -256,11 +256,18 @@ actual fun getFileSize(uri: URI): Long? {
   }
 }
 
-actual fun getBitmapFromUri(uri: URI, withAlertOnException: Boolean): ImageBitmap? {
+actual fun getBitmapFromUri(uri: URI, withAlertOnException: Boolean, targetSize: Int?): ImageBitmap? {
   return if (Build.VERSION.SDK_INT >= 28) {
     try {
       val source = ImageDecoder.createSource(androidAppContext.contentResolver, uri.toUri())
-      ImageDecoder.decodeBitmap(source)
+      ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
+        // #99: sample down to ~targetSize on the larger dimension (aspect
+        // preserved) so thumbnail consumers never materialize full-res pixels.
+        if (targetSize != null) {
+          val maxDim = maxOf(info.size.width, info.size.height)
+          if (maxDim > targetSize) decoder.setTargetSampleSize(maxDim / targetSize)
+        }
+      }
     } catch (e: Exception) {
       Log.e(TAG, "Unable to decode the image: ${e.stackTraceToString()}")
       if (withAlertOnException) showImageDecodingException()
