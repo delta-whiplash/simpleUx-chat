@@ -2,7 +2,6 @@ package chat.simplex.common.ui.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,11 +21,10 @@ import androidx.compose.ui.unit.dp
  */
 @Composable
 fun Modifier.glassSurface(
-    shape: Shape = RoundedCornerShape(24.dp),
-    backgroundColor: Color = if (isInDarkTheme()) Color(0xDD141D2B) else Color(0xEEF8FAFC),
-    borderColor: Color = if (isInDarkTheme()) Color(0x38FFFFFF) else Color(0x20000000),
-    borderWidth: Dp = 1.dp,
-    blurRadius: Dp = 0.dp
+    shape: Shape,
+    backgroundColor: Color,
+    borderColor: Color,
+    borderWidth: Dp = 1.dp
 ): Modifier {
     return this
         .clip(shape)

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -29,7 +27,6 @@ import chat.simplex.common.ui.theme.isInDarkTheme
 @Composable
 fun AmbientGlassBackground(
     modifier: Modifier = Modifier,
-    animated: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val isDark = isInDarkTheme()
@@ -37,30 +34,22 @@ fun AmbientGlassBackground(
     val orbAlphaMultiplier = if (isDark) 1f else 0.5f
 
     val infiniteTransition = rememberInfiniteTransition()
-    val drift1 by if (animated) {
-        infiniteTransition.animateFloat(
-            initialValue = -0.04f,
-            targetValue = 0.04f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(9000, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            )
+    val drift1 by infiniteTransition.animateFloat(
+        initialValue = -0.04f,
+        targetValue = 0.04f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(9000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
         )
-    } else {
-        remember { mutableStateOf(0f) }
-    }
-    val drift2 by if (animated) {
-        infiniteTransition.animateFloat(
-            initialValue = 0.03f,
-            targetValue = -0.03f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(12000, easing = FastOutSlowInEasing),
-                repeatMode = RepeatMode.Reverse
-            )
+    )
+    val drift2 by infiniteTransition.animateFloat(
+        initialValue = 0.03f,
+        targetValue = -0.03f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(12000, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
         )
-    } else {
-        remember { mutableStateOf(0f) }
-    }
+    )
 
     Box(
         modifier = modifier

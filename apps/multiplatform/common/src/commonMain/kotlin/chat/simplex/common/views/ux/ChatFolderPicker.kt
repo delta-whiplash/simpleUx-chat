@@ -67,23 +67,19 @@ fun AddToFolderView(chatIds: Collection<String>, close: () -> Unit) {
 
     customFolders.forEach { folder ->
       val allIn = chatIds.all { folder.includedChatIds.contains(it) }
+      fun toggleFolder() {
+        val updated = if (allIn) {
+          folder.copy(includedChatIds = folder.includedChatIds - chatIds.toSet())
+        } else {
+          folder.copy(includedChatIds = folder.includedChatIds + chatIds)
+        }
+        ChatFoldersPrefs.saveFolder(updated)
+        folders = ChatFoldersPrefs.loadFolders()
+      }
       Row(
         modifier = Modifier
           .fillMaxWidth()
-          .clickable {
-            val updated = if (allIn) {
-              // remove every chat id from includes
-              folder.copy(
-                includedChatIds = folder.includedChatIds - chatIds.toSet()
-              )
-            } else {
-              folder.copy(
-                includedChatIds = folder.includedChatIds + chatIds
-              )
-            }
-            ChatFoldersPrefs.saveFolder(updated)
-            folders = ChatFoldersPrefs.loadFolders()
-          }
+          .clickable { toggleFolder() }
           .padding(horizontal = 20.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
       ) {
@@ -104,15 +100,7 @@ fun AddToFolderView(chatIds: Collection<String>, close: () -> Unit) {
         )
         Checkbox(
           checked = allIn,
-          onCheckedChange = { _ ->
-            val updated = if (allIn) {
-              folder.copy(includedChatIds = folder.includedChatIds - chatIds.toSet())
-            } else {
-              folder.copy(includedChatIds = folder.includedChatIds + chatIds)
-            }
-            ChatFoldersPrefs.saveFolder(updated)
-            folders = ChatFoldersPrefs.loadFolders()
-          },
+          onCheckedChange = { _ -> toggleFolder() },
           colors = CheckboxDefaults.colors(checkedColor = AmberGold)
         )
       }

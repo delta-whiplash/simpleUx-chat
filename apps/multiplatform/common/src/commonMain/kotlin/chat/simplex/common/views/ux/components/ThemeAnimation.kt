@@ -132,17 +132,10 @@ fun AnimatedThemeIcon(
         targetValue = if (isDark) 180f else 0f,
         animationSpec = spring(dampingRatio = 0.55f, stiffness = 350f)
     )
-    val scale by animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = spring(dampingRatio = 0.5f, stiffness = 500f)
-    )
-
     Box(
         modifier = modifier
             .graphicsLayer {
                 rotationZ = rotation
-                scaleX = scale
-                scaleY = scale
             },
         contentAlignment = Alignment.Center
     ) {
