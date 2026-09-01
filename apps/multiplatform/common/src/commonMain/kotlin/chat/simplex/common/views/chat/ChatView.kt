@@ -400,47 +400,32 @@ fun ChatView(
               }
               hideKeyboard(view)
               groupMembersJob.cancel()
-              groupMembersJob = scope.launch(Dispatchers.Default) {
-                // The idea is to preload information before showing a modal because large groups can take time to load all members
-                var preloadedContactInfo: Pair<ConnectionStats?, Profile?>? = null
-                var preloadedCode: String? = null
-                var preloadedLink: GroupLink? = null
-                if (chatInfo is ChatInfo.Direct) {
-                  preloadedContactInfo = chatModel.controller.apiContactInfo(chatRh, chatInfo.apiId)
-                  preloadedCode = chatModel.controller.apiGetContactCode(chatRh, chatInfo.apiId)?.second
-                } else if (chatInfo is ChatInfo.Group) {
-                  setGroupMembers(chatRh, chatInfo.groupInfo, chatModel)
-                  preloadedLink = chatModel.controller.apiGetGroupLink(chatRh, chatInfo.groupInfo.groupId)
-                }
-                if (!isActive) return@launch
-
-                val selectedItems: MutableState<Set<Long>?> = mutableStateOf(null)
-                ModalManager.end.showCustomModal { close ->
+              // #67: the page opens instantly; connection stats / security code / group link
+              // load inside the page (LaunchedEffect fires on open and on chat switch) instead
+              // of blocking the tap until every API call returns
+              val selectedItems: MutableState<Set<Long>?> = mutableStateOf(null)
+              ModalManager.end.showCustomModal { close ->
                   val appBar = remember { mutableStateOf(null as @Composable (BoxScope.() -> Unit)?) }
                   ModalView(close, cardScreen = true, appBar = appBar.value) {
                     val chatInfo = remember { activeChat }.value?.chatInfo
                     if (chatInfo is ChatInfo.Direct) {
-                      var contactInfo: Pair<ConnectionStats?, Profile?>? by remember { mutableStateOf(preloadedContactInfo) }
-                      var code: String? by remember { mutableStateOf(preloadedCode) }
-                      KeyChangeEffect(chatInfo.id) {
+                      var contactInfo: Pair<ConnectionStats?, Profile?>? by remember { mutableStateOf(null) }
+                      var code: String? by remember { mutableStateOf(null) }
+                      LaunchedEffect(chatInfo.id) {
                         contactInfo = chatModel.controller.apiContactInfo(chatRh, chatInfo.apiId)
-                        preloadedContactInfo = contactInfo
                         code = chatModel.controller.apiGetContactCode(chatRh, chatInfo.apiId)?.second
-                        preloadedCode = code
                       }
                       ChatInfoView(chatsCtx, chatModel, chatInfo.contact, contactInfo?.first, contactInfo?.second, chatInfo.localAlias, code, close) {
                         showSearch.value = true
                       }
                     } else if (chatInfo is ChatInfo.Group) {
-                      var link: GroupLink? by remember(chatInfo.id) { mutableStateOf(preloadedLink) }
-                      KeyChangeEffect(chatInfo.id) {
+                      var link: GroupLink? by remember(chatInfo.id) { mutableStateOf(null) }
+                      LaunchedEffect(chatInfo.id) {
                         setGroupMembers(chatRh, chatInfo.groupInfo, chatModel)
                         link = chatModel.controller.apiGetGroupLink(chatRh, chatInfo.groupInfo.groupId)
-                        preloadedLink = link
                       }
                       GroupChatInfoView(chatsCtx, chatRh, chatInfo.id, link, selectedItems, appBar, scrollToItemId, {
                         link = it
-                        preloadedLink = it
                       }, close, { showSearch.value = true })
                     } else {
                       LaunchedEffect(Unit) {
@@ -457,7 +442,6 @@ fun ChatView(
                     }
                   }
                 }
-              }
             },
             showReports = {
               val cInfo = activeChat.value?.chatInfo ?: return@ChatLayout
