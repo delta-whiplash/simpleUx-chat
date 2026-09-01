@@ -1317,6 +1317,35 @@ fun BoxScope.ChatInfoToolbar(
     }
   }
 
+  // #63: tag assignment lives in the conversation menu - the chat-list row menu that
+  // used to carry it is shadowed by selection mode (#102). Opens the shared picker
+  // sheet via the screen-root host; page fallback where the local is absent (desktop).
+  if (chatInfo is ChatInfo.Direct || chatInfo is ChatInfo.Group) {
+    val openTagPicker = LocalTagListPicker.current
+    menuItems.add {
+      ItemAction(
+        stringResource(if (chatInfo.chatTags.isNullOrEmpty()) MR.strings.add_to_list else MR.strings.change_list),
+        painterResource(MR.images.ic_label),
+        onClick = {
+          showMenu.value = false
+          val chat = chatModel.getChat(chatInfo.id)
+          if (chat == null) return@ItemAction
+          if (openTagPicker != null) {
+            openTagPicker(chat)
+          } else {
+            ModalManager.start.showModalCloseable { close ->
+              if (chatModel.userTags.value.isEmpty()) {
+                TagListEditor(rhId = chat.remoteHostId, chat = chat, close = close)
+              } else {
+                TagListView(rhId = chat.remoteHostId, chat = chat, close = close, reorderMode = false)
+              }
+            }
+          }
+        }
+      )
+    }
+  }
+
   // Unified Content Filter options (Media, Files, Links, Voice notes) integrated directly into the main dropdown
   if (showContentFilterButton) {
     menuItems.add { Divider() }

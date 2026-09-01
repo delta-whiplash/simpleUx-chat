@@ -36,6 +36,7 @@ import chat.simplex.common.views.helpers.ModalManager.Companion.fromStartToEndTr
 import chat.simplex.common.views.localauth.VerticalDivider
 import chat.simplex.common.views.newchat.*
 import chat.simplex.common.views.onboarding.*
+import chat.simplex.common.views.ux.SimpleUxSheetsHost
 import chat.simplex.common.views.ux.update.AppUpdater
 import chat.simplex.common.views.ux.update.provideAppUpdateInstaller
 import chat.simplex.common.views.usersettings.*
@@ -339,49 +340,53 @@ fun AndroidScreen(userPickerState: MutableStateFlow<AnimatedViewState>) {
     val cutout = WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal).asPaddingValues()
     val direction = LocalLayoutDirection.current
     val hasCutout = cutout.calculateStartPadding(direction) + cutout.calculateEndPadding(direction) > 0.dp
-    Box(
-      Modifier
-        // clipping only for devices with cutout currently visible on sides. It prevents showing chat list with open chat view
-        // In order cases it's not needed to use clip
-        .then(if (hasCutout) Modifier.clip(RectangleShape) else Modifier)
-        .graphicsLayer {
-          // minOf thing is needed for devices with holes in screen while the user on ChatView rotates his phone from portrait to landscape
-          // because in this case (at least in emulator) maxWidth changes in two steps: big first, smaller on next frame.
-          // But offset is remembered already, so this is a better way than dropping a value of offset
-          translationX = -minOf(offset.value.dp, maxWidth).toPx()
-        }
-    ) {
-      StartPartOfScreen(userPickerState)
-    }
-    val scope = rememberCoroutineScope()
-    val onComposed: suspend (chatId: String?) -> Unit = { chatId ->
-      // coroutine, scope and join() because:
-      // - it should be run from coroutine to wait until this function finishes
-      // - without using scope.launch it throws CancellationException when changing user
-      // - join allows to wait until completion
-      scope.launch {
-        offset.animateTo(
-          if (chatId == null) 0f else maxWidth.value,
-          chatListAnimationSpec()
-        )
-      }.join()
-    }
-    LaunchedEffect(Unit) {
-      launch {
-        snapshotFlow { chatModel.chatId.value }
-          .distinctUntilChanged()
-          .collect {
-            if (it == null) onComposed(null)
-            currentChatId.value = it
+    // #63: one screen-root sheet layer covering the list AND the sliding conversation,
+    // so both the header/radar and the chat menu's tag entry reach the same sheets.
+    SimpleUxSheetsHost(chatModel) {
+      Box(
+        Modifier
+          // clipping only for devices with cutout currently visible on sides. It prevents showing chat list with open chat view
+          // In order cases it's not needed to use clip
+          .then(if (hasCutout) Modifier.clip(RectangleShape) else Modifier)
+          .graphicsLayer {
+            // minOf thing is needed for devices with holes in screen while the user on ChatView rotates his phone from portrait to landscape
+            // because in this case (at least in emulator) maxWidth changes in two steps: big first, smaller on next frame.
+            // But offset is remembered already, so this is a better way than dropping a value of offset
+            translationX = -minOf(offset.value.dp, maxWidth).toPx()
           }
+      ) {
+        StartPartOfScreen(userPickerState)
       }
-    }
-    Box(Modifier
-      .then(if (hasCutout) Modifier.clip(RectangleShape) else Modifier)
-      .graphicsLayer { translationX = maxWidth.toPx() - minOf(offset.value.dp, maxWidth).toPx() }
-    ) Box2@{
-      currentChatId.value?.let {
-        ChatView(chatsCtx = chatModel.chatsContext, currentChatId, onComposed = onComposed)
+      val scope = rememberCoroutineScope()
+      val onComposed: suspend (chatId: String?) -> Unit = { chatId ->
+        // coroutine, scope and join() because:
+        // - it should be run from coroutine to wait until this function finishes
+        // - without using scope.launch it throws CancellationException when changing user
+        // - join allows to wait until completion
+        scope.launch {
+          offset.animateTo(
+            if (chatId == null) 0f else maxWidth.value,
+            chatListAnimationSpec()
+          )
+        }.join()
+      }
+      LaunchedEffect(Unit) {
+        launch {
+          snapshotFlow { chatModel.chatId.value }
+            .distinctUntilChanged()
+            .collect {
+              if (it == null) onComposed(null)
+              currentChatId.value = it
+            }
+        }
+      }
+      Box(Modifier
+        .then(if (hasCutout) Modifier.clip(RectangleShape) else Modifier)
+        .graphicsLayer { translationX = maxWidth.toPx() - minOf(offset.value.dp, maxWidth).toPx() }
+      ) Box2@{
+        currentChatId.value?.let {
+          ChatView(chatsCtx = chatModel.chatsContext, currentChatId, onComposed = onComposed)
+        }
       }
     }
   }

@@ -370,6 +370,13 @@ val LocalSimpleUxTab = compositionLocalOf<MutableState<SimpleUxTab>> { mutableSt
  */
 val LocalOpenProfileSwitcher = compositionLocalOf<(() -> Unit)?> { null }
 
+/**
+ * Opened by tapping the "SimpleUX" brand text in the chat-list header (server
+ * connectivity at a glance). Provided by [SimpleUxSheetsHost]; null outside it (call
+ * sites then fall back to the legacy modal push).
+ */
+val LocalServerRadarSheet = compositionLocalOf<(() -> Unit)?> { null }
+
 // Extracted verbatim from ChatListView.kt (issue #4): the tab-switch host of the chat-list screen.
 // The fork-owned state (current tab, search visibility, profile-switcher popup, quick-camera filter)
 // stays owned by the caller in ChatListView.kt and is passed in; only the CHATS tab content differs
@@ -388,52 +395,10 @@ fun SimpleUxTabHost(
   val keyboardState by getKeyboardState()
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
-  // #63: both chat-list sheets (server radar, chat→tag picker) are hosted at the SCREEN
-  // ROOT. M2 ModalBottomSheetLayout always fills max size - the scrim needs the whole
-  // screen - so wrapping slotted content with it (the top bar in ChatsTopBar, or the tab
-  // box slots) makes that slot consume the entire column and starves the chat list:
-  // that is the ux.40/41 empty-list regression, reverted in de0f9cdac. At the root,
-  // full-size is exactly what the layout already was. One state machine drives both.
-  var chatListSheet by remember { mutableStateOf<ChatListSheet?>(null) }
-  val chatListSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
-  LaunchedEffect(chatListSheet) {
-    if (chatListSheet != null) chatListSheetState.show() else chatListSheetState.hide()
-  }
-  LaunchedEffect(chatListSheetState.currentValue, chatListSheetState.targetValue) {
-    if (chatListSheetState.currentValue == ModalBottomSheetValue.Hidden && chatListSheetState.targetValue == ModalBottomSheetValue.Hidden && chatListSheet != null) {
-      chatListSheet = null
-    }
-  }
-  BackHandler(enabled = chatListSheet != null) {
-    scope.launch { chatListSheetState.hide() }
-  }
 
-  ModalBottomSheetLayout(
-    sheetState = chatListSheetState,
-    sheetContent = {
-      when (val sheet = chatListSheet) {
-        is ChatListSheet.TagPicker ->
-          TagListPickerSheetContent(sheet.chat) { chatListSheet = null }
-        ChatListSheet.ServerRadar ->
-          ServerRadarSheet(
-            isConnected = chatModel.chatRunning.value == true,
-            onConfigureServers = {
-              scope.launch { chatListSheetState.hide() }
-              ModalManager.start.showCustomModal { closeServers ->
-                NetworkAndServersView(closeServers)
-              }
-            },
-            onClose = { scope.launch { chatListSheetState.hide() } }
-          )
-        null -> {}
-      }
-    }
-  ) {
   CompositionLocalProvider(
     LocalSimpleUxTab provides currentTab,
-    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true },
-    LocalTagListPicker provides { c: Chat -> chatListSheet = ChatListSheet.TagPicker(c) },
-    LocalServerRadarSheet provides { chatListSheet = ChatListSheet.ServerRadar }
+    LocalOpenProfileSwitcher provides { showProfileSwitcherPopup.value = true }
   ) {
     Box(Modifier.fillMaxSize()) {
       // No animated tab transitions here (issue #58): the transition's retained layer
@@ -523,21 +488,71 @@ fun SimpleUxTabHost(
       ThemeCircularRevealOverlay()
     }
   }
-  }
 }
 
-/** #63: the sheets hosted by [SimpleUxTabHost]'s root ModalBottomSheetLayout. */
-private sealed interface ChatListSheet {
+/**
+ * #63: the screen-root sheet layer for the whole chat surface (list AND the sliding
+ * conversation panel): server radar + chat→tag assignment.
+ *
+ * M2 ModalBottomSheetLayout always fills max size - the scrim needs the whole screen -
+ * so wrapping slotted content with it (the top bar in ChatsTopBar, or the tab box
+ * slots) makes that slot consume the entire column and starves the chat list: that is
+ * the ux.40/41 empty-list regression, reverted in de0f9cdac. Hosted HERE, at the
+ * AndroidScreen root around already-full-size children, full-size is exactly right.
+ * The trigger locals let any depth open a sheet; surfaces outside this host (desktop
+ * panel, previews) see null locals and fall back to the legacy page/modal paths.
+ */
+sealed interface ChatListSheet {
   data class TagPicker(val chat: Chat) : ChatListSheet
   data object ServerRadar : ChatListSheet
 }
 
-/**
- * Opened by tapping the "SimpleUX" brand text in the chat-list header (server
- * connectivity at a glance). Provided by [SimpleUxTabHost]; null outside it (call
- * sites then fall back to the legacy modal push).
- */
-val LocalServerRadarSheet = compositionLocalOf<(() -> Unit)?> { null }
+@Composable
+fun SimpleUxSheetsHost(chatModel: ChatModel, content: @Composable () -> Unit) {
+  val scope = rememberCoroutineScope()
+  var chatListSheet by remember { mutableStateOf<ChatListSheet?>(null) }
+  val chatListSheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+  LaunchedEffect(chatListSheet) {
+    if (chatListSheet != null) chatListSheetState.show() else chatListSheetState.hide()
+  }
+  LaunchedEffect(chatListSheetState.currentValue, chatListSheetState.targetValue) {
+    if (chatListSheetState.currentValue == ModalBottomSheetValue.Hidden && chatListSheetState.targetValue == ModalBottomSheetValue.Hidden && chatListSheet != null) {
+      chatListSheet = null
+    }
+  }
+  BackHandler(enabled = chatListSheet != null) {
+    scope.launch { chatListSheetState.hide() }
+  }
+
+  ModalBottomSheetLayout(
+    sheetState = chatListSheetState,
+    sheetContent = {
+      when (val sheet = chatListSheet) {
+        is ChatListSheet.TagPicker ->
+          TagListPickerSheetContent(sheet.chat) { chatListSheet = null }
+        ChatListSheet.ServerRadar ->
+          ServerRadarSheet(
+            isConnected = chatModel.chatRunning.value == true,
+            onConfigureServers = {
+              scope.launch { chatListSheetState.hide() }
+              ModalManager.start.showCustomModal { closeServers ->
+                NetworkAndServersView(closeServers)
+              }
+            },
+            onClose = { scope.launch { chatListSheetState.hide() } }
+          )
+        null -> {}
+      }
+    }
+  ) {
+    CompositionLocalProvider(
+      LocalTagListPicker provides { c: Chat -> chatListSheet = ChatListSheet.TagPicker(c) },
+      LocalServerRadarSheet provides { chatListSheet = ChatListSheet.ServerRadar }
+    ) {
+      content()
+    }
+  }
+}
 
 // Vertical space the island bottom bar occupies above the navigation bars:
 // its 2.dp bottom offset + Row vertical padding (2 x 6.dp) + a tab item's
