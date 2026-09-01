@@ -101,7 +101,12 @@ internal fun BoxScope.ChatListContent(
   // #98/#101: bumped when the Chat Folders settings modal closes so both the
   // pills row and custom-folder filtering re-read ChatFoldersPrefs.
   var foldersVersion by remember { mutableStateOf(0) }
-  val rawChats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChats.value.toList(), activeFilter.value)
+  // #99: chatModel.chats is a SnapshotStateList mutated in place (its .value
+  // identity never changes), so a composition-time copy is taken here - the
+  // tracked read invalidates this scope on any chat mutation, and the copy's
+  // structural equality lets the remember blocks below cache across unrelated
+  // recompositions (pull frames, typing, other model ticks).
+  val allChatsSnapshot = allChats.value.toList()
   // #101: a custom folder lists exactly its included chats minus the excluded
   // ones - membership lives in ChatFoldersPrefs.
   val customFolderFilter = (activeFilter.value as? ActiveFilter.CustomFolder)?.let { cf ->
@@ -113,14 +118,28 @@ internal fun BoxScope.ChatListContent(
   // snapshot-backed pinnedChatIds so toggling re-sorts immediately.
   // FB-12/13: created one-time invitations are managed in Settings (InvitationLinksSection),
   // not as chats - hidden here so each preserved link stops polluting the list.
-  val chats = (when {
-    activeFilter.value is ActiveFilter.CustomFolder ->
-      rawChats.filter { customFolderFilter?.matchesChat(it.id) == true }
-    activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES) ->
-      rawChats.filter { chatModel.starredChatIds.contains(it.id) }
-    else -> rawChats
-  }).filterNot { isCreatedInvitationChat(it) }
-    .sortedByDescending { chatModel.pinnedChatIds.contains(it.id) }
+  // #99: the whole filter + sort pipeline runs once per input change instead of
+  // on every recomposition; pinned/starred ids are captured as Sets so the
+  // comparator stops doing contains() over the SnapshotStateLists (O(n*m)).
+  // chatModel.chatId is a key because filteredChats() always includes the open
+  // chat even when it fails the filter.
+  val pinnedIds = chatModel.pinnedChatIds.toSet()
+  val starredIds = chatModel.starredChatIds.toSet()
+  val chats = remember(
+    allChatsSnapshot, searchText.value.text, activeFilter.value,
+    searchShowingSimplexLink.value, searchChatFilteredBySimplexLink.value,
+    customFolderFilter, pinnedIds, starredIds, chatModel.chatId.value
+  ) {
+    val rawChats = filteredChats(searchShowingSimplexLink, searchChatFilteredBySimplexLink, searchText.value.text, allChatsSnapshot, activeFilter.value)
+    (when {
+      activeFilter.value is ActiveFilter.CustomFolder ->
+        rawChats.filter { customFolderFilter?.matchesChat(it.id) == true }
+      activeFilter.value == ActiveFilter.PresetTag(PresetTagKind.FAVORITES) ->
+        rawChats.filter { starredIds.contains(it.id) }
+      else -> rawChats
+    }).filterNot { isCreatedInvitationChat(it) }
+      .sortedByDescending { pinnedIds.contains(it.id) }
+  }
 
   val isSearching = searchText.value.text.isNotEmpty() || searchVisible.value
   val bottomPadding = if (isSearching) 16.dp else 96.dp
@@ -240,8 +259,12 @@ internal fun BoxScope.ChatListContent(
             // set. The old sumOf(unreadCount) counted unread MESSAGES across all
             // chats including the hidden invitation chats (FB-12/13), producing a
             // non-zero badge over an empty filter.
-            val totalUnread = remember(allChats.value) {
-              allChats.value.count { it.unreadTag && !isCreatedInvitationChat(it) }
+            // #99: keyed on the snapshot copy, not allChats.value - the
+            // SnapshotStateList is mutated in place so its identity never
+            // changes and a key on it would freeze the count after first
+            // composition.
+            val totalUnread = remember(allChatsSnapshot) {
+              allChatsSnapshot.count { it.unreadTag && !isCreatedInvitationChat(it) }
             }
 
             FilterPillsRow(
@@ -275,8 +298,10 @@ internal fun BoxScope.ChatListContent(
 
           // SimpleUX Active Contacts / Favorites Rail (Collapsible on search)
           val scope = rememberCoroutineScope()
+          // #99: the shared snapshot (stable identity between unrelated
+          // recompositions) keeps the rail's remember(chats) filter cached.
           ActiveContactsRail(
-            chats = allChats.value.toList(),
+            chats = allChatsSnapshot,
             onChatClicked = { targetChat ->
               scope.launch {
                 when (val info = targetChat.chatInfo) {
@@ -435,12 +460,11 @@ internal fun BoxScope.ChatListContent(
           }
         }
 
-        MineralPullToRefreshIndicator(
-          pullFraction = pullOffset.value / 100f,
-          isRefreshing = isRefreshing.value,
+        PullRefreshIndicatorHost(
+          pullOffset = pullOffset,
+          isRefreshing = isRefreshing,
           modifier = Modifier
             .align(Alignment.TopCenter)
-            .padding(top = (pullOffset.value * 0.4f).dp + 10.dp)
             .zIndex(10f)
         )
       }
@@ -450,4 +474,23 @@ internal fun BoxScope.ChatListContent(
   LaunchedEffect(activeFilter.value) {
     searchText.value = TextFieldValue("")
   }
+}
+
+// #99: reads the pull gesture states in its own scope so the per-frame
+// pullOffset writes from onPreScroll invalidate only this indicator host
+// instead of recomposing the whole chat-list screen. The states are passed
+// as-is (not their values) exactly so the read happens here.
+@Composable
+private fun PullRefreshIndicatorHost(
+  pullOffset: State<Float>,
+  isRefreshing: State<Boolean>,
+  modifier: Modifier = Modifier
+) {
+  val offset = pullOffset.value
+  MineralPullToRefreshIndicator(
+    pullFraction = offset / 100f,
+    isRefreshing = isRefreshing.value,
+    modifier = modifier
+      .padding(top = (offset * 0.4f).dp + 10.dp)
+  )
 }
