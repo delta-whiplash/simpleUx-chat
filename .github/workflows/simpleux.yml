@@ -31,11 +31,11 @@ jobs:
           # (replaces the dead JitPack commit-artifact dependency)
           submodules: recursive
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21 (LTS - same toolchain as the local dev gate, AGENTS.md §6)
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
