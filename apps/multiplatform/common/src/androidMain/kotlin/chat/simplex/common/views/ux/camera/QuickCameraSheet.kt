@@ -14,17 +14,13 @@ import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -52,6 +48,7 @@ import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.ux.BottomIslandBarClearance
 import chat.simplex.res.MR
 import com.google.common.util.concurrent.ListenableFuture
+import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
 import kotlinx.coroutines.launch
 import java.io.File
@@ -59,16 +56,18 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 // Single always-on camera screen for the SimpleUX central quick-access button:
-// the shutter is always available, and EVERY code entering the frame surfaces
-// a confirmation card with its decoded content - SimpleX link (connect flow),
-// URL (explicit "open in browser" tap) or plain text (copy / share into
-// SimpleX) - instead of being silently dropped. Auto-detect, tap to act,
-// never auto-navigate on a bare scan.
+// a general-purpose quick camera, not a QR-only viewfinder. The shutter sends
+// any frame straight into the share flow, EVERY code entering the frame
+// surfaces a confirmation card with its decoded content - SimpleX link
+// (connect flow), URL (explicit "open in browser" tap) or plain text
+// (copy / share into SimpleX) - and never auto-navigates on a bare scan.
+// There is deliberately no scan frame on screen (Delta, 2026-09-01: the gold
+// brackets read as "QR scanner only"); the result card is the scan feedback.
 //
-// The chrome is SimpleUX's Luxury Mineral layer (CameraChrome.kt /
-// CameraReticule.kt): dark mineral surfaces regardless of the app theme, a
-// camera-standard control row (gallery - shutter - torch) lifted above the
-// persistent island tab bar and a gold reticule.
+// The chrome is SimpleUX's Luxury Mineral layer (CameraChrome.kt): dark
+// mineral surfaces regardless of the app theme and a camera-standard control
+// row (gallery - shutter - flip) lifted above the persistent island tab bar,
+// with the torch as a top-corner control like every stock camera app.
 //
 // The BoofCV QR detection logic here mirrors newchat/QRCodeScanner.android.kt
 // (throttled instead of per-frame) rather than sharing code with it, to avoid
@@ -112,11 +111,25 @@ fun QuickCameraSheet(
   val imageCapture = remember { mutableStateOf<ImageCapture?>(null) }
   val camera = remember { mutableStateOf<Camera?>(null) }
   val torchOn = remember { mutableStateOf(false) }
+  // Delta (2026-09-01): the quick camera also takes photos, so it needs the
+  // standard front/back toggle.
+  val lensFacing = remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
   val detectedRaw = remember { mutableStateOf<String?>(null) }
   val detectedContent = remember { mutableStateOf<QrContent?>(null) }
   val connecting = remember { mutableStateOf(false) }
   val lastAnalysisAt = remember { longArrayOf(0L) }
-  val reticulePulse = remember { Animatable(1f) }
+
+  // One executor and one detector for the pane's whole lifetime, reused
+  // across lens flips - the previous code built both per bind.
+  val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+  val detector = remember { FactoryFiducial.qrcode(null, GrayU8::class.java) }
+  val previewView = remember {
+    PreviewView(context).apply {
+      scaleType = PreviewView.ScaleType.FILL_CENTER
+      layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+      implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+    }
+  }
 
   val hasFlashUnit = camera.value?.cameraInfo?.hasFlashUnit() == true
 
@@ -167,17 +180,71 @@ fun QuickCameraSheet(
     onDispose {
       lifecycleOwner.lifecycle.removeObserver(observer)
       cameraProviderFuture?.get()?.unbindAll()
+      cameraExecutor.shutdown()
     }
   }
 
   LaunchedEffect(detectedRaw.value) {
     if (detectedRaw.value == null) return@LaunchedEffect
-    // One-shot arrival feedback per NEW code: a light haptic and a single gold
-    // pulse of the reticule. Never re-triggered while the same code stays in
-    // frame (the analyzer only reports changed payloads).
+    // One-shot arrival feedback per NEW code: a light haptic. The result card
+    // that slides up is the visual feedback (the retired gold reticule used to
+    // pulse here). Never re-triggered while the same code stays in frame (the
+    // analyzer only reports changed payloads).
     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-    reticulePulse.snapTo(0f)
-    reticulePulse.animateTo(1f, tween(durationMillis = 650, easing = FastOutSlowInEasing))
+  }
+
+  // (Re)bind on lens flip - the only two keys that change while the pane is
+  // open. Binding here instead of inside the AndroidView update keeps the
+  // executor and detector singletons above single-instance.
+  LaunchedEffect(cameraProviderFuture, lensFacing.value) {
+    val provider = cameraProviderFuture ?: return@LaunchedEffect
+    val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
+    val capture = ImageCapture.Builder().build()
+    imageCapture.value = capture
+    // A fresh bind starts with the torch off.
+    torchOn.value = false
+
+    // Mirrors QRCodeScanner.android.kt's approach of doing the actual detection work on
+    // Main via withApi (not the analyzer's own background executor thread), so Compose
+    // state reads/writes here are safe. The throttle below keeps Main-thread load well
+    // under what the always-on QR-only scanner already does per frame.
+    val analyzer = ImageAnalysis.Analyzer { proxy ->
+      withApi {
+        val now = System.currentTimeMillis()
+        if (now - lastAnalysisAt[0] < 350L || connecting.value) {
+          proxy.close()
+          return@withApi
+        }
+        lastAnalysisAt[0] = now
+        val gray = imageProxyToGrayU8(proxy)
+        if (gray != null) {
+          detector.process(gray)
+          val qr = detector.detections.firstOrNull()
+          if (qr != null && qr.message != null && qr.message != detectedRaw.value) {
+            detectedRaw.value = qr.message
+            detectedContent.value = classifyQrContent(qr.message)
+          }
+        }
+        proxy.close()
+      }
+    }
+    val imageAnalysis = ImageAnalysis.Builder()
+      .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+      .setImageQueueDepth(1)
+      .build()
+      .also { it.setAnalyzer(cameraExecutor, analyzer) }
+
+    try {
+      val cameraProvider = provider.get()
+      cameraProvider.unbindAll()
+      camera.value = cameraProvider.bindToLifecycle(
+        lifecycleOwner,
+        CameraSelector.Builder().requireLensFacing(lensFacing.value).build(),
+        preview, capture, imageAnalysis
+      )
+    } catch (e: Exception) {
+      Log.e(TAG, "QuickCameraSheet: ${e.localizedMessage}")
+    }
   }
 
   fun takePhoto() {
@@ -218,72 +285,10 @@ fun QuickCameraSheet(
     } else {
       AndroidView(
         modifier = Modifier.fillMaxSize(),
-        factory = { ctx ->
-          PreviewView(ctx).apply {
-            scaleType = PreviewView.ScaleType.FILL_CENTER
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-            implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-          }
-        }
-      ) { previewView ->
-        val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
-
-        cameraProviderFuture?.addListener({
-          val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-          val detector: QrCodeDetector<GrayU8> = FactoryFiducial.qrcode(null, GrayU8::class.java)
-          val preview = Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
-          val capture = ImageCapture.Builder().build()
-          imageCapture.value = capture
-
-          // Mirrors QRCodeScanner.android.kt's approach of doing the actual detection work on
-          // Main via withApi (not the analyzer's own background executor thread), so Compose
-          // state reads/writes here are safe. The throttle below keeps Main-thread load well
-          // under what the always-on QR-only scanner already does per frame.
-          val analyzer = ImageAnalysis.Analyzer { proxy ->
-            withApi {
-              val now = System.currentTimeMillis()
-              if (now - lastAnalysisAt[0] < 350L || connecting.value) {
-                proxy.close()
-                return@withApi
-              }
-              lastAnalysisAt[0] = now
-              val gray = imageProxyToGrayU8(proxy)
-              if (gray != null) {
-                detector.process(gray)
-                val qr = detector.detections.firstOrNull()
-                if (qr != null && qr.message != null && qr.message != detectedRaw.value) {
-                  detectedRaw.value = qr.message
-                  detectedContent.value = classifyQrContent(qr.message)
-                }
-              }
-              proxy.close()
-            }
-          }
-          val imageAnalysis = ImageAnalysis.Builder()
-            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-            .setImageQueueDepth(1)
-            .build()
-            .also { it.setAnalyzer(cameraExecutor, analyzer) }
-
-          try {
-            cameraProviderFuture?.get()?.unbindAll()
-            val bound = cameraProviderFuture?.get()
-              ?.bindToLifecycle(lifecycleOwner, cameraSelector, preview, capture, imageAnalysis)
-            camera.value = bound
-          } catch (e: Exception) {
-            Log.e(TAG, "QuickCameraSheet: ${e.localizedMessage}")
-          }
-        }, ContextCompat.getMainExecutor(context))
-      }
-
-      CameraReticule(
-        pulse = reticulePulse.value,
-        // Lifted clear of the control row below (its top edge sits at
-        // BottomIslandBarClearance + 10.dp + 76.dp).
-        modifier = Modifier.align(Alignment.Center).padding(bottom = BottomIslandBarClearance + 96.dp)
+        factory = { previewView }
       )
 
-      // Bottom controls: gallery / shutter / torch in the classic camera row,
+      // Bottom controls: gallery / shutter / flip in the classic camera row,
       // lifted ABOVE the persistent island tab bar (one labeled bar on screen).
       // The labeled capsule island inherited from the modal era sat at the
       // modal's 16.dp bottom offset and landed behind the tab bar (#95).
@@ -301,20 +306,15 @@ fun QuickCameraSheet(
           onClick = { galleryLauncher.launch("image/*") }
         )
         CameraShutterButton(enabled = imageCapture.value != null) { takePhoto() }
-        // Cameras without a flash unit simply don't offer the toggle.
-        if (hasFlashUnit) {
-          CameraRoundControl(
-            icon = if (torchOn.value) MR.images.ic_bolt else MR.images.ic_bolt_off,
-            contentDescription = stringResource(MR.strings.quick_camera_torch),
-            active = torchOn.value,
-            onClick = {
-              val cam = camera.value ?: return@CameraRoundControl
-              val newState = !torchOn.value
-              cam.cameraControl.enableTorch(newState)
-              torchOn.value = newState
-            }
-          )
-        }
+        CameraRoundControl(
+          icon = MR.images.ic_flip_camera_android_filled,
+          contentDescription = stringResource(MR.strings.icon_descr_flip_camera),
+          onClick = {
+            lensFacing.value =
+              if (lensFacing.value == CameraSelector.LENS_FACING_BACK) CameraSelector.LENS_FACING_FRONT
+              else CameraSelector.LENS_FACING_BACK
+          }
+        )
       }
 
       // Universal QR routing: EVERY detected code surfaces its decoded
@@ -351,10 +351,33 @@ fun QuickCameraSheet(
         }
       }
 
-      // FB-16: composed LAST so the close button draws above the fullscreen
-      // camera preview - the PreviewView used to cover it entirely, leaving
-      // the granted path with no visible way out.
-      CameraTopBar(onClose)
+      // FB-16: composed LAST so the top bar draws above the fullscreen camera
+      // preview - the PreviewView used to cover it entirely, leaving the
+      // granted path with no visible way out. The torch lives in the top
+      // corner like every stock camera app, freeing the bottom row for the
+      // high-frequency controls (flip included).
+      CameraTopBar(
+        onClose,
+        // Cameras without a flash unit simply don't offer the toggle.
+        endControl = if (hasFlashUnit) ({
+          IconButton(
+            onClick = {
+              val cam = camera.value ?: return@IconButton
+              val newState = !torchOn.value
+              cam.cameraControl.enableTorch(newState)
+              torchOn.value = newState
+            },
+            modifier = Modifier.size(48.dp)
+          ) {
+            Icon(
+              painterResource(if (torchOn.value) MR.images.ic_bolt else MR.images.ic_bolt_off),
+              contentDescription = stringResource(MR.strings.quick_camera_torch),
+              tint = if (torchOn.value) AmberGold else CameraChromeTextSecondary,
+              modifier = Modifier.size(24.dp)
+            )
+          }
+        }) else null
+      )
     }
   }
 }

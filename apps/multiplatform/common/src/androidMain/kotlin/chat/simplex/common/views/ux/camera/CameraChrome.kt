@@ -30,8 +30,10 @@ import chat.simplex.res.MR
 // stays constructible in isolation per the views/ux layering rules.
 
 // Top bar: borderless close button + gold "Scan" title over a soft scrim.
+// [endControl] hosts the torch toggle in the top corner (stock-camera
+// pattern); the permission-denied branch renders the bar without it.
 @Composable
-fun CameraTopBar(onClose: () -> Unit) {
+fun CameraTopBar(onClose: () -> Unit, endControl: (@Composable () -> Unit)? = null) {
   Box(
     Modifier
       .fillMaxWidth()
@@ -57,6 +59,11 @@ fun CameraTopBar(onClose: () -> Unit) {
       letterSpacing = 1.5.sp,
       modifier = Modifier.align(Alignment.Center)
     )
+    if (endControl != null) {
+      Box(Modifier.align(Alignment.CenterEnd).padding(end = 4.dp)) {
+        endControl()
+      }
+    }
   }
 }
 
