@@ -233,24 +233,40 @@ class AppUpdater(
   }
 
   /**
-   * Silent, opt-in auto check (#79): the user must have enabled it in the
-   * updater section (default OFF - zero network at startup otherwise). Only
-   * stable releases are considered for auto-check; any failure or
-   * "already current" outcome is swallowed so a background check never
-   * bothers the user. A strictly newer stable is pushed both into [state]
-   * (visible if the updater section is open) and to [onUpdateAvailable].
+   * Silent auto check (#79, generalized for the launch notice #109): runs on the
+   * given [channel] (defaults to the historical STABLE-only behavior), silent on
+   * failure or "already current". A strictly newer release is pushed both into
+   * [state] (visible if the updater section is open) and to [onUpdateAvailable].
    */
-  fun autoCheckForUpdates(onUpdateAvailable: (AppUpdateCandidate) -> Unit) {
+  fun autoCheckForUpdates(
+    channel: UpdateChannel = UpdateChannel.STABLE,
+    onUpdateAvailable: (AppUpdateCandidate) -> Unit,
+  ) {
     if (_state.value != AppUpdateState.Idle) return
     scope.launch(Dispatchers.IO) {
       runCatching {
-        val rawJson = fetchReleasesJson() ?: return@launch
-        // Auto-check always uses STABLE channel regardless of user preference
-        val candidate = selectAppUpdateRelease(rawJson, UpdateChannel.STABLE, currentVersion) ?: return@launch
+        val rawJson = fetchReleasesJson() ?: run {
+          Log.d(TAG, "auto check ($channel): no releases JSON")
+          return@launch
+        }
+        val candidate = selectAppUpdateRelease(rawJson, channel, currentVersion) ?: run {
+          Log.d(TAG, "auto check ($channel): no newer release for $currentVersion")
+          return@launch
+        }
+        Log.d(TAG, "auto check ($channel): update available ${candidate.version}")
         _state.value = AppUpdateState.UpdateAvailable(candidate)
         onUpdateAvailable(candidate)
-      }
+      }.onFailure { Log.d(TAG, "auto check failed: ${it.message}") }
     }
+  }
+
+  /**
+   * #109: the user dismissed the launch notice for this version - remembered so it is
+   * not re-offered until a newer release appears, and the banner resets to Idle.
+   */
+  fun dismissNotice(version: String) {
+    UpdaterPrefs.setNoticeDismissedVersion(version)
+    _state.value = AppUpdateState.Idle
   }
 
   fun downloadUpdate() {

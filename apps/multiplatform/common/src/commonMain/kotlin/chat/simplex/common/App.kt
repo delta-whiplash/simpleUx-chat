@@ -38,6 +38,7 @@ import chat.simplex.common.views.newchat.*
 import chat.simplex.common.views.onboarding.*
 import chat.simplex.common.views.ux.SimpleUxSheetsHost
 import chat.simplex.common.views.ux.update.AppUpdater
+import chat.simplex.common.views.ux.update.UpdateNoticeBanner
 import chat.simplex.common.views.ux.update.provideAppUpdateInstaller
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.res.MR
@@ -108,6 +109,26 @@ fun MainScreen() {
   LaunchedEffect(chatModel.showAdvertiseLAUnavailableAlert.value) {
     if (chatModel.showAdvertiseLAUnavailableAlert.value) {
       laUnavailableInstructionAlert()
+    }
+  }
+  // #109: launch update notice - the always-on surface: checks the user's channel
+  // (STABLE or ROLLING) at most once per 24h, ~8s after start so the app settles
+  // first; silent on failure or offline. The dismissed-version memory lives in
+  // UpdaterPrefs. The #79 opt-in dialog below stays for users who enabled it.
+  val updateNotice = remember {
+    AppUpdater(CoroutineScope(Dispatchers.IO), provideAppUpdateInstaller(), BuildConfigCommon.ANDROID_VERSION_NAME)
+  }
+  LaunchedEffect(Unit) {
+    if (
+      appPlatform.isAndroid
+      && chatModel.controller.appPrefs.onboardingStage.get() == OnboardingStage.OnboardingComplete
+    ) {
+      delay(8_000)
+      val now = System.currentTimeMillis()
+      if (now - UpdaterPrefs.autoCheckLastAt() >= UPDATE_NOTICE_CHECK_INTERVAL_MS) {
+        UpdaterPrefs.setAutoCheckLastAt(now)
+        updateNotice.autoCheckForUpdates(UpdaterPrefs.updateChannel()) {}
+      }
     }
   }
   // #79: opt-in auto check, default OFF - zero GitHub calls at startup unless
@@ -195,6 +216,18 @@ fun MainScreen() {
             }
           } else {
             DesktopScreen(userPickerState)
+          }
+          // #109: launch update notice - a Mineral banner anchored above the island
+          // bar; renders nothing unless an update is available / in flight
+          if (appPlatform.isAndroid) {
+            UpdateNoticeBanner(
+              updateNotice,
+              Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, bottom = 76.dp)
+            )
           }
         }
       }
@@ -316,6 +349,9 @@ private fun DesktopOnboarding(onboarding: OnboardingStage, chatModel: ChatModel)
 }
 
 val ANDROID_CALL_TOP_PADDING = 40.dp
+
+/** #109: the launch update notice re-checks at most once a day */
+private const val UPDATE_NOTICE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000L
 
 @Composable
 fun AndroidWrapInCallLayout(content: @Composable () -> Unit) {
