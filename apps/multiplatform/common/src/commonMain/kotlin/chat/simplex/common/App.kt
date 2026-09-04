@@ -36,6 +36,7 @@ import chat.simplex.common.views.helpers.ModalManager.Companion.fromStartToEndTr
 import chat.simplex.common.views.localauth.VerticalDivider
 import chat.simplex.common.views.newchat.*
 import chat.simplex.common.views.onboarding.*
+import chat.simplex.common.views.ux.LocalUpdateNotice
 import chat.simplex.common.views.ux.SimpleUxSheetsHost
 import chat.simplex.common.views.ux.update.AppUpdater
 import chat.simplex.common.views.ux.update.UpdateNoticeBanner
@@ -210,24 +211,14 @@ fun MainScreen() {
               userPickerState.value = AnimatedViewState.VISIBLE
             }
           }
-          if (appPlatform.isAndroid) {
-            AndroidWrapInCallLayout {
-              AndroidScreen(userPickerState)
+          CompositionLocalProvider(LocalUpdateNotice provides updateNotice) {
+            if (appPlatform.isAndroid) {
+              AndroidWrapInCallLayout {
+                AndroidScreen(userPickerState)
+              }
+            } else {
+              DesktopScreen(userPickerState)
             }
-          } else {
-            DesktopScreen(userPickerState)
-          }
-          // #109: launch update notice - a Mineral banner anchored above the island
-          // bar; renders nothing unless an update is available / in flight
-          if (appPlatform.isAndroid) {
-            UpdateNoticeBanner(
-              updateNotice,
-              Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(start = 16.dp, end = 16.dp, bottom = 76.dp)
-            )
           }
         }
       }

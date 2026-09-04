@@ -56,6 +56,8 @@ import chat.simplex.common.views.usersettings.networkAndServers.NetworkAndServer
 import chat.simplex.common.views.ux.camera.QuickCameraPane
 import chat.simplex.common.views.ux.components.*
 import chat.simplex.common.views.ux.modals.*
+import chat.simplex.common.views.ux.update.AppUpdater
+import chat.simplex.common.views.ux.update.UpdateNoticeBanner
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
 import dev.icerock.moko.resources.StringResource
@@ -377,6 +379,12 @@ val LocalOpenProfileSwitcher = compositionLocalOf<(() -> Unit)?> { null }
  */
 val LocalServerRadarSheet = compositionLocalOf<(() -> Unit)?> { null }
 
+/**
+ * #109: the launch update notice ([AppUpdater] instance), provided by MainScreen and
+ * docked under the island bar by [SimpleUxTabHost]; null outside it (no notice).
+ */
+val LocalUpdateNotice = compositionLocalOf<AppUpdater?> { null }
+
 // Extracted verbatim from ChatListView.kt (issue #4): the tab-switch host of the chat-list screen.
 // The fork-owned state (current tab, search visibility, profile-switcher popup, quick-camera filter)
 // stays owned by the caller in ChatListView.kt and is passed in; only the CHATS tab content differs
@@ -449,30 +457,49 @@ fun SimpleUxTabHost(
       // #99: derived - reading searchText here directly recomposed the whole
       // tab-host shell on every keystroke.
       val showIslandBar by remember { derivedStateOf { keyboardState == KeyboardState.Closed && searchText.value.text.isEmpty() && !searchVisible.value } }
-      if (showIslandBar) {
-        TelegramBottomIslandBar(
-          currentTab = currentTab.value,
-          onSelectTab = { tab ->
-            ModalManager.start.closeModals()
-            currentTab.value = tab
-          },
-          onProfileLongClick = {
-            showProfileSwitcherPopup.value = true
-          },
-          userPickerState = userPickerState,
-          setPerformLA = setPerformLA,
-          onChatsClick = {
-            if (listState.firstVisibleItemIndex != 0) {
-              scope.launch { listState.animateScrollToItem(0) }
-            } else {
-              chatModel.activeChatTagFilter.value = null
-              searchText.value = TextFieldValue("")
+      // #109: the update notice is docked UNDER the island bar in the same bottom
+      // stack - its presence lifts the bar instead of floating over content
+      val updateNotice = LocalUpdateNotice.current
+      if (showIslandBar || updateNotice != null) {
+        Column(
+          Modifier
+            .zIndex(10f)
+            .align(Alignment.BottomCenter)
+            .navigationBarsPadding()
+            .padding(start = 20.dp, end = 20.dp)
+        ) {
+          if (showIslandBar) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+              TelegramBottomIslandBar(
+                currentTab = currentTab.value,
+                onSelectTab = { tab ->
+                  ModalManager.start.closeModals()
+                  currentTab.value = tab
+                },
+                onProfileLongClick = {
+                  showProfileSwitcherPopup.value = true
+                },
+                userPickerState = userPickerState,
+                setPerformLA = setPerformLA,
+                onChatsClick = {
+                  if (listState.firstVisibleItemIndex != 0) {
+                    scope.launch { listState.animateScrollToItem(0) }
+                  } else {
+                    chatModel.activeChatTagFilter.value = null
+                    searchText.value = TextFieldValue("")
+                  }
+                },
+                // #84: Scan is a tab now - the camera renders as QuickCameraPane in
+                // the tab host; the island item only needs to know it's available.
+                scanAvailable = appPlatform.isAndroid
+              )
             }
-          },
-          // #84: Scan is a tab now - the camera renders as QuickCameraPane in
-          // the tab host; the island item only needs to know it's available.
-          scanAvailable = appPlatform.isAndroid
-        )
+          }
+          if (updateNotice != null) {
+            // under the bar: its presence lifts the bar, nothing floats over content
+            UpdateNoticeBanner(updateNotice, Modifier.padding(top = 8.dp))
+          }
+        }
       }
 
       ProfileSwitcherOverlay(
@@ -576,12 +603,10 @@ fun BoxScope.TelegramBottomIslandBar(
   val isDark = isInDarkTheme()
   val shape = RoundedCornerShape(32.dp)
 
+  // #109: bottom placement (nav inset, z-order, horizontal margin) is owned by the
+  // bottom stack in SimpleUxTabHost so the update notice can dock under the bar.
   Box(
-    modifier = Modifier
-      .zIndex(10f)
-      .align(Alignment.BottomCenter)
-      .windowInsetsPadding(WindowInsets.navigationBars)
-      .padding(start = 20.dp, end = 20.dp, bottom = 2.dp),
+    modifier = Modifier,
     contentAlignment = Alignment.Center
   ) {
     Surface(
