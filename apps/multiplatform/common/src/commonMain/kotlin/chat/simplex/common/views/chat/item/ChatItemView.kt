@@ -1472,6 +1472,10 @@ private fun chatItemShape(roundness: Float, density: Density, tailVisible: Boole
   val ryMax = min(msgBubbleMaxRadius, height / 2)
   val rx = roundness * rxMax
   val ry = roundness * ryMax
+  // #113: the bottom corner adjacent to the sender side (bottom-left in shape space,
+  // mirrored for sent) is squashed for conversational directionality; the tail replaces
+  // it entirely when visible. Capped by the roundness preference so square settings stay square.
+  val senderCornerR = min(with(density) { 6.dp.toPx() }, min(rx, ry))
   val tailHeight = with(density) {
     min(
       msgTailMinHeightDp.toPx() + roundness * (msgTailMaxHeightDp.toPx() - msgTailMinHeightDp.toPx()),
@@ -1503,9 +1507,9 @@ private fun chatItemShape(roundness: Float, density: Density, tailVisible: Boole
       lineTo(msgTailWidth, ry)
     }
   } else {
-    lineTo(rx, height) // Bottom line
+    lineTo(senderCornerR, height) // Bottom line
     if (roundness > 0) {
-      quadraticBezierTo(0f, height, 0f, height - ry) // Bottom-left corner
+      quadraticBezierTo(0f, height, 0f, height - senderCornerR) // Bottom-left corner (sender-adjacent, smaller)
     }
     if (height > 2 * ry) {
       lineTo(0f, ry) // Left side
