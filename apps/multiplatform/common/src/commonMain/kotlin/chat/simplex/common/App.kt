@@ -38,6 +38,7 @@ import chat.simplex.common.views.newchat.*
 import chat.simplex.common.views.onboarding.*
 import chat.simplex.common.views.ux.LocalUpdateNotice
 import chat.simplex.common.views.ux.SimpleUxSheetsHost
+import chat.simplex.common.views.ux.call.IncomingCallOverlay
 import chat.simplex.common.views.ux.update.AppUpdater
 import chat.simplex.common.views.ux.update.UpdateNoticeBanner
 import chat.simplex.common.views.ux.update.provideAppUpdateInstaller
@@ -298,7 +299,7 @@ fun MainScreen() {
       }
     }
     val invitation = chatModel.activeCallInvitation.value
-    if (invitation != null) IncomingCallAlertView(invitation, chatModel)
+    if (invitation != null) IncomingCallOverlay(invitation, chatModel.callManager, chatModel)
     AlertManager.shared.showInView()
 
     LaunchedEffect(Unit) {
