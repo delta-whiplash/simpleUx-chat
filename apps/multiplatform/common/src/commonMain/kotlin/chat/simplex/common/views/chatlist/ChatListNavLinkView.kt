@@ -33,8 +33,6 @@ import chat.simplex.res.MR
 import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 
-import chat.simplex.common.views.ux.components.SwipeableChatCard
-
 // Spec: spec/client/chat-list.md#ChatListNavLinkView
 // #102: selection mode - when active, taps toggle the row and long-press no
 // longer opens the context menu (the transformed top bar hosts the actions).
@@ -86,15 +84,12 @@ fun ChatListNavLinkView(
     }
   }
 
-  // Swipe actions mirror the context menu affordances; star state is read from the model so
-  // the revealed action bar always reflects reality (issue #61).
-  val isStarred = chatModel.starredChatIds.contains(chat.id)
-  val toggleReadSupported = swipeToggleReadSupported(chat)
-  val toggleFavoriteSupported = swipeToggleFavoriteSupported(chat)
-
   // #102: in selection mode taps toggle instead of opening the chat
-  val effectiveClick: () -> Unit =
-    if (selectionActive && onToggleSelection != null) ({ onToggleSelection() }) else defaultClickAction
+  // #111: the tap lives on the layout's own combinedClickable now that the
+  // swipe card wrapper is gone, so every branch routes its open action
+  // through rowClick to keep the selection-mode toggle uniform.
+  fun rowClick(open: () -> Unit): () -> Unit =
+    if (selectionActive && onToggleSelection != null) ({ onToggleSelection() }) else open
   // long-press: enters selection on a normal list, toggles within it
   val effectiveLongClick: (() -> Unit)? = when {
     selectionActive && onToggleSelection != null -> ({ onToggleSelection() })
@@ -102,15 +97,6 @@ fun ChatListNavLinkView(
     else -> null
   }
 
-  SwipeableChatCard(
-    chat,
-    isStarred = isStarred,
-    onClick = effectiveClick,
-    onToggleRead = if (toggleReadSupported) ({ c ->
-      if (c.unreadTag || c.chatStats.unreadCount > 0) markChatRead(c) else markChatUnread(c, chatModel)
-    }) else null,
-    onToggleFavorite = if (toggleFavoriteSupported) ({ c -> chatModel.toggleStarChat(c.id) }) else null,
-  ) {
   when (chat.chatInfo) {
     is ChatInfo.Direct -> {
       ChatListNavLinkLayout(
@@ -119,7 +105,7 @@ fun ChatListNavLinkView(
             ChatPreviewView(chat, showChatPreviews, chatModel.draft.value, chatModel.draftChatId.value, chatModel.currentUser.value?.profile?.displayName, disabled, linkMode, inProgress = false, progressByTimeout = false, defaultClickAction)
           }
         },
-        click = defaultClickAction,
+        click = rowClick(defaultClickAction),
         dropdownMenuItems = {
           tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
             ContactMenuItems(chat, chat.chatInfo.contact, chatModel, showMenu, showMarkRead)
@@ -141,7 +127,7 @@ fun ChatListNavLinkView(
             ChatPreviewView(chat, showChatPreviews, chatModel.draft.value, chatModel.draftChatId.value, chatModel.currentUser.value?.profile?.displayName, disabled, linkMode, inProgress.value, progressByTimeout, defaultClickAction)
           }
         },
-        click = defaultClickAction,
+        click = rowClick(defaultClickAction),
         dropdownMenuItems = {
           tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
             GroupMenuItems(chat, chat.chatInfo.groupInfo, chatModel, showMenu, inProgress, showMarkRead)
@@ -163,7 +149,7 @@ fun ChatListNavLinkView(
             ChatPreviewView(chat, showChatPreviews, chatModel.draft.value, chatModel.draftChatId.value, chatModel.currentUser.value?.profile?.displayName, disabled, linkMode, inProgress = false, progressByTimeout = false, defaultClickAction)
           }
         },
-        click = defaultClickAction,
+        click = rowClick(defaultClickAction),
         dropdownMenuItems = {
           tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
             NoteFolderMenuItems(chat, showMenu, showMarkRead)
@@ -185,7 +171,7 @@ fun ChatListNavLinkView(
             ContactRequestView(chat.chatInfo)
           }
         },
-        click = { contactRequestAlertDialog(chat.remoteHostId, chat.chatInfo, chatModel) { onRequestAccepted(it) } },
+        click = rowClick({ contactRequestAlertDialog(chat.remoteHostId, chat.chatInfo, chatModel) { onRequestAccepted(it) } }),
         dropdownMenuItems = {
           tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
             ContactRequestMenuItems(chat.remoteHostId, contactRequestId = chat.chatInfo.apiId, chatModel, showMenu)
@@ -206,9 +192,9 @@ fun ChatListNavLinkView(
             ContactConnectionView(chat.chatInfo.contactConnection)
           }
         },
-        click = {
+        click = rowClick({
           chatModel.chatId.value = chat.id
-        },
+        }),
         dropdownMenuItems = {
           tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
             ContactConnectionMenuItems(chat.remoteHostId, chat.chatInfo, chatModel, showMenu)
@@ -229,9 +215,9 @@ fun ChatListNavLinkView(
             InvalidDataView()
           }
         },
-        click = {
+        click = rowClick({
           chatModel.chatId.value = chat.id
-        },
+        }),
         dropdownMenuItems = null,
         showMenu,
         disabled,
@@ -241,7 +227,6 @@ fun ChatListNavLinkView(
         selectionChecked,
         effectiveLongClick,
       )
-  }
   }
 }
 
@@ -748,24 +733,6 @@ private fun ArchiveAllReportsItemAction(showMenu: MutableState<Boolean>, archive
       showMenu.value = false
     }
   )
-}
-
-// Swipe actions are only offered where the chat context menu offers the same action
-// (no fake affordances): read/unread wherever the menu has it, favorite for contacts
-// and joined groups only.
-private fun swipeToggleReadSupported(chat: Chat): Boolean = when (val info = chat.chatInfo) {
-  is ChatInfo.Direct -> info.contact.activeConn != null
-  is ChatInfo.Group -> info.groupInfo.membership.memberStatus != GroupMemberStatus.MemInvited &&
-    info.groupInfo.membership.memberStatus != GroupMemberStatus.MemAccepted
-  is ChatInfo.Local -> true
-  else -> false
-}
-
-private fun swipeToggleFavoriteSupported(chat: Chat): Boolean = when (val info = chat.chatInfo) {
-  is ChatInfo.Direct -> info.contact.activeConn != null
-  is ChatInfo.Group -> info.groupInfo.membership.memberStatus != GroupMemberStatus.MemInvited &&
-    info.groupInfo.membership.memberStatus != GroupMemberStatus.MemAccepted
-  else -> false
 }
 
 fun markChatRead(c: Chat) {

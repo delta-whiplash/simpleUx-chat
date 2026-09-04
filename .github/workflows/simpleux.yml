@@ -83,7 +83,6 @@ jobs:
             "./components/QuickReactionsBar.kt"
             "./components/QuickRepliesBar.kt"
             "./components/SecurityBadge.kt"
-            "./components/SwipeableChatCard.kt"
             "./components/ThemeAnimation.kt"
             "./components/VoiceWaveformPlayer.kt"
             "./modals/QuickProfileSwitcher.kt"
@@ -103,7 +102,6 @@ jobs:
           echo "Checking for ChatModel singleton defaults..."
           # Same deal as the hex baseline above: tracked by issue #09, must only shrink.
           chatmodel_baseline=(
-            "./components/SwipeableChatCard.kt"
             "./components/FilterPillsRow.kt"
             "./modals/QuickProfileSwitcher.kt"
           )
