@@ -1,7 +1,9 @@
 package chat.simplex.common.views.ux
 
-import SectionDividerSpaced
 import SectionItemView
+import itemHPadding
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -13,7 +15,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -43,7 +47,14 @@ import chat.simplex.common.model.getTimestampText
 import chat.simplex.common.platform.InvitationLinksPrefs
 import chat.simplex.common.platform.chatModel
 import chat.simplex.common.ui.theme.DEFAULT_PADDING
+import chat.simplex.common.ui.theme.AmberGold
+import chat.simplex.common.ui.theme.GlassBorderDark
+import chat.simplex.common.ui.theme.GlassBorderLight
 import chat.simplex.common.ui.theme.HighOrLowlight
+import chat.simplex.common.ui.theme.Slate100
+import chat.simplex.common.ui.theme.Slate200
+import chat.simplex.common.ui.theme.Slate800
+import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.AlertManager
 import chat.simplex.common.views.helpers.ModalManager
 import chat.simplex.common.views.helpers.generalGetString
@@ -106,30 +117,49 @@ fun InvitationLinksSection() {
     if (expanded.value) {
       invites.forEachIndexed { index, chat ->
         val conn = (chat.chatInfo as ChatInfo.ContactConnection).contactConnection
-        if (index > 0) SectionDividerSpaced()
+        // #112: hairline inset separator - SectionDividerSpaced (section-level
+        // spacing: DEFAULT_PADDING + 18dp on each side) read as a hole between rows.
+        if (index > 0) {
+          Divider(
+            Modifier.padding(
+              start = itemHPadding + 36.dp + 12.dp,
+              end = itemHPadding
+            ),
+            color = MaterialTheme.colors.onBackground.copy(alpha = 0.08f)
+          )
+        }
         SectionItemView(click = {
           ModalManager.start.showModalCloseable(cardScreen = true) { close ->
             ContactConnectionInfoView(chatModel, chat.remoteHostId, conn.connLinkInv, conn, focusAlias = false, close = close)
           }
         }) {
           Row(verticalAlignment = Alignment.CenterVertically) {
+            // #112: same avatar treatment as NewChatButton rows in this sheet
+            // (36dp tinted circle + hairline rim + gold glyph) instead of a
+            // bespoke secondary-alpha bubble.
+            val isDark = isInDarkTheme()
             Box(
               modifier = Modifier
-                .size(40.dp)
+                .size(36.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colors.secondary.copy(alpha = 0.14f)),
+                .background(if (isDark) Slate800 else Slate100)
+                .border(
+                  BorderStroke(1.dp, if (isDark) GlassBorderDark else GlassBorderLight.copy(alpha = 0.35f)),
+                  CircleShape
+                ),
               contentAlignment = Alignment.Center
             ) {
               Icon(
                 Icons.Filled.Share, contentDescription = null,
-                tint = MaterialTheme.colors.secondary, modifier = Modifier.size(18.dp)
+                tint = AmberGold, modifier = Modifier.size(18.dp)
               )
             }
-            Column(Modifier.padding(horizontal = DEFAULT_PADDING).weight(1f)) {
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
               Text(
                 conn.localAlias.ifEmpty { generalGetString(MR.strings.display_name_invited_to_connect) },
                 maxLines = 1, overflow = TextOverflow.Ellipsis,
-                fontWeight = FontWeight.Bold
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Medium)
               )
               Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
