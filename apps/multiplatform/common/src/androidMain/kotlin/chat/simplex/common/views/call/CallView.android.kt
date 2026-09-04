@@ -345,9 +345,9 @@ private fun ActiveCallOverlayLayout(
 ) {
   val callBackgroundBrush = Brush.verticalGradient(
     colors = listOf(
-      Color(0xFF0F172A),
-      Color(0xFF080C14),
-      Color(0xFF020617)
+      Slate900,
+      SurfaceContainerLowestDark,
+      Slate950
     )
   )
 
@@ -359,7 +359,7 @@ private fun ActiveCallOverlayLayout(
     CallAppBar(
       title = {
         if (call.hasVideo) {
-          Text(call.contact.chatViewName, Modifier.offset(x = (-4).dp).padding(end = DEFAULT_PADDING), color = Color(0xFFF8FAFC), style = MaterialTheme.typography.h2, overflow = TextOverflow.Ellipsis, maxLines = 1)
+          Text(call.contact.chatViewName, Modifier.offset(x = (-4).dp).padding(end = DEFAULT_PADDING), color = Slate50, style = MaterialTheme.typography.h2, overflow = TextOverflow.Ellipsis, maxLines = 1)
         }
       },
       onBack = { chatModel.activeCallViewIsCollapsed.value = true }
@@ -381,7 +381,7 @@ private fun ActiveCallOverlayLayout(
             fontSize = 18.sp,
             boxSize = size,
             listIconSize = 30.dp,
-            iconColor = Color(0xFFF8FAFC),
+            iconColor = Slate50,
             background = controlButtonsBackground(),
             minWidth = 300.dp,
             onSelected = {
@@ -434,13 +434,13 @@ private fun ActiveCallOverlayLayout(
                       scaleY = pulseScale
                       alpha = pulseAlpha
                     }
-                    .background(Color(0xFFE2B755), CircleShape)
+                    .background(ChampagneGold, CircleShape)
                 )
               }
               ChatInfoImage(
                 ChatInfo.Direct(call.contact),
                 size = 120.dp,
-                iconColor = Color(0xFFE2B755)
+                iconColor = ChampagneGold
               )
             }
             AudioCallInfoView(call)
@@ -458,7 +458,7 @@ private fun ActiveCallOverlayLayout(
         Row(horizontalArrangement = Arrangement.spacedBy(padding), verticalAlignment = Alignment.CenterVertically) {
           ToggleMicButton(call, enabled, toggleAudio, size = size)
           SelectSoundDevice(size = size)
-          ControlButton(painterResource(MR.images.ic_call_end_filled), MR.strings.icon_descr_hang_up, enabled = enabled, dismiss, background = Color(0xFFDC2626), borderColor = Color(0x66EF4444), size = size, iconPaddingPercent = 0.166f)
+          ControlButton(painterResource(MR.images.ic_call_end_filled), MR.strings.icon_descr_hang_up, enabled = enabled, dismiss, background = Coral500, borderColor = Coral500.copy(alpha = 0.4f), size = size, iconPaddingPercent = 0.166f)
           if (call.localMediaSources.camera) {
             ControlButton(painterResource(MR.images.ic_flip_camera_android_filled), MR.strings.icon_descr_flip_camera, enabled, flipCamera, size = size)
             ControlButton(painterResource(MR.images.ic_videocam_filled), MR.strings.icon_descr_video_off, enabled, toggleVideo, size = size)
@@ -479,12 +479,12 @@ private fun ControlButton(
   enabled: Boolean = true,
   action: () -> Unit,
   background: Color = controlButtonsBackground(),
-  borderColor: Color = Color(0x26FFFFFF),
+  borderColor: Color = GlassBorderDark,
   size: Dp,
   iconPaddingPercent: Float = 0.2f
 ) {
   ControlButtonWrap(enabled, action, background, borderColor, size) {
-    Icon(icon, stringResource(iconText), tint = if (enabled) Color(0xFFF8FAFC) else MaterialTheme.colors.secondary, modifier = Modifier.padding(size * iconPaddingPercent).fillMaxSize())
+    Icon(icon, stringResource(iconText), tint = if (enabled) Slate50 else MaterialTheme.colors.secondary, modifier = Modifier.padding(size * iconPaddingPercent).fillMaxSize())
   }
 }
 
@@ -493,7 +493,7 @@ private fun ControlButtonWrap(
   enabled: Boolean = true,
   action: () -> Unit,
   background: Color = controlButtonsBackground(),
-  borderColor: Color = Color(0x26FFFFFF),
+  borderColor: Color = GlassBorderDark,
   size: Dp,
   content: @Composable () -> Unit
 ) {
@@ -536,7 +536,7 @@ private fun ToggleSoundButton(enabled: Boolean, speaker: Boolean, muted: Boolean
 }
 
 @Composable
-fun controlButtonsBackground(): Color = Color(0x26FFFFFF)
+fun controlButtonsBackground(): Color = GlassBorderDark
 
 @Composable
 fun AudioCallInfoView(call: Call) {
@@ -546,14 +546,14 @@ fun AudioCallInfoView(call: Call) {
   ) {
     Text(
       text = call.contact.chatViewName,
-      color = Color(0xFFF8FAFC),
+      color = Slate50,
       style = MaterialTheme.typography.h1.copy(fontSize = 24.sp, fontWeight = FontWeight.Bold),
       textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(6.dp))
     Text(
       text = call.callState.text,
-      color = Color(0xFF94A3B8),
+      color = Slate400,
       style = MaterialTheme.typography.body2.copy(fontSize = 14.sp),
       textAlign = TextAlign.Center
     )
@@ -562,8 +562,8 @@ fun AudioCallInfoView(call: Call) {
     val connInfoText = if (connInfo == null) "" else " • ${connInfo.text}"
     Surface(
       shape = RoundedCornerShape(50),
-      color = Color(0x2210B981),
-      border = BorderStroke(1.dp, Color(0x4410B981))
+      color = EmeraldGreen.copy(alpha = 0.13f),
+      border = BorderStroke(1.dp, EmeraldGreen.copy(alpha = 0.27f))
     ) {
       Row(
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 5.dp),
@@ -572,13 +572,13 @@ fun AudioCallInfoView(call: Call) {
         Icon(
           painter = painterResource(MR.images.ic_lock_filled),
           contentDescription = null,
-          tint = Color(0xFF10B981),
+          tint = EmeraldGreen,
           modifier = Modifier.size(12.dp)
         )
         Spacer(Modifier.width(5.dp))
         Text(
           text = "${call.encryptionStatus}$connInfoText",
-          color = Color(0xFF10B981),
+          color = EmeraldGreen,
           fontSize = 11.5.sp,
           fontWeight = FontWeight.SemiBold
         )
@@ -600,7 +600,7 @@ fun VideoCallInfoView(call: Call) {
 
 @Composable
 fun InfoText(text: String, modifier: Modifier = Modifier, style: TextStyle = MaterialTheme.typography.body2) =
-  Text(text, modifier, color = Color(0xFFFFFFD8), style = style)
+  Text(text, modifier, color = Slate100, style = style)
 
 @Composable
 private fun DisabledBackgroundCallsButton() {
@@ -703,7 +703,7 @@ fun CallPermissionsView(pipActive: Boolean, hasVideo: Boolean, cancel: () -> Uni
           painterResource(MR.images.ic_call_500),
           stringResource(MR.strings.permissions_record_audio),
           Modifier.size(22.dp),
-          tint = Color(0xFFFFFFD8)
+          tint = Slate100
         )
       }
       if (hasVideo && cameraPermission.status is PermissionStatus.Denied) {
@@ -711,7 +711,7 @@ fun CallPermissionsView(pipActive: Boolean, hasVideo: Boolean, cancel: () -> Uni
           painterResource(MR.images.ic_videocam),
           stringResource(MR.strings.permissions_camera),
           Modifier.size(22.dp),
-          tint = Color(0xFFFFFFD8)
+          tint = Slate100
         )
       }
     }
@@ -728,7 +728,7 @@ fun CallPermissionsView(pipActive: Boolean, hasVideo: Boolean, cancel: () -> Uni
             permissionsState.launchMultiplePermissionRequestWithFallback(buttonEnabled, context::showAllowPermissionInSettingsAlert)
           }
         }
-        Text(stringResource(MR.strings.permissions_grant), Modifier.fillMaxWidth().padding(horizontal = DEFAULT_PADDING), textAlign = TextAlign.Center, color = Color(0xFFFFFFD8))
+        Text(stringResource(MR.strings.permissions_grant), Modifier.fillMaxWidth().padding(horizontal = DEFAULT_PADDING), textAlign = TextAlign.Center, color = Slate100)
         SectionSpacer()
         SectionView {
           Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -748,7 +748,7 @@ fun CallPermissionsView(pipActive: Boolean, hasVideo: Boolean, cancel: () -> Uni
         Spacer(Modifier.weight(1f))
         Box(Modifier.fillMaxWidth().padding(bottom = DEFAULT_PADDING), contentAlignment = Alignment.Center) {
           SimpleButtonFrame(cancel, Modifier.height(60.dp)) {
-            Text(stringResource(MR.strings.call_service_notification_end_call), fontSize = 20.sp, color = Color(0xFFFFFFD8))
+            Text(stringResource(MR.strings.call_service_notification_end_call), fontSize = 20.sp, color = Slate100)
           }
         }
       }
