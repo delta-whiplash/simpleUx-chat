@@ -847,10 +847,14 @@ fun WebRTCView(callCommand: SnapshotStateList<WCallCommand>, onResponse: (WVAPIM
             )
             this.webChromeClient = object: WebChromeClient() {
               override fun onPermissionRequest(request: PermissionRequest) {
-                if (request.origin.toString().startsWith("file:/")) {
+                // The call page is reachable through two origins: the plain asset URL
+                // (file:/) and the WebViewAssetLoader https origin. Grant both, otherwise
+                // getUserMedia is silently refused and the in-call camera never starts.
+                val origin = request.origin.toString()
+                if (origin.startsWith("file:/") || origin.startsWith("https://appassets.androidplatform.net")) {
                   request.grant(request.resources)
                 } else {
-                  Log.d(TAG, "Permission request from webview denied.")
+                  Log.d(TAG, "Permission request from webview denied: $origin")
                   request.deny()
                 }
               }
