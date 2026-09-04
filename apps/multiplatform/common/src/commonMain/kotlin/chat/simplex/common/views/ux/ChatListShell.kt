@@ -426,12 +426,17 @@ fun SimpleUxTabHost(
             val bottomPadding = if (keyboardState == KeyboardState.Closed) 56.dp else 0.dp
             Box(Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(bottom = bottomPadding)) {
               Column(Modifier.fillMaxSize()) {
-                // #85: created one-time invitations live in the Contacts tab  - 
+                // #85: created one-time invitations live in the Contacts tab -
                 // the context where they are created and consumed - not at the
-                // bottom of Settings. Zero-state: renders nothing at all.
-                InvitationLinksSection()
+                // bottom of Settings. #112: rendered inside the sheet's list
+                // flow (below the invite actions) instead of pinned above it.
+                // Zero-state: renders nothing at all.
                 val modalData = remember { ModalData() }
-                modalData.NewChatSheet(rh = chatModel.currentRemoteHost.value, close = { currentTab.value = SimpleUxTab.CHATS })
+                modalData.NewChatSheet(
+                  rh = chatModel.currentRemoteHost.value,
+                  invitationsSection = { InvitationLinksSection() },
+                  close = { currentTab.value = SimpleUxTab.CHATS }
+                )
               }
             }
           }

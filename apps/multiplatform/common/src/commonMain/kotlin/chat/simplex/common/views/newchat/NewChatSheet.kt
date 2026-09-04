@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
+fun ModalData.NewChatSheet(rh: RemoteHostInfo?, invitationsSection: (@Composable () -> Unit)? = null, close: () -> Unit) {
   DisposableEffect(Unit) {
     onDispose {
       connectProgressManager.cancelConnectProgress()
@@ -82,6 +82,7 @@ fun ModalData.NewChatSheet(rh: RemoteHostInfo?, close: () -> Unit) {
           ModalManager.start.showCustomModal { closeChannel -> AddChannelView(chatModel, chatModel.currentRemoteHost.value, closeChannel, closeAll) }
         },
         rh = rh,
+        invitationsSection = invitationsSection,
         close = close
       )
     }
@@ -116,6 +117,7 @@ private fun filterContactTypes(c: List<Chat>, contactTypes: List<ContactType>): 
 @Composable
 private fun ModalData.NewChatSheetLayout(
   rh: RemoteHostInfo?,
+  invitationsSection: (@Composable () -> Unit)? = null,
   addContact: () -> Unit,
   scanPaste: () -> Unit,
   createGroup: () -> Unit,
@@ -387,6 +389,12 @@ private fun ModalData.NewChatSheetLayout(
       }
       item {
         DeletedChatsItem(actionButtonsOriginal)
+      }
+      // #112: created one-time invitations render in the list flow (below the
+      // invite actions), not pinned above the whole sheet where they used to
+      // overlap the status bar.
+      if (invitationsSection != null) {
+        item { invitationsSection() }
       }
       item {
         if (filteredContactChats.isNotEmpty() && searchText.value.text.isEmpty()) {

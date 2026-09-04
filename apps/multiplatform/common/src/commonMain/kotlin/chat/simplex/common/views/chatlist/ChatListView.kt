@@ -85,7 +85,7 @@ private fun showNewChatSheet(oneHandUI: State<Boolean>) {
           close()
         }
       }
-      NewChatSheet(rh = chatModel.currentRemoteHost.value, close)
+      NewChatSheet(rh = chatModel.currentRemoteHost.value, close = close)
       DisposableEffect(Unit) {
         onDispose {
           chatModel.newChatSheetVisible.value = false
