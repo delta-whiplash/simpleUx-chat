@@ -1403,11 +1403,8 @@
     <string name="add_contact_button_to_create_link_or_connect_via_link"><![CDATA[<b>Přidat kontakt</b>: vytvořit novou pozvánku nebo připojit přes odkaz, který jste obdrželi.]]></string>
     <string name="new_chat">Nový chat</string>
     <string name="creating_link">Vytvořit odkaz…</string>
-    <string name="keep_invitation_link">Ponechat</string>
-    <string name="keep_unused_invitation_question">Ponechat nepoužitou pozvánku?</string>
     <string name="or_scan_qr_code">Nebo skenovat QR kód</string>
     <string name="or_show_this_qr_code">Nebo ukázat tento kód</string>
-    <string name="you_can_view_invitation_link_again">Pozvánku můžete znovu zobrazit v detailech připojení.</string>
     <string name="invalid_qr_code">Neplatný QR kód</string>
     <string name="retry_verb">Zkusit znovu</string>
     <string name="share_this_1_time_link">Sdílejte tento jedorázový odkaz</string>

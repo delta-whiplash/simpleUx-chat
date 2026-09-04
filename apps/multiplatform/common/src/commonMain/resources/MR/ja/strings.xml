@@ -1323,11 +1323,9 @@
     <string name="found_desktop">デスクトップの検出</string>
     <string name="error_showing_message">メッセージ表示エラー</string>
     <string name="link_a_mobile">モバイルにリンク</string>
-    <string name="keep_unused_invitation_question">未使用の招待状を保持？</string>
     <string name="invalid_name">不正な名前！</string>
     <string name="invalid_qr_code">不正なQRコード</string>
     <string name="non_content_uri_alert_title">不正なファイルパス</string>
-    <string name="keep_invitation_link">保持</string>
     <string name="v5_4_link_mobile_desktop">モバイルとデスクトップのアプリを接続！</string>
     <string name="linked_desktop_options">接続済のデスクトップのオプション</string>
     <string name="linked_desktops">接続済のデスクトップ</string>
@@ -1374,7 +1372,6 @@
     <string name="correct_name_to">正しい名前は%s？</string>
     <string name="not_compatible">非互換です！</string>
     <string name="waiting_for_mobile_to_connect">モバイルの接続を待機中:</string>
-    <string name="you_can_view_invitation_link_again">招待リンクは接続の詳細設定画面で再表示できます。</string>
     <string name="remove_member_button">メンバーの削除</string>
     <string name="start_chat_question">チャットを開始？</string>
     <string name="block_member_confirmation">ブロック</string>

@@ -1347,7 +1347,6 @@
     <string name="files_and_media_not_allowed">不允許檔案和媒體</string>
     <string name="forward_message">轉發訊息…</string>
     <string name="creating_link">建立連結中…</string>
-    <string name="keep_invitation_link">保留</string>
     <string name="profile_update_event_contact_name_changed">聯絡人名稱從 %1$s 變更為 %2$s</string>
     <string name="receipts_contacts_disable_keep_overrides">停用（保留覆蓋）</string>
     <string name="share_text_message_status">訊息狀態：%s</string>
@@ -1524,7 +1523,6 @@
     <string name="keep_conversation">保留對話</string>
     <string name="delete_without_notification">不通知刪除</string>
     <string name="invalid_qr_code">無效的 QR 圖碼</string>
-    <string name="keep_unused_invitation_question">保留未使用的邀請嗎？</string>
     <string name="receipts_contacts_title_disable">停用回執？</string>
     <string name="receipts_contacts_title_enable">啟用回執？</string>
     <string name="cant_call_contact_connecting_wait_alert_text">正在連接聯絡人，請等待或稍後檢查！</string>
@@ -2206,7 +2204,6 @@
     <string name="scan_paste_link">貼上連結 / 掃描</string>
     <string name="switching_profile_error_title">切換個人檔案時發生錯誤</string>
     <string name="switching_profile_error_message">你的連線已移至 %s，但切換個人檔案時發生錯誤。</string>
-    <string name="you_can_view_invitation_link_again">你可以在連線詳細資料中再次查看邀請連結。</string>
     <string name="share_this_1_time_link">分享這個一次性邀請連結</string>
     <string name="the_text_you_pasted_is_not_a_link">你貼上的文字不是 SimpleX 連結。</string>
     <string name="tap_to_paste_link">點選貼上連結</string>

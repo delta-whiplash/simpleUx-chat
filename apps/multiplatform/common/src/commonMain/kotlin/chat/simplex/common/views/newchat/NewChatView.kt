@@ -40,6 +40,7 @@ import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.chat.item.CIFileViewScope
 import chat.simplex.common.views.chat.topPaddingToContent
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.isCreatedInvitationChat
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.common.BuildConfigCommon
 import chat.simplex.res.MR
@@ -64,7 +65,9 @@ fun ModalData.NewChatView(rh: RemoteHostInfo?, selection: NewChatOption, showQRC
       && contactConnection.value == null
       && !creatingConnReq.value
     ) {
-      createInvitation(rh?.remoteHostId, creatingConnReq, connLinkInvitation, contactConnection)
+      if (!adoptUnsharedInvitation(rh?.remoteHostId, contactConnection)) {
+        createInvitation(rh?.remoteHostId, creatingConnReq, connLinkInvitation, contactConnection)
+      }
     }
   }
   DisposableEffect(Unit) {
@@ -72,27 +75,13 @@ fun ModalData.NewChatView(rh: RemoteHostInfo?, selection: NewChatOption, showQRC
       /** When [AddContactLearnMore] is open, we don't need to drop [ChatModel.showingInvitation].
        * Otherwise, it will be called here AFTER [AddContactLearnMore] is launched and will clear the value too soon.
        * It will be dropped automatically when connection established or when user goes away from this screen.
+       * SimpleUX #112: the invitation is now always kept silently; if its link already left
+       * the device it is recorded so the Contacts tab never re-adopts it (one-time semantics).
        **/
       if (chatModel.showingInvitation.value != null && ModalManager.start.openModalCount() <= 1) {
-        val conn = contactConnection.value
-        if (chatModel.showingInvitation.value?.connChatUsed == false && conn != null) {
-          AlertManager.shared.showAlertDialog(
-            title = generalGetString(MR.strings.keep_unused_invitation_question),
-            text = generalGetString(MR.strings.you_can_view_invitation_link_again),
-            confirmText = generalGetString(MR.strings.delete_verb),
-            dismissText = generalGetString(MR.strings.keep_invitation_link),
-            destructive = true,
-            onConfirm = {
-              withBGApi {
-                val chatInfo = ChatInfo.ContactConnection(conn)
-                controller.deleteChat(Chat(remoteHostId = rh?.remoteHostId, chatInfo = chatInfo, chatItems = listOf()))
-                if (chatModel.chatId.value == chatInfo.id) {
-                  chatModel.chatId.value = null
-                  ModalManager.start.closeModals()
-                }
-              }
-            }
-          )
+        val shown = chatModel.showingInvitation.value
+        if (shown != null && shown.connChatUsed == true) {
+          InvitationLinksPrefs.markShared(shown.connId)
         }
         chatModel.showingInvitation.value = null
       }
@@ -820,6 +809,25 @@ private fun createInvitation(
       }
     }
   }
+}
+
+// SimpleUX (#112): opening the INVITE tab re-serves the existing created invitation
+// that was never shared instead of creating a new link every time, so idly opening
+// the sheet cannot pile up identical "invited to connect" chats. Links known to
+// have been shared are never adopted again - one-time semantics are preserved.
+private fun adoptUnsharedInvitation(rhId: Long?, contactConnection: MutableState<PendingContactConnection?>): Boolean {
+  val sharedIds = InvitationLinksPrefs.loadSharedIds()
+  val candidate = chatModel.chats.value
+    .filter { isCreatedInvitationChat(it) }
+    .mapNotNull { c -> (c.chatInfo as? ChatInfo.ContactConnection)?.let { c to it.contactConnection } }
+    .filter { (chat, conn) -> chat.remoteHostId == rhId && conn.pccConnStatus is ConnStatus.New && conn.connLinkInv != null && chat.id !in sharedIds }
+    .maxByOrNull { (_, conn) -> conn.createdAt }
+    ?: return false
+  val conn = candidate.second
+  val connLink = conn.connLinkInv ?: return false
+  chatModel.showingInvitation.value = ShowingInvitation(connId = conn.id, connLink = connLink, connChatUsed = false, conn = conn)
+  contactConnection.value = conn
+  return true
 }
 
 fun strIsSimplexLink(str: String): Boolean {

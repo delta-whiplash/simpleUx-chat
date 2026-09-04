@@ -477,7 +477,6 @@
     <string name="feature_off">isključeno</string>
     <string name="voice_prohibited_in_this_chat">Glasovne poruke su zabranjene u ovom razgovoru.</string>
     <string name="mute_chat">Isključiti zvuk</string>
-    <string name="keep_invitation_link">Zadržati</string>
     <string name="sync_connection_confirm">Popraviti</string>
     <string name="clear_chat_question">Očistiti razgovor?</string>
     <string name="clear_note_folder_question">Očistiti privatne beleške?</string>
@@ -826,7 +825,6 @@
     <string name="paste_the_link_you_received">Nalepiti link koji ste primili</string>
     <string name="rate_the_app">Oceniti aplikaciju</string>
     <string name="no_unread_chats">Nema nepročitanih razgovora</string>
-    <string name="keep_unused_invitation_question">Sačuvati neiskorišćenu pozivnicu?</string>
     <string name="voice_message_send_text">Glasovna poruka…</string>
     <string name="connect_use_current_profile">Koristiti trenutni profil</string>
     <string name="paste_link">Nalepiti link</string>

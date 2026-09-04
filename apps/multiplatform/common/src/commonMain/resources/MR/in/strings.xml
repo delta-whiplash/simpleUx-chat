@@ -755,9 +755,6 @@
     <string name="back">Kembali</string>
     <string name="learn_more">Lebih lanjut</string>
     <string name="or_scan_qr_code">Atau pindai kode QR</string>
-    <string name="keep_invitation_link">Simpan</string>
-    <string name="keep_unused_invitation_question">Simpan undangan tidak terpakai?</string>
-    <string name="you_can_view_invitation_link_again">Anda dapat melihat tautan undangan lagi dalam detail koneksi.</string>
     <string name="simplex_address">Alamat SimpleX</string>
     <string name="or_show_this_qr_code">Atau perlihatkan kode ini</string>
     <string name="scan_code_from_contacts_app">Pindai kode keamanan dari aplikasi kontak Anda.</string>

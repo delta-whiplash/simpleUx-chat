@@ -713,7 +713,6 @@
     <string name="icon_descr_settings">Configuració</string>
     <string name="icon_descr_more_button">Més</string>
     <string name="simplex_address_and_1_time_links_are_safe_to_share">Compartir els enllaços d\'un sol ús i les adreces de SimpleX és segur a través de qualsevol mitjà.</string>
-    <string name="keep_invitation_link">Desa</string>
     <string name="retry_verb">Torna-ho a provar</string>
     <string name="simplex_address">Adreça de SimpleX</string>
     <string name="save_servers_button">Desa</string>
@@ -1704,7 +1703,6 @@
     <string name="connect__your_profile_will_be_shared">El teu perfil %1$s es compartirà.</string>
     <string name="you_will_be_connected_when_your_contacts_device_is_online">Et connectaràs quan el dispositiu del teu contacte estigui en línia, si us plau, espera o consulta més tard!</string>
     <string name="you_wont_lose_your_contacts_if_delete_address">Si més tard decideixes eliminar la teva adreça els contactes no es perdran.</string>
-    <string name="keep_unused_invitation_question">Mantenir la invitació no utilitzada?</string>
     <string name="new_chat">Nou xat</string>
     <string name="no_filtered_contacts">No hi ha contactes filtrats</string>
     <string name="one_time_link">Enllaç d\'invitació d\'un sol ús</string>
@@ -1719,7 +1717,6 @@
     <string name="code_you_scanned_is_not_simplex_link_qr_code">El codi QR que heu escanejat no és un enllaç de SimpleX.</string>
     <string name="the_text_you_pasted_is_not_a_link">El text enganxat no és un enllaç SimpleX.</string>
     <string name="this_string_is_not_a_connection_link">Aquesta cadena no és un enllaç de connexió!</string>
-    <string name="you_can_view_invitation_link_again">Podeu tornar a veure l\'enllaç d\'invitació als detalls de connexió.</string>
     <string name="switching_profile_error_message">La connexió s\'ha mogut a %s però s\'ha produït un error en canviar de perfil.</string>
     <string name="mark_code_verified">Marcar com a verificat</string>
     <string name="scan_code_from_contacts_app">Escaneja el codi de seguretat des de l\'aplicació del teu contacte.</string>

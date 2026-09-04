@@ -397,7 +397,6 @@
     <string name="switch_receiving_address_question">Schimbi adresa de primire?</string>
     <string name="alert_title_contact_connection_pending">Contactul nu este conectat încă!</string>
     <string name="connect_via_link">Conectare prin link</string>
-    <string name="you_can_view_invitation_link_again">Puteți vedea din nou linkul de invitație în detaliile conexiunii.</string>
     <string name="your_chat_profiles">Profilurile tale de conversație</string>
     <string name="create_chat_profile">Creează un profil de conversație</string>
     <string name="callstatus_ended">apel încheiat %1$s</string>
@@ -768,7 +767,6 @@
     <string name="delete_report">Ștergeți raportul</string>
     <string name="forward_multiple">Redirecționați mesajele…</string>
     <string name="only_delete_conversation">Șterge doar conversația</string>
-    <string name="keep_unused_invitation_question">Păstrezi invitația nefolosită?</string>
     <string name="display_name">Introdu numele tău:</string>
     <string name="permissions_grant">Acordați permisiunea (permisiunile) de a efectua apeluri</string>
     <string name="onboarding_notifications_mode_battery">Notificări și baterie</string>
@@ -1297,7 +1295,6 @@
     <string name="from_gallery_button">Din Galerie</string>
     <string name="gallery_image_button">Imagine</string>
     <string name="full_link_button_text">Link complet</string>
-    <string name="keep_invitation_link">Păstrează</string>
     <string name="or_show_this_qr_code">Sau arată acest cod</string>
     <string name="switching_profile_error_title">Eroare la schimbarea profilului</string>
     <string name="no_filtered_contacts">Nicio persoană de contact filtrată</string>

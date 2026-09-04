@@ -1400,8 +1400,6 @@
     <string name="code_you_scanned_is_not_simplex_link_qr_code">你扫描的码不是 SimpleX 链接的二维码。</string>
     <string name="the_text_you_pasted_is_not_a_link">你粘贴的文本不是 SimpleX 链接。</string>
     <string name="enable_camera_access">启用相机访问</string>
-    <string name="you_can_view_invitation_link_again">你可以在连接详情中再次查看邀请链接。</string>
-    <string name="keep_unused_invitation_question">保留未使用的邀请吗？</string>
     <string name="share_this_1_time_link">分享此一次性邀请链接</string>
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>建群</b>: 来建立新群。]]></string>
     <string name="recent_history">可见的历史</string>
@@ -1412,7 +1410,6 @@
     <string name="or_scan_qr_code">或者扫描二维码</string>
     <string name="invalid_qr_code">无效的二维码</string>
     <string name="tap_to_scan">轻按扫描</string>
-    <string name="keep_invitation_link">保留</string>
     <string name="tap_to_paste_link">轻按粘贴链接</string>
     <string name="search_or_paste_simplex_link">搜索或粘贴 SimpleX 链接</string>
     <string name="chat_is_stopped_you_should_transfer_database">聊天已停止。如果你已经在另一台设备商使用过此数据库，你应该在启动聊天前将数据库传输回来。</string>

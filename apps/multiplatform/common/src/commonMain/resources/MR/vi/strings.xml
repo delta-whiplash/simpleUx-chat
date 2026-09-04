@@ -954,7 +954,6 @@
     <string name="v5_2_fix_encryption">Giữ lại các kết nối của bạn</string>
     <string name="v5_2_disappear_one_message">Làm cho một tin nhắn biến mất</string>
     <string name="live_message">Tin nhắn động!</string>
-    <string name="keep_unused_invitation_question">Giữ lại lời mời chưa sử dụng?</string>
     <string name="invite_friends">Mời bạn bè</string>
     <string name="mark_code_verified">Đánh dấu đã xác thực</string>
     <string name="alert_text_skipped_messages_it_can_happen_when">Điều này có thể xảy ra khi:\n1. Tin nhắn hết hạn sau 2 ngày trên máy gửi hoặc sau 30 ngày trên máy chủ.\n2. Quá trình giải mã tin nhắn thất bại do bạn hoặc liên hệ của bạn sử dụng bản sao lưu cơ sở dữ liệu cũ.\n3. Kết nối bị xâm phạm.</string>
@@ -971,7 +970,6 @@
     <string name="message_reactions_are_prohibited">Thả biểu tượng cảm xúc tin nhắn bị cấm.</string>
     <string name="display_name_invited_to_connect">đã được mời để kết nối</string>
     <string name="learn_more">Tìm hiểu thêm</string>
-    <string name="keep_invitation_link">Giữ</string>
     <string name="leave_group_button">Rời</string>
     <string name="auth_log_in_using_credential">Đăng nhập bằng thông tin xác thực của bạn</string>
     <string name="message_delivery_error_title">Lỗi chuyển gửi tin nhắn</string>
@@ -2105,7 +2103,6 @@
     <string name="snd_conn_event_switch_queue_phase_completed">bạn đã thay đổi địa chỉ</string>
     <string name="connect_plan_you_have_already_requested_connection_via_this_address">Bạn đã yêu cầu kết nối thông qua địa chỉ này rồi!</string>
     <string name="you_invited_a_contact">Bạn đã mời một liên hệ</string>
-    <string name="you_can_view_invitation_link_again">Bạn có thể xem đường dẫn mời lần nữa trong chi tiết kết nối.</string>
     <string name="observer_cant_send_message_title">bạn là quan sát viên</string>
     <string name="you_can_share_this_address_with_your_contacts">Bạn có thể chia sẻ địa chỉ này với các liên hệ của mình để họ kết nối với %s.</string>
     <string name="you_need_to_allow_to_send_voice">Bạn cần cho phép liên hệ của mình gửi tin nhắn thoại để có thể gửi cho họ.</string>

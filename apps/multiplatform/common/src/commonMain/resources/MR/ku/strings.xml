@@ -128,8 +128,6 @@
     <string name="new_chat_share_profile">Profîlê parve bike</string>
     <string name="switching_profile_error_title">Profîl nikarîbû were guhertin</string>
     <string name="or_scan_qr_code">Yan jî koda QRyê skan bike</string>
-    <string name="keep_unused_invitation_question">Dewetiya neşuxulandî bihêle?</string>
-    <string name="keep_invitation_link">Bihêle</string>
     <string name="creating_link">Lînk tê çêkirin…</string>
     <string name="retry_verb">Dîsa biceribîne</string>
     <string name="share_this_1_time_link">Vê lînka 1-carê parve bike</string>

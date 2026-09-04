@@ -928,9 +928,6 @@
   <string name="switching_profile_error_title">Error switching profile</string>
   <string name="switching_profile_error_message">Your connection was moved to %s but an error happened when switchig profile.</string>
   <string name="or_scan_qr_code">Or scan QR code</string>
-  <string name="keep_unused_invitation_question">Keep unused invitation?</string>
-  <string name="you_can_view_invitation_link_again">You can view invitation link again in connection details.</string>
-  <string name="keep_invitation_link">Keep</string>
   <string name="creating_link">Creating link…</string>
   <string name="retry_verb">Retry</string>
   <string name="share_this_1_time_link">Share this 1-time invite link</string>
@@ -3229,7 +3226,7 @@
   <string name="unpin_chat">Unpin</string>
 
   <!-- FB-12/13: settings section managing created one-time invitation links -->
-  <string name="invites_section_title">Invitation links</string>
+  <string name="invites_section_title">Invitation links (%d)</string>
   <string name="invites_status_available">Available</string>
   <string name="invites_status_connecting">Connecting</string>
   <string name="invites_status_expired">Expired</string>

@@ -295,9 +295,6 @@
     <string name="you_can_connect_to_simplex_chat_founder"><![CDATA[Jūs varat sazināties ar SimpleX čata dibinātāju]]></string>
     <string name="to_start_a_new_chat_help_header">Lai sāktu jaunu čatu, palīdzības virsraksts</string>
     <string name="chat_help_tap_button">Čata palīdzības pieskāriena poga</string>
-    <string name="keep_unused_invitation_question">Saglabāt neizmantoto uzaicinājuma jautājumu</string>
-    <string name="you_can_view_invitation_link_again">Jūs varat vēlreiz apskatīt uzaicinājuma saiti</string>
-    <string name="keep_invitation_link">Saglabāt uzaicinājuma saiti</string>
     <string name="creating_link">Izveido saiti</string>
     <string name="retry_verb">Mēģināt vēlreiz</string>
     <string name="share_this_1_time_link">Kopīgojiet šo vienreizējo saiti</string>

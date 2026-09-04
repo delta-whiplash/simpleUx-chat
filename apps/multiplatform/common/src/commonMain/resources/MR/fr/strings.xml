@@ -1416,8 +1416,6 @@
     <string name="code_you_scanned_is_not_simplex_link_qr_code">Le code scanné n\'est pas un code QR de lien SimpleX.</string>
     <string name="the_text_you_pasted_is_not_a_link">Le texte collé n\'est pas un lien SimpleX.</string>
     <string name="enable_camera_access">Autoriser l\'accès à la caméra</string>
-    <string name="you_can_view_invitation_link_again">Vous pouvez à nouveau consulter le lien d\'invitation dans les détails de la connexion.</string>
-    <string name="keep_unused_invitation_question">Conserver l\'invitation inutilisée ?</string>
     <string name="share_this_1_time_link">Partagez ce lien d\'invitation unique</string>
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>Créer un groupe</b> : pour créer un nouveau groupe.]]></string>
     <string name="recent_history">Historique visible</string>
@@ -1428,7 +1426,6 @@
     <string name="or_scan_qr_code">Ou scanner le code QR</string>
     <string name="invalid_qr_code">Code QR invalide</string>
     <string name="tap_to_scan">Appuyez pour scanner</string>
-    <string name="keep_invitation_link">Conserver</string>
     <string name="tap_to_paste_link">Appuyez pour coller le lien</string>
     <string name="search_or_paste_simplex_link">Rechercher ou coller un lien SimpleX</string>
     <string name="chat_is_stopped_you_should_transfer_database">Le chat est arrêté. Si vous avez déjà utilisé cette base de données sur un autre appareil, vous devez la transférer à nouveau avant de démarrer le chat.</string>
@@ -2488,4 +2485,10 @@
 	<string name="chat_folders_delete_confirm_text">Le dossier sera retiré de votre liste de discussions. Les discussions ne sont pas supprimées.</string>
 	<string name="chat_folders_none_yet">Aucun dossier personnalisé - créez-en un dans Réglages → Dossiers de discussion.</string>
 	<string name="add_to_folder">Ajouter au dossier</string>
+	<string name="invites_section_title">Liens d\'invitation (%d)</string>
+	<string name="invites_status_available">Disponible</string>
+	<string name="invites_status_connecting">Connexion</string>
+	<string name="invites_status_expired">Expiré</string>
+	<string name="invites_delete_confirm_title">Supprimer ce lien ?</string>
+	<string name="invites_delete_confirm_text">Le lien cessera de fonctionner et sa conversation sera supprimée.</string>
 </resources>

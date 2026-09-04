@@ -1484,8 +1484,6 @@
     <string name="code_you_scanned_is_not_simplex_link_qr_code">Der von Ihnen gescannte Code ist kein SimpleX-Link-QR-Code.</string>
     <string name="the_text_you_pasted_is_not_a_link">Der von Ihnen eingefügte Text ist kein SimpleX-Link.</string>
     <string name="enable_camera_access">Kamera-Zugriff aktivieren</string>
-    <string name="you_can_view_invitation_link_again">Den Einladungslink können Sie in den Details der Verbindung nochmals sehen.</string>
-    <string name="keep_unused_invitation_question">Nicht genutzte Einladung behalten?</string>
     <string name="share_this_1_time_link">Teilen Sie diesen Einmal-Einladungslink</string>
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>Gruppe erstellen</b>: Um eine neue Gruppe zu erstellen.]]></string>
     <string name="recent_history">Sichtbarer Nachrichtenverlauf</string>
@@ -1496,7 +1494,6 @@
     <string name="or_scan_qr_code">Oder den QR-Code scannen</string>
     <string name="invalid_qr_code">Ungültiger QR-Code</string>
     <string name="tap_to_scan">Zum Scannen tippen</string>
-    <string name="keep_invitation_link">Behalten</string>
     <string name="tap_to_paste_link">Tippen, um den Link einzufügen</string>
     <string name="search_or_paste_simplex_link">Suchen oder SimpleX-Link einfügen</string>
     <string name="chat_is_stopped_you_should_transfer_database">Der Chat wurde gestoppt. Wenn diese Datenbank bereits auf einem anderen Gerät von Ihnen verwendet wurde, sollten Sie diese dorthin zurück übertragen, bevor Sie den Chat starten.</string>

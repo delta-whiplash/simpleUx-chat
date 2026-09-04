@@ -818,7 +818,6 @@
     <string name="deleted_chats">Conversas eliminadas</string>
     <string name="your_simplex_contact_address">O seu endereço SimpleX</string>
     <string name="your_chat_profiles">Os seus perfis de conversa</string>
-    <string name="you_can_view_invitation_link_again">Você pode ver a ligação de convite outra vez nos detalhes da ligação.</string>
     <string name="app_check_for_updates_download_started">A transferir atualização da app, não feche a aplicação</string>
     <string name="app_check_for_updates_button_download">Transferir %s (%s)</string>
     <string name="your_ICE_servers">Os seus servidores ICE</string>

@@ -1057,9 +1057,7 @@
     <string name="joining_group">Συμμετοχή στη ομάδα</string>
     <string name="connect_plan_join_your_group">Θέλεις να συμμετάσχεις στην ομάδα σου;</string>
     <string name="thousand_abbreviation">χ</string>
-    <string name="keep_invitation_link">Διατήρηση</string>
     <string name="keep_conversation">Διατήρηση συνομιλίας</string>
-    <string name="keep_unused_invitation_question">Διατήρηση αχρησιμοποίητων προσκλήσεων;</string>
     <string name="v6_4_1_keep_chats_clean">Διατήρησε καθαρές τις συνομιλίες σου</string>
     <string name="v5_2_fix_encryption">Διατήρησε τις συνδέσεις</string>
     <string name="keychain_error">Σφάλμα κλειδιού</string>
@@ -2311,7 +2309,6 @@
     <string name="cant_send_message_alert_title">Δεν μπορείς να στείλεις μηνύματα!</string>
     <string name="you_can_turn_on_lock">Μπορείς να ενεργοποιήσεις το SimpleX Lock μέσω των Ρυθμίσεων.</string>
     <string name="you_can_use_markdown_to_format_messages__prompt">Μπορείς να χρησιμοποιήσεις σύνταξη markdown για να μορφοποιήσεις τα μηνύματα:</string>
-    <string name="you_can_view_invitation_link_again">Μπορείς να δεις ξανά το σύνδεσμο πρόσκλησης στις λεπτομέρειες σύνδεσης.</string>
     <string name="report_sent_alert_msg_view_in_support_chat">Μπορείς να δείς τις αναφορές σου στη Συνομιλία με τους διαχειριστές.</string>
     <string name="snd_conn_event_switch_queue_phase_completed">άλλαξες διεύθυνση</string>
     <string name="snd_conn_event_switch_queue_phase_completed_for_member">άλλαξες διεύθυνση για %s</string>

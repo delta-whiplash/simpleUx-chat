@@ -810,8 +810,6 @@
     <string name="share_text_created_at">Sukurta: %s</string>
     <string name="group_member_status_intro_invitation">jungiamasi (supažindinimo pakvietimas)</string>
     <string name="self_destruct_passcode_changed">Savaiminio susinaikinimo prieigos kodas pakeistas!</string>
-    <string name="keep_unused_invitation_question">Pasilikti nepanaudotą pakvietimą?</string>
-    <string name="keep_invitation_link">Pasilikti</string>
     <string name="v5_4_more_things_descr">- pasirinktinai praneškite ištrintiems kontaktams.
 \n- profilių vardai su tarpais.
 \n- ir daugiau!</string>
@@ -1473,7 +1471,6 @@
     <string name="icon_descr_waiting_for_image">Laukiama nuotraukos</string>
     <string name="compose_send_direct_message_to_connect">Siųsti tiesioginę žinutę, kad prisijungti</string>
     <string name="waiting_for_image">Laukiama nuotraukos</string>
-    <string name="you_can_view_invitation_link_again">Galite peržiūrėti pakvietimo nuorodą vėl, prisijungimo detalėse.</string>
     <string name="markdown_in_messages">Markdown žinutėse</string>
     <string name="to_verify_compare">Norėdami patvirtinti visapusį šifravimą su savo kontaktu, palyginkite (ar nuskanuokite) kodą ant savo įrenginių.</string>
     <string name="xftp_servers">XFTP serveriai</string>

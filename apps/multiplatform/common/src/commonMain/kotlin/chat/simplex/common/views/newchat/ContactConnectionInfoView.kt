@@ -52,6 +52,12 @@ fun ContactConnectionInfoView(
   DisposableEffect(Unit) {
     onDispose {
       if (!ModalManager.center.hasModalsOpen() || appPlatform.isDesktop) {
+        // SimpleUX #112: record that this invitation's link left the device so it is
+        // never re-adopted from the Contacts tab (one-time semantics).
+        val shown = chatModel.showingInvitation.value
+        if (shown != null && shown.connChatUsed == true) {
+          InvitationLinksPrefs.markShared(contactConnection.id)
+        }
         chatModel.showingInvitation.value = null
       }
     }

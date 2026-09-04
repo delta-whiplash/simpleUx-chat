@@ -1420,9 +1420,6 @@
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>Створити групу</b>: створити нову групу.]]></string>
     <string name="clear_note_folder_question">Очистити приватні нотатки?</string>
     <string name="clear_note_folder_warning">Усі повідомлення будуть видалені - цю дію не можна скасувати!</string>
-    <string name="keep_invitation_link">Залишити</string>
-    <string name="keep_unused_invitation_question">Залишити невикористане запрошення?</string>
-    <string name="you_can_view_invitation_link_again">Ви можете знову побачити посилання-запрошення відкривши з\'єднання.</string>
     <string name="create_chat_profile">Створити профіль чату</string>
     <string name="creating_link">Створення посилання…</string>
     <string name="developer_options_section">Налаштування для розробників</string>

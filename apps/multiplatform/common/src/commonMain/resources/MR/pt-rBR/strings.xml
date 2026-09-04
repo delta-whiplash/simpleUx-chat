@@ -1294,12 +1294,9 @@
     <string name="tap_to_scan">Toque para escanear</string>
     <string name="new_chat">Novo bate-papo</string>
     <string name="or_show_this_qr_code">Ou mostrar este código</string>
-    <string name="keep_invitation_link">Manter</string>
-    <string name="keep_unused_invitation_question">Manter convite não utilizado?</string>
     <string name="or_scan_qr_code">Ou escanear o QR code</string>
     <string name="tap_to_paste_link">Toque para colar o link</string>
     <string name="the_text_you_pasted_is_not_a_link">O texto que você colou não é um link SimpleX.</string>
-    <string name="you_can_view_invitation_link_again">Você pode visualizar o código de convite novamente nos detalhes de conexão.</string>
     <string name="developer_options_section">Opções de desenvolvedor</string>
     <string name="show_slow_api_calls">Mostrar chamadas de API lentas</string>
     <string name="encrypt_local_files">Criptografar arquivos locais</string>

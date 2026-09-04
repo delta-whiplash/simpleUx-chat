@@ -1315,7 +1315,6 @@
     <string name="agent_internal_error_title">내부 오류</string>
     <string name="invalid_name">잘못된 이름입니다!</string>
     <string name="invalid_file_link">유효하지 않은 링크</string>
-    <string name="keep_invitation_link">유지</string>
     <string name="error_parsing_uri_title">유효하지 않은 링크</string>
     <string name="alert_text_fragment_encryption_out_of_sync_old_database">이 문제는 이전 데이터베이스의 백업을 사용하는 경우에 발생할 수 있습니다.</string>
     <string name="v4_5_italian_interface">이탈리아어 인터페이스</string>

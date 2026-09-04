@@ -1397,8 +1397,6 @@
     <string name="code_you_scanned_is_not_simplex_link_qr_code">الرمز الذي مسحته ليس رمز QR لرابط SimpleX.</string>
     <string name="the_text_you_pasted_is_not_a_link">النص الذي لصقته ليس رابط SimpleX.</string>
     <string name="enable_camera_access">فعّل الوصول إلى الكاميرا</string>
-    <string name="you_can_view_invitation_link_again">يمكنك عرض رابط الدعوة مرة أخرى في تفاصيل الاتصال.</string>
-    <string name="keep_unused_invitation_question">أبقِ الدعوة غير المستخدمة؟</string>
     <string name="share_this_1_time_link">شارك رابط الدعوة هذا لمرة واحدة</string>
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>أنشئ مجموعة</b>: لإنشاء مجموعة جديدة.]]></string>
     <string name="recent_history">التاريخ المرئي</string>
@@ -1409,7 +1407,6 @@
     <string name="or_scan_qr_code">أو امسح رمز QR</string>
     <string name="invalid_qr_code">رمز QR غير صالح</string>
     <string name="tap_to_scan">انقر للمسح الضوئي</string>
-    <string name="keep_invitation_link">أبقِ</string>
     <string name="tap_to_paste_link">انقر للصق الرابط</string>
     <string name="search_or_paste_simplex_link">ابحث أو ألصِق رابط SimpleX</string>
     <string name="start_chat_question">بدء الدردشة؟</string>

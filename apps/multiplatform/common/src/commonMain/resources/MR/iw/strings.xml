@@ -1385,7 +1385,6 @@
     <string name="new_chat">צ׳אט חדש</string>
     <string name="or_show_this_qr_code">או הצג את הקוד הזה</string>
     <string name="or_scan_qr_code">או סרוק קוד QR</string>
-    <string name="keep_invitation_link">שמור</string>
     <string name="snd_group_event_member_unblocked">ביטלת חסימה של %s</string>
     <string name="group_member_role_author">מחבר</string>
     <string name="saved_message_title">הודעה נשמרה</string>
@@ -1407,8 +1406,6 @@
     <string name="tap_to_scan">לחץ לסריקה</string>
     <string name="create_group_button_to_create_new_group"><![CDATA[<b>צור קבוצה</b>: כדי ליצור קבוצה חדשה.]]></string>
     <string name="clear_note_folder_question">למחוק הערות פרטיות?</string>
-    <string name="you_can_view_invitation_link_again">תוכל לראות את קישור ההזמנה שוב בפרטי החיבור.</string>
-    <string name="keep_unused_invitation_question">האם לשמור הזמנה שלא נעשה בה שימוש?</string>
     <string name="the_text_you_pasted_is_not_a_link">הטקסט שהדבקת אינו קישור של SimpleX.</string>
     <string name="show_slow_api_calls">הצג קריאות API איטיות</string>
     <string name="developer_options_section">אפשרויות למפתח</string>
