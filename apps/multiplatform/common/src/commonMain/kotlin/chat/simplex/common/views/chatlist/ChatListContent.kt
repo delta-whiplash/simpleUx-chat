@@ -12,10 +12,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -70,34 +66,6 @@ internal fun BoxScope.ChatListContent(
   val searchShowingSimplexLink = remember { mutableStateOf(false) }
   val searchChatFilteredBySimplexLink = remember { mutableStateOf<Set<String>>(emptySet()) }
   val connectNameCandidate = remember { mutableStateOf<String?>(null) }
-  val pullOffset = remember { mutableStateOf(0f) }
-  val isRefreshing = remember { mutableStateOf(false) }
-  val nestedScrollConnection = remember {
-    object : NestedScrollConnection {
-      override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-        if (available.y > 15f && listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
-          searchVisible.value = true
-        }
-        if (available.y > 0 && listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0) {
-          pullOffset.value = (pullOffset.value + available.y * 0.4f).coerceAtMost(180f)
-        } else if (available.y < 0 && pullOffset.value > 0) {
-          pullOffset.value = (pullOffset.value + available.y).coerceAtLeast(0f)
-        }
-        return Offset.Zero
-      }
-
-      override suspend fun onPostFling(consumed: androidx.compose.ui.unit.Velocity, available: androidx.compose.ui.unit.Velocity): androidx.compose.ui.unit.Velocity {
-        if (pullOffset.value > 100f) {
-          isRefreshing.value = true
-          chat.simplex.common.platform.performHapticFeedback(chat.simplex.common.platform.SimpleUXHapticType.MEDIUM)
-          delay(800)
-          isRefreshing.value = false
-        }
-        pullOffset.value = 0f
-        return super.onPostFling(consumed, available)
-      }
-    }
-  }
   // #98/#101: bumped when the Chat Folders settings modal closes so both the
   // pills row and custom-folder filtering re-read ChatFoldersPrefs.
   var foldersVersion by remember { mutableStateOf(0) }
@@ -325,8 +293,7 @@ internal fun BoxScope.ChatListContent(
         LazyColumnWithScrollBarNoAppBar(
           modifier = Modifier
             .fillMaxSize()
-            .clipToBounds()
-            .nestedScroll(nestedScrollConnection),
+            .clipToBounds(),
           state = listState,
           contentPadding = PaddingValues(bottom = bottomPadding),
           reverseLayout = false
@@ -459,14 +426,6 @@ internal fun BoxScope.ChatListContent(
             }
           }
         }
-
-        PullRefreshIndicatorHost(
-          pullOffset = pullOffset,
-          isRefreshing = isRefreshing,
-          modifier = Modifier
-            .align(Alignment.TopCenter)
-            .zIndex(10f)
-        )
       }
     }
   }
@@ -474,23 +433,4 @@ internal fun BoxScope.ChatListContent(
   LaunchedEffect(activeFilter.value) {
     searchText.value = TextFieldValue("")
   }
-}
-
-// #99: reads the pull gesture states in its own scope so the per-frame
-// pullOffset writes from onPreScroll invalidate only this indicator host
-// instead of recomposing the whole chat-list screen. The states are passed
-// as-is (not their values) exactly so the read happens here.
-@Composable
-private fun PullRefreshIndicatorHost(
-  pullOffset: State<Float>,
-  isRefreshing: State<Boolean>,
-  modifier: Modifier = Modifier
-) {
-  val offset = pullOffset.value
-  MineralPullToRefreshIndicator(
-    pullFraction = offset / 100f,
-    isRefreshing = isRefreshing.value,
-    modifier = modifier
-      .padding(top = (offset * 0.4f).dp + 10.dp)
-  )
 }

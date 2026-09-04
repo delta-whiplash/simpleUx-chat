@@ -79,7 +79,6 @@ jobs:
             "./components/FilterPillsRow.kt"
             "./components/FullscreenEmojiEffectOverlay.kt"
             "./components/MessageBubble.kt"
-            "./components/MineralPullToRefreshIndicator.kt"
             "./components/ProfileSwitcherOverlay.kt"
             "./components/QuickReactionsBar.kt"
             "./components/QuickRepliesBar.kt"
