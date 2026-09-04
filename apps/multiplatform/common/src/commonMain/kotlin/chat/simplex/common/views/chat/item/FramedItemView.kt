@@ -218,7 +218,7 @@ fun FramedItemView(
 
   @Composable
   fun ciFileView(ci: ChatItem, text: String) {
-    CIFileView(ci.file, ci.meta, chatTTL, showTimestamp, showMenu, false, ciSenderProfile(ci, chatInfo), receiveFile)
+    CIFileView(ci.file, ci.meta, chatTTL, showTimestamp, showMenu, false, ciSenderProfile(ci, chatInfo), receiveFile, hideStatus = ci.localNote)
     if (text != "" || ci.meta.isLive) {
       CIMarkdownText(chatsCtx, ci, chat, chatTTL, linkMode = linkMode, uriHandler, showTimestamp = showTimestamp)
     }
@@ -339,7 +339,7 @@ fun FramedItemView(
               ) {
                 EmojiText(ci.content.text)
                 Text(
-                  reserveSpaceForMeta(ci.meta, chatTTL, secondaryColor = MaterialTheme.colors.secondary, showTimestamp = showTimestamp),
+                  reserveSpaceForMeta(ci.meta, chatTTL, secondaryColor = MaterialTheme.colors.secondary, hideStatus = ci.localNote, showTimestamp = showTimestamp),
                   color = Color.Transparent,
                   style = MaterialTheme.typography.body1
                 )
@@ -445,7 +445,7 @@ fun CIMarkdownText(
     MarkdownText(
       text, if (text.isEmpty()) emptyList() else ci.formattedText, toggleSecrets = true,
       sendCommandMsg = if (chatInfo.useCommands && chat.chatInfo.sndReady) { { msg -> sendCommandMsg(chatsCtx, chat, msg) } } else null,
-      meta = ci.meta, chatTTL = chatTTL, linkMode = linkMode,
+      meta = ci.meta, chatTTL = chatTTL, linkMode = linkMode, metaHideStatus = ci.localNote,
       mentions = ci.mentions, userMemberId = when {
         chatInfo is ChatInfo.Group -> chatInfo.groupInfo.membership.memberId
         else -> null

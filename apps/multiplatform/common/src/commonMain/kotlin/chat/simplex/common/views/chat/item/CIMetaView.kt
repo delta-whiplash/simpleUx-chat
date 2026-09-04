@@ -53,7 +53,8 @@ fun CIMetaView(
         timedMessagesTTL,
         metaColor,
         paleMetaColor,
-        showStatus = showStatus,
+        // notes stay SndNew forever, so the sending clock would never resolve there
+        showStatus = showStatus && !chatItem.localNote,
         showEdited = showEdited,
         showTimestamp = showTimestamp,
         signedFileVerified = chatItem.file?.loaded
@@ -125,6 +126,8 @@ fun reserveSpaceForMeta(
   chatTTL: Int?,
   secondaryColor: Color,
   showStatus: Boolean = true,
+  // set for note-folder items: no status icon is drawn there (SndNew forever)
+  hideStatus: Boolean = false,
   showEdited: Boolean = true,
   showTimestamp: Boolean,
   signedFileVerified: Boolean? = null
@@ -156,7 +159,7 @@ fun reserveSpaceForMeta(
     }
     space = whiteSpace
   }
-  if (showStatus) {
+  if (showStatus && !hideStatus) {
     appendSpace()
     if (meta.statusIcon(secondaryColor) != null) {
       res += iconSpace

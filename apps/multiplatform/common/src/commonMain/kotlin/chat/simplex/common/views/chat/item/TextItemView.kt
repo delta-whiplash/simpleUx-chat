@@ -127,6 +127,7 @@ fun MarkdownText (
   sender: String? = null,
   meta: CIMeta? = null,
   chatTTL: Int? = null,
+  metaHideStatus: Boolean = false,
   mentions: Map<String, CIMention>? = null,
   userMemberId: String? = null,
   toggleSecrets: Boolean,
@@ -154,7 +155,7 @@ fun MarkdownText (
   val reserve = if (textLayoutDirection != LocalLayoutDirection.current && meta != null) {
     "\n"
   } else if (meta != null) {
-    reserveSpaceForMeta(meta, chatTTL, secondaryColor = MaterialTheme.colors.secondary, showTimestamp = showTimestamp)
+    reserveSpaceForMeta(meta, chatTTL, secondaryColor = MaterialTheme.colors.secondary, hideStatus = metaHideStatus, showTimestamp = showTimestamp)
   } else {
     "    "
   }

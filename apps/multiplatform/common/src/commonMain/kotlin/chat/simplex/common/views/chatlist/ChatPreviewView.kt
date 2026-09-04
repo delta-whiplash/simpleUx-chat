@@ -388,10 +388,10 @@ fun ChatPreviewView(
         }
       }
       is MsgContent.MCFile -> SmallContentPreviewFile {
-        CIFileView(ci.file, ci.meta, cInfo.timedMessagesTTL, showTimestamp = true, showMenu = remember { mutableStateOf(false) }, smallView = true, senderProfile = ciSenderProfile(ci, chat.chatInfo)) {
+        CIFileView(ci.file, ci.meta, cInfo.timedMessagesTTL, showTimestamp = true, showMenu = remember { mutableStateOf(false) }, smallView = true, senderProfile = ciSenderProfile(ci, chat.chatInfo), hideStatus = ci.localNote, receiveFile = {
           val user = chatModel.currentUser.value ?: return@CIFileView
           withBGApi { chatModel.controller.receiveFile(chat.remoteHostId, user, it) }
-        }
+        })
       }
       is MsgContent.MCChat -> SmallContentPreview(borderColor = if (mc.chatLink.image != null) MaterialTheme.colors.onSurface.copy(alpha = 0.12f) else Color.Transparent) {
         Box(

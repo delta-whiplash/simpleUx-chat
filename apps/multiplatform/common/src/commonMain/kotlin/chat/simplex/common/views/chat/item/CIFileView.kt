@@ -39,7 +39,8 @@ fun CIFileView(
   showMenu: MutableState<Boolean>,
   smallView: Boolean = false,
   senderProfile: LocalProfile?,
-  receiveFile: (Long) -> Unit
+  receiveFile: (Long) -> Unit,
+  hideStatus: Boolean = false
 ) {
   val saveFileLauncher = rememberSaveFileLauncher(ciFile = file)
   val sizeMultiplier = 1f
@@ -215,7 +216,7 @@ fun CIFileView(
       val secondaryColor = MaterialTheme.colors.secondary
       val metaReserve = buildAnnotatedString {
         withStyle(reserveTimestampStyle) {
-          append(reserveSpaceForMeta(meta, chatTTL, secondaryColor = secondaryColor, showTimestamp = showTimestamp, signedFileVerified = file?.loaded))
+          append(reserveSpaceForMeta(meta, chatTTL, secondaryColor = secondaryColor, hideStatus = hideStatus, showTimestamp = showTimestamp, signedFileVerified = file?.loaded))
         }
       }
       if (file != null) {
