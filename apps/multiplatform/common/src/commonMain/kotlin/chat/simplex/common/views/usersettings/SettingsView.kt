@@ -172,12 +172,6 @@ fun SettingsLayout(
       SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, badgeColor = Color(0xFF43A047), disabled = stopped)
       SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Color(0xFF1E293B))
     }
-    SectionDividerSpaced()
-
-    // Groupe 4 : Zone Système
-    SectionView(stringResource(MR.strings.settings_section_system)) {
-      AppShutdownItem()
-    }
 
     if (crowdfundingAvailable()) {
       SectionDividerSpaced()
@@ -379,10 +373,6 @@ expect fun AdvancedSettingsAppSection(
   showSettingsModal: (@Composable (ChatModel) -> Unit) -> (() -> Unit),
   withAuth: (title: String, desc: String, block: () -> Unit) -> Unit,
 )
-
-// Shutdown is only available on Android; on desktop the app is closed via the window.
-@Composable
-expect fun AppShutdownItem()
 
 @Composable private fun DatabaseItem(encrypted: Boolean, saved: Boolean, openDatabaseView: () -> Unit, stopped: Boolean) {
   val isDark = isInDarkTheme()
