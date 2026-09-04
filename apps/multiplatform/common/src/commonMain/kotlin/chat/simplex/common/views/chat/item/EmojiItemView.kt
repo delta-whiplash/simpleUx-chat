@@ -21,7 +21,7 @@ val largeEmojiFont: TextStyle = TextStyle(fontSize = 48.sp, fontFamily = EmojiFo
 val mediumEmojiFont: TextStyle = TextStyle(fontSize = 36.sp, fontFamily = EmojiFont)
 
 @Composable
-fun EmojiItemView(chatItem: ChatItem, timedMessagesTTL: Int?, showViaProxy: Boolean, showTimestamp: Boolean) {
+fun EmojiItemView(chatItem: ChatItem, timedMessagesTTL: Int?, showTimestamp: Boolean) {
   val emojiText = chatItem.content.text.trim()
   val isSelected = setupEmojiSelection(LocalSelectionManager.current, LocalItemContext.current.selectionIndex, emojiText.length)
 
@@ -36,7 +36,7 @@ fun EmojiItemView(chatItem: ChatItem, timedMessagesTTL: Int?, showViaProxy: Bool
     } else {
       EmojiText(chatItem.content.text)
     }
-    CIMetaView(chatItem, timedMessagesTTL, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
+    CIMetaView(chatItem, timedMessagesTTL, showTimestamp = showTimestamp)
   }
 }
 

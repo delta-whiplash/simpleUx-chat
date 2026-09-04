@@ -22,6 +22,7 @@ import chat.simplex.common.model.*
 import chat.simplex.common.model.ChatController.appPrefs
 import chat.simplex.common.platform.*
 import chat.simplex.common.views.chat.chatViewScrollState
+import chat.simplex.common.views.ux.components.FileEncryptedBadge
 import dev.icerock.moko.resources.StringResource
 import java.io.File
 import java.net.URI
@@ -140,6 +141,11 @@ fun CIVideoView(
       Box(Modifier.align(Alignment.Center)) {
         fileStatusIcon(file, true)
       }
+    }
+    // #116: the file lock moved here from the meta line - it describes the
+    // attachment's storage encryption, not the message delivery
+    if (!smallView && file?.fileSource?.cryptoArgs != null && appPreferences.privacyShowEncryption.state.value) {
+      FileEncryptedBadge(Modifier.align(Alignment.TopEnd).padding(6.dp))
     }
   }
 }

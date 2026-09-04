@@ -140,7 +140,6 @@ fun MarkdownText (
   linkMode: SimplexLinkMode,
   inlineContent: Pair<AnnotatedString.Builder.() -> Unit, Map<String, InlineTextContent>>? = null,
   onLinkLongClick: (link: String) -> Unit = {},
-  showViaProxy: Boolean = false,
   showTimestamp: Boolean = true,
   prefix: AnnotatedString? = null,
   stripLink: String? = null,
@@ -155,7 +154,7 @@ fun MarkdownText (
   val reserve = if (textLayoutDirection != LocalLayoutDirection.current && meta != null) {
     "\n"
   } else if (meta != null) {
-    reserveSpaceForMeta(meta, chatTTL, null, secondaryColor = MaterialTheme.colors.secondary, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
+    reserveSpaceForMeta(meta, chatTTL, secondaryColor = MaterialTheme.colors.secondary, showTimestamp = showTimestamp)
   } else {
     "    "
   }

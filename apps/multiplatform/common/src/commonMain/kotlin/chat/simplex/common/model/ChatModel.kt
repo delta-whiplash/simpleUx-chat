@@ -3182,8 +3182,6 @@ data class ChatItem (
 
   val isLiveDummy: Boolean get() = meta.itemId == TEMP_LIVE_CHAT_ITEM_ID
 
-  val encryptedFile: Boolean? = if (file?.fileSource == null) null else file.fileSource.cryptoArgs != null
-
   val memberDisplayName: String? get() =
     when (chatDir) {
       is CIDirection.GroupRcv -> when (content) {
@@ -3812,7 +3810,9 @@ sealed class CIStatus {
     paleMetaColor: Color = CurrentColors.value.colors.secondary
   ): Pair<ImageResource, Color>? =
     when (this) {
-      is SndNew -> null
+      // #116: sending in progress is no longer invisible - a clock, distinct
+      // from the disappearing-timer ic_timer, at meta color
+      is SndNew -> MR.images.ic_schedule to metaColor
       is SndSent -> when (this.sndProgress) {
         SndCIStatusProgress.Complete -> MR.images.ic_check_filled to metaColor
         SndCIStatusProgress.Partial -> MR.images.ic_check_filled to paleMetaColor
@@ -3822,7 +3822,8 @@ sealed class CIStatus {
           SndCIStatusProgress.Complete -> MR.images.ic_double_check to metaColor
           SndCIStatusProgress.Partial -> MR.images.ic_double_check to paleMetaColor
         }
-        MsgReceiptStatus.BadMsgHash -> MR.images.ic_double_check to Color.Red
+        // #116: a red check still reads as "delivered" - a hash mismatch is a warning
+        MsgReceiptStatus.BadMsgHash -> MR.images.ic_warning_filled to Color.Red
       }
       is SndErrorAuth -> MR.images.ic_close to Color.Red
       is CISSndError -> MR.images.ic_close to Color.Red

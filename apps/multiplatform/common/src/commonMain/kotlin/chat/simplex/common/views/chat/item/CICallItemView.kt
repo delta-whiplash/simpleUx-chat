@@ -48,7 +48,7 @@ fun CICallItemView(
       CICallStatus.Error -> Icon(painterResource(MR.images.ic_call), stringResource(MR.strings.callstatus_error), tint = WarningOrange)
     }
 
-    CIMetaView(cItem, timedMessagesTTL, showStatus = false, showEdited = false, showViaProxy = false, showTimestamp = showTimestamp)
+    CIMetaView(cItem, timedMessagesTTL, showStatus = false, showEdited = false, showTimestamp = showTimestamp)
   }
 }
 

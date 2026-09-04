@@ -39,7 +39,6 @@ fun CIVoiceView(
   hasText: Boolean,
   ci: ChatItem,
   timedMessagesTTL: Int?,
-  showViaProxy: Boolean,
   showTimestamp: Boolean,
   smallView: Boolean = false,
   longClick: () -> Unit,

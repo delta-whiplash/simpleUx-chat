@@ -26,6 +26,7 @@ import chat.simplex.common.model.ChatController.appPrefs
 import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.DEFAULT_MAX_IMAGE_WIDTH
 import chat.simplex.common.views.chat.chatViewScrollState
+import chat.simplex.common.views.ux.components.FileEncryptedBadge
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.StringResource
 import kotlinx.coroutines.*
@@ -270,6 +271,11 @@ fun CIImageView(
       Box(Modifier.matchParentSize(), contentAlignment = Alignment.Center) {
         loadingIndicator()
       }
+    }
+    // #116: the file lock moved here from the meta line - it describes the
+    // attachment's storage encryption, not the message delivery
+    if (!smallView && file?.fileSource?.cryptoArgs != null && appPreferences.privacyShowEncryption.state.value) {
+      FileEncryptedBadge(Modifier.align(Alignment.TopEnd).padding(6.dp))
     }
   }
 }

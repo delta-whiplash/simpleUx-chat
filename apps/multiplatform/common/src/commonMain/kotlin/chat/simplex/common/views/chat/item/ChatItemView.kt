@@ -110,7 +110,6 @@ fun ChatItemView(
   showMemberInfo: (GroupInfo, GroupMember) -> Unit,
   showChatInfo: () -> Unit,
   developerTools: Boolean,
-  showViaProxy: Boolean,
   showTimestamp: Boolean,
   itemSeparation: ItemSeparation,
   preview: Boolean = false,
@@ -383,7 +382,7 @@ fun ChatItemView(
           ) {
             @Composable
             fun framedItemView() {
-              FramedItemView(chatsCtx, chat, cItem, uriHandler, imageProvider, linkMode = linkMode, showViaProxy = showViaProxy, showMenu, showTimestamp = showTimestamp, tailVisible = itemSeparation.largeGap, receiveFile, onLinkLongClick, scrollToItem, scrollToItemId, scrollToQuotedItemFromItem)
+              FramedItemView(chatsCtx, chat, cItem, uriHandler, imageProvider, linkMode = linkMode, showMenu, showTimestamp = showTimestamp, tailVisible = itemSeparation.largeGap, receiveFile, onLinkLongClick, scrollToItem, scrollToItemId, scrollToQuotedItemFromItem)
             }
 
             fun deleteMessageQuestionText(): String {
@@ -623,9 +622,9 @@ fun ChatItemView(
               val mc = cItem.content.msgContent
               if (cItem.quotedItem == null && cItem.meta.itemForwarded == null && cItem.meta.itemDeleted == null && !cItem.meta.isLive) {
                 if (mc is MsgContent.MCText && isShortEmoji(cItem.content.text)) {
-                  EmojiItemView(cItem, cInfo.timedMessagesTTL, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
+                  EmojiItemView(cItem, cInfo.timedMessagesTTL, showTimestamp = showTimestamp)
                 } else if (mc is MsgContent.MCVoice && cItem.content.text.isEmpty()) {
-                  CIVoiceView(mc.duration, cItem.file, cItem.meta.itemEdited, cItem.chatDir.sent, hasText = false, cItem, cInfo.timedMessagesTTL, showViaProxy = showViaProxy, showTimestamp = showTimestamp, longClick = { onLinkLongClick("") }, receiveFile = receiveFile)
+                  CIVoiceView(mc.duration, cItem.file, cItem.meta.itemEdited, cItem.chatDir.sent, hasText = false, cItem, cInfo.timedMessagesTTL, showTimestamp = showTimestamp, longClick = { onLinkLongClick("") }, receiveFile = receiveFile)
                 } else {
                   framedItemView()
                 }
@@ -636,7 +635,7 @@ fun ChatItemView(
             }
 
             @Composable fun LegacyDeletedItem() {
-              DeletedItemView(cItem, cInfo.timedMessagesTTL, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
+              DeletedItemView(cItem, cInfo.timedMessagesTTL, showTimestamp = showTimestamp)
               DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
@@ -703,7 +702,7 @@ fun ChatItemView(
 
             @Composable
             fun DeletedItem() {
-              MarkedDeletedItemView(chatsCtx, cItem, cInfo, cInfo.timedMessagesTTL, revealed, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
+              MarkedDeletedItemView(chatsCtx, cItem, cInfo, cInfo.timedMessagesTTL, revealed, showTimestamp = showTimestamp)
               DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 if (revealed.value) {
                   HideItemAction(revealed, showMenu, reveal)
@@ -850,7 +849,7 @@ fun ChatItemView(
             }
 
             if (cItem.meta.itemDeleted != null && (!revealed.value || cItem.isDeletedContent)) {
-              MarkedDeletedItemView(chatsCtx, cItem, cInfo, cInfo.timedMessagesTTL, revealed, showViaProxy = showViaProxy, showTimestamp = showTimestamp)
+              MarkedDeletedItemView(chatsCtx, cItem, cInfo, cInfo.timedMessagesTTL, revealed, showTimestamp = showTimestamp)
               MarkedDeletedItemDropdownMenu()
             } else {
               when (val c = cItem.content) {
@@ -1750,7 +1749,6 @@ fun PreviewChatItemView(
     showMemberInfo = { _, _ ->},
     showChatInfo = {},
     developerTools = false,
-    showViaProxy = false,
     showTimestamp = true,
     preview = true,
     itemSeparation = ItemSeparation(timestamp = true, largeGap = true, null)
@@ -1801,7 +1799,6 @@ fun PreviewChatItemViewDeletedContent() {
       showMemberInfo = { _, _ ->},
       showChatInfo = {},
       developerTools = false,
-      showViaProxy = false,
       preview = true,
       showTimestamp = true,
       itemSeparation = ItemSeparation(timestamp = true, largeGap = true, null)

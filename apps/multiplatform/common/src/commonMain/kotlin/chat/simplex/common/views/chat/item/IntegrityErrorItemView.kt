@@ -69,7 +69,7 @@ fun CIMsgError(ci: ChatItem, showTimestamp: Boolean, timedMessagesTTL: Int?, onC
         style = MaterialTheme.typography.body1.copy(lineHeight = 22.sp),
         modifier = Modifier.padding(end = 8.dp)
       )
-      CIMetaView(ci, timedMessagesTTL, showViaProxy = false, showTimestamp = showTimestamp)
+      CIMetaView(ci, timedMessagesTTL, showTimestamp = showTimestamp)
     }
   }
 }

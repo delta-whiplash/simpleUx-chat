@@ -25,6 +25,7 @@ import chat.simplex.common.model.*
 import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.ux.components.FileEncryptedBadge
 import chat.simplex.res.MR
 import java.io.File
 import java.net.URI
@@ -34,7 +35,6 @@ fun CIFileView(
   file: CIFile?,
   meta: CIMeta,
   chatTTL: Int?,
-  showViaProxy: Boolean,
   showTimestamp: Boolean,
   showMenu: MutableState<Boolean>,
   smallView: Boolean = false,
@@ -179,6 +179,11 @@ fun CIFileView(
       } else {
         fileIcon()
       }
+      // #116: the file lock moved here from the meta line - it describes the
+      // attachment's storage encryption, not the message delivery
+      if (!smallView && file?.fileSource?.cryptoArgs != null && appPreferences.privacyShowEncryption.state.value) {
+        FileEncryptedBadge(Modifier.align(Alignment.TopEnd))
+      }
     }
   }
 
@@ -208,10 +213,9 @@ fun CIFileView(
     fileIndicator()
     if (!smallView) {
       val secondaryColor = MaterialTheme.colors.secondary
-      val encrypted = if (file?.fileSource == null) null else file.fileSource.cryptoArgs != null
       val metaReserve = buildAnnotatedString {
         withStyle(reserveTimestampStyle) {
-          append(reserveSpaceForMeta(meta, chatTTL, encrypted, secondaryColor = secondaryColor, showViaProxy = showViaProxy, showTimestamp = showTimestamp, signedFileVerified = file?.loaded))
+          append(reserveSpaceForMeta(meta, chatTTL, secondaryColor = secondaryColor, showTimestamp = showTimestamp, signedFileVerified = file?.loaded))
         }
       }
       if (file != null) {

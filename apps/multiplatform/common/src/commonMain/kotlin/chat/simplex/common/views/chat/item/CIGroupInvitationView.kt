@@ -116,7 +116,7 @@ fun CIGroupInvitationView(
               Text(
                 buildAnnotatedString {
                   append(generalGetString(if (chatIncognito) MR.strings.group_invitation_tap_to_join_incognito else MR.strings.group_invitation_tap_to_join))
-                  withStyle(reserveTimestampStyle) { append(reserveSpaceForMeta(ci.meta, timedMessagesTTL, encrypted = null, showStatus = false, showEdited = false, secondaryColor = secondaryColor, showTimestamp = showTimestamp)) }
+                  withStyle(reserveTimestampStyle) { append(reserveSpaceForMeta(ci.meta, timedMessagesTTL, showStatus = false, showEdited = false, secondaryColor = secondaryColor, showTimestamp = showTimestamp)) }
                 },
                 color = if (inProgress.value)
                   MaterialTheme.colors.secondary
@@ -127,7 +127,7 @@ fun CIGroupInvitationView(
               Text(
                 buildAnnotatedString {
                   append(groupInvitationStr())
-                  withStyle(reserveTimestampStyle) { append(reserveSpaceForMeta(ci.meta, timedMessagesTTL, encrypted = null, showStatus = false, showEdited = false, secondaryColor = secondaryColor, showTimestamp = showTimestamp)) }
+                  withStyle(reserveTimestampStyle) { append(reserveSpaceForMeta(ci.meta, timedMessagesTTL, showStatus = false, showEdited = false, secondaryColor = secondaryColor, showTimestamp = showTimestamp)) }
                 },
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
@@ -145,7 +145,7 @@ fun CIGroupInvitationView(
         }
       }
 
-      CIMetaView(ci, timedMessagesTTL, showStatus = false, showEdited = false, showViaProxy = false, showTimestamp = showTimestamp)
+      CIMetaView(ci, timedMessagesTTL, showStatus = false, showEdited = false, showTimestamp = showTimestamp)
     }
   }
 }

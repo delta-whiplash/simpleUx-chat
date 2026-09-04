@@ -38,7 +38,6 @@ fun CIMetaView(
   showStatus: Boolean = true,
   showEdited: Boolean = true,
   showTimestamp: Boolean,
-  showViaProxy: Boolean,
 ) {
   Row(Modifier.padding(start = 3.dp), verticalAlignment = Alignment.CenterVertically) {
     if (chatItem.isDeletedContent) {
@@ -52,12 +51,10 @@ fun CIMetaView(
       CIMetaText(
         chatItem.meta,
         timedMessagesTTL,
-        encrypted = chatItem.encryptedFile,
         metaColor,
         paleMetaColor,
         showStatus = showStatus,
         showEdited = showEdited,
-        showViaProxy = showViaProxy,
         showTimestamp = showTimestamp,
         signedFileVerified = chatItem.file?.loaded
       )
@@ -70,17 +67,14 @@ fun CIMetaView(
 private fun CIMetaText(
   meta: CIMeta,
   chatTTL: Int?,
-  encrypted: Boolean?,
   color: Color,
   paleColor: Color,
   showStatus: Boolean = true,
   showEdited: Boolean = true,
   showTimestamp: Boolean,
-  showViaProxy: Boolean,
   signedFileVerified: Boolean?,
 ) {
   val showSignature = appPreferences.privacyShowSignature.state.value
-  val showEncryption = appPreferences.privacyShowEncryption.state.value
   // #81: icon heights are in sp (not dp) so the drawn row scales exactly like
   // the NBSP string reserveSpaceForMeta builds - with fixed-dp icons any font
   // scale under ~1.1 under-reserved the row and the meta overlaid the text.
@@ -97,10 +91,6 @@ private fun CIMetaText(
       Text(shortTimeText(ttl), color = color, fontSize = 12.sp)
     }
   }
-  if (showViaProxy && meta.sentViaProxy == true) {
-    Spacer(Modifier.width(metaSpacer))
-    Icon(painterResource(MR.images.ic_arrow_forward), null, Modifier.height(metaIconHeight), tint = MaterialTheme.colors.secondary)
-  }
   if (showStatus) {
     Spacer(Modifier.width(metaSpacer))
     val statusIcon = meta.statusIcon(MaterialTheme.colors.primary, color, paleColor)
@@ -114,10 +104,6 @@ private fun CIMetaText(
     } else if (!meta.disappearing) {
       StatusIconText(painterResource(MR.images.ic_circle_filled), Color.Transparent)
     }
-  }
-  if (encrypted != null && showEncryption) {
-    Spacer(Modifier.width(metaSpacer))
-    StatusIconText(painterResource(if (encrypted) MR.images.ic_lock else MR.images.ic_lock_open_right), color)
   }
   if (showSignature && meta.msgVerified?.verified == true && signedFileVerified != false) {
     Spacer(Modifier.width(metaSpacer))
@@ -137,19 +123,16 @@ private fun CIMetaText(
 fun reserveSpaceForMeta(
   meta: CIMeta,
   chatTTL: Int?,
-  encrypted: Boolean?,
   secondaryColor: Color,
   showStatus: Boolean = true,
   showEdited: Boolean = true,
-  showViaProxy: Boolean = false,
   showTimestamp: Boolean,
   signedFileVerified: Boolean? = null
 ): String {
   val showSignature = appPreferences.privacyShowSignature.state.value
-  val showEncryption = appPreferences.privacyShowEncryption.state.value
   // #81: one more NBSP than before - with the sp-scaled icons the row is now
   // proportional to the text, and this adds a small constant margin for the
-  // widest indicators (proxy arrow / delivery checks).
+  // widest indicators (delivery checks).
   val iconSpace = " \u00A0\u00A0\u00A0\u00A0"
   val whiteSpace = "\u00A0"
   var res = if (showTimestamp) "" else iconSpace
@@ -173,10 +156,6 @@ fun reserveSpaceForMeta(
     }
     space = whiteSpace
   }
-  if (showViaProxy && meta.sentViaProxy == true) {
-    appendSpace()
-    res += iconSpace
-  }
   if (showStatus) {
     appendSpace()
     if (meta.statusIcon(secondaryColor) != null) {
@@ -187,11 +166,6 @@ fun reserveSpaceForMeta(
     space = whiteSpace
   }
 
-  if (encrypted != null && showEncryption) {
-    appendSpace()
-    res += iconSpace
-    space = whiteSpace
-  }
   if ((showSignature && meta.msgVerified?.verified == true && signedFileVerified != false) || meta.msgVerified is MsgVerified.SigMissing) {
     appendSpace()
     res += iconSpace
@@ -218,7 +192,6 @@ fun PreviewCIMetaView() {
       1, CIDirection.DirectSnd(), Clock.System.now(), "hello"
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -232,7 +205,6 @@ fun PreviewCIMetaViewUnread() {
       status = CIStatus.RcvNew()
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -246,7 +218,6 @@ fun PreviewCIMetaViewSendFailed() {
       status = CIStatus.CISSndError(SndError.Other("CMD SYNTAX"))
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -259,7 +230,6 @@ fun PreviewCIMetaViewSendNoAuth() {
       1, CIDirection.DirectSnd(), Clock.System.now(), "hello", status = CIStatus.SndErrorAuth()
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -272,7 +242,6 @@ fun PreviewCIMetaViewSendSent() {
       1, CIDirection.DirectSnd(), Clock.System.now(), "hello", status = CIStatus.SndSent(SndCIStatusProgress.Complete)
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -286,7 +255,6 @@ fun PreviewCIMetaViewEdited() {
       itemEdited = true
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -301,7 +269,6 @@ fun PreviewCIMetaViewEditedUnread() {
       status= CIStatus.RcvNew()
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -316,7 +283,6 @@ fun PreviewCIMetaViewEditedSent() {
       status= CIStatus.SndSent(SndCIStatusProgress.Complete)
     ),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
@@ -327,7 +293,6 @@ fun PreviewCIMetaViewDeletedContent() {
   CIMetaView(
     chatItem = ChatItem.getDeletedContentSampleData(),
     null,
-    showViaProxy = false,
     showTimestamp = true
   )
 }
