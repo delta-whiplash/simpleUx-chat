@@ -1,6 +1,7 @@
 package chat.simplex.common.views.chatlist
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.shape.CircleShape
@@ -12,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -112,6 +116,39 @@ internal fun BoxScope.ChatListContent(
   val isSearching = searchText.value.text.isNotEmpty() || searchVisible.value
   val bottomPadding = if (isSearching) 16.dp else 96.dp
 
+  // #98: visible folders re-read whenever the settings modal closes
+  // (foldersVersion bump in its onDispose). "All" is always on regardless of
+  // stored state - it has no toggle in settings. Hoisted above the header so
+  // the pills row and the list swipe (#111) share one folder order.
+  val visibleFolders = remember(foldersVersion) {
+    ChatFoldersPrefs.loadFolders()
+      .map { if (it.id == "all") it.copy(isVisible = true) else it }
+      .filter { it.isVisible }
+      .sortedBy { it.order }
+  }
+
+  // #111: single source of truth for folder -> filter, shared by the pills
+  // row and the horizontal swipe so both always agree on the target view.
+  fun folderToFilter(folder: ChatFolder): ActiveFilter? = when {
+    folder.id == "all" -> null
+    folder.id == "unread" -> ActiveFilter.Unread
+    folder.isCustom -> ActiveFilter.CustomFolder(folder.id)
+    folder.id == "direct" -> ActiveFilter.PresetTag(PresetTagKind.CONTACTS)
+    folder.id == "groups" -> ActiveFilter.PresetTag(PresetTagKind.GROUPS)
+    folder.id == "favorites" -> ActiveFilter.PresetTag(PresetTagKind.FAVORITES)
+    else -> null
+  }
+  val orderedFilters = remember(foldersVersion) { visibleFolders.mapNotNull(::folderToFilter) }
+
+  // #111: Telegram-style folder switching - a horizontal drag on the list
+  // moves to the previous/next visible folder in pill order. Enabled under
+  // the same conditions as the pills row, instant on commit (#58: no
+  // AnimatedContent, no retained raster layers), rubber-banded at the ends.
+  val folderDragX = remember { mutableStateOf(0f) }
+  val listContentWidth = remember { mutableStateOf(1f) }
+  val folderSwipeEnabled = !selectionMode.value && searchText.value.text.isEmpty() &&
+    !searchShowingSimplexLink.value && orderedFilters.size > 1
+
   val allDirectoryGroups by SimpleUxDirectoryRepository.groups.collectAsState()
   val directoryBotDescription = stringResource(MR.strings.directory_bot_description)
   val directoryBotCategory = stringResource(MR.strings.directory_category)
@@ -195,16 +232,6 @@ internal fun BoxScope.ChatListContent(
         }
 
         if (!selectionMode.value && searchText.value.text.isEmpty() && !searchShowingSimplexLink.value) {
-          // #98: visible folders re-read whenever the settings modal closes
-          // (foldersVersion bump in its onDispose). "All" is always on
-          // regardless of stored state - it has no toggle in settings.
-          val visibleFolders = remember(foldersVersion) {
-            ChatFoldersPrefs.loadFolders()
-              .map { if (it.id == "all") it.copy(isVisible = true) else it }
-              .filter { it.isVisible }
-              .sortedBy { it.order }
-          }
-
           // #98: Auto-hide rule - if only 1 folder visible, hide the entire row
           if (visibleFolders.size > 1) {
             // Active pill follows the domain filter; custom folders (#101)
@@ -240,15 +267,7 @@ internal fun BoxScope.ChatListContent(
               activeFolderId = activeFolderId,
               totalUnread = totalUnread,
               onFolderSelected = { folder ->
-                chatModel.activeChatTagFilter.value = when {
-                  folder.id == "all" -> null
-                  folder.id == "unread" -> ActiveFilter.Unread
-                  folder.isCustom -> ActiveFilter.CustomFolder(folder.id)
-                  folder.id == "direct" -> ActiveFilter.PresetTag(PresetTagKind.CONTACTS)
-                  folder.id == "groups" -> ActiveFilter.PresetTag(PresetTagKind.GROUPS)
-                  folder.id == "favorites" -> ActiveFilter.PresetTag(PresetTagKind.FAVORITES)
-                  else -> null
-                }
+                chatModel.activeChatTagFilter.value = folderToFilter(folder)
               },
               onManageClick = {
                 ModalManager.start.showModal(cardScreen = true) {
@@ -293,7 +312,41 @@ internal fun BoxScope.ChatListContent(
         LazyColumnWithScrollBarNoAppBar(
           modifier = Modifier
             .fillMaxSize()
-            .clipToBounds(),
+            .clipToBounds()
+            .graphicsLayer { translationX = folderDragX.value }
+            .onSizeChanged { listContentWidth.value = it.width.toFloat() }
+            .then(
+              if (folderSwipeEnabled) Modifier.pointerInput(orderedFilters) {
+                detectHorizontalDragGestures(
+                  onDragEnd = {
+                    val threshold = (listContentWidth.value * 0.25f).coerceAtLeast(200f)
+                    val dx = folderDragX.value
+                    val index = orderedFilters.indexOfFirst { it == activeFilter.value }
+                    val target = when {
+                      dx <= -threshold && index < orderedFilters.lastIndex -> index + 1
+                      dx >= threshold && index > 0 -> index - 1
+                      else -> null
+                    }
+                    folderDragX.value = 0f
+                    if (target != null) {
+                      performHapticFeedback(SimpleUXHapticType.MEDIUM)
+                      activeFilter.value = orderedFilters[target]
+                    }
+                  },
+                  onDragCancel = { folderDragX.value = 0f }
+                ) { _, dragAmount ->
+                  val index = orderedFilters.indexOfFirst { it == activeFilter.value }
+                  val atEdge = (index <= 0 && dragAmount > 0) ||
+                    (index >= orderedFilters.lastIndex && dragAmount < 0)
+                  // No neighbor in the drag direction: rubber-band instead of travel
+                  folderDragX.value = if (atEdge) {
+                    (folderDragX.value + dragAmount * 0.3f).coerceIn(-160f, 160f)
+                  } else {
+                    (folderDragX.value + dragAmount).coerceIn(-listContentWidth.value / 3f, listContentWidth.value / 3f)
+                  }
+                }
+              } else Modifier
+            ),
           state = listState,
           contentPadding = PaddingValues(bottom = bottomPadding),
           reverseLayout = false

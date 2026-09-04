@@ -7,11 +7,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -74,6 +78,12 @@ fun FilterPillsRow(
   ) {
     visibleFolders.sortedBy { it.order }.forEach { folder ->
       val isSelected = folder.id == activeFolderId
+      // #111: a swipe on the list can activate a pill that is scrolled out of
+      // sight - bring the newly selected one into view, Telegram-style.
+      val bringPillIntoView = remember { BringIntoViewRequester() }
+      LaunchedEffect(isSelected) {
+        if (isSelected) bringPillIntoView.bringIntoView()
+      }
       val shape = RoundedCornerShape(20.dp)
 
       val badgeCount: Int? = when {
@@ -113,6 +123,7 @@ fun FilterPillsRow(
 
       Box(
         modifier = Modifier
+          .bringIntoViewRequester(bringPillIntoView)
           .clip(shape)
           .background(bgColor.value)
           .border(width = 1.dp, color = borderColor.value, shape = shape)
