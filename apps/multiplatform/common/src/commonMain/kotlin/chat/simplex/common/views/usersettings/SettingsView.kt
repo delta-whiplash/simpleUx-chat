@@ -155,6 +155,7 @@ fun SettingsLayout(
           values = notificationModes().map { it.value to it.title },
           selection = notificationsMode,
           icon = painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt),
+          badgeColor = Color(0xFF1E293B),
           enabled = remember { mutableStateOf(!stopped) },
           onSelected = { changeNotificationsMode(it, chatModel) }
         )
@@ -605,37 +606,7 @@ fun SettingsActionItem(
       verticalAlignment = Alignment.CenterVertically
     ) {
       if (badgeColor != null) {
-        val isShutdown = badgeColor == Color(0xFFE53935) || badgeColor == Color.Red
-        val isPrivacy = badgeColor == Color(0xFF43A047)
-        val bg = if (isShutdown) {
-          if (isDark) Color(0x33EF4444) else Color(0x22EF4444)
-        } else if (isPrivacy) {
-          if (isDark) Color(0x3310B981) else Color(0x2210B981)
-        } else {
-          if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
-        }
-        val iconTint = if (isShutdown) {
-          Color(0xFFEF4444)
-        } else if (isPrivacy) {
-          Color(0xFF10B981)
-        } else {
-          if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
-        }
-        Box(
-          modifier = Modifier
-            .size(34.dp)
-            .clip(CircleShape)
-            .background(if (disabled) MaterialTheme.colors.secondary.copy(alpha = 0.2f) else bg)
-            .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), CircleShape),
-          contentAlignment = Alignment.Center
-        ) {
-          Icon(
-            icon,
-            contentDescription = text,
-            modifier = Modifier.size(18.dp),
-            tint = if (disabled) MaterialTheme.colors.secondary else iconTint
-          )
-        }
+        SettingsRowIconBadge(icon, text, badgeColor, disabled)
         Spacer(Modifier.width(14.dp))
       } else {
         Icon(icon, text, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
@@ -660,8 +631,45 @@ fun SettingsActionItem(
   }
 }
 
+/** Shared circular icon container used by all settings rows (#117). */
 @Composable
-fun SettingsActionItemWithContent(icon: Painter?, text: String? = null, click: (() -> Unit)? = null, iconColor: Color = MaterialTheme.colors.secondary, textColor: Color = MaterialTheme.colors.onBackground, disabled: Boolean = false, extraPadding: Boolean = false, content: @Composable RowScope.() -> Unit) {
+private fun SettingsRowIconBadge(icon: Painter, text: String?, badgeColor: Color, disabled: Boolean) {
+  val isDark = isInDarkTheme()
+  val isShutdown = badgeColor == Color(0xFFE53935) || badgeColor == Color.Red
+  val isPrivacy = badgeColor == Color(0xFF43A047)
+  val bg = if (isShutdown) {
+    if (isDark) Color(0x33EF4444) else Color(0x22EF4444)
+  } else if (isPrivacy) {
+    if (isDark) Color(0x3310B981) else Color(0x2210B981)
+  } else {
+    if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+  }
+  val iconTint = if (isShutdown) {
+    Color(0xFFEF4444)
+  } else if (isPrivacy) {
+    Color(0xFF10B981)
+  } else {
+    if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+  }
+  Box(
+    modifier = Modifier
+      .size(34.dp)
+      .clip(CircleShape)
+      .background(if (disabled) MaterialTheme.colors.secondary.copy(alpha = 0.2f) else bg)
+      .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), CircleShape),
+    contentAlignment = Alignment.Center
+  ) {
+    Icon(
+      icon,
+      contentDescription = text,
+      modifier = Modifier.size(18.dp),
+      tint = if (disabled) MaterialTheme.colors.secondary else iconTint
+    )
+  }
+}
+
+@Composable
+fun SettingsActionItemWithContent(icon: Painter?, text: String? = null, click: (() -> Unit)? = null, iconColor: Color = MaterialTheme.colors.secondary, textColor: Color = MaterialTheme.colors.onBackground, disabled: Boolean = false, extraPadding: Boolean = false, badgeColor: Color? = null, content: @Composable RowScope.() -> Unit) {
   SectionItemView(
     click,
     extraPadding = extraPadding,
@@ -672,7 +680,11 @@ fun SettingsActionItemWithContent(icon: Painter?, text: String? = null, click: (
     disabled = disabled
   ) {
     if (icon != null) {
-      Icon(icon, text, Modifier, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
+      if (badgeColor != null) {
+        SettingsRowIconBadge(icon, text, badgeColor, disabled)
+      } else {
+        Icon(icon, text, Modifier, tint = if (disabled) MaterialTheme.colors.secondary else iconColor)
+      }
       TextIconSpaced(extraPadding)
     }
     if (text != null) {

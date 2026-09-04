@@ -161,12 +161,13 @@ fun <T> ExposedDropDownSettingRow(
   label: String? = null,
   icon: Painter? = null,
   iconTint: Color = MaterialTheme.colors.secondary,
+  badgeColor: Color? = null,
   enabled: State<Boolean> = mutableStateOf(true),
   minWidth: Dp = 200.dp,
   maxWidth: Dp = with(LocalDensity.current) { 180.sp.toDp() },
   onSelected: (T) -> Unit
 ) {
-  SettingsActionItemWithContent(icon, title, iconColor = iconTint, disabled = !enabled.value) {
+  SettingsActionItemWithContent(icon, title, iconColor = iconTint, disabled = !enabled.value, badgeColor = badgeColor) {
     ExposedDropDownSetting(values, selection ,textColor, label = label, enabled = enabled, minWidth = minWidth, maxWidth = maxWidth, onSelected = onSelected)
   }
 }
