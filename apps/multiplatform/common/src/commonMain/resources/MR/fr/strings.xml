@@ -2369,12 +2369,6 @@
     <string name="filter_pill_direct">Directs</string>
 
     <!-- SimpleUX i18n : réponses rapides -->
-    <string name="quick_reply_agree">👍 D\'accord</string>
-    <string name="quick_reply_thanks">🙏 Merci !</string>
-    <string name="quick_reply_perfect">👌 Parfait</string>
-    <string name="quick_reply_on_my_way">🚀 En route !</string>
-    <string name="quick_reply_talk_later">👋 À plus tard</string>
-    <string name="quick_reply_looking_into_it">⏳ Je regarde ça</string>
 
     <!-- SimpleUX i18n : bascule de thème -->
     <string name="theme_mode_light_descr">Mode Clair</string>

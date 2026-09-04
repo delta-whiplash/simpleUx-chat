@@ -74,14 +74,12 @@ jobs:
           # any file not on this list, is held to the real rule with no exceptions.
           hex_baseline=(
             "./ChatListShell.kt"
-            "./components/ActiveContactsRail.kt"
             "./components/DisappearingTimerBar.kt"
             "./components/FilterPillsRow.kt"
             "./components/FullscreenEmojiEffectOverlay.kt"
             "./components/MessageBubble.kt"
             "./components/ProfileSwitcherOverlay.kt"
             "./components/QuickReactionsBar.kt"
-            "./components/QuickRepliesBar.kt"
             "./components/SecurityBadge.kt"
             "./components/ThemeAnimation.kt"
             "./components/VoiceWaveformPlayer.kt"

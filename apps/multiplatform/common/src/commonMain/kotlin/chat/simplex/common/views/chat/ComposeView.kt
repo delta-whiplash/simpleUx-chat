@@ -1810,12 +1810,6 @@ fun ComposeView(
           )
         } else {
           Column {
-            QuickRepliesBar(
-              isVisible = composeState.value.whitespaceOnly && composeState.value.preview is ComposePreview.NoPreview,
-              onQuickReplySelected = { text: String ->
-                onMessageChange(ComposeMessage(text))
-              }
-            )
             Row(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
               AttachmentAndCommandsButtons()
               val broadcastPlaceholder = (chat.chatInfo as? ChatInfo.Group)?.groupInfo?.let { gi ->

@@ -3108,14 +3108,6 @@
   <string name="filter_pill_unread">Unread</string>
   <string name="filter_pill_direct">Direct</string>
 
-  <!-- SimpleUX i18n: quick replies -->
-  <string name="quick_reply_agree">👍 Got it</string>
-  <string name="quick_reply_thanks">🙏 Thanks!</string>
-  <string name="quick_reply_perfect">👌 Perfect</string>
-  <string name="quick_reply_on_my_way">🚀 On my way!</string>
-  <string name="quick_reply_talk_later">👋 Talk later</string>
-  <string name="quick_reply_looking_into_it">⏳ Looking into it</string>
-
   <!-- SimpleUX i18n: theme switcher -->
   <string name="theme_mode_light_descr">Light mode</string>
   <string name="theme_mode_dark_descr">Dark mode</string>

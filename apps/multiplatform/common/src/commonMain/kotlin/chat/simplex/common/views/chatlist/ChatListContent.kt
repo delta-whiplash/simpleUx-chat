@@ -283,23 +283,6 @@ internal fun BoxScope.ChatListContent(
             )
           }
 
-          // SimpleUX Active Contacts / Favorites Rail (Collapsible on search)
-          val scope = rememberCoroutineScope()
-          // #99: the shared snapshot (stable identity between unrelated
-          // recompositions) keeps the rail's remember(chats) filter cached.
-          ActiveContactsRail(
-            chats = allChatsSnapshot,
-            onChatClicked = { targetChat ->
-              scope.launch {
-                when (val info = targetChat.chatInfo) {
-                  is ChatInfo.Direct -> directChatAction(targetChat.remoteHostId, info.contact, chatModel)
-                  is ChatInfo.Group -> groupChatAction(targetChat.remoteHostId, info.groupInfo, chatModel, mutableStateOf(false))
-                  is ChatInfo.Local -> noteFolderChatAction(targetChat.remoteHostId, info.noteFolder)
-                  else -> chatModel.chatId.value = targetChat.id
-                }
-              }
-            }
-          )
         }
 
         if (connectNameCandidate.value != null) {
