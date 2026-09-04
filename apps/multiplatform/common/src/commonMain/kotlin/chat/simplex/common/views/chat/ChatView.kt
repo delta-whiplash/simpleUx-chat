@@ -2360,7 +2360,10 @@ fun BoxScope.ChatItemsList(
     modifier.align(Alignment.BottomCenter),
     state = listState.value,
     contentPadding = PaddingValues(
-      top = topPaddingToContent,
+      // #119: breathing room between the floating top-bar card and the first
+      // item - topPaddingToContent is exactly the bar's height, so without the
+      // gap the first card touches the bar's border and they read as fused
+      top = topPaddingToContent + DEFAULT_PADDING_HALF,
       bottom = composeViewHeight.value
     ),
     reverseLayout = true,
