@@ -425,7 +425,7 @@ fun ChatItemView(
             fun DeleteItemMenu() {
               DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                if (cItem.canBeDeletedForSelf) {
+                if (cItem.canBeSelected) {
                   Divider()
                   SelectItemAction(showMenu, selectChatItem)
                 }
@@ -444,7 +444,9 @@ fun ChatItemView(
                     }
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages, buttonText = stringResource(MR.strings.delete_report))
                     Divider()
-                    SelectItemAction(showMenu, selectChatItem)
+                    if (cItem.canBeSelected) {
+                      SelectItemAction(showMenu, selectChatItem)
+                    }
                   }
                 }
                 cItem.content.msgContent != null && cItem.id >= 0 && !cItem.isReport -> {
@@ -542,7 +544,7 @@ fun ChatItemView(
                         ReportItemAction(cItem, composeState, showMenu)
                       }
                     }
-                    if (cItem.canBeDeletedForSelf) {
+                    if (cItem.canBeSelected) {
                       Divider()
                       SelectItemAction(showMenu, selectChatItem)
                     }
@@ -559,7 +561,7 @@ fun ChatItemView(
                     }
                     ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                    if (cItem.canBeDeletedForSelf) {
+                    if (cItem.canBeSelected) {
                       Divider()
                       SelectItemAction(showMenu, selectChatItem)
                     }
@@ -569,7 +571,7 @@ fun ChatItemView(
                   DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                    if (cItem.canBeDeletedForSelf) {
+                    if (cItem.canBeSelected) {
                       Divider()
                       SelectItemAction(showMenu, selectChatItem)
                     }
@@ -583,7 +585,7 @@ fun ChatItemView(
                       ExpandItemAction(revealed, showMenu, reveal)
                     }
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                    if (cItem.canBeDeletedForSelf) {
+                    if (cItem.canBeSelected) {
                       Divider()
                       SelectItemAction(showMenu, selectChatItem)
                     }
@@ -592,7 +594,7 @@ fun ChatItemView(
                 else -> {
                   DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                     DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                    if (selectedChatItems.value == null) {
+                    if (cItem.canBeSelected && selectedChatItems.value == null) {
                       Divider()
                       SelectItemAction(showMenu, selectChatItem)
                     }
@@ -609,7 +611,7 @@ fun ChatItemView(
                 }
                 ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                if (cItem.canBeDeletedForSelf) {
+                if (cItem.canBeSelected) {
                   Divider()
                   SelectItemAction(showMenu, selectChatItem)
                 }
@@ -638,7 +640,7 @@ fun ChatItemView(
               DefaultDropdownMenu(showMenu, offset = contextualMenuOffset) {
                 ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = deleteMessageQuestionText(), deleteMessage, deleteMessages)
-                if (cItem.canBeDeletedForSelf) {
+                if (cItem.canBeSelected) {
                   Divider()
                   SelectItemAction(showMenu, selectChatItem)
                 }
@@ -712,7 +714,7 @@ fun ChatItemView(
                 }
                 ItemInfoAction(cInfo, cItem, showItemDetails, showMenu)
                 DeleteItemAction(chatsCtx, cInfo, cItem, revealed, showMenu, questionText = generalGetString(MR.strings.delete_message_cannot_be_undone_warning), deleteMessage, deleteMessages)
-                if (cItem.canBeDeletedForSelf) {
+                if (cItem.canBeSelected) {
                   Divider()
                   SelectItemAction(showMenu, selectChatItem)
                 }

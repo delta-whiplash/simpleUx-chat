@@ -1975,7 +1975,7 @@ fun BoxScope.ChatItemsList(
 
         Box(modifier = Modifier.fillMaxWidth()) {
           val voiceWithTransparentBack = cItem.content.msgContent is MsgContent.MCVoice && cItem.content.text.isEmpty() && cItem.quotedItem == null && cItem.meta.itemForwarded == null
-          val selectionVisible = selectedChatItems.value != null && cItem.canBeDeletedForSelf
+          val selectionVisible = selectedChatItems.value != null && cItem.canBeSelected
           val selectionOffset by animateDpAsState(if (selectionVisible && !sent) 4.dp + 22.dp * fontSizeMultiplier else 0.dp)
           val swipeModifierToUse = if (selectionVisible || isCenterEvent) Modifier else swipeableModifier
           if (chatInfo is ChatInfo.Group) {
@@ -2033,16 +2033,18 @@ fun BoxScope.ChatItemsList(
                   @Composable
                   fun Item() {
                     ChatItemBox(Modifier.layoutId(CHAT_BUBBLE_LAYOUT_ID)) {
-                      androidx.compose.animation.AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
-                        SelectedListItem(Modifier, cItem.id, selectedChatItems)
-                      }
-                      Row(Modifier.graphicsLayer { translationX = selectionOffset.toPx() }) {
-                        val member = cItem.chatDir.groupMember
-                        Box(Modifier.clickable { showMemberInfo(chatInfo.groupInfo, member) }) {
-                          MemberImage(member)
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        androidx.compose.animation.AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
+                          SelectedListItem(Modifier, cItem.id, selectedChatItems)
                         }
-                        Box(modifier = Modifier.padding(top = 2.dp, start = 4.dp).chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)) {
-                          ChatItemViewShortHand(cItem, itemSeparation, range, false, dismissState.offset.value)
+                        Row {
+                          val member = cItem.chatDir.groupMember
+                          Box(Modifier.clickable { showMemberInfo(chatInfo.groupInfo, member) }) {
+                            MemberImage(member)
+                          }
+                          Box(modifier = Modifier.padding(top = 2.dp, start = 4.dp).chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)) {
+                            ChatItemViewShortHand(cItem, itemSeparation, range, false, dismissState.offset.value)
+                          }
                         }
                       }
                     }
@@ -2058,16 +2060,17 @@ fun BoxScope.ChatItemsList(
                 }
               } else {
                 ChatItemBox(swipeModifierToUse) {
-                  AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
-                    SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
-                  }
-                  Row(
-                    Modifier
-                      .padding(start = if (chatInfo.isChannel) 12.dp else 8.dp + (MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier) + 4.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
-                      .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                      .graphicsLayer { translationX = selectionOffset.toPx() }
-                  ) {
-                    ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                  Row(verticalAlignment = Alignment.CenterVertically) {
+                    AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
+                      SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
+                    }
+                    Row(
+                      Modifier
+                        .padding(start = if (chatInfo.isChannel) 12.dp else 8.dp + (MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier) + 4.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
+                        .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
+                    ) {
+                      ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                    }
                   }
                 }
               }
@@ -2112,20 +2115,22 @@ fun BoxScope.ChatItemsList(
                   @Composable
                   fun Item() {
                     ChatItemBox(Modifier.layoutId(CHAT_BUBBLE_LAYOUT_ID)) {
-                      androidx.compose.animation.AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
-                        SelectedListItem(Modifier, cItem.id, selectedChatItems)
-                      }
-                      Row(Modifier.graphicsLayer { translationX = selectionOffset.toPx() }) {
-                        Box(Modifier.clickable { showChatInfo() }) {
-                          ProfileImage(
-                            MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier,
-                            chatInfo.groupInfo.image,
-                            chatInfo.groupInfo.chatIconName,
-                            backgroundColor = MaterialTheme.colors.background
-                          )
+                      Row(verticalAlignment = Alignment.CenterVertically) {
+                        androidx.compose.animation.AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
+                          SelectedListItem(Modifier, cItem.id, selectedChatItems)
                         }
-                        Box(modifier = Modifier.padding(top = 2.dp, start = 4.dp).chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)) {
-                          ChatItemViewShortHand(cItem, itemSeparation, range, false)
+                        Row {
+                          Box(Modifier.clickable { showChatInfo() }) {
+                            ProfileImage(
+                              MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier,
+                              chatInfo.groupInfo.image,
+                              chatInfo.groupInfo.chatIconName,
+                              backgroundColor = MaterialTheme.colors.background
+                            )
+                          }
+                          Box(modifier = Modifier.padding(top = 2.dp, start = 4.dp).chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)) {
+                            ChatItemViewShortHand(cItem, itemSeparation, range, false)
+                          }
                         }
                       }
                     }
@@ -2141,51 +2146,54 @@ fun BoxScope.ChatItemsList(
                 }
               } else {
                 ChatItemBox(swipeModifierToUse) {
-                  AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
-                    SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
-                  }
-                  Row(
-                    Modifier
-                      .padding(start = if (chatInfo.isChannel) 12.dp else 8.dp + (MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier) + 4.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
-                      .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                      .graphicsLayer { translationX = selectionOffset.toPx() }
-                  ) {
-                    ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                  Row(verticalAlignment = Alignment.CenterVertically) {
+                    AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
+                      SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
+                    }
+                    Row(
+                      Modifier
+                        .padding(start = if (chatInfo.isChannel) 12.dp else 8.dp + (MEMBER_IMAGE_SIZE * fontSizeSqrtMultiplier) + 4.dp, end = if (voiceWithTransparentBack || chatInfo.isChannel) 12.dp else adjustTailPaddingOffset(66.dp, start = false))
+                        .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
+                    ) {
+                      ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                    }
                   }
                 }
               }
             } else {
               ChatItemBox(swipeModifierToUse) {
-                AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
-                  SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
-                }
-                Box(
-                  Modifier
-                    .padding(start = if (isCenterEvent || voiceWithTransparentBack) 12.dp else adjustTailPaddingOffset(104.dp, start = true), end = 12.dp)
-                    .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
-                    .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                    .graphicsLayer { translationX = selectionOffset.toPx() }
-                ) {
-                  ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                  AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
+                    SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
+                  }
+                  Box(
+                    Modifier
+                      .padding(start = if (isCenterEvent || voiceWithTransparentBack) 12.dp else adjustTailPaddingOffset(104.dp, start = true), end = 12.dp)
+                      .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
+                      .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
+                  ) {
+                    ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                  }
                 }
               }
             }
           } else { // direct message
             ChatItemBox(swipeModifierToUse) {
-              AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
-                SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
-              }
+              Row(verticalAlignment = Alignment.CenterVertically) {
+                AnimatedVisibility(selectionVisible, enter = fadeIn(), exit = fadeOut()) {
+                  SelectedListItem(Modifier.padding(start = 8.dp), cItem.id, selectedChatItems)
+                }
 
-              Box(
-                Modifier.padding(
-                  start = if (isCenterEvent || (!sent || voiceWithTransparentBack)) 12.dp else adjustTailPaddingOffset(76.dp, start = true),
-                  end = if (isCenterEvent || (sent && !voiceWithTransparentBack)) 12.dp else adjustTailPaddingOffset(76.dp, start = false),
-                )
-                  .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
-                  .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
-                  .graphicsLayer { translationX = selectionOffset.toPx() }
-              ) {
-                ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                Box(
+                  Modifier.padding(
+                    start = if (isCenterEvent || (!sent || voiceWithTransparentBack)) 12.dp else adjustTailPaddingOffset(76.dp, start = true),
+                    end = if (isCenterEvent || (sent && !voiceWithTransparentBack)) 12.dp else adjustTailPaddingOffset(76.dp, start = false),
+                  )
+                    .then(if (isCenterEvent) Modifier.fillMaxWidth() else Modifier)
+                    .chatItemOffset(cItem, itemSeparation.largeGap, revealed = revealed.value)
+                ) {
+                  ChatItemViewShortHand(cItem, itemSeparation, range, swipeOffset = dismissState.offset.value)
+                }
               }
             }
           }

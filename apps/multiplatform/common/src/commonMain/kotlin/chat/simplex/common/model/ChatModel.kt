@@ -3300,6 +3300,11 @@ data class ChatItem (
   val canBeDeletedForSelf: Boolean
     get() = (content.msgContent != null && !meta.isLive) || meta.itemDeleted != null || isDeletedContent || mergeCategory != null || showLocalDelete
 
+  // Only real messages (text/file/media, incl. local notes and forwarded items) are selectable;
+  // excludes calls, group/direct events, integrity errors, banners and deleted-content placeholders.
+  val canBeSelected: Boolean
+    get() = content.msgContent != null && !meta.isLive && meta.itemDeleted == null
+
   val showNotification: Boolean get() =
     when (content) {
       is CIContent.SndMsgContent -> false
