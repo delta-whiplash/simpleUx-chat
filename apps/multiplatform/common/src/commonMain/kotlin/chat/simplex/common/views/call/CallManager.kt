@@ -77,6 +77,10 @@ class CallManager(val chatModel: ChatModel) {
       // If there is active call currently and it's with other contact, don't interrupt it
       if (activeCall.value != null && !(activeCall.value?.remoteHostId == call.remoteHostId && activeCall.value?.contact?.id == call.contact.id)) return
 
+      // Duplicate endCall for a call already cleaned up: the WCallResponse.End/Ended handlers
+      // and the explicit hang-up can each reach this point after the first call did the work
+      if (activeCall.value == null && !switchingCall.value) return
+
       // Don't destroy WebView if you plan to accept next call right after this one
       if (!switchingCall.value) {
         showCallView.value = false
@@ -89,7 +93,7 @@ class CallManager(val chatModel: ChatModel) {
         Log.d(TAG, "CallManager.endCall: call ended")
       } else {
         Log.d(TAG, "CallManager.endCall: ending call...")
-        //callCommand.add(WCallCommand.End)
+        callCommand.add(WCallCommand.End)
         controller.apiEndCall(call.remoteHostId, call.contact)
       }
     }
