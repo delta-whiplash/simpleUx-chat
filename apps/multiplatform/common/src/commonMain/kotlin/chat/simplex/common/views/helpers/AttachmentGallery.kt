@@ -14,11 +14,17 @@ data class RecentMediaItem(
 )
 
 /**
- * Recent-gallery section of the attachment sheet: a grid of the most recent
- * photos/videos, tap sends it straight into the compose preview. Android
- * actual handles the media permission and the MediaStore query; when the
- * permission is missing it renders nothing (the Gallery action below still
- * opens the system picker, which needs no permission). Desktop: nothing.
+ * #122 phase 2: top section of the attachment sheet - a live camera tile
+ * next to the recent-gallery grid. The tile only binds the camera while the
+ * sheet is visible (the sheet content composes eagerly while hidden - see
+ * the #99 camera-perf class); tapping it opens the existing full-screen
+ * capture flow. The grid is tap-to-send via the compose preview path. When
+ * media permission is missing the grid renders nothing. Desktop: nothing.
  */
 @Composable
-expect fun RecentGallerySection(onMediaPicked: (List<URI>) -> Unit, hide: () -> Unit)
+expect fun AttachmentTopSection(
+  sheetVisible: Boolean,
+  onCameraOpened: () -> Unit,
+  onMediaPicked: (List<URI>) -> Unit,
+  hide: () -> Unit
+)

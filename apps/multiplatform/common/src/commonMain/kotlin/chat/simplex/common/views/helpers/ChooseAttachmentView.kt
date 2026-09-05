@@ -56,6 +56,7 @@ sealed class AttachmentOption {
 fun ChooseAttachmentView(
   attachmentOption: MutableState<AttachmentOption?>,
   hide: () -> Unit,
+  sheetVisible: Boolean = true,
   onMediaPicked: (List<URI>) -> Unit = {},
   onContactPicked: (String) -> Unit = {}
 ) {
@@ -93,7 +94,12 @@ fun ChooseAttachmentView(
         )
       } else {
         if (appPlatform.isAndroid) {
-          RecentGallerySection(
+          AttachmentTopSection(
+            sheetVisible = sheetVisible,
+            onCameraOpened = {
+              attachmentOption.value = AttachmentOption.CameraPhoto
+              hide()
+            },
             onMediaPicked = onMediaPicked,
             hide = hide
           )
@@ -103,15 +109,8 @@ fun ChooseAttachmentView(
           Modifier.fillMaxWidth().padding(horizontal = 12.dp),
           horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-          AttachmentAction(MR.images.ic_camera_enhance, MR.strings.use_camera_button, visible = appPlatform.isAndroid) {
-            attachmentOption.value = AttachmentOption.CameraPhoto
-            hide()
-          }
-          AttachmentAction(MR.images.ic_add_photo, MR.strings.gallery_button, visible = appPlatform.isAndroid) {
-            attachmentOption.value = AttachmentOption.GalleryImage
-            hide()
-          }
-          // desktop keeps the separate Image / Video system dialogs
+          // desktop keeps the separate Image / Video system dialogs (its
+          // camera tile is Android-only)
           AttachmentAction(MR.images.ic_add_photo, MR.strings.gallery_image_button, visible = !appPlatform.isAndroid) {
             attachmentOption.value = AttachmentOption.GalleryImage
             hide()

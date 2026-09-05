@@ -7,12 +7,15 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -23,18 +26,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import chat.simplex.common.helpers.toURI
 import chat.simplex.common.platform.androidAppContext
+import chat.simplex.res.MR
+import dev.icerock.moko.resources.compose.painterResource
 import java.net.URI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val RECENT_MEDIA_LIMIT = 6
+private val RECENT_MEDIA_LIMIT = 4
 
 private fun neededMediaPermissions(): List<String> =
   if (Build.VERSION.SDK_INT >= 33) {
@@ -48,18 +56,25 @@ private fun hasMediaPermission(): Boolean =
     ContextCompat.checkSelfPermission(androidAppContext, it) == PackageManager.PERMISSION_GRANTED
   }
 
+private fun hasCameraPermission(): Boolean =
+  ContextCompat.checkSelfPermission(androidAppContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
 @Composable
-actual fun RecentGallerySection(onMediaPicked: (List<URI>) -> Unit, hide: () -> Unit) {
-  val permissions = neededMediaPermissions()
+actual fun AttachmentTopSection(
+  sheetVisible: Boolean,
+  onCameraOpened: () -> Unit,
+  onMediaPicked: (List<URI>) -> Unit,
+  hide: () -> Unit
+) {
   var granted by remember { mutableStateOf(hasMediaPermission()) }
   // ask for the next permission in the chain from the current launcher's callback
   var pendingLaunch by remember { mutableStateOf<String?>(null) }
   val permissionLauncher = rememberPermissionLauncher { _ ->
     granted = hasMediaPermission()
-    pendingLaunch = if (granted) null else permissions.firstOrNull { !isPermissionGranted(it) }
+    pendingLaunch = if (granted) null else neededMediaPermissions().firstOrNull { !isPermissionGranted(it) }
   }
   LaunchedEffect(Unit) {
-    if (!granted) pendingLaunch = permissions.firstOrNull { !isPermissionGranted(it) }
+    if (!granted) pendingLaunch = neededMediaPermissions().firstOrNull { !isPermissionGranted(it) }
   }
   LaunchedEffect(pendingLaunch) {
     pendingLaunch?.let { permissionLauncher.launch(it) }
@@ -73,23 +88,33 @@ actual fun RecentGallerySection(onMediaPicked: (List<URI>) -> Unit, hide: () -> 
   }
 
   if (!granted || items.isEmpty()) return
-  Column(
+  Row(
     Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-    verticalArrangement = Arrangement.spacedBy(6.dp)
+    horizontalArrangement = Arrangement.spacedBy(6.dp)
   ) {
-    items.chunked(3).forEach { rowItems ->
-      Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        rowItems.forEach { item ->
-          RecentMediaThumb(
-            item = item,
-            modifier = Modifier.weight(1f),
-            onClick = {
-              onMediaPicked(listOf(Uri.parse(item.uri).toURI()))
-              hide()
-            }
-          )
+    CameraPreviewTile(
+      modifier = Modifier.weight(1f),
+      sheetVisible = sheetVisible,
+      onClick = onCameraOpened
+    )
+    Column(
+      Modifier.weight(2f),
+      verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+      items.chunked(2).forEach { rowItems ->
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+          rowItems.forEach { item ->
+            RecentMediaThumb(
+              item = item,
+              modifier = Modifier.weight(1f),
+              onClick = {
+                onMediaPicked(listOf(Uri.parse(item.uri).toURI()))
+                hide()
+              }
+            )
+          }
+          repeat(2 - rowItems.size) { Spacer(Modifier.weight(1f)) }
         }
-        repeat(3 - rowItems.size) { Spacer(Modifier.weight(1f)) }
       }
     }
   }
@@ -97,6 +122,78 @@ actual fun RecentGallerySection(onMediaPicked: (List<URI>) -> Unit, hide: () -> 
 
 private fun isPermissionGranted(permission: String): Boolean =
   ContextCompat.checkSelfPermission(androidAppContext, permission) == PackageManager.PERMISSION_GRANTED
+
+/**
+ * #122 phase 2: live viewfinder square. Binds a preview-only camera while the
+ * sheet is VISIBLE (sheet content composes eagerly while hidden - binding
+ * unconditionally would keep the camera on during the whole chat, the #99
+ * perf class). Tap opens the existing full-screen capture flow, which also
+ * handles the CAMERA permission request.
+ */
+@Composable
+private fun CameraPreviewTile(modifier: Modifier, sheetVisible: Boolean, onClick: () -> Unit) {
+  val context = LocalContext.current
+  val lifecycleOwner = LocalLifecycleOwner.current
+  val cameraGranted = remember { mutableStateOf(hasCameraPermission()) }
+  val providerFuture = remember { ProcessCameraProvider.getInstance(context) }
+  val previewView = remember {
+    PreviewView(context).apply {
+      scaleType = PreviewView.ScaleType.FILL_CENTER
+      implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+    }
+  }
+  // the camera permission may be granted while the sheet is open (the capture
+  // flow's own request); re-check whenever the sheet becomes visible
+  LaunchedEffect(sheetVisible) {
+    if (sheetVisible) cameraGranted.value = hasCameraPermission()
+  }
+  var bound by remember { mutableStateOf(false) }
+  DisposableEffect(sheetVisible, cameraGranted.value) {
+    if (sheetVisible && cameraGranted.value && !bound) {
+      try {
+        val provider = providerFuture.get()
+        val preview = androidx.camera.core.Preview.Builder().build().also { it.setSurfaceProvider(previewView.surfaceProvider) }
+        provider.bindToLifecycle(lifecycleOwner, androidx.camera.core.CameraSelector.DEFAULT_BACK_CAMERA, preview)
+        bound = true
+      } catch (e: Exception) {
+        // camera busy elsewhere (e.g. the full-screen capture flow) - fall back to the static tile
+      }
+    }
+    onDispose {
+      if (bound) {
+        try {
+          providerFuture.get().unbindAll()
+        } catch (e: Exception) {
+        }
+        bound = false
+      }
+    }
+  }
+
+  Box(
+    modifier
+      .aspectRatio(1f)
+      .clip(RoundedCornerShape(12.dp))
+      .background(MaterialTheme.colors.onBackground.copy(alpha = 0.06f))
+      .clickable(
+        interactionSource = remember { MutableInteractionSource() },
+        indication = null,
+        onClick = onClick
+      ),
+    contentAlignment = Alignment.Center
+  ) {
+    if (cameraGranted.value && sheetVisible) {
+      AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize())
+    } else {
+      Icon(
+        painterResource(MR.images.ic_camera_enhance),
+        contentDescription = null,
+        tint = MaterialTheme.colors.primary,
+        modifier = Modifier.size(26.dp)
+      )
+    }
+  }
+}
 
 private fun queryRecentGalleryItems(): List<RecentMediaItem> {
   val resolver = androidAppContext.contentResolver
@@ -167,11 +264,6 @@ private fun RecentMediaThumb(item: RecentMediaItem, modifier: Modifier, onClick:
   }
 }
 
-private fun isVideoUri(uri: Uri): Boolean {
-  val mime = androidAppContext.contentResolver.getType(uri)
-  return mime != null && mime.startsWith("video/")
-}
-
 private fun loadMediaThumbnail(uri: String): ImageBitmap? = try {
   val parsed = Uri.parse(uri)
   // this SDK's android.jar lacks android.graphics.Size, so no
@@ -198,6 +290,11 @@ private fun loadMediaThumbnail(uri: String): ImageBitmap? = try {
   }
 } catch (e: Exception) {
   null
+}
+
+private fun isVideoUri(uri: Uri): Boolean {
+  val mime = androidAppContext.contentResolver.getType(uri)
+  return mime != null && mime.startsWith("video/")
 }
 
 private fun shortDurationText(totalSeconds: Int): String {
