@@ -1394,21 +1394,14 @@ fun BoxScope.ChatInfoToolbar(
   // header tap is the filter entry point (#57) and a kebab would duplicate it
   if (menuItems.isNotEmpty() && chatInfo !is ChatInfo.Local) {
     barButtons.add {
+      // #121: bare icon like every sibling in the bar - the tinted pill read as
+      // a permanent active state and made the kebab the loudest element
       IconButton({ showMenu.value = true }) {
-        Box(
-          modifier = Modifier
-            .size(34.dp)
-            .clip(CornerPill)
-            .background(MaterialTheme.colors.primary.copy(alpha = 0.12f)),
-          contentAlignment = Alignment.Center
-        ) {
-          Icon(
-            MoreVertFilled,
-            stringResource(MR.strings.icon_descr_more_button),
-            tint = MaterialTheme.colors.primary,
-            modifier = Modifier.size(20.dp)
-          )
-        }
+        Icon(
+          MoreVertFilled,
+          stringResource(MR.strings.icon_descr_more_button),
+          tint = MaterialTheme.colors.primary
+        )
       }
     }
   }
