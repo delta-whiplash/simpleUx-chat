@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import chat.simplex.common.model.ChatController.appPrefs
 import chat.simplex.common.ui.theme.DEFAULT_PADDING
+import chat.simplex.common.ui.theme.DEFAULT_PADDING_HALF
 import chat.simplex.common.views.chatlist.NavigationBarBackground
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.onboarding.OnboardingStage
@@ -140,12 +141,14 @@ actual fun ColumnWithScrollBar(
         Modifier.copyViewToAppBar(remember { appPrefs.appearanceBarsBlurRadius.state }.value, LocalAppBarHandler.current?.graphicsLayer).then(modifier).nestedScroll(connection).verticalScroll(state)
       }, verticalArrangement, horizontalAlignment
     ) {
+      // #119: reserve the floating bar's full height + air in EVERY mode, or the
+      // first item (profile header) starts under the top-bar card
       if (oneHandUI.value) {
-        Spacer(Modifier.padding(top = DEFAULT_PADDING + 5.dp).windowInsetsTopHeight(WindowInsets.statusBars))
+        Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier + DEFAULT_PADDING_HALF))
         content()
         Spacer(Modifier.navigationBarsPadding().padding(bottom = AppBarHeight * fontSizeSqrtMultiplier))
       } else {
-        Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier))
+        Spacer(Modifier.statusBarsPadding().padding(top = AppBarHeight * fontSizeSqrtMultiplier + DEFAULT_PADDING_HALF))
         content()
         Spacer(Modifier.windowInsetsBottomHeight(WindowInsets.systemBars))
       }

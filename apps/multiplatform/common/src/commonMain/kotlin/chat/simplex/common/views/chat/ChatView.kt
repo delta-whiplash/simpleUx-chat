@@ -2845,14 +2845,11 @@ private fun TopEndFloatingButton(
 
 @Composable
 fun topPaddingToContent(chatView: Boolean, additionalTopBar: Boolean = false): Dp {
-  val oneHandUI = remember { appPrefs.oneHandUI.state }
-  val chatBottomBar = remember { appPrefs.chatBottomBar.state }
+  // #119: the bar height is part of the padding in EVERY mode - the one-hand
+  // variant used to reserve only the status bar, so scrolled-to-top items
+  // (contact/group banner) slid under the floating top-bar card
   val reportsPadding = if (additionalTopBar) AppBarHeight * fontSizeSqrtMultiplier else 0.dp
-  return if (oneHandUI.value && (!chatView || chatBottomBar.value)) {
-    WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + reportsPadding
-  } else {
-    AppBarHeight * fontSizeSqrtMultiplier + WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + reportsPadding
-  }
+  return AppBarHeight * fontSizeSqrtMultiplier + WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + reportsPadding
 }
 
 @Composable

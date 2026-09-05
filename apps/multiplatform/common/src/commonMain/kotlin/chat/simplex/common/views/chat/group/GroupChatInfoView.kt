@@ -566,7 +566,9 @@ fun ModalData.GroupChatInfoLayout(
     state = listState,
     contentPadding = if (oneHandUI.value) {
       PaddingValues(
-        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + DEFAULT_PADDING + 5.dp,
+        // #119: include the bar height + air, same as topPaddingToContent — the
+        // profile header must not slide under the floating top-bar card
+        top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + AppBarHeight * fontSizeSqrtMultiplier + DEFAULT_PADDING_HALF,
         bottom = navBarPadding +
             imePadding +
             selectedItemsBarHeight +
@@ -576,7 +578,7 @@ fun ModalData.GroupChatInfoLayout(
       )
     } else {
       PaddingValues(
-        top = topPaddingToContent(false),
+        top = topPaddingToContent(false) + DEFAULT_PADDING_HALF,
         bottom = if (imePadding > 0.dp) {
           imePadding + selectedItemsBarHeight
         } else {

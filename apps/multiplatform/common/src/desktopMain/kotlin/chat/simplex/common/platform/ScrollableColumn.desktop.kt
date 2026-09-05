@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import chat.simplex.common.model.ChatController.appPrefs
 import chat.simplex.common.ui.theme.DEFAULT_PADDING
+import chat.simplex.common.ui.theme.DEFAULT_PADDING_HALF
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.onboarding.OnboardingStage
 import kotlinx.coroutines.*
@@ -228,7 +229,9 @@ actual fun ColumnWithScrollBar(
       },
       verticalArrangement, horizontalAlignment
     ) {
-      Spacer(if (oneHandUI.value) Modifier.padding(top = DEFAULT_PADDING + 5.dp) else Modifier.padding(padding))
+      // #119: reserve the bar's full height + air in every mode so the first
+      // item never starts under the top-bar card (desktop: no status bar inset)
+      Spacer(Modifier.padding(top = AppBarHeight * fontSizeSqrtMultiplier + DEFAULT_PADDING_HALF))
       content()
       if (oneHandUI.value) {
         Spacer(Modifier.padding(padding))
