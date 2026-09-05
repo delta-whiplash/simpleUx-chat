@@ -245,9 +245,6 @@ private fun ProfileStepView(
     hasRelays.value = checkHasRelays(rhId)
   }
 
-  BackHandler(enabled = bottomSheetModalState.isVisible) {
-    scope.launch { bottomSheetModalState.hide() }
-  }
   ModalBottomSheetLayout(
     scrimColor = Color.Black.copy(alpha = 0.12F),
     modifier = Modifier.imePadding(),
@@ -352,6 +349,9 @@ private fun ProfileStepView(
           delay(1000)
           focusRequester.requestFocus()
         }
+      }
+      BackHandler(enabled = bottomSheetModalState.isVisible) {
+        scope.launch { bottomSheetModalState.hide() }
       }
     }
   }

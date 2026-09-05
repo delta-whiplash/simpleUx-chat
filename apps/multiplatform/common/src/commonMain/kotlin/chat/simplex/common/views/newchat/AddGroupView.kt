@@ -85,9 +85,6 @@ fun AddGroupLayout(
   val focusRequester = remember { FocusRequester() }
   val incognito = remember { mutableStateOf(incognitoPref.get()) }
 
-    BackHandler(enabled = bottomSheetModalState.isVisible) {
-    scope.launch { bottomSheetModalState.hide() }
-  }
   ModalBottomSheetLayout(
       scrimColor = Color.Black.copy(alpha = 0.12F),
       modifier = Modifier.imePadding(),
@@ -185,6 +182,9 @@ fun AddGroupLayout(
             focusRequester.requestFocus()
           }
         }
+      }
+      BackHandler(enabled = bottomSheetModalState.isVisible) {
+        scope.launch { bottomSheetModalState.hide() }
       }
     }
 }
