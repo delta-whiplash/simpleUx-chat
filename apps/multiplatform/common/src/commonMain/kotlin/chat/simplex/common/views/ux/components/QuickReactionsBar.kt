@@ -13,7 +13,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -26,15 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.ui.theme.isInDarkTheme
-import chat.simplex.res.MR
-import dev.icerock.moko.resources.compose.painterResource
-import dev.icerock.moko.resources.compose.stringResource
 
 @Composable
 fun QuickReactionsBar(
     isVisible: Boolean,
     onReactionSelected: (String) -> Unit,
-    onMoreEmojisClicked: () -> Unit,
     modifier: Modifier = Modifier,
     emojis: List<String>
 ) {
@@ -97,27 +92,9 @@ fun QuickReactionsBar(
                     }
                 }
 
-                // Plus button for full emoji picker
-                Box(
-                    modifier = Modifier
-                        .size(26.dp)
-                        .clip(CircleShape)
-                        .background(if (isDark) GlassBorderDark else GlassBorderLight)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            onMoreEmojisClicked()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(MR.images.ic_add),
-                        contentDescription = stringResource(MR.strings.more_emojis),
-                        tint = if (isDark) Slate400 else Slate500,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
+                // #120: no "+" button - the protocol only supports these 8
+                // reactions, so there is no "more emojis" to open (a picker
+                // would be a fake affordance)
             }
         }
     }

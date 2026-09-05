@@ -412,9 +412,6 @@ fun ChatItemView(
                       setReaction(cInfo, cItem, true, match)
                     }
                     showMenu.value = false
-                  },
-                  onMoreEmojisClicked = {
-                    showMenu.value = false
                   }
                 )
               }
