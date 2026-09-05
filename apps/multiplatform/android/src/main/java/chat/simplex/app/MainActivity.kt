@@ -92,37 +92,44 @@ class MainActivity: FragmentActivity() {
   }
 
   override fun onBackPressed() {
+    // Double-tap back to exit: when no Compose BackHandler wants the event,
+    // intercept here BEFORE super.onBackPressed() (which would finish the
+    // activity directly on Android R+).
+    if (!onBackPressedDispatcher.hasEnabledCallbacks()) {
+      // Drop shared content
+      val sharedContent = chatModel.sharedContent.value
+      chatModel.sharedContent.value = null
+      if (sharedContent is SharedContent.Forward) {
+        chatModel.chatId.value = sharedContent.fromChatInfo.id
+      }
+
+      // Clear auth state to force re-auth on next launch if LA is enabled
+      if (ChatController.appPrefs.performLA.get()) {
+        AppLock.clearAuthState()
+        AppLock.laFailed.value = true
+      }
+
+      val now = System.currentTimeMillis()
+      if (now - backPressTime < 2000) {
+        // Second press within 2s - actually exit
+        super.onBackPressed()
+        finish()
+      } else {
+        // First press - show toast, record time, do NOT call super
+        backPressTime = now
+        Toast.makeText(this, generalGetString(MR.strings.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
+      }
+      return
+    }
+
+    // A Compose BackHandler wants the event - delegate normally
     val canFinishActivity = (
-        onBackPressedDispatcher.hasEnabledCallbacks() // Has something to do in a backstack
-            || Build.VERSION.SDK_INT >= Build.VERSION_CODES.R // Android 11 or above
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.R // Android 11 or above
             || isTaskRoot // there are still other tasks after we reach the main (home) activity
         ) && SimplexApp.context.chatModel.sharedContent.value !is SharedContent.Forward
     if (canFinishActivity) {
       // https://medium.com/mobile-app-development-publication/the-risk-of-android-strandhogg-security-issue-and-how-it-can-be-mitigated-80d2ddb4af06
       super.onBackPressed()
-    }
-
-    if (!onBackPressedDispatcher.hasEnabledCallbacks() && ChatController.appPrefs.performLA.get()) {
-      // When pressed Back and there is no one wants to process the back event, clear auth state to force re-auth on launch
-      AppLock.clearAuthState()
-      AppLock.laFailed.value = true
-    }
-    if (!onBackPressedDispatcher.hasEnabledCallbacks()) {
-      val sharedContent = chatModel.sharedContent.value
-      // Drop shared content
-      chatModel.sharedContent.value = null
-      if (sharedContent is SharedContent.Forward) {
-        chatModel.chatId.value = sharedContent.fromChatInfo.id
-      }
-      if (canFinishActivity) {
-        val now = System.currentTimeMillis()
-        if (now - backPressTime < 2000) {
-          finish()
-        } else {
-          backPressTime = now
-          Toast.makeText(this, generalGetString(MR.strings.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
-        }
-      }
     }
   }
 }

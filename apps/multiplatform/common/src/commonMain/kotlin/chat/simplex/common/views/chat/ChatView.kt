@@ -1133,7 +1133,7 @@ fun ChatLayout(
               Box {
                 if (selectedChatItems.value == null) {
                   if (chatInfo != null) {
-                    ChatInfoToolbar(chatsCtx, chatInfo, back, info, startCall, endCall, addMembers, openGroupLink, changeNtfsState, onSearchValueChanged, showSearch, contentFilter, availableContent, searchPlaceholder)
+                    ChatInfoToolbar(chatsCtx, chatInfo, back, info, startCall, endCall, addMembers, openGroupLink, changeNtfsState, onSearchValueChanged, showSearch, contentFilter, availableContent, searchPlaceholder, attachmentBottomSheetState)
                   }
                 } else {
                   SelectedItemsCounterToolbar(selectedChatItems, true)
@@ -1169,7 +1169,8 @@ fun BoxScope.ChatInfoToolbar(
   showSearch: MutableState<Boolean>,
   contentFilter: MutableState<ContentFilter?>,
   availableContent: State<List<ContentFilter>>,
-  searchPlaceholder: String?
+  searchPlaceholder: String?,
+  attachmentBottomSheetState: ModalBottomSheetState
 ) {
   val scope = rememberCoroutineScope()
   val showMenu = rememberSaveable { mutableStateOf(false) }
@@ -1185,7 +1186,7 @@ fun BoxScope.ChatInfoToolbar(
     }
   }
   if (appPlatform.isAndroid && chatsCtx.secondaryContextFilter == null) {
-    BackHandler(onBack = onBackClicked)
+    BackHandler(enabled = !attachmentBottomSheetState.isVisible, onBack = onBackClicked)
   }
   val barButtons = arrayListOf<@Composable RowScope.() -> Unit>()
   val menuItems = arrayListOf<@Composable () -> Unit>()
