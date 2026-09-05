@@ -185,6 +185,7 @@
     <string name="gallery_image_button">Image</string>
     <string name="gallery_video_button">Vidéo</string>
     <string name="send_contact_button">Contact</string>
+    <string name="gallery_button">Galerie</string>
     <string name="to_start_a_new_chat_help_header">Pour démarrer une nouvelle discussion</string>
     <string name="chat_help_tap_button">Appuyez sur le bouton</string>
     <string name="to_connect_via_link_title">Pour se connecter via un lien</string>

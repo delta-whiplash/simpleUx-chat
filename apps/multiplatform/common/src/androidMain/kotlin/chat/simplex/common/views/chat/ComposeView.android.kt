@@ -37,10 +37,11 @@ actual fun AttachmentSelection(
       showToast(generalGetString(MR.strings.toast_permission_denied))
     }
   }
-  val galleryImageLauncher = rememberLauncherForActivityResult(contract = PickMultipleImagesFromGallery()) { processPickedMedia(it.map { it.toURI() }, null) }
-  val galleryImageLauncherFallback = rememberGetMultipleContentsLauncher { processPickedMedia(it.map { it.toURI() }, null) }
-  val galleryVideoLauncher = rememberLauncherForActivityResult(contract = PickMultipleVideosFromGallery()) { processPickedMedia(it.map { it.toURI() }, null) }
-  val galleryVideoLauncherFallback = rememberGetMultipleContentsLauncher { processPickedMedia(it.map { it.toURI() }, null) }
+  // #122: the Gallery entry uses the system photo picker (GetMultipleContents
+  // + EXTRA_MIME_TYPES) - multi-select, no permission needed. ACTION_PICK with
+  // a */* type was rejected silently by Photos, so there is no try/fallback
+  // dance here anymore.
+  val galleryMediaLauncher = rememberGetMultipleContentsLauncher { processPickedMedia(it.map { it.toURI() }, null) }
   val filesLauncher = rememberGetContentLauncher { processPickedFile(it?.toURI(), null) }
   LaunchedEffect(attachmentOption.value) {
     when (attachmentOption.value) {
@@ -56,19 +57,11 @@ actual fun AttachmentSelection(
         attachmentOption.value = null
       }
       AttachmentOption.GalleryImage -> {
-        try {
-          galleryImageLauncher.launch(0)
-        } catch (e: ActivityNotFoundException) {
-          galleryImageLauncherFallback.launch("image/*")
-        }
+        galleryMediaLauncher.launch("image/*;video/*")
         attachmentOption.value = null
       }
       AttachmentOption.GalleryVideo -> {
-        try {
-          galleryVideoLauncher.launch(0)
-        } catch (e: ActivityNotFoundException) {
-          galleryVideoLauncherFallback.launch("video/*")
-        }
+        galleryMediaLauncher.launch("video/*")
         attachmentOption.value = null
       }
       AttachmentOption.File -> {

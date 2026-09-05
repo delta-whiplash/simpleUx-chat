@@ -109,6 +109,12 @@ fun ChooseAttachmentView(
           Modifier.fillMaxWidth().padding(horizontal = 12.dp),
           horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+          // #122: keep the multi-select system picker reachable - the grid
+          // sends one item per tap, the Gallery well opens the full picker
+          AttachmentAction(MR.images.ic_add_photo, MR.strings.gallery_button, visible = appPlatform.isAndroid) {
+            attachmentOption.value = AttachmentOption.GalleryImage
+            hide()
+          }
           // desktop keeps the separate Image / Video system dialogs (its
           // camera tile is Android-only)
           AttachmentAction(MR.images.ic_add_photo, MR.strings.gallery_image_button, visible = !appPlatform.isAndroid) {
