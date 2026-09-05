@@ -777,6 +777,8 @@
   <string name="choose_file_title">Choose a file</string>
   <string name="gallery_image_button">Image</string>
   <string name="gallery_video_button">Video</string>
+  <string name="gallery_button">Gallery</string>
+  <string name="send_contact_button">Contact</string>
 
   <!-- help - ChatHelpView.kt -->
   <string name="thank_you_for_installing_simplex">Thank you for installing SimpleX Chat!</string>

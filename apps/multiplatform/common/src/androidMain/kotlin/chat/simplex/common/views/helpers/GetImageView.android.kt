@@ -215,11 +215,13 @@ class PickFromGallery: ActivityResultContract<Int, Uri?>() {
   override fun parseResult(resultCode: Int, intent: Intent?): Uri? = intent?.data
 }
 
+// #122: the Gallery entry covers photos AND videos in one picker
 class PickMultipleImagesFromGallery: ActivityResultContract<Int, List<Uri>>() {
   override fun createIntent(context: Context, input: Int) =
-    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI).apply {
+    Intent(Intent.ACTION_PICK).apply {
       putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-      type = "image/*"
+      type = "*/*"
+      putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
     }
 
   override fun parseResult(resultCode: Int, intent: Intent?): List<Uri> =

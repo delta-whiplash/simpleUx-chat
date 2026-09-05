@@ -966,7 +966,9 @@ fun ChatLayout(
       sheetContent = {
         ChooseAttachmentView(
           attachmentOption,
-          hide = { scope.launch { attachmentBottomSheetState.hide() } }
+          hide = { scope.launch { attachmentBottomSheetState.hide() } },
+          onMediaPicked = { uris -> scope.launch { composeState.processPickedMedia(uris, null) } },
+          onContactPicked = { link -> composeState.value = composeState.value.copy(message = ComposeMessage(link)) }
         )
       },
       sheetState = attachmentBottomSheetState,

@@ -20,6 +20,11 @@
   <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
       tools:ignore="ScopedStorage" />
+  <!-- #122: recent-gallery grid in the attachment sheet - local MediaStore query only -->
+  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+      android:maxSdkVersion="32" />
   <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
   <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
