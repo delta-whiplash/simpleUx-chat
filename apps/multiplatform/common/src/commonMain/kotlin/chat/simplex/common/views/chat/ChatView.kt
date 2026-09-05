@@ -960,6 +960,9 @@ fun ChatLayout(
         },
       )
   ) {
+    BackHandler(enabled = attachmentBottomSheetState.isVisible) {
+      scope.launch { attachmentBottomSheetState.hide() }
+    }
     ModalBottomSheetLayout(
       scrimColor = Color.Black.copy(alpha = 0.12F),
       sheetElevation = 0.dp,

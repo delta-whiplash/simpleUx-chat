@@ -20,6 +20,7 @@ import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.usersettings.PreferenceToggle
 import chat.simplex.common.model.*
 import chat.simplex.common.platform.ColumnWithScrollBar
+import chat.simplex.common.platform.BackHandler
 import chat.simplex.common.platform.chatModel
 import chat.simplex.res.MR
 import kotlinx.coroutines.*
@@ -32,6 +33,7 @@ fun ContactPreferencesView(
   contactId: Long,
   close: () -> Unit,
 ) {
+  BackHandler(onBack = close)
   val contact = remember { derivedStateOf { (m.getContactChat(contactId)?.chatInfo as? ChatInfo.Direct)?.contact } }
   val ct = contact.value ?: return
   var featuresAllowed by rememberSaveable(ct, user, stateSaver = serializableSaver()) { mutableStateOf(contactUserPrefsToFeaturesAllowed(ct.mergedPreferences)) }

@@ -93,7 +93,10 @@ fun UserProfileLayout(
   val descrFocusRequester = remember { FocusRequester() }
   var editingDescription by remember { mutableStateOf(false) }
   var descrHadFocus by remember { mutableStateOf(false) }
-    ModalBottomSheetLayout(
+    BackHandler(enabled = bottomSheetModalState.isVisible) {
+    scope.launch { bottomSheetModalState.hide() }
+  }
+  ModalBottomSheetLayout(
       scrimColor = Color.Black.copy(alpha = 0.12F),
       sheetContent = {
         GetImageBottomSheet(

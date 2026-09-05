@@ -3245,4 +3245,5 @@
   <string name="chat_folders_delete_confirm_text">The folder will be removed from your chat list. Chats are not deleted.</string>
   <string name="chat_folders_none_yet">No custom folder yet - create one in Settings → Chat Folders.</string>
   <string name="add_to_folder">Add to Folder</string>
+  <string name="press_back_again_to_exit">Press back again to exit</string>
 </resources>

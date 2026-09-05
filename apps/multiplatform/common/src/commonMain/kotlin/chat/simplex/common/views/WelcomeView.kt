@@ -70,6 +70,9 @@ fun CreateProfile(chatModel: ChatModel, close: () -> Unit) {
   val profileImage = rememberSaveable { mutableStateOf<String?>(null) }
   val focusRequester = remember { FocusRequester() }
 
+  BackHandler(enabled = bottomSheetModalState.isVisible) {
+    scope.launch { bottomSheetModalState.hide() }
+  }
   ModalBottomSheetLayout(
     scrimColor = Color.Black.copy(alpha = 0.12F),
     modifier = Modifier.imePadding(),

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.*
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
@@ -25,6 +26,8 @@ class MainActivity: FragmentActivity() {
   companion object {
     const val OLD_ANDROID_UI_FLAGS = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
   }
+
+  private var backPressTime = 0L
 
   override fun onCreate(savedInstanceState: Bundle?) {
     mainActivity = WeakReference(this)
@@ -112,7 +115,13 @@ class MainActivity: FragmentActivity() {
         chatModel.chatId.value = sharedContent.fromChatInfo.id
       }
       if (canFinishActivity) {
-        finish()
+        val now = System.currentTimeMillis()
+        if (now - backPressTime < 2000) {
+          finish()
+        } else {
+          backPressTime = now
+          Toast.makeText(this, generalGetString(MR.strings.press_back_again_to_exit), Toast.LENGTH_SHORT).show()
+        }
       }
     }
   }
