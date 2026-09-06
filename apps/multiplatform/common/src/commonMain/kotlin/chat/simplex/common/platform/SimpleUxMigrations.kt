@@ -25,4 +25,16 @@ fun runSimpleUxMigrations() {
     }
     SimpleUxPrefs.setChatStyleDefaultsApplied(true)
   }
+
+  if (!SimpleUxPrefs.remoteDiscoverySeedApplied()) {
+    // Linking level 1 (#127): auto-search for known desktops when the "Use from
+    // desktop" screen opens. The upstream default (off) lives in the byte-frozen
+    // model, so seed it ON once here; the "Discover via local network" toggle in
+    // Linked desktop options remains the opt-out.
+    val discoveryPrefs = ChatController.appPrefs
+    if (!discoveryPrefs.connectRemoteViaMulticast.get()) {
+      discoveryPrefs.connectRemoteViaMulticast.set(true)
+    }
+    SimpleUxPrefs.setRemoteDiscoverySeedApplied(true)
+  }
 }

@@ -2667,6 +2667,7 @@
   <string name="verify_connections">Verify connections</string>
   <string name="discover_on_network">Discover via local network</string>
   <string name="multicast_discoverable_via_local_network">Discoverable via local network</string>
+  <string name="listen_for_linked_mobiles_on_startup">Listen for linked mobiles on startup</string>
   <string name="multicast_connect_automatically">Connect automatically</string>
   <string name="paste_desktop_address">Paste desktop address</string>
   <string name="desktop_device">Desktop</string>

@@ -36,6 +36,8 @@ import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.QRCode
 import chat.simplex.common.views.usersettings.*
 import chat.simplex.common.views.usersettings.networkAndServers.validPort
+import chat.simplex.common.views.ux.AutoApplyDefaultCtrlAddress
+import chat.simplex.common.views.ux.pickDefaultCtrlAddress
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import dev.icerock.moko.resources.compose.stringResource
@@ -97,6 +99,11 @@ fun ConnectMobileLayout(
       SectionTextFooter(generalGetString(MR.strings.this_device_name_shared_with_mobile))
       PreferenceToggle(stringResource(MR.strings.multicast_discoverable_via_local_network), checked = remember { controller.appPrefs.offerRemoteMulticast.state }.value) {
         controller.appPrefs.offerRemoteMulticast.set(it)
+      }
+      val autostart = remember { mutableStateOf(SimpleUxPrefs.remoteHostAutostart()) }
+      PreferenceToggle(stringResource(MR.strings.listen_for_linked_mobiles_on_startup), checked = autostart.value) {
+        SimpleUxPrefs.setRemoteHostAutostart(it)
+        autostart.value = it
       }
       SectionDividerSpaced()
     }
@@ -288,7 +295,7 @@ fun AddingMobileDevice(showTitle: Boolean, staleQrCode: MutableState<Boolean>, c
     if (r != null) {
       cachedR = r
       connecting.value = true
-      customAddress.value = cachedR.addresses.firstOrNull()
+      customAddress.value = pickDefaultCtrlAddress(cachedR.addresses)
       customPort.value = cachedR.port
       chatModel.remoteHostPairing.value = null to RemoteHostSessionState.Starting
     }
@@ -345,6 +352,19 @@ fun AddingMobileDevice(showTitle: Boolean, staleQrCode: MutableState<Boolean>, c
       chatModel.remoteHostPairing.value = null
     }
   }
+
+  AutoApplyDefaultCtrlAddress(
+    cachedR = cachedR,
+    customAddress = customAddress,
+    userChangedAddress = { userChangedAddress },
+    applyDefault = {
+      withBGApi {
+        if (chatController.stopRemoteHost(null)) {
+          startRemoteHost()
+        }
+      }
+    }
+  )
 }
 
 private fun showConnectMobileDevice(rh: RemoteHostInfo, connecting: MutableState<Boolean>) {
@@ -370,7 +390,7 @@ private fun showConnectMobileDevice(rh: RemoteHostInfo, connecting: MutableState
       if (r != null) {
         cachedR = r
         connecting.value = true
-        customAddress.value = cachedR.addresses.firstOrNull()
+        customAddress.value = pickDefaultCtrlAddress(cachedR.addresses)
         customPort.value = cachedR.port
         chatModel.remoteHostPairing.value = null to RemoteHostSessionState.Starting
       }
@@ -424,6 +444,19 @@ private fun showConnectMobileDevice(rh: RemoteHostInfo, connecting: MutableState
         chatModel.remoteHostPairing.value = null
       }
     }
+
+    AutoApplyDefaultCtrlAddress(
+      cachedR = cachedR,
+      customAddress = customAddress,
+      userChangedAddress = { userChangedAddress },
+      applyDefault = {
+        withBGApi {
+          if (chatController.stopRemoteHost(rh.remoteHostId)) {
+            startRemoteHost()
+          }
+        }
+      }
+    )
   }
 }
 

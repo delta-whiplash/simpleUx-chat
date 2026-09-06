@@ -135,6 +135,8 @@ fun UserPicker(
     if (controller.hasChatCtrl()) {
       withBGApi {
         controller.reloadRemoteHosts()
+        // #127: desktop re-listens for linked mobiles at launch (no-op on mobile)
+        maybeAutoStartRemoteHosts()
       }
     }
   }
