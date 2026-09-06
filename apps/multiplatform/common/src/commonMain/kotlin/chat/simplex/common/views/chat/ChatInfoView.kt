@@ -45,6 +45,8 @@ import chat.simplex.common.views.chat.group.ChatTTLOption
 import chat.simplex.common.views.chat.item.MarkdownText
 import chat.simplex.common.views.chatlist.updateChatSettings
 import chat.simplex.common.views.newchat.*
+import chat.simplex.common.views.ux.matrix.ChatProtocol
+import chat.simplex.common.views.ux.matrix.protocol
 import chat.simplex.res.MR
 import kotlinx.coroutines.*
 import kotlinx.coroutines.delay
@@ -545,6 +547,7 @@ fun ChatInfoLayout(
   deletingItems: State<Boolean>
 ) {
   val cStats = connStats.value
+  val isMatrix = chat.chatInfo.protocol == ChatProtocol.Matrix
   val scrollState = rememberScrollState()
   val scope = rememberCoroutineScope()
   KeyChangeEffect(chat.id) {
@@ -583,12 +586,12 @@ fun ChatInfoLayout(
     // Carte 1 : Sécurité & Confidentialité
     val conn = contact.activeConn
     SectionView(stringResource(MR.strings.security_badge_alert_title)) {
-      if (conn != null) {
+      if (conn != null && !isMatrix) {
         val pqText = if (conn.connPQEnabled) generalGetString(MR.strings.e2ee_status_post_quantum) else generalGetString(MR.strings.e2ee_status_standard)
         val pqColor = if (conn.connPQEnabled) Color(0xFF10B981) else MaterialTheme.colors.secondary
         InfoRow(stringResource(MR.strings.security_badge_e2ee), pqText, valueColor = pqColor)
       }
-      if (contact.ready && contact.active) {
+      if (contact.ready && contact.active && !isMatrix) {
         if (connectionCode != null) {
           VerifyCodeButton(contact.verified, verifyClicked)
         }
@@ -597,7 +600,9 @@ fun ChatInfoLayout(
           SynchronizeConnectionButton(syncContactConnection)
         }
       }
-      ChatTTLOption(chatItemTTL, setChatItemTTL, deletingItems, title = stringResource(MR.strings.timed_messages))
+      if (!isMatrix) {
+        ChatTTLOption(chatItemTTL, setChatItemTTL, deletingItems, title = stringResource(MR.strings.timed_messages))
+      }
     }
     SectionDividerSpaced()
 
@@ -615,7 +620,7 @@ fun ChatInfoLayout(
       if (contact.ready && contact.active) {
         ContactPreferencesButton(openPreferences)
       }
-      if (customUserProfile != null) {
+      if (customUserProfile != null && !isMatrix) {
         SectionItemViewSpaceBetween {
           Text(generalGetString(MR.strings.incognito_random_profile))
           Text(customUserProfile.chatViewName, color = Indigo)
@@ -625,7 +630,7 @@ fun ChatInfoLayout(
     SectionDividerSpaced()
 
     // Carte 3 : Relais SMP & Technique
-    if (contact.ready && contact.active) {
+    if (contact.ready && contact.active && !isMatrix) {
       SectionView(title = stringResource(MR.strings.conn_stats_section_title_servers)) {
         val chatSubStatus = chatModel.chatSubStatus.value
         if (chatSubStatus != null) {

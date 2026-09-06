@@ -38,6 +38,10 @@ fun SendMsgView(
   showVoiceRecordIcon: Boolean,
   recState: MutableState<RecordingState>,
   isDirectChat: Boolean,
+  // Co-protocol gate (#140): SimpleX disappearing-message TTLs do not apply to Matrix chats.
+  // Defaults to SimpleX so existing call sites are unaffected; callers owning a Chat pass
+  // `chat.protocol == ChatProtocol.Matrix`.
+  isMatrixChat: Boolean = false,
   liveMessageAlertShown: SharedPreference<Boolean>,
   sendMsgEnabled: Boolean,
   userCantSendReason: Pair<String, String?>?,
@@ -224,7 +228,7 @@ fun SendMsgView(
                   )
                 }
               }
-              if (timedMessageAllowed && !cs.editing) {
+              if (timedMessageAllowed && !cs.editing && !isMatrixChat) {
                 menuItems.add {
                   ItemAction(
                     generalGetString(MR.strings.disappearing_message),

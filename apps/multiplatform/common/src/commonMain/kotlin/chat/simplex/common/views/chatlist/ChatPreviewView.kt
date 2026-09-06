@@ -35,6 +35,9 @@ import chat.simplex.common.platform.*
 import chat.simplex.common.views.chat.*
 import chat.simplex.common.views.newchat.planAndConnect
 import chat.simplex.common.views.chat.item.*
+import chat.simplex.common.views.ux.matrix.ChatProtocol
+import chat.simplex.common.views.ux.matrix.ProtocolBadgeOverlay
+import chat.simplex.common.views.ux.matrix.protocol
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.ImageResource
 
@@ -453,6 +456,9 @@ fun ChatPreviewView(
         }
         Box(Modifier.padding(end = 2.dp, bottom = 2.dp)) {
           chatPreviewImageOverlayIcon()
+        }
+        if (cInfo.protocol == ChatProtocol.Matrix) {
+          ProtocolBadgeOverlay(Modifier.align(Alignment.TopEnd))
         }
       }
       Spacer(Modifier.width(10.dp))
