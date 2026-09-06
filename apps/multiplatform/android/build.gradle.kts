@@ -169,6 +169,9 @@ gradle.taskGraph.whenReady {
 
 dependencies {
     implementation(project(":common"))
+    // Matrix co-protocol spike (#129): debug builds only. Release stays
+    // Matrix-free until the P0 gates in #132 pass.
+    debugImplementation(project(":matrix-bridge"))
     "googleImplementation"("com.android.billingclient:billing:9.1.0")
     implementation("androidx.core:core-ktx:1.13.1")
     //implementation("androidx.compose.ui:ui:${rootProject.extra["compose.version"] as String}")

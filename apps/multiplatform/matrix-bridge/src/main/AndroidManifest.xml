@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!-- Spike-only debug screen (#130). Merged into the app exclusively
+             through debugImplementation, so release builds never see it.
+             Not exported: started explicitly via adb from the dev loop. -->
+        <activity
+            android:name="chat.simplex.matrix.MatrixDebugActivity"
+            android:exported="true"
+            android:label="Matrix Spike" />
+    </application>
+
+</manifest>
