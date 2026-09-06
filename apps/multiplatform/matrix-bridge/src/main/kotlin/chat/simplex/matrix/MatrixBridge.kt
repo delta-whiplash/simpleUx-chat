@@ -73,8 +73,36 @@ object MatrixBridge {
 
     /** Open a room's timeline and stream its items into the open-conversation scope. */
     fun openRoom(roomId: String) {
-        val obs = observer ?: return
-        scope.launch { obs.openRoom(roomId) { dto -> ingestMessage(dto) } }
+        scope.launch {
+            // start() is asynchronous: the observer appears only once the
+            // engine has booted. Wait for it (bounded) instead of silently
+            // dropping the open request - this races at every app start where
+            // a stored Matrix session exists.
+            var obs = observer
+            var tries = 0
+            while (obs == null && tries++ < 15) {
+                kotlinx.coroutines.delay(2000)
+                obs = observer
+            }
+            if (obs == null) {
+                log("openRoom($roomId): bridge not running")
+                return@launch
+            }
+            if (obs.openRoom(roomId) { dto -> ingestMessage(dto) }) {
+                // Register + ingest the chat even when it was not discovered
+                // via DM markers (rooms created without m.direct account data
+                // never appear in getDmRooms; opening by id must still work).
+                val summary = obs.summaryOf(roomId)
+                when {
+                    summary == null -> log("openRoom: no summary for $roomId")
+                    rooms[roomId] != null -> {} // already registered
+                    else -> {
+                        registerRoom(summary)
+                        log("ingested chat id=${MatrixAdapter.matrixChatId(summary.roomId)}")
+                    }
+                }
+            }
+        }
     }
 
     fun isOpen(roomId: String): Boolean = observer?.isOpen(roomId) == true
@@ -115,11 +143,25 @@ object MatrixBridge {
         eng.startSync()
         val obs = MatrixRoomsObserver(eng) { log(it) }
         observer = obs
+        // Best-effort immediate discovery, then the event-driven all-rooms
+        // stream (authoritative on servers where it works). Rooms already
+        // known from previous sessions are re-opened directly: the direct
+        // room lookup is the one path proven to work everywhere (#134).
         for (summary in obs.awaitDmRooms()) {
-            rooms[summary.roomId] = summary
-            ingestChat(summary)
+            registerRoom(summary)
         }
-        log("bridge started: ${rooms.size} room(s) in chat list")
+        obs.subscribeAllRooms(scope) { summary -> registerRoom(summary) }
+        val known = account?.knownRooms().orEmpty()
+        log("re-opening ${known.size} known room(s)")
+        known.forEach { openRoom(it) }
+        log("bridge started: ${rooms.size} room(s) so far, all-rooms stream subscribed")
+    }
+
+    private fun registerRoom(summary: MatrixRoomSummary) {
+        if (rooms[summary.roomId] != null) return
+        rooms[summary.roomId] = summary
+        account?.rememberRoom(summary.roomId)
+        scope.launch { ingestChat(summary) }
     }
 
     // ---- ingestion (chatsContext public methods only, on Main) ----
@@ -129,6 +171,9 @@ object MatrixBridge {
         withContext(Dispatchers.Main) {
             if (!ChatModel.chatsContext.hasChat(null, chat.id)) {
                 ChatModel.chatsContext.addChat(chat)
+                log("chatsContext.addChat done: ${chat.id} (list size now ${ChatModel.chats.value.size})")
+            } else {
+                log("ingestChat: chat already present ${chat.id}")
             }
         }
     }
@@ -145,6 +190,9 @@ object MatrixBridge {
     }
 
     private fun log(line: String) {
+        // Always mirror to logcat: the hook runs without the bench screen
+        // attached in real app starts, and bench runs span activity switches.
+        android.util.Log.d("MatrixBridge", line)
         onLog(line)
     }
 }

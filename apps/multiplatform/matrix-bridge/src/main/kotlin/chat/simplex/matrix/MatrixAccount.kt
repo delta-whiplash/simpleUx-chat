@@ -5,6 +5,7 @@ import org.matrix.rustcomponents.sdk.Client
 import org.matrix.rustcomponents.sdk.ClientBuilder
 import org.matrix.rustcomponents.sdk.Session
 import org.matrix.rustcomponents.sdk.SlidingSyncVersion
+import org.matrix.rustcomponents.sdk.SlidingSyncVersionBuilder
 import java.io.File
 import java.util.Properties
 
@@ -102,12 +103,34 @@ class MatrixAccount(private val context: Context) {
             runCatching { c.close() }
         }
         sessionFile().delete()
+        File(context.filesDir, "matrix/known_rooms.properties").delete()
         dataDir().deleteRecursively()
         cacheDir().deleteRecursively()
         log("logged out, local data wiped")
     }
 
     private fun sessionFile(): File = File(context.filesDir, "matrix/account.properties")
+
+    /**
+     * Room ids this account has interacted with (opened/ingested at least once).
+     * The SDK's room-list discovery stayed empty on some servers (#134), while
+     * direct room lookup works reliably - so known rooms are persisted and
+     * re-opened at every bridge start. First contact with a new room comes
+     * from a user action (bench, later: QR/DM creation).
+     */
+    fun knownRooms(): Set<String> {
+        val f = File(context.filesDir, "matrix/known_rooms.properties")
+        if (!f.exists()) return emptySet()
+        return Properties().apply { f.inputStream().use { load(it) } }.stringPropertyNames()
+    }
+
+    fun rememberRoom(roomId: String) {
+        val f = File(context.filesDir, "matrix/known_rooms.properties")
+        val p = Properties().apply { if (f.exists()) f.inputStream().use { load(it) } }
+        p.setProperty(roomId, "1")
+        f.parentFile?.mkdirs()
+        f.outputStream().use { p.store(it, "rooms this account has opened") }
+    }
 
     private fun dataDir(): File = File(context.filesDir, "matrix/data").apply { mkdirs() }
 
@@ -116,6 +139,13 @@ class MatrixAccount(private val context: Context) {
     private suspend fun newClient(homeserverUrl: String): Client =
         ClientBuilder()
             .homeserverUrl(homeserverUrl)
+            // The SDK's DISCOVER_NATIVE default fails against some servers that
+            // do serve native v3 behind a plain HTTP base URL (observed on the
+            // local Synapse bench: ClientException "Sliding sync version is
+            // missing" right after login). matrix.org and current Synapse both
+            // serve native sliding sync, so pin NATIVE; a discovery fallback for
+            // arbitrary homeservers is tracked with P4 custom-homeserver support.
+            .slidingSyncVersionBuilder(SlidingSyncVersionBuilder.NATIVE)
             .sessionPaths(dataDir().absolutePath, cacheDir().absolutePath)
             .build()
 

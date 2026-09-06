@@ -24,14 +24,20 @@ object MatrixAppHook {
 }
 
 /**
- * P1 timeline source: serves the current ingested state from ChatModel; live
- * updates flow through ChatsContext via the bridge's listeners. History
- * back-pagination is deliberately empty in P1 (documented on #139) - the UI
- * treats it as "no more pages".
+ * P1 timeline source: opening a Matrix conversation attaches the engine's live
+ * timeline listener for that room (id scheme: "mx|<roomId>"), then serves the
+ * current ingested state; subsequent live updates flow through ChatsContext
+ * via the bridge's listeners. History back-pagination is deliberately empty in
+ * P1 (documented on #139) - the UI treats it as "no more pages".
  */
 object BridgeTimelineSource : MatrixTimelineSource {
-    override suspend fun loadLatest(chatInfo: ChatInfo): List<ChatItem> =
-        chat.simplex.common.platform.chatModel.getChat(chatInfo.id)?.chatItems ?: emptyList()
+    override suspend fun loadLatest(chatInfo: ChatInfo): List<ChatItem> {
+        MatrixBridge.openRoom(roomIdFromChatId(chatInfo.id))
+        return chat.simplex.common.platform.chatModel.getChat(chatInfo.id)?.chatItems ?: emptyList()
+    }
 
     override suspend fun paginateOlder(chatInfo: ChatInfo): List<ChatItem> = emptyList()
+
+    private fun roomIdFromChatId(chatId: String): String =
+        chatId.removePrefix(chat.simplex.common.views.ux.matrix.MATRIX_CHAT_ID_PREFIX)
 }

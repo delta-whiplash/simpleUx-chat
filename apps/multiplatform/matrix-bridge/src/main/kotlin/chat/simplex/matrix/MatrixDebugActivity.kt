@@ -37,6 +37,9 @@ class MatrixDebugActivity : Activity() {
     private lateinit var roomField: EditText
 
     private fun log(line: String) {
+        // Mirror to logcat: the in-app log dies with activity recreation, and
+        // bench runs span activity switches.
+        android.util.Log.d("MatrixBench", line)
         if (logBuf.size == 500) logBuf.removeFirst()
         logBuf.addLast(line)
         runOnUiThread { if (::logView.isInitialized) renderLog() }
@@ -79,10 +82,9 @@ class MatrixDebugActivity : Activity() {
     override fun onDestroy() {
         MatrixBridge.onLog = {}
         scope.cancel()
-        if (isFinishing) {
-            // keep the client alive across screen rotations; full shutdown only on back-out
-            MatrixBridge.stop()
-        }
+        // The bridge lifecycle belongs to MatrixAppHook (app start), not to this
+        // bench screen: leaving it must never stop sync mid-test. Use the on-screen
+        // "Stop sync" button for a deliberate stop.
         super.onDestroy()
     }
 

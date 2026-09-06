@@ -4,10 +4,14 @@ import chat.simplex.matrix.adapter.MatrixItemKind
 import chat.simplex.matrix.adapter.MatrixMessageDto
 import chat.simplex.matrix.adapter.MatrixRoomSummary
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.matrix.rustcomponents.sdk.EventOrTransactionId
 import org.matrix.rustcomponents.sdk.MsgLikeContent
 import org.matrix.rustcomponents.sdk.MsgLikeKind
 import org.matrix.rustcomponents.sdk.Room
+import org.matrix.rustcomponents.sdk.RoomList
+import org.matrix.rustcomponents.sdk.RoomListEntriesListener
+import org.matrix.rustcomponents.sdk.RoomListEntriesUpdate
 import org.matrix.rustcomponents.sdk.TaskHandle
 import org.matrix.rustcomponents.sdk.Timeline
 import org.matrix.rustcomponents.sdk.TimelineDiff
@@ -33,6 +37,59 @@ class MatrixRoomsObserver(
     private val openTimelines = linkedMapOf<String, Timeline>()
     private val timelineHandles = linkedMapOf<String, TaskHandle>()
 
+    private var allRoomsList: RoomList? = null
+    private var allRoomsStream: TaskHandle? = null
+
+    /**
+     * Subscribes to the room list service's full entry stream. This is the
+     * reliable discovery path: `Client.getDmRooms` stayed empty on the local
+     * Synapse bench even with correct m.direct account data (see #134), while
+     * the room list service tracks every room the account knows (the spike
+     * opened rooms by id through it successfully). Every direct room in an
+     * Append update is converted and forwarded; non-direct rooms are skipped
+     * until group support lands (#148).
+     */
+    suspend fun subscribeAllRooms(scope: kotlinx.coroutines.CoroutineScope, onRoom: (MatrixRoomSummary) -> Unit) {
+        val svc = engine.syncService ?: error("start sync first")
+        val list = svc.roomListService().allRooms()
+        allRoomsList = list
+        val result = list.entriesWithDynamicAdapters(50u, object : RoomListEntriesListener {
+            override fun onUpdate(updates: List<RoomListEntriesUpdate>) {
+                updates.forEach { update ->
+                    if (update is RoomListEntriesUpdate.Append) {
+                        update.values.forEach { room ->
+                            // isDirect() is a suspend call: the FFI listener thread
+                            // must not block, so conversion runs in [scope].
+                            scope.launch {
+                                try {
+                                    val direct = room.isDirect()
+                                    if (!direct) {
+                                        onLog("room ${room.id()} skipped (not direct, groups = #148)")
+                                        return@launch
+                                    }
+                                    roomSummary(room, isDm = true)?.let { summary ->
+                                        roomSummaries[summary.roomId] = summary
+                                        onRoom(summary)
+                                    }
+                                } catch (e: Exception) {
+                                    onLog("room ${room.id()} convert failed: ${e.message}")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        allRoomsStream = result.entriesStream()
+        // The dynamic adapter ships with NO filter: without an explicit one the
+        // stream stays silent even though the room list is populated behind it.
+        runCatching {
+            result.controller().setFilter(org.matrix.rustcomponents.sdk.RoomListEntriesDynamicFilterKind.All(emptyList()))
+            result.controller().addOnePage()
+        }.onFailure { onLog("filter setup failed: ${it.message}") }
+        onLog("subscribed to all-rooms stream")
+    }
+
     /**
      * Waits for the sliding-sync room list to populate (retry window:
      * 10 x 2 s, matching the P0 spike), then returns DM room summaries.
@@ -47,15 +104,18 @@ class MatrixRoomsObserver(
         }
         var rooms: List<Room> = emptyList()
         var lastError: Exception? = null
-        repeat(10) { attempt ->
+        repeat(15) { attempt ->
             if (rooms.isEmpty()) {
                 try {
                     rooms = engine.client.getDmRooms(userId)
                 } catch (e: Exception) {
                     lastError = e
                     if (attempt == 0) onLog("waiting for room list (attempt ${attempt + 1})")
-                    delay(2000)
                 }
+                // Delay on BOTH failure paths: an empty (non-throwing) result is
+                // the common case while sliding sync is still populating, and
+                // without this delay the loop burned all attempts instantly.
+                if (rooms.isEmpty()) delay(2000)
             }
         }
         if (rooms.isEmpty()) {
@@ -103,6 +163,14 @@ class MatrixRoomsObserver(
                 diffs.forEach { diff -> renderDiff(roomId, diff, onMessage) }
             }
         })
+        // Subscribe the room in the sliding-sync session: without this the
+        // server never pushes the room's updates (the sync pos stalls and the
+        // timeline listener stays silent after the initial sync window).
+        try {
+            svc.roomListService().setRoomSubscriptions(listOf(roomId))
+        } catch (e: Exception) {
+            onLog("room subscription failed: ${e.message}")
+        }
         openTimelines[roomId] = timeline
         timelineHandles[roomId] = handle
         onLog("timeline open: ${r.displayName()} (id=${r.id()})")
@@ -119,6 +187,10 @@ class MatrixRoomsObserver(
         timelineHandles.clear()
         openTimelines.values.forEach { runCatching { it.close() } }
         openTimelines.clear()
+        allRoomsStream?.close()
+        allRoomsStream = null
+        runCatching { allRoomsList?.close() }
+        allRoomsList = null
     }
 
     private suspend fun roomSummary(room: Room, isDm: Boolean): MatrixRoomSummary? = try {
