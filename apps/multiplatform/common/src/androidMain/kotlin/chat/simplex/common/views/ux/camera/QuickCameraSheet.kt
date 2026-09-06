@@ -59,8 +59,10 @@ import java.util.concurrent.Executors
 // a general-purpose quick camera, not a QR-only viewfinder. The shutter sends
 // any frame straight into the share flow, EVERY code entering the frame
 // surfaces a confirmation card with its decoded content - SimpleX link
-// (connect flow), URL (explicit "open in browser" tap) or plain text
-// (copy / share into SimpleX) - and never auto-navigates on a bare scan.
+// (connect flow), xrcp:/ desktop-linking invitation (#159: opens the
+// desktop-connect screen via onConnectDesktopLink), URL (explicit "open in
+// browser" tap) or plain text (copy / share into SimpleX) - and never
+// auto-navigates on a bare scan.
 // There is deliberately no scan frame on screen (Delta, 2026-09-01: the gold
 // brackets read as "QR scanner only"); the result card is the scan feedback.
 //
@@ -77,6 +79,7 @@ fun QuickCameraSheet(
   onClose: () -> Unit,
   onPhotoCaptured: (Uri) -> Unit,
   onQrCode: suspend (String) -> Boolean,
+  onConnectDesktopLink: (String) -> Unit,
   onTextShared: (String) -> Unit
 ) {
   val context = LocalContext.current
@@ -325,8 +328,8 @@ fun QuickCameraSheet(
       }
 
       // Universal QR routing: EVERY detected code surfaces its decoded
-      // content here (SimpleX link, URL or plain text) and waits for an
-      // explicit tap - never auto-navigates on a bare scan.
+      // content here (SimpleX link, xrcp:/ desktop link, URL or plain text)
+      // and waits for an explicit tap - never auto-navigates on a bare scan.
       AnimatedVisibility(
         visible = detectedContent.value != null,
         // Above the control row (top edge at BottomIslandBarClearance + 86.dp).
@@ -349,6 +352,16 @@ fun QuickCameraSheet(
                   dismissCard()
                 }
               }
+            },
+            onConnectDesktop = {
+              // #159: hand the invitation to the desktop-connect feature and
+              // step aside so ConnectDesktopView owns the outcome (Connecting
+              // -> session code -> Connected, plus its error alerts). Closing
+              // first also releases this pane's camera binding for the
+              // ConnectDesktopView scanner.
+              val raw = detectedRaw.value ?: return@QrResultCard
+              onClose()
+              onConnectDesktopLink(raw)
             },
             onOpenUrl = openInBrowser,
             onCopy = copyToClipboard,

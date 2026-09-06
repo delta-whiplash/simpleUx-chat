@@ -31,6 +31,7 @@ fun QrResultCard(
   content: QrContent,
   connecting: Boolean,
   onConnect: () -> Unit,
+  onConnectDesktop: () -> Unit,
   onOpenUrl: (String) -> Unit,
   onCopy: (String) -> Unit,
   onShare: (String) -> Unit,
@@ -42,6 +43,12 @@ fun QrResultCard(
         stringResource(MR.strings.quick_camera_link_detected),
         content.target.displayText(),
         MR.images.ic_link
+      )
+    is QrContent.DesktopLink ->
+      Triple(
+        stringResource(MR.strings.found_desktop),
+        content.invitation,
+        MR.images.ic_desktop
       )
     is QrContent.Url ->
       Triple(
@@ -118,6 +125,17 @@ fun QrResultCard(
           Button(
             enabled = !connecting,
             onClick = onConnect,
+            colors = ButtonDefaults.buttonColors(backgroundColor = AmberGold, contentColor = CameraChromeOnGold)
+          ) {
+            Text(stringResource(MR.strings.quick_camera_connect), fontWeight = FontWeight.SemiBold)
+          }
+        }
+        is QrContent.DesktopLink -> {
+          // #159: same explicit-tap contract as SimpleXTarget - the card never
+          // connects on a bare scan. The sheet routes this to ConnectDesktopView.
+          Button(
+            enabled = !connecting,
+            onClick = onConnectDesktop,
             colors = ButtonDefaults.buttonColors(backgroundColor = AmberGold, contentColor = CameraChromeOnGold)
           ) {
             Text(stringResource(MR.strings.quick_camera_connect), fontWeight = FontWeight.SemiBold)

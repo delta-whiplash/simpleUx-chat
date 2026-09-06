@@ -43,7 +43,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun ConnectDesktopView(close: () -> Unit) {
+fun ConnectDesktopView(close: () -> Unit, pendingDesktopAddress: String? = null) {
   val deviceName = remember { controller.appPrefs.deviceNameForRemoteAccess.state }
   val closeWithAlert = {
     if (!connectedToRemote()) {
@@ -55,7 +55,8 @@ fun ConnectDesktopView(close: () -> Unit) {
   ModalView(close = closeWithAlert, cardScreen = true) {
     ConnectDesktopLayout(
       deviceName = deviceName.value!!,
-      close
+      close,
+      pendingDesktopAddress
     )
   }
   val ntfModeService = remember { chatModel.controller.appPrefs.notificationsMode.get() == NotificationsMode.SERVICE }
@@ -70,7 +71,7 @@ fun ConnectDesktopView(close: () -> Unit) {
 }
 
 @Composable
-private fun ConnectDesktopLayout(deviceName: String, close: () -> Unit) {
+private fun ConnectDesktopLayout(deviceName: String, close: () -> Unit, pendingDesktopAddress: String? = null) {
   val showConnectScreen = remember { mutableStateOf(true) }
   val sessionAddress = remember { mutableStateOf("") }
   val remoteCtrls = remember { mutableStateListOf<RemoteCtrlInfo>() }
@@ -110,6 +111,15 @@ private fun ConnectDesktopLayout(deviceName: String, close: () -> Unit) {
     showConnectScreen.value = !useMulticast
     if (chatModel.remoteCtrlSession.value != null) {
       disconnectDesktop()
+    }
+    if (pendingDesktopAddress != null) {
+      // #159: the invitation was scanned by the universal Scan tab and this
+      // screen was opened for it. Connect here, after the stale-session
+      // cleanup above, so the existing flow renders the outcome: Connecting
+      // -> session code -> Connected, with connectDesktop's error alerts
+      // (bad address / incompatible version / ...) on failure. An explicit
+      // scan wins over the multicast auto-discovery below.
+      connectDesktopAddress(sessionAddress, pendingDesktopAddress)
     } else if (useMulticast) {
       findKnownDesktop(showConnectScreen)
     }
