@@ -11,6 +11,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -36,13 +38,19 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import chat.simplex.common.helpers.toURI
 import chat.simplex.common.platform.androidAppContext
+import chat.simplex.common.ui.theme.GlassBorderDark
+import chat.simplex.common.ui.theme.GlassBorderLight
+import chat.simplex.common.ui.theme.GlassSpecularHighlight
+import chat.simplex.common.ui.theme.SurfaceContainerHighDark
+import chat.simplex.common.ui.theme.SurfaceContainerLowLight
+import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
 import java.net.URI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val RECENT_MEDIA_LIMIT = 4
+private val RECENT_MEDIA_LIMIT = 6
 
 private fun neededMediaPermissions(): List<String> =
   if (Build.VERSION.SDK_INT >= 33) {
@@ -56,6 +64,32 @@ private fun hasMediaPermission(): Boolean =
     ContextCompat.checkSelfPermission(androidAppContext, it) == PackageManager.PERMISSION_GRANTED
   }
 
+/**
+ * #126: Luxury Mineral tile surface — vertical-gradient mineral card
+ * background with a specular hairline rim. Reusable for both the camera
+ * bento tile and the gallery thumbnails.
+ */
+@Composable
+private fun Modifier.mineralTileSurface(shape: RoundedCornerShape): Modifier {
+  val isDark = isInDarkTheme()
+  val bgBrush = remember(isDark) {
+    Brush.verticalGradient(
+      if (isDark) listOf(SurfaceContainerHighDark, SurfaceContainerHighDark.copy(alpha = 0.88f))
+      else        listOf(SurfaceContainerLowLight, SurfaceContainerLowLight.copy(alpha = 0.92f))
+    )
+  }
+  val rimBrush = remember(isDark) {
+    Brush.verticalGradient(
+      if (isDark) listOf(GlassSpecularHighlight, GlassBorderDark)
+      else        listOf(GlassBorderLight, GlassBorderLight.copy(alpha = 0.5f))
+    )
+  }
+  return this
+    .clip(shape)
+    .background(brush = bgBrush, shape = shape)
+    .border(width = 1.dp, brush = rimBrush, shape = shape)
+}
+
 private fun hasCameraPermission(): Boolean =
   ContextCompat.checkSelfPermission(androidAppContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
 
@@ -67,7 +101,6 @@ actual fun AttachmentTopSection(
   hide: () -> Unit
 ) {
   var granted by remember { mutableStateOf(hasMediaPermission()) }
-  // ask for the next permission in the chain from the current launcher's callback
   var pendingLaunch by remember { mutableStateOf<String?>(null) }
   val permissionLauncher = rememberPermissionLauncher { _ ->
     granted = hasMediaPermission()
@@ -88,32 +121,57 @@ actual fun AttachmentTopSection(
   }
 
   if (!granted || items.isEmpty()) return
-  Row(
+
+  // #126: unified 4-column bento grid. Camera spans 2 vertical cells in
+  // column 1; 6 gallery thumbnails fill columns 2-4 across 2 rows.
+  // Layout:
+  //   Row 1: [Camera bento] [thumb 1] [thumb 2] [thumb 3]
+  //   Row 2: [  (spacer)  ] [thumb 4] [thumb 5] [thumb 6]
+  val gap = 6.dp
+  val thumbH = 84.dp          // square cell: width ~= height via weight(1f)
+  val cameraH = 174.dp        // 2 rows + 1 gap
+  Column(
     Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-    horizontalArrangement = Arrangement.spacedBy(6.dp)
+    verticalArrangement = Arrangement.spacedBy(gap)
   ) {
-    CameraPreviewTile(
-      modifier = Modifier.weight(1f),
-      sheetVisible = sheetVisible,
-      onClick = onCameraOpened
-    )
-    Column(
-      Modifier.weight(2f),
-      verticalArrangement = Arrangement.spacedBy(6.dp)
-    ) {
-      items.chunked(2).forEach { rowItems ->
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-          rowItems.forEach { item ->
-            RecentMediaThumb(
-              item = item,
-              modifier = Modifier.weight(1f),
-              onClick = {
-                onMediaPicked(listOf(Uri.parse(item.uri).toURI()))
-                hide()
-              }
-            )
-          }
-          repeat(2 - rowItems.size) { Spacer(Modifier.weight(1f)) }
+    // Row 1: camera bento + first 3 thumbs
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap)) {
+      CameraPreviewTile(
+        modifier = Modifier.weight(1f).height(cameraH),
+        sheetVisible = sheetVisible,
+        onClick = onCameraOpened
+      )
+      repeat(3) { i ->
+        if (items.size > i) {
+          RecentMediaThumb(
+            item = items[i],
+            modifier = Modifier.weight(1f).height(thumbH),
+            onClick = {
+              onMediaPicked(listOf(Uri.parse(items[i].uri).toURI()))
+              hide()
+            }
+          )
+        } else {
+          Spacer(Modifier.weight(1f).height(thumbH))
+        }
+      }
+    }
+    // Row 2: invisible spacer (camera column) + next 3 thumbs
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap)) {
+      Spacer(Modifier.weight(1f).height(thumbH))
+      repeat(3) { i ->
+        val idx = i + 3
+        if (items.size > idx) {
+          RecentMediaThumb(
+            item = items[idx],
+            modifier = Modifier.weight(1f).height(thumbH),
+            onClick = {
+              onMediaPicked(listOf(Uri.parse(items[idx].uri).toURI()))
+              hide()
+            }
+          )
+        } else {
+          Spacer(Modifier.weight(1f).height(thumbH))
         }
       }
     }
@@ -170,11 +228,11 @@ private fun CameraPreviewTile(modifier: Modifier, sheetVisible: Boolean, onClick
     }
   }
 
+  // #126: height is set by the caller. Modifier.height() + weight(1f) = size.
+  // Mineral tile surface: gradient background + specular hairline rim.
   Box(
     modifier
-      .aspectRatio(1f)
-      .clip(RoundedCornerShape(12.dp))
-      .background(MaterialTheme.colors.onBackground.copy(alpha = 0.06f))
+      .mineralTileSurface(RoundedCornerShape(16.dp))
       .clickable(
         interactionSource = remember { MutableInteractionSource() },
         indication = null,
@@ -235,9 +293,7 @@ private fun RecentMediaThumb(item: RecentMediaItem, modifier: Modifier, onClick:
   }
   Box(
     modifier
-      .aspectRatio(1f)
-      .clip(RoundedCornerShape(12.dp))
-      .background(MaterialTheme.colors.onBackground.copy(alpha = 0.06f))
+      .mineralTileSurface(RoundedCornerShape(14.dp))
       .clickable(onClick = onClick),
     contentAlignment = Alignment.Center
   ) {
@@ -252,7 +308,7 @@ private fun RecentMediaThumb(item: RecentMediaItem, modifier: Modifier, onClick:
           .align(Alignment.BottomEnd)
           .padding(4.dp)
           .clip(RoundedCornerShape(50))
-          .background(Color.Black.copy(alpha = 0.5f))
+          .background(Color.Black.copy(alpha = 0.6f))
           .padding(horizontal = 5.dp, vertical = 1.dp),
         color = Color.White,
         fontSize = 10.sp,
