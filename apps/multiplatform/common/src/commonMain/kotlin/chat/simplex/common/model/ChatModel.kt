@@ -1897,9 +1897,12 @@ data class Contact(
   val chatItemTTL: Long?,
   override val chatDeleted: Boolean,
   val uiThemes: ThemeModeOverrides? = null,
+  // Matrix co-protocol (#135): synthetic chat id for cross-protocol chats ("mx|<roomId>");
+  // null for all SimpleX contacts (upstream behavior unchanged).
+  val syntheticId: String? = null,
 ): SomeChat, NamedChat {
   override val chatType get() = ChatType.Direct
-  override val id get() = "@$contactId"
+  override val id get() = syntheticId ?: "@$contactId"
   override val apiId get() = contactId
   override val ready get() = activeConn?.connStatus == ConnStatus.Ready
   val sndReady get() = ready || activeConn?.connStatus == ConnStatus.SndReady
@@ -2272,9 +2275,12 @@ data class GroupInfo (
   val chatItemTTL: Long?,
   override val localAlias: String,
   val groupDomainVerified: Boolean? = null,
+  // Matrix co-protocol (#135): synthetic chat id for cross-protocol chats ("mx|<roomId>");
+  // null for all SimpleX groups (upstream behavior unchanged).
+  val syntheticId: String? = null,
 ): SomeChat, NamedChat {
   override val chatType get() = ChatType.Group
-  override val id get() = "#$groupId"
+  override val id get() = syntheticId ?: "#$groupId"
   override val apiId get() = groupId
   override val ready get() = membership.memberActive
   override val nextConnect get() = nextConnectPrepared
@@ -4107,7 +4113,9 @@ sealed class CIContent: ItemContent {
         e2eeInfoNoPQStr
       }
 
-    private val e2eeInfoNoPQStr: String = generalGetString(MR.strings.e2ee_info_no_pq_short)
+    // lazy so that constructing CIContent values (e.g. matrix-bridge adapter
+    // unit tests on JVM) does not require an initialized Android app context
+    private val e2eeInfoNoPQStr: String by lazy { generalGetString(MR.strings.e2ee_info_no_pq_short) }
 
     fun groupE2EEInfoStr(e2EEInfo: E2EEInfo): String =
       if (e2EEInfo.public == true) generalGetString(MR.strings.e2ee_info_no_e2ee) else e2eeInfoNoPQStr
