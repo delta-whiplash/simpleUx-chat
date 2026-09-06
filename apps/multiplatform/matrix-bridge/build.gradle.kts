@@ -20,6 +20,10 @@ dependencies {
     // matrix-rust-sdk Kotlin bindings (UniFFI), the engine powering Element X.
     // Version pinned to an existing Maven Central artifact; the distribution
     // repo's git tags are broken, only trust the maven-metadata list.
-    api("org.matrix.rustcomponents:sdk-android:26.09.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+  api("org.matrix.rustcomponents:sdk-android:26.09.3")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
+  // Display model access for the Room->ChatInfo adapter (#135) and
+  // chatsContext ingestion (#136). Read-only usage; SimpleXAPI.kt untouched.
+  implementation(project(":common"))
+  testImplementation("junit:junit:4.13.2")
 }
