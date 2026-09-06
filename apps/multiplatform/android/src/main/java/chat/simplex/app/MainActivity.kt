@@ -35,6 +35,14 @@ class MainActivity: FragmentActivity() {
     val c = CurrentColors.value.colors
     platform.androidSetStatusAndNavigationBarAppearance(c.isLight, c.isLight)
     applyAppLocale(ChatModel.controller.appPrefs.appLanguage)
+    // Matrix co-protocol (#128): boot the bridge when its module is present.
+    // Release builds do not include matrix-bridge (debugImplementation), so the
+    // class is absent there and this is a silent no-op - release is unaffected.
+    runCatching {
+      Class.forName("chat.simplex.matrix.MatrixAppHook")
+        .getMethod("onAppStart", android.content.Context::class.java)
+        .invoke(null, applicationContext)
+    }
     // This flag makes status bar and navigation bar fully transparent. But on API level < 30 it breaks insets entirely
     // https://issuetracker.google.com/issues/236862874
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
