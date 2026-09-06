@@ -29,6 +29,8 @@ import chat.simplex.common.ui.theme.isInDarkTheme
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.planAndConnect
 import chat.simplex.common.views.ux.ChatsTopBar
+import chat.simplex.common.views.ux.matrix.ChatProtocol
+import chat.simplex.common.views.ux.matrix.protocol
 import chat.simplex.common.views.ux.ChatFoldersSettingsScreen
 import chat.simplex.common.views.ux.ChatSelectionTopBar
 import chat.simplex.common.views.ux.showAddToFolderModal
@@ -167,7 +169,9 @@ internal fun BoxScope.ChatListContent(
           // emulator-5554), same as Telegram's Saved Messages. Delete only
           // offers the remaining selected chats; the action dims when that
           // set is empty.
-          val deletableChats = selectedChats.filter { it.chatInfo !is ChatInfo.Local }
+          // Matrix chats are excluded too: controller.deleteChat would hit the SimpleX
+          // core with a synthetic chat id (issue #138).
+          val deletableChats = selectedChats.filter { it.chatInfo !is ChatInfo.Local && it.chatInfo.protocol != ChatProtocol.Matrix }
           ChatSelectionTopBar(
             count = selectedChatIds.size,
             anyUnpinned = selectedChats.any { !chatModel.pinnedChatIds.contains(it.id) },

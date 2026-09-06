@@ -44,6 +44,9 @@ import chat.simplex.common.views.chatlist.*
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.ux.components.*
 import chat.simplex.common.views.ux.isCenteredEvent
+import chat.simplex.common.views.ux.matrix.ChatProtocol
+import chat.simplex.common.views.ux.matrix.paginateMatrixChat
+import chat.simplex.common.views.ux.matrix.protocol
 import chat.simplex.common.model.GroupInfo
 import chat.simplex.common.platform.*
 import chat.simplex.common.platform.AudioPlayer
@@ -194,7 +197,8 @@ fun ChatView(
             if (chatsCtx.secondaryContextFilter == null && (cInfo is ChatInfo.Direct || cInfo is ChatInfo.Group || cInfo is ChatInfo.Local)) {
               updateAvailableContent(openedChatRh, activeChat, availableContent)
             }
-            if (cInfo is ChatInfo.Direct && cInfo.contact.activeConn != null) {
+            // Matrix: synthetic Direct contacts never reach apiContactInfo (core call)
+            if (cInfo is ChatInfo.Direct && cInfo.contact.activeConn != null && cInfo.protocol != ChatProtocol.Matrix) {
               withBGApi {
                 val r = chatModel.controller.apiContactInfo(openedChatRh, cInfo.apiId)
                 if (r != null) {
@@ -269,6 +273,9 @@ fun ChatView(
 
         SimpleXThemeOverride(overrides ?: CurrentColors.collectAsState().value) {
           val onSearchValueChanged: (String) -> Unit = onSearchValueChanged@{ value ->
+            // Matrix: message search is core-backed (apiFindMessages) - not supported
+            // for synthetic chats this wave
+            if (chatInfo.protocol == ChatProtocol.Matrix) return@onSearchValueChanged
             val sameText = searchText.value == value
             // showSearch can be false with empty text when it was closed manually after clicking on message from search to load .around it
             // (required on Android to have this check to prevent call to search with old text)
@@ -287,7 +294,11 @@ fun ChatView(
             unreadCount,
             composeState,
             composeView = { focusRequester ->
-              if (selectedChatItems.value == null) {
+              // Matrix conversations are read-only this wave (#139): the composer host is
+              // hidden entirely rather than shown as a dead input (no fake affordances).
+              if (chatInfo.protocol == ChatProtocol.Matrix) {
+                // no composer, no selection toolbar - nothing at the bottom edge
+              } else if (selectedChatItems.value == null) {
                 Column(
                   Modifier.fillMaxWidth(),
                   horizontalAlignment = Alignment.CenterHorizontally
@@ -515,7 +526,13 @@ fun ChatView(
               val c = chatModel.getChat(chatId)
               if (chatModel.chatId.value != chatId) return@ChatLayout
               if (c != null) {
-                apiLoadMessages(chatsCtx, c.remoteHostId, c.chatInfo.chatType, c.chatInfo.apiId, pagination, contentFilter.value?.contentTag, searchText.value, null, visibleItemIndexes)
+                // Matrix: paginate via the seam - ChatController.apiGetChat must never
+                // see a synthetic chat id (#139).
+                if (c.chatInfo.protocol == ChatProtocol.Matrix) {
+                  paginateMatrixChat(c, chatsCtx)
+                } else {
+                  apiLoadMessages(chatsCtx, c.remoteHostId, c.chatInfo.chatType, c.chatInfo.apiId, pagination, contentFilter.value?.contentTag, searchText.value, null, visibleItemIndexes)
+                }
               }
             },
             deleteMessage = { itemId, mode ->
@@ -831,6 +848,8 @@ fun updateAvailableContent(chatRh: Long?, activeChat: State<Chat?>, availableCon
   withBGApi {
     val chatInfo = activeChat.value?.chatInfo
     if (chatInfo == null || chatInfo !is ChatInfo.Direct && chatInfo !is ChatInfo.Group && chatInfo !is ChatInfo.Local) return@withBGApi
+    // Matrix: apiGetChatContentTypes is a core call - keep content filters untouched
+    if (chatInfo.protocol == ChatProtocol.Matrix) return@withBGApi
     val types = chatModel.controller.apiGetChatContentTypes(chatRh, chatInfo.chatType, chatInfo.apiId, null)
     if (activeChat.value?.chatInfo?.id != chatInfo.id) return@withBGApi
     if (types == null) {
@@ -3150,6 +3169,8 @@ private fun scrollToItem(
       var index = mergedItems.value.indexInParentItems[itemId] ?: -1
       if (index == -1 && (searchValue.value.isNotBlank() || contentFilter.value != null)) {
         val ci = chatInfo.value
+        // Matrix: search/jump-to-item pagination is core-backed - not supported this wave
+        if (ci.protocol == ChatProtocol.Matrix) return@withApi
         apiLoadMessages(chatsCtx, remoteHostId.value, ci.chatType, ci.apiId,
           ChatPagination.Around(itemId, ChatPagination.PRELOAD_COUNT * 2),
           openAroundItemId = itemId)
@@ -3476,6 +3497,8 @@ private fun archiveItems(rhId: Long?, chatInfo: ChatInfo, selectedChatItems: Mut
 private fun markUnreadChatAsRead(chatId: String) {
   val chat = chatModel.chats.value.firstOrNull { it.id == chatId }
   if (chat?.chatStats?.unreadChat != true) return
+  // Matrix: read-state is bridge-owned, apiChatUnread must not see a synthetic chat id
+  if (chat.chatInfo.protocol == ChatProtocol.Matrix) return
   withApi {
     val chatRh = chat.remoteHostId
     val success = chatModel.controller.apiChatUnread(

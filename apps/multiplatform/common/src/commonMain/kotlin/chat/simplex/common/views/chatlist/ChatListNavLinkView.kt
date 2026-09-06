@@ -28,6 +28,9 @@ import chat.simplex.common.views.chat.item.ItemAction
 import chat.simplex.common.views.contacts.onRequestAccepted
 import chat.simplex.common.views.helpers.*
 import chat.simplex.common.views.newchat.*
+import chat.simplex.common.views.ux.matrix.ChatProtocol
+import chat.simplex.common.views.ux.matrix.openMatrixChat
+import chat.simplex.common.views.ux.matrix.protocol
 import chat.simplex.common.views.ux.showAddToFolderModal
 import chat.simplex.res.MR
 import kotlinx.coroutines.*
@@ -74,7 +77,11 @@ fun ChatListNavLinkView(
   val defaultClickAction: () -> Unit = {
     if (chatModel.chatId.value != chat.id) {
       scope.launch {
-        when (val info = chat.chatInfo) {
+        // Matrix chats are synthetic (id "mx|..."): open via the Matrix seam, never
+        // openChat/apiLoadMessages -> ChatController.apiGetChat (issue #139).
+        if (chat.chatInfo.protocol == ChatProtocol.Matrix) {
+          openMatrixChat(chat, chatModel)
+        } else when (val info = chat.chatInfo) {
           is ChatInfo.Direct -> directChatAction(chat.remoteHostId, info.contact, chatModel)
           is ChatInfo.Group -> if (!inProgress.value) groupChatAction(chat.remoteHostId, info.groupInfo, chatModel, inProgress)
           is ChatInfo.Local -> noteFolderChatAction(chat.remoteHostId, info.noteFolder)
@@ -106,9 +113,13 @@ fun ChatListNavLinkView(
           }
         },
         click = rowClick(defaultClickAction),
-        dropdownMenuItems = {
-          tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
-            ContactMenuItems(chat, chat.chatInfo.contact, chatModel, showMenu, showMarkRead)
+        // Matrix: row menu actions all hit ChatController.api* on a synthetic chat -
+        // hidden this wave rather than shown dead (no fake affordances).
+        dropdownMenuItems = if (chat.chatInfo.protocol == ChatProtocol.Matrix) null else {
+          {
+            tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
+              ContactMenuItems(chat, chat.chatInfo.contact, chatModel, showMenu, showMarkRead)
+            }
           }
         },
         showMenu,
@@ -128,9 +139,11 @@ fun ChatListNavLinkView(
           }
         },
         click = rowClick(defaultClickAction),
-        dropdownMenuItems = {
-          tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
-            GroupMenuItems(chat, chat.chatInfo.groupInfo, chatModel, showMenu, inProgress, showMarkRead)
+        dropdownMenuItems = if (chat.chatInfo.protocol == ChatProtocol.Matrix) null else {
+          {
+            tryOrShowError("${chat.id}ChatListNavLinkDropdown", error = {}) {
+              GroupMenuItems(chat, chat.chatInfo.groupInfo, chatModel, showMenu, inProgress, showMarkRead)
+            }
           }
         },
         showMenu,
@@ -736,6 +749,9 @@ private fun ArchiveAllReportsItemAction(showMenu: MutableState<Boolean>, archive
 }
 
 fun markChatRead(c: Chat) {
+  // Matrix: read-state lives in the bridge, apiChatRead/apiChatUnread would hit the
+  // SimpleX core with a synthetic chat id - no-op until the engine implements it.
+  if (c.chatInfo.protocol == ChatProtocol.Matrix) return
   var chat = c
   withApi {
     if (chat.chatStats.unreadCount > 0) {
@@ -772,6 +788,8 @@ fun markChatRead(c: Chat) {
 fun markChatUnread(chat: Chat, chatModel: ChatModel) {
   // Just to be sure
   if (chat.chatStats.unreadChat) return
+  // Matrix: see markChatRead - no core call for synthetic chats
+  if (chat.chatInfo.protocol == ChatProtocol.Matrix) return
 
   withApi {
     val wasUnread = chat.unreadTag
