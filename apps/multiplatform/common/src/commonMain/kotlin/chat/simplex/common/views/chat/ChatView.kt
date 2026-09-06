@@ -307,7 +307,7 @@ fun ChatView(
                   }
                   ComposeView(
                     rhId = remoteHostId.value, chatModel, chatsCtx, Chat(remoteHostId = chatRh, chatInfo = chatInfo, chatItems = emptyList()), composeState, showCommandsMenu, attachmentOption,
-                    showChooseAttachment = { scope.launch { attachmentBottomSheetState.show() } },
+                    showChooseAttachment = { hideKeyboard(view); scope.launch { attachmentBottomSheetState.show() } },
                     focusRequester = focusRequester
                   )
                 }
