@@ -8,6 +8,7 @@ import chat.simplex.common.model.SimplexTLD
 import chat.simplex.common.views.newchat.ConnectTarget
 import chat.simplex.common.views.ux.camera.QrContent
 import chat.simplex.common.views.ux.camera.classifyQrContent
+import chat.simplex.common.views.ux.camera.isDesktopLink
 import chat.simplex.common.views.ux.camera.isHttpUrl
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -130,6 +131,57 @@ class QrContentTest {
     detectorArgs.clear()
     classifyQrContent("  @delta  ", recordingNotSimplex)
     assertEquals(listOf("@delta"), detectorArgs)
+  }
+
+  @Test
+  fun desktopInvitationClassifiesAsDesktopLink() {
+    // #159: an XRCP desktop-linking invitation (format per
+    // Simplex/RemoteControl/Invitation.hs) used to land in the generic Text
+    // bucket, so the Scan tab never routed it to the desktop-connect feature.
+    val invitation = "xrcp:/abc@192.168.1.5:55072#/?v=2&ssig=x&idsig=y"
+    assertEquals(QrContent.DesktopLink(invitation), classifyQrContent(invitation, notSimplex))
+  }
+
+  @Test
+  fun desktopLinkCheckRunsBeforeTheSimplexDetector() {
+    // The xrcp:/ prefix is decided before the detector seam runs: even a
+    // detector that (wrongly) claims the payload cannot steal it from the
+    // desktop-connect routing.
+    val invitation = "xrcp:/abc@192.168.1.5:55072#/?v=2&ssig=x&idsig=y"
+    val target = ConnectTarget.Link("https://simplex.chat/invitation#/?v=1&s=abc", SimplexLinkType.invitation, "Invitation")
+    assertEquals(QrContent.DesktopLink(invitation), classifyQrContent(invitation) { target })
+  }
+
+  @Test
+  fun desktopLinkIsTrimmedBeforeClassificationAndStored() {
+    val invitation = "xrcp:/abc@192.168.1.5:55072#/?v=2&ssig=x&idsig=y"
+    assertEquals(QrContent.DesktopLink(invitation), classifyQrContent("  $invitation\n", notSimplex))
+  }
+
+  @Test
+  fun simplexAndUrlPayloadsAreUnaffectedByDesktopLinkDetection() {
+    // Same stub pattern as simplexDetectorResultRoutesToSimpleXTarget: the
+    // detector decides SimpleX-ness, here for a simplex:/ URI shape.
+    val target = ConnectTarget.Link("simplex:/invitation#/?v=1&s=abc", SimplexLinkType.invitation, "Invitation")
+    assertEquals(
+      QrContent.SimpleXTarget(target),
+      classifyQrContent("simplex:/invitation#/?v=1&s=abc") { target }
+    )
+    assertEquals(
+      QrContent.Url("https://example.com/page?q=1"),
+      classifyQrContent("https://example.com/page?q=1", notSimplex)
+    )
+    // Same-prefix-no-suffix payloads keep the documented Text fallback,
+    // mirroring the "simplex:garbage" case.
+    assertEquals(QrContent.Text("xrcp:garbage"), classifyQrContent("xrcp:garbage", notSimplex))
+  }
+
+  @Test
+  fun desktopLinkShapeCheck() {
+    assertTrue(isDesktopLink("xrcp:/abc@192.168.1.5:55072#/?v=2&ssig=x&idsig=y"))
+    assertFalse(isDesktopLink("xrcp:garbage")) // scheme without the xrcp:/ body marker
+    assertFalse(isDesktopLink("https://example.com/xrcp:/a")) // prefix must open the payload
+    assertFalse(isDesktopLink("XRCP:/abc")) // case-sensitive, matching the wire format
   }
 
   @Test

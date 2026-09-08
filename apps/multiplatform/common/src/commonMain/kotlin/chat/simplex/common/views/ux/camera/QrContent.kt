@@ -6,18 +6,25 @@ import chat.simplex.common.views.newchat.strConnectTarget
 // Universal routing for anything the quick camera scans. Previously the sheet
 // silently dropped every QR that was not a SimpleX link (the decoded content
 // vanished with no confirmation card); every scanned payload now surfaces as
-// one of these three kinds and gets a visible card.
+// one of these kinds and gets a visible card.
 //
-// Pure commonMain with no platform imports: URL detection is a plain shape
-// check, so the classifier is desktop-testable.
+// Pure commonMain with no platform imports: URL and xrcp:/ detection are plain
+// shape checks, so the classifier is desktop-testable.
 sealed class QrContent {
   data class SimpleXTarget(val target: ConnectTarget) : QrContent()
+  // XRCP desktop-linking invitation (format per Simplex/RemoteControl/
+  // Invitation.hs): `xrcp:/<keys>@<ip>:<port>#/?v=2&ssig=...&idsig=...`.
+  // #159: it used to fall into the generic Text bucket, so the Scan tab
+  // never routed it to the desktop-connect feature.
+  data class DesktopLink(val invitation: String) : QrContent()
   data class Url(val url: String) : QrContent()
   data class Text(val text: String) : QrContent()
 }
 
 /**
- * Classifies a raw QR payload. SimpleX detection wins over URL detection, so
+ * Classifies a raw QR payload. The xrcp:/ prefix is checked before the SimpleX
+ * and URL detectors (nothing else claims the scheme, and the check is a plain
+ * string comparison). SimpleX detection then wins over URL detection, so
  * SimpleX invitation/contact/group links distributed as web URLs still route
  * to the in-app connect flow instead of the browser.
  *
@@ -34,11 +41,16 @@ fun classifyQrContent(
   // Empty/blank payloads classify as empty Text. The camera analyzer never
   // reports one in practice, but the behavior is defined and total.
   if (trimmed.isEmpty()) return QrContent.Text(trimmed)
+  if (isDesktopLink(trimmed)) return QrContent.DesktopLink(trimmed)
   val target = simplexDetector(trimmed)
   if (target != null) return QrContent.SimpleXTarget(target)
   if (isHttpUrl(trimmed)) return QrContent.Url(trimmed)
   return QrContent.Text(trimmed)
 }
+
+// XRCP desktop-linking invitation. Same rationale as isHttpUrl: a plain
+// commonMain shape check, no platform imports.
+fun isDesktopLink(s: String): Boolean = s.startsWith("xrcp:/")
 
 // Pure-Kotlin "sane URL" shape: an http(s) scheme and a non-empty host with a
 // dot (or localhost; a trailing :port is not part of the host). Anything else

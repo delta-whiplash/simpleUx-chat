@@ -7,14 +7,20 @@ import chat.simplex.common.helpers.toURI
 import chat.simplex.common.model.*
 import chat.simplex.common.platform.chatModel
 import chat.simplex.common.views.chatlist.connect
+import chat.simplex.common.views.helpers.ModalManager
 import chat.simplex.common.views.helpers.SharedContent
 import chat.simplex.common.views.newchat.ConnectTarget
 import chat.simplex.common.views.newchat.strConnectTarget
+import chat.simplex.common.views.remote.ConnectDesktopView
 
 // #84: the camera as an in-shell pane (Scan tab). Same routing semantics the
 // modal version had: photos and shared text use the proven ShareListView
 // hand-off via sharedContent; SimpleX links connect immediately; other QR
 // content is surfaced by the sheet's universal QR routing.
+// #159: an xrcp:/ desktop-linking invitation opens ConnectDesktopView with
+// the scanned invitation as its pending address, so the connect runs through
+// that screen's existing flow (session states + error alerts) and the user
+// sees the outcome.
 @Composable
 actual fun QuickCameraPane(onClose: () -> Unit) {
   val quickCameraConnectFilter = remember { mutableStateOf(emptySet<String>()) }
@@ -33,6 +39,11 @@ actual fun QuickCameraPane(onClose: () -> Unit) {
         true
       } else {
         false
+      }
+    },
+    onConnectDesktopLink = { invitation ->
+      ModalManager.start.showCustomModal { close ->
+        ConnectDesktopView(close, pendingDesktopAddress = invitation)
       }
     },
     onTextShared = { text ->
