@@ -42,6 +42,10 @@ val GlassBorderDark = Color(0x33FFFFFF)
 val GlassBorderLight = Color(0x24000000)
 val GlassSpecularHighlight = Color(0x55FFFFFF)
 
+// Translucent Slate surfaces for settings rows and filter chips (Slate800 @ 20% / Slate100 @ 50%)
+val SlateSurfaceDark = Color(0x331E293B)
+val SlateSurfaceLight = Color(0x80F1F5F9)
+
 // Accent Vibrancy Tokens
 val TelegramBlue = Color(0xFF2AABEE)
 val ElectricIndigo = Color(0xFF6366F1)
