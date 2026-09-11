@@ -31,6 +31,7 @@ import chat.simplex.common.platform.*
 import chat.simplex.common.ui.theme.*
 import chat.simplex.common.views.CreateProfile
 import chat.simplex.common.views.helpers.*
+import chat.simplex.common.views.remote.ConnectDesktopView
 import chat.simplex.common.views.usersettings.UserProfilesView
 import chat.simplex.res.MR
 import dev.icerock.moko.resources.compose.painterResource
@@ -466,6 +467,46 @@ fun ProfileSwitcherOverlay(
                     )
                   )
                 }
+              }
+
+              // Desktop linking entry: upstream's GlobalSettingsSection ("Use
+              // from desktop") is not reachable in the fork's Android UI.
+              Spacer(Modifier.height(10.dp))
+              Row(
+                modifier = Modifier
+                  .fillMaxWidth()
+                  .clip(RoundedCornerShape(14.dp))
+                  .background(if (isDark) SlateSurfaceDark else SlateSurfaceLight)
+                  .border(
+                    width = 1.dp,
+                    color = if (isDark) GlassBorderDark else GlassBorderLight,
+                    shape = RoundedCornerShape(14.dp)
+                  )
+                  .clickable {
+                    onDismiss()
+                    ModalManager.start.showCustomModal { close ->
+                      ConnectDesktopView(close)
+                    }
+                  }
+                  .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+              ) {
+                Icon(
+                  painter = painterResource(MR.images.ic_desktop),
+                  contentDescription = null,
+                  modifier = Modifier.size(15.dp),
+                  tint = if (isDark) Slate400 else Slate500
+                )
+                Text(
+                  text = stringResource(MR.strings.settings_section_title_use_from_desktop),
+                  style = TextStyle(
+                    fontFamily = PlusJakartaSans,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (isDark) Slate200 else Slate800
+                  )
+                )
               }
             }
           }
