@@ -49,8 +49,11 @@ object ThemeManager {
     }
     val defaultTheme = defaultActiveTheme(appSettingsTheme)
     return ThemeModeOverride(colors = defaultTheme?.colors ?: ThemeColors(), wallpaper = defaultTheme?.wallpaper
-      // Situation when user didn't change global theme at all (it is not saved yet). Using defaults
-      ?: ThemeWallpaper.from(PresetWallpaper.SCHOOL.toType(CurrentColors.value.base), null, null))
+      // Situation when user didn't change global theme at all (it is not saved yet). Using defaults.
+      // #175: the default is no wallpaper at all - conversations sit on the mineral
+      // canvas instead of the legacy SCHOOL doodle pattern. Users keep any wallpaper
+      // they picked explicitly.
+      ?: ThemeWallpaper())
   }
 
   // Spec: spec/services/theme.md#currentColors
@@ -60,11 +63,11 @@ object ThemeManager {
     val defaultTheme = defaultActiveTheme(appSettingsTheme)
 
     val baseTheme = when (nonSystemThemeName) {
-      DefaultTheme.LIGHT.themeName -> ActiveTheme(DefaultTheme.LIGHT.themeName, DefaultTheme.LIGHT, LightColorPalette, LightColorPaletteApp, AppWallpaper(type = PresetWallpaper.SCHOOL.toType(DefaultTheme.LIGHT)))
-      DefaultTheme.DARK.themeName -> ActiveTheme(DefaultTheme.DARK.themeName, DefaultTheme.DARK, DarkColorPalette, DarkColorPaletteApp, AppWallpaper(type = PresetWallpaper.SCHOOL.toType(DefaultTheme.DARK)))
-      DefaultTheme.SIMPLEX.themeName -> ActiveTheme(DefaultTheme.SIMPLEX.themeName, DefaultTheme.SIMPLEX, SimplexColorPalette, SimplexColorPaletteApp, AppWallpaper(type = PresetWallpaper.SCHOOL.toType(DefaultTheme.SIMPLEX)))
-      DefaultTheme.BLACK.themeName -> ActiveTheme(DefaultTheme.BLACK.themeName, DefaultTheme.BLACK, BlackColorPalette, BlackColorPaletteApp, AppWallpaper(type = PresetWallpaper.SCHOOL.toType(DefaultTheme.BLACK)))
-      else -> ActiveTheme(DefaultTheme.LIGHT.themeName, DefaultTheme.LIGHT, LightColorPalette, LightColorPaletteApp, AppWallpaper(type = PresetWallpaper.SCHOOL.toType(DefaultTheme.LIGHT)))
+      DefaultTheme.LIGHT.themeName -> ActiveTheme(DefaultTheme.LIGHT.themeName, DefaultTheme.LIGHT, LightColorPalette, LightColorPaletteApp)
+      DefaultTheme.DARK.themeName -> ActiveTheme(DefaultTheme.DARK.themeName, DefaultTheme.DARK, DarkColorPalette, DarkColorPaletteApp)
+      DefaultTheme.SIMPLEX.themeName -> ActiveTheme(DefaultTheme.SIMPLEX.themeName, DefaultTheme.SIMPLEX, SimplexColorPalette, SimplexColorPaletteApp)
+      DefaultTheme.BLACK.themeName -> ActiveTheme(DefaultTheme.BLACK.themeName, DefaultTheme.BLACK, BlackColorPalette, BlackColorPaletteApp)
+      else -> ActiveTheme(DefaultTheme.LIGHT.themeName, DefaultTheme.LIGHT, LightColorPalette, LightColorPaletteApp)
     }
 
     val perUserTheme = if (baseTheme.colors.isLight) perUserTheme?.light else perUserTheme?.dark

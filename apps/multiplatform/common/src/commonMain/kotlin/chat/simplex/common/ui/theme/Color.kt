@@ -110,3 +110,45 @@ val SurfaceContainerLowLight = Color(0xFFF7F9FC)
 val SurfaceContainerLight = Color(0xFFEFF2F8)
 val SurfaceContainerHighLight = Color(0xFFE5EAF3)
 val SurfaceContainerHighestLight = Color(0xFFD9E1ED)
+
+// ── Luxury Mineral v2 (#175) ─────────────────────────────────────────────
+// The committed mineral world for the core surfaces, mirroring
+// plans/ui-rework/mockups/core-screens.html. View code references these
+// tokens, never raw hex. Gold carries live attention (unread, active states,
+// read checks, send, brand); azure = links/pending, emerald = presence and
+// security truth, ruby = destructive.
+val MineralCanvasDark = Color(0xFF0B0F17)
+val MineralCanvasLight = Color(0xFFF5F7FA)
+
+// Island / stone-slab surfaces (floating top bar, island bar, composer, sheets)
+val MineralIslandTopDark = Color(0xFF141C2A)
+val MineralIslandBottomDark = Color(0xFF101622)
+val MineralIslandTopLight = Color(0xFFFFFFFF)
+val MineralIslandBottomLight = Color(0xFFFBFCFE)
+
+// Hairline rims: soft top-edge specular on dark slabs, precision bevel on light
+val MineralRimTopDark = Color(0x3DFFFFFF)
+val MineralRimDark = Color(0x29FFFFFF)
+val MineralRimLight = Color(0x140F172A)
+
+// Dark ink used on gold fills (design system "OnGold")
+val MineralInkOnGold = Color(0xFF131720)
+
+// Conversation bubbles: outgoing sapphire steel (dark) / champagne (light),
+// incoming slate-ink (dark) / white (light)
+val MineralInBubbleDark = Color(0xFF1A2130)
+val MineralOutDark = Color(0xFF27436B)
+val MineralOutTopDark = Color(0xFF2C4C78)
+val MineralOutBottomDark = Color(0xFF1E3557)
+val MineralOutLight = Color(0xFFF6E7C4)
+val MineralOutTopLight = Color(0xFFFAEFD3)
+val MineralOutBottomLight = Color(0xFFF2E0B4)
+val MineralOutRimLight = Color(0x42B47D14)
+
+// Gold washes for selected pills / active tab containers (light mode ramp)
+val MineralGoldWashLight = Color(0xFFFEF3C7)
+val MineralGoldWashDeepLight = Color(0xFFFDE68A)
+
+// Read-check gold (delivered/read ticks on outgoing messages)
+val MineralChecksDark = Color(0xFFE2B755)
+val MineralChecksLight = Color(0xFFC98A12)

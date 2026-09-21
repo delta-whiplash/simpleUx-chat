@@ -741,7 +741,7 @@
     <string name="feature_received_prohibited">reçu, non autorisé</string>
     <string name="allow_your_contacts_to_send_disappearing_messages">Autorise votre contact à envoyer des messages éphémères.</string>
     <string name="conn_level_desc_direct">directe</string>
-    <string name="group_is_decentralized">Entièrement décentralisé – visible que par ses membres.</string>
+    <string name="group_is_decentralized">Entièrement décentralisé, visible que par ses membres.</string>
     <string name="group_members_can_send_disappearing">Les membres peuvent envoyer des messages éphémères.</string>
     <string name="prohibit_sending_disappearing_messages">Interdire l’envoi de messages éphémères.</string>
     <string name="incognito_info_protects">Le mode incognito protège votre vie privée en utilisant un nouveau profil aléatoire pour chaque contact.</string>

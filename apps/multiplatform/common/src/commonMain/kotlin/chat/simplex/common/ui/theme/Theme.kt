@@ -663,44 +663,49 @@ val DEFAULT_MIN_CENTER_MODAL_WIDTH = 590.dp
 val DEFAULT_END_MODAL_WIDTH = 388.dp
 val DEFAULT_MAX_IMAGE_WIDTH = 500.dp
 
+// #175 Luxury Mineral v2: one committed accent. Gold is the app's primary;
+// azure stays for links/pending, emerald for presence/security, ruby for
+// destructive. On-gold content is dark ink (design system "OnGold"), so dark
+// palettes carry a matching onPrimary.
 val DarkColorPalette = darkColors(
-  primary = TelegramBlue,  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = TelegramBlue,
+  primary = ChampagneGold,
+  onPrimary = MineralInkOnGold,
+  primaryVariant = ChampagneGold,
   secondary = Color(0xFF8E9BAE),
   secondaryVariant = Color(0xFF232B3E),
-  background = Color(0xFF0E121B),
-  surface = Color(0xFF181E2C),
+  background = MineralCanvasDark,
+  surface = Color(0xFF121826),
   error = CoralRed,
-  onBackground = Color(0xFFF1F5F9),
-  onSurface = Color(0xFFF1F5F9),
+  onBackground = Color(0xFFF8FAFC),
+  onSurface = Color(0xFFF8FAFC),
 )
 val DarkColorPaletteApp = AppColors(
-  title = TelegramBlue,
-  primaryVariant2 = Color(0xFF1E3A5F),
-  sentMessage = Color(0xFF1E3A5F),
-  sentQuote = Color(0xFF254B78),
-  receivedMessage = Color(0xFF1C2230),
-  receivedQuote = Color(0xFF252D3F),
+  title = ChampagneGold,
+  primaryVariant2 = Color(0xFF27436B),
+  sentMessage = MineralOutDark,
+  sentQuote = Color(0xFF1F3452),
+  receivedMessage = MineralInBubbleDark,
+  receivedQuote = Color(0xFF232B3D),
 )
 
 val LightColorPalette = lightColors(
-  primary = Color(0xFF0284C7),  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = Color(0xFF0369A1),
+  primary = Amber700,
+  primaryVariant = Amber600,
   secondary = Color(0xFF64748B),
   secondaryVariant = Color(0xFFE2E8F0),
-  background = Color(0xFFF8FAFC),
+  background = MineralCanvasLight,
   surface = Color.White,
   error = CoralRed,
   onBackground = Color(0xFF0F172A),
   onSurface = Color(0xFF0F172A),
 )
 val LightColorPaletteApp = AppColors(
-  title = Color(0xFF0369A1),
-  primaryVariant2 = Color(0xFFE0F2FE),
-  sentMessage = Color(0xFFE1EFFE),
-  sentQuote = Color(0xFFCEE5FD),
+  title = Amber700,
+  primaryVariant2 = Color(0xFFF6E7C4),
+  sentMessage = MineralOutLight,
+  sentQuote = Color(0xFFEFD9A8),
   receivedMessage = Color.White,
-  receivedQuote = Color(0xFFF1F5F9),
+  receivedQuote = Color(0xFFF1F4F9),
 )
 
 val SimplexColorPalette = darkColors(
@@ -724,8 +729,9 @@ val SimplexColorPaletteApp = AppColors(
 )
 
 val BlackColorPalette = darkColors(
-  primary = TelegramBlue,  // If this value changes also need to update #0088ff in string resource files
-  primaryVariant = TelegramBlue,
+  primary = ChampagneGold,
+  onPrimary = MineralInkOnGold,
+  primaryVariant = ChampagneGold,
   secondary = Color(0xFF8E9BAE),
   secondaryVariant = Color(0xFF1E1E22),
   background = Color(0xFF000000),
@@ -735,12 +741,12 @@ val BlackColorPalette = darkColors(
   onSurface = Color(0xFFF1F5F9),
 )
 val BlackColorPaletteApp = AppColors(
-  title = TelegramBlue,
-  primaryVariant2 = Color(0xFF1A2E44),
-  sentMessage = Color(0xFF162436),
-  sentQuote = Color(0xFF1F3550),
-  receivedMessage = Color(0xFF18181B),
-  receivedQuote = Color(0xFF27272A),
+  title = ChampagneGold,
+  primaryVariant2 = Color(0xFF1F2D47),
+  sentMessage = Color(0xFF22334E),
+  sentQuote = Color(0xFF182438),
+  receivedMessage = Color(0xFF17171A),
+  receivedQuote = Color(0xFF242428),
 )
 
 var systemInDarkThemeCurrently: Boolean = isInNightMode()

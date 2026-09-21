@@ -247,7 +247,7 @@
   <string name="service_notifications">Instant notifications!</string>
   <string name="service_notifications_disabled">Instant notifications are disabled!</string>
   <string name="to_preserve_privacy_simplex_has_background_service_instead_of_push_notifications_it_uses_a_few_pc_battery"><![CDATA[To improve privacy, <b>SimpleX runs in background</b> instead of using push notifications.]]></string>
-  <string name="it_can_disabled_via_settings_notifications_still_shown"><![CDATA[<b>It can be disabled via settings</b> – notifications will still be shown while the app is running.]]></string>
+  <string name="it_can_disabled_via_settings_notifications_still_shown"><![CDATA[<b>It can be disabled via settings</b>. Notifications will still be shown while the app is running.]]></string>
   <string name="turn_off_battery_optimization"><![CDATA[<b>Allow it</b> in the next dialog to receive notifications instantly.]]></string>
   <string name="turning_off_service_and_periodic">Battery optimization is active, turning off background service and periodic requests for new messages. You can re-enable them via settings.</string>
   <string name="periodic_notifications">Periodic notifications</string>
@@ -288,7 +288,7 @@
   <string name="notifications_mode_service">Always on</string>
   <string name="notifications_mode_off_desc">App can receive notifications only when it\'s running, no background service will be started</string>
   <string name="notifications_mode_periodic_desc">Checks new messages every 10 minutes for up to 1 minute</string>
-  <string name="notifications_mode_service_desc">Background service is always running – notifications will be shown as soon as the messages are available.</string>
+  <string name="notifications_mode_service_desc">Background service is always running: notifications will be shown as soon as the messages are available.</string>
   <string name="notification_preview_mode_message">Message text</string>
   <string name="notification_preview_mode_contact">Contact name</string>
   <string name="notification_preview_mode_hidden">Hidden</string>
@@ -1277,7 +1277,7 @@
   <string name="onboarding_notifications_mode_off_desc_short">No background service</string>
   <string name="onboarding_notifications_mode_periodic_desc"><![CDATA[<b>Good for battery</b>. App checks messages every 10 minutes. You may miss calls or urgent messages.]]></string>
   <string name="onboarding_notifications_mode_periodic_desc_short">Check messages every 10 minutes</string>
-  <string name="onboarding_notifications_mode_service_desc"><![CDATA[<b>Uses more battery</b>! App always runs in background – notifications are shown instantly.]]></string>
+  <string name="onboarding_notifications_mode_service_desc"><![CDATA[<b>Uses more battery</b>! App always runs in background, so notifications are shown instantly.]]></string>
   <string name="onboarding_notifications_mode_service_desc_short">App always runs in background</string>
   <string name="onboarding_notifications_mode_battery">Notifications and battery</string>
 
@@ -2006,7 +2006,7 @@
 
   <!-- AddGroupView.kt -->
   <string name="create_secret_group_title">Create secret group</string>
-  <string name="group_is_decentralized">Fully decentralized – visible only to members.</string>
+  <string name="group_is_decentralized">Fully decentralized, visible only to members.</string>
   <string name="group_display_name_field">Enter group name:</string>
   <string name="group_full_name_field">Group full name:</string>
   <string name="channel_full_name_field">Channel full name:</string>
@@ -2401,7 +2401,7 @@
   <string name="v4_4_verify_connection_security">Verify connection security</string>
   <string name="v4_4_verify_connection_security_desc">Compare security codes with your contacts.</string>
   <string name="v4_4_french_interface">French interface</string>
-  <string name="v4_4_french_interface_descr">Thanks to the users – contribute via Weblate!</string>
+  <string name="v4_4_french_interface_descr">Thanks to the users. Contribute via Weblate!</string>
   <string name="v4_5_multiple_chat_profiles">Multiple chat profiles</string>
   <string name="v4_5_multiple_chat_profiles_descr">Different names, avatars and transport isolation.</string>
   <string name="v4_5_message_draft">Message draft</string>
@@ -2413,7 +2413,7 @@
   <string name="v4_5_reduced_battery_usage">Reduced battery usage</string>
   <string name="v4_5_reduced_battery_usage_descr">More improvements are coming soon!</string>
   <string name="v4_5_italian_interface">Italian interface</string>
-  <string name="v4_5_italian_interface_descr">Thanks to the users – contribute via Weblate!</string>
+  <string name="v4_5_italian_interface_descr">Thanks to the users. Contribute via Weblate!</string>
   <string name="v4_6_hidden_chat_profiles">Hidden chat profiles</string>
   <string name="v4_6_hidden_chat_profiles_descr">Protect your chat profiles with a password!</string>
   <string name="v4_6_audio_video_calls">Audio and video calls</string>
@@ -2425,13 +2425,13 @@
   <string name="v4_6_reduced_battery_usage">Further reduced battery usage</string>
   <string name="v4_6_reduced_battery_usage_descr">More improvements are coming soon!</string>
   <string name="v4_6_chinese_spanish_interface">Chinese and Spanish interface</string>
-  <string name="v4_6_chinese_spanish_interface_descr">Thanks to the users – contribute via Weblate!</string>
+  <string name="v4_6_chinese_spanish_interface_descr">Thanks to the users. Contribute via Weblate!</string>
   <string name="v5_0_large_files_support">Videos and files up to 1gb</string>
   <string name="v5_0_large_files_support_descr">Fast and no wait until the sender is online!</string>
   <string name="v5_0_app_passcode">App passcode</string>
   <string name="v5_0_app_passcode_descr">Set it instead of system authentication.</string>
   <string name="v5_0_polish_interface">Polish interface</string>
-  <string name="v5_0_polish_interface_descr">Thanks to the users – contribute via Weblate!</string>
+  <string name="v5_0_polish_interface_descr">Thanks to the users. Contribute via Weblate!</string>
   <string name="v5_1_message_reactions">Message reactions</string>
   <string name="v5_1_message_reactions_descr">Finally, we have them! 🚀</string>
   <string name="v5_1_self_destruct_passcode">Self-destruct passcode</string>
@@ -2441,7 +2441,7 @@
   <string name="v5_1_better_messages">Better messages</string>
   <string name="v5_1_better_messages_descr">- voice messages up to 5 minutes.\n- custom time to disappear.\n- editing history.</string>
   <string name="v5_1_japanese_portuguese_interface">Japanese and Portuguese UI</string>
-  <string name="whats_new_thanks_to_users_contribute_weblate">Thanks to the users – contribute via Weblate!</string>
+  <string name="whats_new_thanks_to_users_contribute_weblate">Thanks to the users. Contribute via Weblate!</string>
   <string name="v5_2_message_delivery_receipts">Message delivery receipts!</string>
   <string name="v5_2_message_delivery_receipts_descr">The second tick we missed! ✅</string>
   <string name="v5_2_favourites_filter">Find chats faster</string>

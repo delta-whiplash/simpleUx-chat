@@ -12,33 +12,36 @@ import androidx.compose.ui.graphics.Color
 object GlassTokens {
 
     // ── Deep background ──────────────────────────────────────────────
-    val DarkBackground = Color(0xFF07090E)
+    // #175: the glass-mode canvas is the mineral obsidian canvas
+    val DarkBackground = MineralCanvasDark
 
-    // ── Ambient orb colors (radial gradients behind glass) ──────────
-    val OrbIndigo = Blue500
-    val OrbViolet = VioletPurple
-    val OrbCyan = Color(0xFF06B6D4)
+    // ── Ambient orb colors (static radial glows behind glass) ───────
+    // #175: mineral glows - steel, champagne and a whisper of azure -
+    // replacing the indigo/violet/cyan trio. Kept names, new values.
+    val OrbIndigo = Color(0xFF3D5A80)
+    val OrbViolet = ChampagneGold
+    val OrbCyan = Sky400
 
-    const val OrbIndigoAlpha = 0.28f
-    const val OrbVioletAlpha = 0.22f
-    const val OrbCyanAlpha = 0.18f
+    const val OrbIndigoAlpha = 0.16f
+    const val OrbVioletAlpha = 0.10f
+    const val OrbCyanAlpha = 0.08f
 
-    // ── Sent bubble ─────────────────────────────────────────────────
-    val SentBubblePrimary = Color(0xFF1E40AF)
-    val SentBubbleAccent = Color(0xFF60A5FA)
+    // ── Sent bubble (sapphire steel, #175) ──────────────────────────
+    val SentBubblePrimary = MineralOutTopDark
+    val SentBubbleAccent = Color(0xFF7FA6D9)
     const val SentBubbleAlpha = 0.88f
     const val SentBorderAlpha = 0.45f
 
     // ── Received bubble ─────────────────────────────────────────────
-    val ReceivedBubbleColor = Slate800
+    val ReceivedBubbleColor = MineralInBubbleDark
     const val ReceivedBubbleAlpha = 0.88f
     const val ReceivedBorderAlpha = 0.25f
 
-    // ── Security pill ───────────────────────────────────────────────
-    val SecurityPillBg = Color(0xFF1E3A8A)
-    val SecurityPillBorder = Color(0xFF60A5FA)
-    val SecurityPillIcon = Color(0xFF93C5FD)
-    val SecurityPillText = Color(0xFFE2E8F0)
+    // ── Security pill (emerald = security truth, #175) ──────────────
+    val SecurityPillBg = Color(0xFF122A20)
+    val SecurityPillBorder = Color(0x6610B981)
+    val SecurityPillIcon = Color(0xFF6EE7B7)
+    val SecurityPillText = Color(0xFFD1FAE5)
 
     // ── Chat list surfaces ─────────────────────────────────────────
     val ChatListCardBorderLight = Color(0x140F172A)

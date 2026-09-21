@@ -802,14 +802,14 @@ fun ChatItemView(
                         Modifier
                           .size(28.dp)
                           .clip(CircleShape)
-                          .background(if (isPublic) Color(0x22EF4444) else Color(0x222AABEE)),
+                          .background(if (isPublic) Color(0x22EF4444) else Color(0x2238BDF8)),
                         contentAlignment = Alignment.Center
                       ) {
                         Icon(
                           painterResource(if (isPublic) MR.images.ic_info else MR.images.ic_lock_filled),
                           null,
                           Modifier.size(15.dp),
-                          tint = if (isPublic) Color(0xFFEF4444) else Color(0xFF2AABEE)
+                          tint = if (isPublic) Color(0xFFEF4444) else Sky400
                         )
                       }
                       Text(

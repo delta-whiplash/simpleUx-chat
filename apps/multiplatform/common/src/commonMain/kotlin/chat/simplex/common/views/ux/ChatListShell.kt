@@ -150,12 +150,12 @@ fun ChatsTopBar(
         ) {
           Text(
             text = "SimpleUX",
-            color = if (isDark) AmberGold else Amber600,
+            color = if (isDark) ChampagneGold else Amber700,
             style = TextStyle(
               fontFamily = PlusJakartaSans,
-              fontSize = 22.sp,
-              fontWeight = FontWeight.Bold,
-              letterSpacing = 0.5.sp
+              fontSize = 21.sp,
+              fontWeight = FontWeight.ExtraBold,
+              letterSpacing = (-0.2).sp
             )
           )
           val isConnected = chatModel.chatRunning.value == true
@@ -616,7 +616,7 @@ fun BoxScope.TelegramBottomIslandBar(
   ) {
     Surface(
       shape = shape,
-      color = if (isDark) Color(0xEE121A26) else Color(0xFAFFFFFF),
+      color = if (isDark) CameraChromeIsland else Color(0xFAFFFFFF),
       elevation = 12.dp,
       // FB-1: tabs share the width equally, so the pill's width is bounded
       // (full width up to a phone-friendly cap) instead of hugging uneven
@@ -716,8 +716,8 @@ private fun IslandTabItem(
   val isDark = isInDarkTheme()
   val activeShape = RoundedCornerShape(20.dp)
   val activeBg = if (isActive) {
-    if (isDark) Brush.linearGradient(listOf(Color(0x33E2B755), Color(0x22D97706)))
-    else Brush.linearGradient(listOf(Color(0xFFFEF3C7), Color(0xFFFDE68A)))
+    if (isDark) Brush.linearGradient(listOf(AmberGoldWash, Amber600.copy(alpha = 0.13f)))
+    else Brush.linearGradient(listOf(MineralGoldWashLight, MineralGoldWashDeepLight))
   } else {
     SolidColor(Color.Transparent)
   }
@@ -728,7 +728,7 @@ private fun IslandTabItem(
     modifier = modifier
       .clip(activeShape)
       .background(activeBg)
-      .then(if (isActive) Modifier.border(1.dp, if (isDark) Color(0x66E2B755) else AmberGold, activeShape) else Modifier)
+      .then(if (isActive) Modifier.border(1.dp, if (isDark) AmberGoldRim else AmberGold, activeShape) else Modifier)
       .then(
         if (onLongClick != null) {
           Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
@@ -747,7 +747,7 @@ private fun IslandTabItem(
         painterResource(icon),
         contentDescription = label,
         modifier = Modifier.size(20.dp),
-        tint = if (isActive) (if (isDark) AmberGold else Color(0xFFB45309)) else inactiveColor
+        tint = if (isActive) (if (isDark) ChampagneGold else Amber700) else inactiveColor
       )
       Spacer(Modifier.height(2.dp))
       // FB-11: labels are single-line; instead of wrapping or ellipsizing the four
@@ -763,7 +763,7 @@ private fun IslandTabItem(
           if (it.hasVisualOverflow && labelFontSize > 8.sp) labelFontSize *= 0.92f
         },
         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
-        color = if (isActive) (if (isDark) AmberGold else Color(0xFFB45309)) else inactiveColor
+        color = if (isActive) (if (isDark) ChampagneGold else Amber700) else inactiveColor
       )
     }
   }

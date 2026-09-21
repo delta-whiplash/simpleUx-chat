@@ -109,8 +109,9 @@ fun ChatPreviewView(
         overflow = TextOverflow.Ellipsis,
         style = TextStyle(
           fontFamily = PlusJakartaSans,
-          fontSize = 16.sp,
-          fontWeight = FontWeight.SemiBold,
+          fontSize = 15.5.sp,
+          fontWeight = FontWeight.Bold,
+          letterSpacing = (-0.1).sp,
           color = titleColor
         )
       )
@@ -184,8 +185,13 @@ fun ChatPreviewView(
               cInfo.nameBadge,
               maxLines = 1,
               overflow = TextOverflow.Ellipsis,
-              style = MaterialTheme.typography.h3,
-              fontWeight = FontWeight.Bold,
+              // #175: 15.5sp bold tracked tight, unified with the group title
+              style = TextStyle(
+                fontFamily = PlusJakartaSans,
+                fontSize = 15.5.sp,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.1).sp
+              ),
               color = color
             )
             if (isStarred) {
@@ -269,13 +275,13 @@ fun ChatPreviewView(
         Box(
           modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(if (isDark) Color(0x33E2B755) else Color(0xFFFEF3C7))
-            .border(0.5.dp, if (isDark) Color(0x66E2B755) else Color(0xFFF59E0B), RoundedCornerShape(6.dp))
+            .background(if (isDark) AmberGoldWash else MineralGoldWashLight)
+            .border(0.5.dp, if (isDark) AmberGoldRim else AmberGold, RoundedCornerShape(6.dp))
             .padding(horizontal = 5.dp, vertical = 1.dp)
         ) {
           Text(
             text = stringResource(MR.strings.draft_badge),
-            color = if (isDark) Color(0xFFE2B755) else Color(0xFFB45309),
+            color = if (isDark) ChampagneGold else Amber700,
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold
           )
@@ -288,7 +294,7 @@ fun ChatPreviewView(
             fontFamily = PlusJakartaSans,
             fontStyle = FontStyle.Italic,
             fontSize = 14.sp,
-            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+            color = if (isDark) Slate400 else Slate500
           )
         )
       }
@@ -339,9 +345,9 @@ fun ChatPreviewView(
         overflow = TextOverflow.Ellipsis,
         style = TextStyle(
           fontFamily = PlusJakartaSans,
-          fontSize = 14.sp,
-          color = if (isInDarkTheme()) Color(0xFF94A3B8) else Color(0xFF475569),
-          lineHeight = 19.sp
+          fontSize = 13.5.sp,
+          color = if (isInDarkTheme()) Slate400 else Slate600,
+          lineHeight = 18.5.sp
         ),
         inlineContent = inlineTextContent,
         modifier = Modifier.fillMaxWidth(),
@@ -446,7 +452,9 @@ fun ChatPreviewView(
         Box(
           Modifier
             .size(54.dp * fontSizeSqrtMultiplier)
-            .clip(CircleShape),
+            .clip(CircleShape)
+            // #175: specular hairline ring so avatars sit as polished discs
+            .border(1.dp, if (isInDarkTheme()) MineralRimTopDark else MineralRimLight, CircleShape),
           contentAlignment = Alignment.Center
         ) {
           ChatInfoImage(cInfo, size = 54.dp * fontSizeSqrtMultiplier)
@@ -463,7 +471,7 @@ fun ChatPreviewView(
           }
           Spacer(Modifier.width(8.dp))
           val ts = getTimestampText(chat.chatItems.lastOrNull()?.meta?.itemTs ?: chat.chatInfo.chatTs)
-          ChatListTimestampView(ts)
+          ChatListTimestampView(ts, hot = chat.chatStats.unreadCount > 0 || chat.chatStats.unreadChat)
         }
         Row(Modifier.heightIn(min = 34.sp.toDp()).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
           Row(Modifier.padding(top = 2.dp).weight(1f)) {
@@ -646,8 +654,8 @@ fun UnreadBadge(
   val bgModifier = if (isGradient) {
     Modifier.background(
       Brush.linearGradient(
-        if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
-        else listOf(Color(0xFFD97706), Color(0xFFB45309))
+        if (isDark) listOf(ChampagneGold, Amber600)
+        else listOf(Amber600, Amber700)
       ),
       shape = CornerPill
     )
@@ -665,7 +673,7 @@ fun UnreadBadge(
   ) {
     Text(
       text,
-      color = if (isGradient && isDark) Color(0xFF0F172A) else Color.White,
+      color = if (isGradient && isDark) Slate900 else Color.White,
       fontSize = 11.sp,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Center
@@ -678,12 +686,18 @@ fun unreadCountStr(n: Int): String {
   return if (n < 1000) "$n" else "${n / 1000}" + stringResource(MR.strings.thousand_abbreviation)
 }
 
-@Composable fun ChatListTimestampView(ts: String) {
+@Composable fun ChatListTimestampView(ts: String, hot: Boolean = false) {
   Text(
     ts,
     Modifier.padding(top = 1.dp).offset(x = if (appPlatform.isDesktop) 1.5.sp.toDp() else 0.dp),
-    color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
-    style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, fontWeight = FontWeight.Medium),
+    // #175: gold timestamp on chats with unread attention, muted slate otherwise
+    color = when {
+      hot && isInDarkTheme() -> ChampagneGold
+      hot -> MineralChecksLight
+      isInDarkTheme() -> Slate500
+      else -> Slate400
+    },
+    style = MaterialTheme.typography.body2.copy(fontSize = 12.sp, fontWeight = FontWeight.SemiBold),
   )
 }
 

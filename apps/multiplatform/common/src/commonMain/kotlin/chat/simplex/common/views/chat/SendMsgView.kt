@@ -77,16 +77,16 @@ fun SendMsgView(
           Modifier
             .glassSurface(
               shape = Corner24,
-              backgroundColor = if (isInDarkTheme()) Color(0xF0141D2B) else Color(0xFFFFFFFF),
-              borderColor = if (isInDarkTheme()) Color(0x40FFFFFF) else Color(0xFFCBD5E1)
+              backgroundColor = if (isInDarkTheme()) Color(0xF0141C2A) else Color(0xFFFFFFFF),
+              borderColor = if (isInDarkTheme()) MineralRimTopDark else Color(0xFFCBD5E1)
             )
         } else {
           Modifier
             .clip(Corner24)
-            .background(if (isInDarkTheme()) Color(0xFF181E2C) else Color(0xFFFFFFFF))
+            .background(if (isInDarkTheme()) MineralIslandTopDark else Color(0xFFFFFFFF))
             .border(
               width = 1.dp,
-              color = if (isInDarkTheme()) Color(0x33FFFFFF) else Color(0xFFE2E8F0),
+              color = if (isInDarkTheme()) MineralRimDark else Color(0xFFE2E8F0),
               shape = Corner24
             )
         }
@@ -508,7 +508,8 @@ private fun SendMsgButton(
         .clip(CircleShape)
         .background(
           if (enabled) {
-            Brush.linearGradient(listOf(Color(0xFF2AABEE), Color(0xFF229ED9)))
+            // #175: gold send disc (design system CTA) with dark on-gold glyph
+            Brush.linearGradient(listOf(ChampagneGold, Amber600))
           } else {
             Brush.linearGradient(listOf(MaterialTheme.colors.secondary.copy(alpha = 0.5f), MaterialTheme.colors.secondary.copy(alpha = 0.5f)))
           }
@@ -518,7 +519,7 @@ private fun SendMsgButton(
       Icon(
         icon,
         stringResource(MR.strings.icon_descr_send_message),
-        tint = Color.White,
+        tint = if (enabled) MineralInkOnGold else Color.White,
         modifier = Modifier.size(18.dp)
       )
     }

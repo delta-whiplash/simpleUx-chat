@@ -93,8 +93,8 @@ fun FilterPillsRow(
 
       val bgColor = animateColorAsState(
         targetValue = when {
-          isSelected && isDark -> Color(0x33E2B755)
-          isSelected && !isDark -> Color(0xFFFEF3C7)
+          isSelected && isDark -> AmberGoldWash
+          isSelected && !isDark -> MineralGoldWashLight
           isDark -> Color(0x1F1E293B)
           else -> Slate50
         },
@@ -103,7 +103,7 @@ fun FilterPillsRow(
 
       val borderColor = animateColorAsState(
         targetValue = when {
-          isSelected && isDark -> Color(0x80E2B755)
+          isSelected && isDark -> ChampagneGold.copy(alpha = 0.5f)
           isSelected && !isDark -> AmberGold
           isDark -> Color(0x2EFFFFFF)
           else -> Slate200
@@ -113,8 +113,8 @@ fun FilterPillsRow(
 
       val textColor = animateColorAsState(
         targetValue = when {
-          isSelected && isDark -> AmberGold
-          isSelected && !isDark -> Color(0xFFB45309)
+          isSelected && isDark -> ChampagneGold
+          isSelected && !isDark -> Amber700
           isDark -> Slate400
           else -> Slate600
         },
@@ -163,8 +163,8 @@ fun FilterPillsRow(
                 .clip(RoundedCornerShape(10.dp))
                 .background(
                   Brush.linearGradient(
-                    if (isDark) listOf(AmberGold, Amber600)
-                    else listOf(Amber600, Color(0xFFB45309))
+                    if (isDark) listOf(ChampagneGold, Amber600)
+                    else listOf(Amber600, Amber700)
                   )
                 )
                 .padding(horizontal = 6.dp, vertical = 1.dp),

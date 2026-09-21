@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import chat.simplex.common.ui.theme.GlassTokens
+import chat.simplex.common.ui.theme.MineralCanvasLight
 import chat.simplex.common.ui.theme.isInDarkTheme
 
 /**
@@ -34,7 +35,7 @@ fun AmbientGlassBackground(
     content: @Composable () -> Unit
 ) {
     val isDark = isInDarkTheme()
-    val baseBackground = if (isDark) GlassTokens.DarkBackground else Color(0xFFF0F2F5)
+    val baseBackground = if (isDark) GlassTokens.DarkBackground else MineralCanvasLight
     val orbAlphaMultiplier = if (isDark) 1f else 0.5f
 
     val drift1: Float
