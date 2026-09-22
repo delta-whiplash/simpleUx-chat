@@ -410,6 +410,7 @@
   <string name="delivery">Delivery</string>
   <string name="no_info_on_delivery">No delivery information</string>
   <string name="delete_verb">Delete</string>
+  <string name="icon_descr_clear_text">Clear text</string>
   <string name="reveal_verb">Reveal</string>
   <string name="hide_verb">Hide</string>
   <string name="allow_verb">Allow</string>

@@ -119,7 +119,7 @@ fun SimpleXInfoLayout(
           val cardBrush = if (isDarkTheme) {
             Brush.verticalGradient(listOf(Color(0xFF1E2533), Color(0xFF131720)))
           } else {
-            Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Color(0xFFF1F5F9)))
+            Brush.verticalGradient(listOf(Color(0xFFFFFFFF), Slate100))
           }
           val specularRimBrush = if (isDarkTheme) {
             Brush.verticalGradient(listOf(Color(0x38FFFFFF), Color(0x0EFFFFFF)))
@@ -204,7 +204,7 @@ fun SimpleXLogo() {
 
 @Composable
 fun SimpleUxWordmark() {
-  val gold = if (isInDarkTheme()) Color(0xFFE2B755) else Color(0xFFD97706)
+  val gold = if (isInDarkTheme()) ChampagneGold else Amber600
   Row(verticalAlignment = Alignment.Bottom) {
     Text(
       "Simple",
@@ -243,15 +243,15 @@ fun OnboardingActionButton(
 
   val bgBrush = if (enabled) {
     if (isDark) {
-      Brush.verticalGradient(listOf(Color(0xFFE2B755), Color(0xFFB88A2E)))
+      Brush.verticalGradient(listOf(ChampagneGold, Color(0xFFB88A2E)))
     } else {
-      Brush.verticalGradient(listOf(Color(0xFFF59E0B), Color(0xFFD97706)))
+      Brush.verticalGradient(listOf(AmberGold, Amber600))
     }
   } else {
     if (isDark) {
-      Brush.verticalGradient(listOf(Color(0xFF1E293B), Color(0xFF0F172A)))
+      Brush.verticalGradient(listOf(Slate800, Slate900))
     } else {
-      Brush.verticalGradient(listOf(Color(0xFFE2E8F0), Color(0xFFCBD5E1)))
+      Brush.verticalGradient(listOf(Slate200, Slate300))
     }
   }
 
@@ -287,11 +287,11 @@ fun OnboardingActionButton(
       verticalAlignment = Alignment.CenterVertically
     ) {
       if (icon != null) {
-        Icon(icon, stringResource(labelId), Modifier.padding(end = DEFAULT_PADDING_HALF), tint = if (enabled) iconColor else (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)))
+        Icon(icon, stringResource(labelId), Modifier.padding(end = DEFAULT_PADDING_HALF), tint = if (enabled) iconColor else (if (isDark) Slate500 else Slate400))
       }
       Text(
         stringResource(labelId),
-        color = if (enabled) Color.White else (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)),
+        color = if (enabled) Color.White else (if (isDark) Slate500 else Slate400),
         fontSize = 16.5.sp,
         fontWeight = FontWeight.SemiBold,
         letterSpacing = 0.3.sp
@@ -331,14 +331,14 @@ fun TextButtonBelowOnboardingButton(text: String, onClick: (() -> Unit)?, icon: 
           Icon(
             icon,
             null,
-            tint = if (enabled) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else MaterialTheme.colors.secondary,
+            tint = if (enabled) (if (isDark) Sky400 else Color(0xFF0284C7)) else MaterialTheme.colors.secondary,
             modifier = Modifier.size(16.dp)
           )
           Spacer(Modifier.width(6.dp))
         }
         Text(
           text,
-          color = if (enabled) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else MaterialTheme.colors.secondary,
+          color = if (enabled) (if (isDark) Sky400 else Color(0xFF0284C7)) else MaterialTheme.colors.secondary,
           fontWeight = FontWeight.Medium,
           fontSize = 14.sp,
           textAlign = TextAlign.Center

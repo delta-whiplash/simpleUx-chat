@@ -421,23 +421,25 @@ fun ProfileNameField(name: MutableState<String>, placeholder: String = "", isVal
   val isDark = isInDarkTheme()
   val shape = RoundedCornerShape(18.dp)
 
+  // #175: mineral field - gold focus (active state = the one accent), ruby
+  // when invalid, hairline rims at rest
   val borderBrush = if (!valid) {
-    Brush.verticalGradient(listOf(Color(0xFFEF4444), Color(0xFFDC2626)))
+    Brush.verticalGradient(listOf(Coral500, Coral500.copy(alpha = 0.75f)))
   } else if (focused) {
     if (isDark) {
-      Brush.verticalGradient(listOf(Color(0xFF38BDF8), Color(0x6038BDF8)))
+      Brush.verticalGradient(listOf(ChampagneGold, ChampagneGold.copy(alpha = 0.38f)))
     } else {
-      Brush.verticalGradient(listOf(Color(0xFF0284C7), Color(0x600284C7)))
+      Brush.verticalGradient(listOf(Amber700, Amber700.copy(alpha = 0.38f)))
     }
   } else {
     if (isDark) {
-      Brush.verticalGradient(listOf(Color(0x35FFFFFF), Color(0x10FFFFFF)))
+      Brush.verticalGradient(listOf(MineralRimTopDark, MineralRimDark))
     } else {
-      Brush.verticalGradient(listOf(Color(0x200F172A), Color(0x0A0F172A)))
+      Brush.verticalGradient(listOf(MineralRimLight, MineralRimLight.copy(alpha = 0.4f)))
     }
   }
 
-  val containerBg = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+  val containerBg = if (isDark) Slate800 else Slate100
 
   val modifier = Modifier
     .fillMaxWidth()
@@ -457,11 +459,11 @@ fun ProfileNameField(name: MutableState<String>, placeholder: String = "", isVal
       modifier = if (focusRequester == null) modifier else modifier.focusRequester(focusRequester),
       textStyle = TextStyle(
         fontSize = 17.sp,
-        color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+        color = if (isDark) Slate50 else Slate900,
         fontWeight = FontWeight.Medium
       ),
       singleLine = true,
-      cursorBrush = SolidColor(if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)),
+      cursorBrush = SolidColor(if (isDark) ChampagneGold else Amber700),
       decorationBox = @Composable { innerTextField ->
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -470,7 +472,7 @@ fun ProfileNameField(name: MutableState<String>, placeholder: String = "", isVal
           Icon(
             painter = painterResource(MR.images.ic_person),
             contentDescription = null,
-            tint = if (focused) (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)) else (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)),
+            tint = if (focused) (if (isDark) ChampagneGold else Amber700) else (if (isDark) Slate500 else Slate400),
             modifier = Modifier.size(20.dp)
           )
           Spacer(Modifier.width(12.dp))
@@ -479,7 +481,7 @@ fun ProfileNameField(name: MutableState<String>, placeholder: String = "", isVal
               Text(
                 placeholder,
                 style = MaterialTheme.typography.body1.copy(
-                  color = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+                  color = if (isDark) Slate500 else Slate400,
                   fontSize = 16.sp
                 )
               )
@@ -493,8 +495,8 @@ fun ProfileNameField(name: MutableState<String>, placeholder: String = "", isVal
             ) {
               Icon(
                 painter = painterResource(MR.images.ic_close),
-                contentDescription = "Clear",
-                tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+                contentDescription = stringResource(MR.strings.icon_descr_clear_text),
+                tint = if (isDark) Slate500 else Slate400,
                 modifier = Modifier.size(16.dp)
               )
             }

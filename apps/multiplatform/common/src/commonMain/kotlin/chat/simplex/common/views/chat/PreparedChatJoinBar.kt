@@ -102,7 +102,7 @@ fun PreparedChatJoinBar(
             fontFamily = PlusJakartaSans,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
-            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+            color = if (isDark) Slate400 else Slate500
           ),
           modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
@@ -128,7 +128,7 @@ fun PreparedChatJoinBar(
                 fontFamily = PlusJakartaSans,
                 fontSize = 13.sp,
                 fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                color = if (isDark) Color.White else Color(0xFF0F172A)
+                color = if (isDark) Color.White else Slate900
               ),
               modifier = Modifier.weight(1f)
             )
@@ -136,7 +136,7 @@ fun PreparedChatJoinBar(
               Icon(
                 painterResource(MR.images.ic_check),
                 contentDescription = null,
-                tint = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+                tint = if (isDark) Sky400 else Color(0xFF0284C7),
                 modifier = Modifier.size(16.dp)
               )
             }
@@ -165,7 +165,7 @@ fun PreparedChatJoinBar(
               fontFamily = PlusJakartaSans,
               fontSize = 13.sp,
               fontWeight = if (isIncognito) FontWeight.SemiBold else FontWeight.Normal,
-              color = if (isDark) Color.White else Color(0xFF0F172A)
+              color = if (isDark) Color.White else Slate900
             ),
             modifier = Modifier.weight(1f)
           )
@@ -228,7 +228,7 @@ fun PreparedChatJoinBar(
               fontFamily = PlusJakartaSans,
               fontSize = 10.sp,
               fontWeight = FontWeight.Medium,
-              color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+              color = if (isDark) Slate400 else Slate500
             ),
             maxLines = 1
           )
@@ -239,7 +239,7 @@ fun PreparedChatJoinBar(
                 fontFamily = PlusJakartaSans,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = if (isDark) Color.White else Color(0xFF0F172A)
+                color = if (isDark) Color.White else Slate900
               ),
               maxLines = 1,
               overflow = TextOverflow.Ellipsis
@@ -248,7 +248,7 @@ fun PreparedChatJoinBar(
               Icon(
                 painterResource(if (pickerExpanded.value) MR.images.ic_chevron_up else MR.images.ic_chevron_down),
                 contentDescription = null,
-                tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+                tint = if (isDark) Slate400 else Slate500,
                 modifier = Modifier.size(14.dp)
               )
             }
@@ -267,9 +267,9 @@ fun PreparedChatJoinBar(
         enabled = !inProgress,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-          backgroundColor = if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7),
+          backgroundColor = if (isDark) Sky400 else Color(0xFF0284C7),
           contentColor = Color.White,
-          disabledBackgroundColor = (if (isDark) Color(0xFF38BDF8) else Color(0xFF0284C7)).copy(alpha = 0.5f)
+          disabledBackgroundColor = (if (isDark) Sky400 else Color(0xFF0284C7)).copy(alpha = 0.5f)
         ),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp),
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp)

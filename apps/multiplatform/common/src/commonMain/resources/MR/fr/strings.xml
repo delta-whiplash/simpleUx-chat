@@ -103,6 +103,7 @@
     <string name="share_verb">Partager</string>
     <string name="copy_verb">Copier</string>
     <string name="delete_verb">Supprimer</string>
+  <string name="icon_descr_clear_text">Effacer le texte</string>
     <string name="save_verb">Enregistrer</string>
     <string name="edit_verb">Modifier</string>
     <string name="reveal_verb">Révéler</string>
