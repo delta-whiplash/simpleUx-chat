@@ -100,7 +100,7 @@ fun ChatPreviewView(
   @Composable
   fun chatPreviewTitleText(color: Color = Color.Unspecified) {
     val titleColor = if (color == Color.Unspecified) {
-      if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+      if (isInDarkTheme()) Slate50 else Slate900
     } else color
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
       Text(
@@ -176,7 +176,7 @@ fun ChatPreviewView(
           } else if (!cInfo.contact.sndReady) {
             MaterialTheme.colors.secondary
           } else {
-            if (isInDarkTheme()) Color(0xFFF8FAFC) else Color(0xFF0F172A)
+            if (isInDarkTheme()) Slate50 else Slate900
           }
           val isStarred = chatModel.starredChatIds.contains(chat.id)
           Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {

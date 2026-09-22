@@ -176,8 +176,8 @@ fun UserProfileLayout(
                     .border(
                       width = 2.dp,
                       brush = Brush.linearGradient(
-                        if (isDark) listOf(Color(0xFFE2B755), Color(0xFFD97706))
-                        else listOf(Color(0xFFD97706), Color(0xFFB45309))
+                        if (isDark) listOf(ChampagneGold, Amber600)
+                        else listOf(Amber600, Amber700)
                       ),
                       shape = CircleShape
                     ),
@@ -203,15 +203,15 @@ fun UserProfileLayout(
                     .align(Alignment.BottomEnd)
                     .size(34.dp)
                     .clip(CircleShape)
-                    .background(if (isDark) Color(0xFFE2B755) else Color(0xFFD97706))
-                    .border(2.dp, if (isDark) Color(0xFF0F172A) else Color.White, CircleShape)
+                    .background(if (isDark) ChampagneGold else Amber600)
+                    .border(2.dp, if (isDark) Slate900 else Color.White, CircleShape)
                     .clickable { scope.launch { bottomSheetModalState.show() } },
                   contentAlignment = Alignment.Center
                 ) {
                   Icon(
                     painter = painterResource(MR.images.ic_photo_camera),
                     contentDescription = stringResource(MR.strings.icon_descr_change_photo),
-                    tint = if (isDark) Color(0xFF0F172A) else Color.White,
+                    tint = if (isDark) Slate900 else Color.White,
                     modifier = Modifier.size(16.dp)
                   )
                 }
@@ -298,7 +298,7 @@ fun UserProfileLayout(
                       fontFamily = PlusJakartaSans,
                       fontSize = 13.sp,
                       fontWeight = FontWeight.SemiBold,
-                      color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+                      color = if (isDark) Slate400 else Slate500
                     ),
                     modifier = Modifier.weight(1f)
                   )
@@ -307,7 +307,7 @@ fun UserProfileLayout(
                       Icon(
                         painter = painterResource(MR.images.ic_arrow_upward),
                         contentDescription = stringResource(MR.strings.profile_detailed_description),
-                        tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                        tint = if (isDark) ChampagneGold else Amber600,
                         modifier = Modifier.size(18.dp)
                       )
                     }
@@ -329,7 +329,7 @@ fun UserProfileLayout(
                     style = TextStyle(
                       fontFamily = PlusJakartaSans,
                       fontSize = 14.sp,
-                      color = if (description.value.isBlank()) (if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)) else (if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A))
+                      color = if (description.value.isBlank()) (if (isDark) Slate500 else Slate400) else (if (isDark) Slate100 else Slate900)
                     ),
                     maxLines = 3
                   )
@@ -350,10 +350,10 @@ fun UserProfileLayout(
               enabled = enabled,
               shape = RoundedCornerShape(16.dp),
               colors = ButtonDefaults.buttonColors(
-                backgroundColor = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
-                disabledBackgroundColor = if (isDark) Color(0xFF1E293B) else Color(0xFFE2E8F0),
-                contentColor = if (isDark) Color(0xFF0F172A) else Color.White,
-                disabledContentColor = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+                backgroundColor = if (isDark) ChampagneGold else Amber600,
+                disabledBackgroundColor = if (isDark) Slate800 else Slate200,
+                contentColor = if (isDark) Slate900 else Color.White,
+                disabledContentColor = if (isDark) Slate500 else Slate400
               ),
               modifier = Modifier.fillMaxWidth().height(48.dp),
               elevation = ButtonDefaults.elevation(defaultElevation = if (enabled) 4.dp else 0.dp)
@@ -377,7 +377,7 @@ fun UserProfileLayout(
                 fontFamily = PlusJakartaSans,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = if (isDark) Color(0xFFE2E8F0) else Color(0xFF1E293B)
+                color = if (isDark) Slate200 else Slate800
               ),
               modifier = Modifier.padding(bottom = 8.dp)
             )
@@ -407,7 +407,7 @@ fun UserProfileLayout(
                   Icon(
                     painterResource(MR.images.ic_add_link),
                     contentDescription = null,
-                    tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                    tint = if (isDark) ChampagneGold else Amber600,
                     modifier = Modifier.size(26.dp)
                   )
                   Spacer(Modifier.height(8.dp))
@@ -418,7 +418,7 @@ fun UserProfileLayout(
                       fontFamily = PlusJakartaSans,
                       fontSize = 12.sp,
                       fontWeight = FontWeight.SemiBold,
-                      color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                      color = if (isDark) Slate100 else Slate900
                     )
                   )
                 }
@@ -445,7 +445,7 @@ fun UserProfileLayout(
                   Icon(
                     painterResource(MR.images.ic_qr_code),
                     contentDescription = null,
-                    tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+                    tint = if (isDark) ChampagneGold else Amber600,
                     modifier = Modifier.size(26.dp)
                   )
                   Spacer(Modifier.height(8.dp))
@@ -456,7 +456,7 @@ fun UserProfileLayout(
                       fontFamily = PlusJakartaSans,
                       fontSize = 12.sp,
                       fontWeight = FontWeight.SemiBold,
-                      color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+                      color = if (isDark) Slate100 else Slate900
                     )
                   )
                 }
@@ -505,7 +505,7 @@ fun ProfileTextBox(
         fontFamily = PlusJakartaSans,
         fontSize = 13.sp,
         fontWeight = FontWeight.SemiBold,
-        color = if (focused) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)) else (if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B))
+        color = if (focused) (if (isDark) ChampagneGold else Amber600) else (if (isDark) Slate400 else Slate500)
       ),
       modifier = Modifier.padding(bottom = 6.dp)
     )
@@ -518,7 +518,7 @@ fun ProfileTextBox(
         .border(
           width = if (focused) 1.5.dp else 1.dp,
           color = if (!valid) MaterialTheme.colors.error
-                  else if (focused) (if (isDark) Color(0xFFE2B755) else Color(0xFFD97706))
+                  else if (focused) (if (isDark) ChampagneGold else Amber600)
                   else (if (isDark) Color(0x2AFFFFFF) else Color(0x18000000)),
           shape = shape
         )
@@ -539,12 +539,12 @@ fun ProfileTextBox(
             fontFamily = PlusJakartaSans,
             fontSize = 15.sp,
             fontWeight = FontWeight.Medium,
-            color = if (isDark) Color(0xFFF1F5F9) else Color(0xFF0F172A)
+            color = if (isDark) Slate100 else Slate900
           ),
           keyboardOptions = keyboardOptions,
           singleLine = singleLine,
           maxLines = maxLines,
-          cursorBrush = SolidColor(if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)),
+          cursorBrush = SolidColor(if (isDark) ChampagneGold else Amber600),
           decorationBox = { innerTextField ->
             if (value.value.isEmpty() && placeholder.isNotEmpty()) {
               Text(
@@ -552,7 +552,7 @@ fun ProfileTextBox(
                 style = TextStyle(
                   fontFamily = PlusJakartaSans,
                   fontSize = 15.sp,
-                  color = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8)
+                  color = if (isDark) Slate500 else Slate400
                 )
               )
             }

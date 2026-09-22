@@ -152,3 +152,8 @@ val MineralGoldWashDeepLight = Color(0xFFFDE68A)
 // Read-check gold (delivered/read ticks on outgoing messages)
 val MineralChecksDark = Color(0xFFE2B755)
 val MineralChecksLight = Color(0xFFC98A12)
+
+// Chat list row washes for the flat mineral list: the chat currently open
+// gets a quiet neutral highlight (Telegram model), gold stays for unread
+val MineralRowOpenDark = Color(0x10FFFFFF)
+val MineralRowOpenLight = Color(0x0A0F172A)

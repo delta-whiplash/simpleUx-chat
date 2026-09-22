@@ -138,15 +138,15 @@ fun SettingsLayout(
     // Groupe 1 : Compte & Données
     SectionView(stringResource(MR.strings.settings_section_account)) {
       DatabaseItem(encrypted, passphraseSaved, showSettingsModal { DatabaseView() }, stopped)
-      SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, badgeColor = Color(0xFF1E293B), disabled = stopped)
-      SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_ios_share), stringResource(MR.strings.migrate_from_device_to_another_device), { withAuth(generalGetString(MR.strings.auth_open_migration_to_another_device), generalGetString(MR.strings.auth_log_in_using_credential)) { ModalManager.fullscreen.showCustomModal { close -> MigrateFromDeviceView(close) } } }, badgeColor = Slate800, disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_wifi_tethering), stringResource(MR.strings.network_and_servers), showCustomModal { _, close -> NetworkAndServersView(close) }, badgeColor = Slate800, disabled = stopped)
     }
     SectionDividerSpaced()
 
     // Groupe 2 : Préférences
     SectionView(stringResource(MR.strings.settings_section_preferences)) {
-      SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Color(0xFF1E293B))
-      SettingsActionItem(painterResource(MR.images.ic_folder_filled), stringResource(MR.strings.settings_chat_folders), showSettingsModal { ChatFoldersSettingsScreen(it, onBack = { /* modal closes automatically */ }) }, badgeColor = Color(0xFFF59E0B))
+      SettingsActionItem(painterResource(MR.images.ic_light_mode), stringResource(MR.strings.appearance_settings), showSettingsModal { AppearanceView(it) }, badgeColor = Slate800)
+      SettingsActionItem(painterResource(MR.images.ic_folder_filled), stringResource(MR.strings.settings_chat_folders), showSettingsModal { ChatFoldersSettingsScreen(it, onBack = { /* modal closes automatically */ }) }, badgeColor = AmberGold)
       if (appPlatform == AppPlatform.ANDROID) {
         // #63: notifications mode is a 3-option choice - inline dropdown on the Settings
         // page, not a settings page holding one row that opens a second page of radios
@@ -155,7 +155,7 @@ fun SettingsLayout(
           values = notificationModes().map { it.value to it.title },
           selection = notificationsMode,
           icon = painterResource(if (notificationsMode.value == NotificationsMode.OFF) MR.images.ic_bolt_off else MR.images.ic_bolt),
-          badgeColor = Color(0xFF1E293B),
+          badgeColor = Slate800,
           enabled = remember { mutableStateOf(!stopped) },
           onSelected = { changeNotificationsMode(it, chatModel) }
         )
@@ -163,14 +163,14 @@ fun SettingsLayout(
           SectionTextFooter(annotatedStringResource(MR.strings.xiaomi_ignore_battery_optimization))
         }
       }
-      SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, badgeColor = Color(0xFF1E293B), disabled = stopped)
+      SettingsActionItem(painterResource(MR.images.ic_videocam), stringResource(MR.strings.settings_audio_video_calls), showSettingsModal { CallSettingsView(it, showModal) }, badgeColor = Slate800, disabled = stopped)
     }
     SectionDividerSpaced()
 
     // Groupe 3 : Sécurité & Support
     SectionView(stringResource(MR.strings.settings_section_security)) {
       SettingsActionItem(painterResource(MR.images.ic_lock), stringResource(MR.strings.your_privacy), showSettingsModal { PrivacySettingsView(it, showSettingsModal, setPerformLA) }, badgeColor = Color(0xFF43A047), disabled = stopped)
-      SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Color(0xFF1E293B))
+      SettingsActionItem(painterResource(MR.images.ic_help), stringResource(MR.strings.help_and_support), showSettingsModal { HelpAndSupportView(it, showModal, showCustomModal) }, badgeColor = Slate800)
     }
 
     if (crowdfundingAvailable()) {
@@ -180,7 +180,7 @@ fun SettingsLayout(
           painterResource(MR.images.ic_redeem),
           stringResource(MR.strings.v7_0_crowdfunding),
           { ModalManager.start.showModalCloseable(cardScreen = true) { close -> GetStakeView(fromSettings = true, close = close) } },
-          badgeColor = Color(0xFF1E293B)
+          badgeColor = Slate800
         )
       }
     }
@@ -200,7 +200,7 @@ fun SettingsLayout(
       Text(
         text = "SimpleUX ${appVersionInfo.first}${if (appVersionInfo.second != null) " (${appVersionInfo.second})" else ""}",
         style = MaterialTheme.typography.caption,
-        color = if (isInDarkTheme()) Color(0xFF64748B) else Color(0xFF94A3B8),
+        color = if (isInDarkTheme()) Slate500 else Slate400,
         textAlign = TextAlign.Center,
         // Issue #73: the settings version row is the entry point to VersionInfoView
         // (app updates, project links). AppVersionItem's clickable variant is orphaned
@@ -235,7 +235,7 @@ private fun UserProfileHeaderCard(
         shape
       ),
     shape = shape,
-    color = if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9),
+    color = if (isDark) Slate800 else Slate100,
     elevation = 2.dp
   ) {
     Row(
@@ -255,7 +255,7 @@ private fun UserProfileHeaderCard(
           text = profile.displayName.ifEmpty { stringResource(MR.strings.settings_my_profile) },
           fontSize = 17.sp,
           fontWeight = FontWeight.Bold,
-          color = if (isDark) Color(0xFFF8FAFC) else Color(0xFF0F172A),
+          color = if (isDark) Slate50 else Slate900,
           maxLines = 1,
           overflow = TextOverflow.Ellipsis
         )
@@ -264,7 +264,7 @@ private fun UserProfileHeaderCard(
           Text(
             text = profile.fullName,
             fontSize = 13.sp,
-            color = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+            color = if (isDark) Slate300 else Slate600,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
           )
@@ -273,7 +273,7 @@ private fun UserProfileHeaderCard(
           Text(
             text = profile.shortDescr ?: "",
             fontSize = 13.sp,
-            color = if (isDark) Color(0xFFCBD5E1) else Color(0xFF475569),
+            color = if (isDark) Slate300 else Slate600,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
           )
@@ -284,13 +284,13 @@ private fun UserProfileHeaderCard(
             text = stringResource(MR.strings.settings_edit_profile),
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            color = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B)
+            color = if (isDark) Slate400 else Slate500
           )
           Spacer(Modifier.width(4.dp))
           Icon(
             painter = painterResource(MR.images.ic_chevron_right),
             contentDescription = null,
-            tint = if (isDark) Color(0xFF94A3B8) else Color(0xFF64748B),
+            tint = if (isDark) Slate400 else Slate500,
             modifier = Modifier.size(12.dp)
           )
         }
@@ -303,13 +303,13 @@ private fun UserProfileHeaderCard(
           modifier = Modifier
             .size(36.dp)
             .clip(CircleShape)
-            .background(if (isDark) Color(0x33E2B755) else Color(0x22D97706)),
+            .background(if (isDark) AmberGoldWash else Color(0x22D97706)),
           contentAlignment = Alignment.Center
         ) {
           Icon(
             painter = painterResource(MR.images.ic_qr_code),
             contentDescription = stringResource(MR.strings.icon_descr_my_qr_code),
-            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+            tint = if (isDark) ChampagneGold else Amber600,
             modifier = Modifier.size(18.dp)
           )
         }
@@ -387,7 +387,7 @@ expect fun AdvancedSettingsAppSection(
           modifier = Modifier
             .size(34.dp)
             .clip(CircleShape)
-            .background(if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9))
+            .background(if (isDark) Slate800 else Slate100)
             .border(1.dp, if (isDark) Color(0x33FFFFFF) else Color(0x1F000000), CircleShape),
           contentAlignment = Alignment.Center
         ) {
@@ -395,7 +395,7 @@ expect fun AdvancedSettingsAppSection(
             painterResource(MR.images.ic_database),
             contentDescription = stringResource(MR.strings.chat_data),
             modifier = Modifier.size(18.dp),
-            tint = if (isDark) Color(0xFFE2B755) else Color(0xFFD97706),
+            tint = if (isDark) ChampagneGold else Amber600,
           )
         }
         Spacer(Modifier.width(14.dp))
@@ -412,7 +412,7 @@ expect fun AdvancedSettingsAppSection(
         Icon(
           painter = painterResource(MR.images.ic_chevron_right),
           contentDescription = null,
-          tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+          tint = if (isDark) Slate500 else Slate400,
           modifier = Modifier.size(16.dp)
         )
       }
@@ -614,7 +614,7 @@ fun SettingsActionItem(
         Icon(
           painter = painterResource(MR.images.ic_chevron_right),
           contentDescription = null,
-          tint = if (isDark) Color(0xFF64748B) else Color(0xFF94A3B8),
+          tint = if (isDark) Slate500 else Slate400,
           modifier = Modifier.size(16.dp)
         )
       }
@@ -633,14 +633,14 @@ private fun SettingsRowIconBadge(icon: Painter, text: String?, badgeColor: Color
   } else if (isPrivacy) {
     if (isDark) Color(0x3310B981) else Color(0x2210B981)
   } else {
-    if (isDark) Color(0xFF1E293B) else Color(0xFFF1F5F9)
+    if (isDark) Slate800 else Slate100
   }
   val iconTint = if (isShutdown) {
-    Color(0xFFEF4444)
+    Coral500
   } else if (isPrivacy) {
-    Color(0xFF10B981)
+    Emerald500
   } else {
-    if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+    if (isDark) ChampagneGold else Amber600
   }
   Box(
     modifier = Modifier

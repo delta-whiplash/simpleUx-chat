@@ -403,6 +403,12 @@ fun SimpleUxTabHost(
   val keyboardState by getKeyboardState()
   val scope = rememberCoroutineScope()
   val showProfileSwitcherPopup = remember { mutableStateOf(false) }
+  // #175: unread-chats dot on the island's Chats tab. Same predicate as the
+  // Unread pill (ChatListContent) so the two can never disagree.
+  val allChatsState = remember { chatModel.chats }
+  val chatsUnread = remember(allChatsState.value.toList()) {
+    allChatsState.value.count { it.unreadTag && !isCreatedInvitationChat(it) }
+  }
 
   CompositionLocalProvider(
     LocalSimpleUxTab provides currentTab,
@@ -477,6 +483,7 @@ fun SimpleUxTabHost(
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
               TelegramBottomIslandBar(
                 currentTab = currentTab.value,
+                chatsUnread = chatsUnread,
                 onSelectTab = { tab ->
                   ModalManager.start.closeModals()
                   currentTab.value = tab
@@ -601,6 +608,9 @@ fun BoxScope.TelegramBottomIslandBar(
   userPickerState: MutableStateFlow<AnimatedViewState>,
   setPerformLA: (Boolean) -> Unit,
   onChatsClick: () -> Unit,
+  // #175: count of chats with unread attention, shown as a gold dot on the
+  // Chats tab (same predicate as the Unread filter pill).
+  chatsUnread: Int = 0,
   // #84: whether the device offers the Scan pane (Android); when false the
   // Scan item is not composed at all.
   scanAvailable: Boolean = false
@@ -648,6 +658,7 @@ fun BoxScope.TelegramBottomIslandBar(
           label = stringResource(MR.strings.settings_section_title_chats),
           icon = MR.images.ic_forum,
           isActive = (currentTab == SimpleUxTab.CHATS),
+          badgeCount = chatsUnread,
           onClick = {
             if (currentTab == SimpleUxTab.CHATS) {
               onChatsClick()
@@ -711,7 +722,8 @@ private fun IslandTabItem(
   isActive: Boolean,
   onClick: () -> Unit,
   onLongClick: (() -> Unit)? = null,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  badgeCount: Int = 0
 ) {
   val isDark = isInDarkTheme()
   val activeShape = RoundedCornerShape(20.dp)
@@ -765,6 +777,27 @@ private fun IslandTabItem(
         fontWeight = if (isActive) FontWeight.Bold else FontWeight.Medium,
         color = if (isActive) (if (isDark) ChampagneGold else Amber700) else inactiveColor
       )
+    }
+    if (badgeCount > 0) {
+      // #175: gold attention dot, matching the chat list unread badges
+      Box(
+        modifier = Modifier
+          .align(Alignment.TopEnd)
+          .offset(x = 2.dp, y = (-1).dp)
+          .clip(RoundedCornerShape(9.dp))
+          .background(Brush.linearGradient(if (isDark) listOf(ChampagneGold, Amber600) else listOf(Amber600, Amber700)))
+          .border(0.5.dp, if (isDark) Color(0x66FFFFFF) else Color(0x33000000), RoundedCornerShape(9.dp))
+          .padding(horizontal = 4.dp, vertical = 0.5.dp),
+        contentAlignment = Alignment.Center
+      ) {
+        Text(
+          text = unreadCountStr(badgeCount),
+          color = if (isDark) Slate900 else Color.White,
+          fontSize = 9.sp,
+          fontWeight = FontWeight.Bold,
+          maxLines = 1
+        )
+      }
     }
   }
 }

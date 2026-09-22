@@ -732,7 +732,7 @@ fun ChatItemView(
                       .widthIn(max = 360.dp)
                       .glassSurface(
                         shape = RoundedCornerShape(20.dp),
-                        backgroundColor = if (isPublic) Color(0xFFEF4444).copy(alpha = 0.12f) else GlassTokens.SecurityPillBg.copy(alpha = 0.12f),
+                        backgroundColor = if (isPublic) Coral500.copy(alpha = 0.12f) else GlassTokens.SecurityPillBg.copy(alpha = 0.12f),
                         borderColor = if (isPublic) Color(0xFFF87171).copy(alpha = 0.25f) else GlassTokens.SecurityPillBorder.copy(alpha = 0.25f)
                       )
                       .padding(horizontal = 16.dp, vertical = 10.dp)
@@ -757,7 +757,7 @@ fun ChatItemView(
                             painterResource(if (isPublic) MR.images.ic_info else MR.images.ic_lock_filled),
                             null,
                             Modifier.size(13.dp),
-                            tint = if (isPublic) Color(0xFFEF4444) else GlassTokens.SecurityPillIcon
+                            tint = if (isPublic) Coral500 else GlassTokens.SecurityPillIcon
                           )
                         }
                         Spacer(Modifier.width(6.dp))
@@ -809,12 +809,12 @@ fun ChatItemView(
                           painterResource(if (isPublic) MR.images.ic_info else MR.images.ic_lock_filled),
                           null,
                           Modifier.size(15.dp),
-                          tint = if (isPublic) Color(0xFFEF4444) else Sky400
+                          tint = if (isPublic) Coral500 else Sky400
                         )
                       }
                       Text(
                         buildAnnotatedString {
-                          withStyle(SpanStyle(fontWeight = FontWeight.Normal, color = if (isInDarkTheme()) Color(0xFFCBD5E1) else Color(0xFF334155))) {
+                          withStyle(SpanStyle(fontWeight = FontWeight.Normal, color = if (isInDarkTheme()) Slate300 else Slate700)) {
                             append(annotatedStringResource(sId))
                           }
                         },
@@ -979,8 +979,8 @@ fun ChatItemView(
               .clip(CircleShape)
               .background(
                 if (thresholdReached) {
-                  if (isDark) Brush.linearGradient(listOf(Color(0xFFE2B755), Color(0xFFD97706)))
-                  else Brush.linearGradient(listOf(Color(0xFFD97706), Color(0xFFB45309)))
+                  if (isDark) Brush.linearGradient(listOf(ChampagneGold, Amber600))
+                  else Brush.linearGradient(listOf(Amber600, Amber700))
                 } else {
                   if (isDark) SolidColor(Color(0xEE1E293B))
                   else SolidColor(Color(0xEEF8FAFC))
@@ -1006,9 +1006,9 @@ fun ChatItemView(
               contentDescription = null,
               modifier = Modifier.size(16.dp),
               tint = if (thresholdReached) {
-                if (isDark) Color(0xFF0F172A) else Color.White
+                if (isDark) Slate900 else Color.White
               } else {
-                if (isDark) Color(0xFFE2B755) else Color(0xFFD97706)
+                if (isDark) ChampagneGold else Amber600
               }
             )
           }
